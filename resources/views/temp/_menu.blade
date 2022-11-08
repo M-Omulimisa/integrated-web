@@ -1,0 +1,585 @@
+<ul class="navbar-nav" id="navbar-nav">
+    <li class="menu-title"><span>Main Menu</span></li>
+    
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="{{ url('/') }}">
+            <i data-feather="airplay"></i> <span>Dashboard</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarFarmers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarFarmers">
+            <i data-feather="users"></i> <span>Farmers</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarFarmers">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> All Farmers </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Farmer Groups </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Individual Farmers </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Mapping </a>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarVillageAgents" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarVillageAgents">
+            <i class="ri-team-line"></i> <span>Village Agents</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarVillageAgents">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> All Agents</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Macro Agents </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Micro Agents </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Individual Agents </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Mapping </a>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarExtension" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarExtension">
+            <i class="ri-team-line"></i> <span>Extension Officers</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarExtension">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> All Officers </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Macro Officers </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Micro Officers </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Individual Officers </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Mapping </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarExtensionSettings" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarExtensionSettings">
+                        <span>Settings</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarExtensionSettings">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Roles </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Positions </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarOrganisation" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarOrganisation">
+            <i data-feather="briefcase"></i> <span>Organisations</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarOrganisation">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Organisations </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Officers/Users </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarOrganisationSettings" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarOrganisationSettings">
+                        <span>Settings</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarOrganisationSettings">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Roles </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarInsurance" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarInsurance">
+            <i data-feather="umbrella"></i> <span>Insurance</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarInsurance">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Compensation </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Agent Earnings </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Subscriptions </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Transactions </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Calculator </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Loss Management </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Agents </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Companies </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarInsuranceSettings" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarInsuranceSettings">
+                        <span>Settings</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarInsuranceSettings">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> USSD menu </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Premium Options </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Max. Sum Insured </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Insurance Period </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Agent Commission </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Insurance Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarQuestions" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarQuestions">
+            <i class="ri-questionnaire-line"></i> <span>Questions</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarQuestions">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Queries &amp; Responses </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Mapping </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarQuestionsSettings" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarQuestionsSettings">
+                        <span>Settings</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarQuestionsSettings">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Keywords </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Success Responses </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Failure Responses </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarOutbreaks" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarOutbreaks">
+            <i data-feather="bell"></i> <span>Outbreaks</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarOutbreaks">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Outbreaks </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Mapping </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarAlerts" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAlerts">
+                        <span>Alets</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarAlerts">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> All Alerts </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Single Alerts </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Bulk Alerts </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> User Category Alerts </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Keyword Alerts</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Area Alerts </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Enterprise Alerts </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarInputLoans" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarInputLoans">
+            <i data-feather="dollar-sign"></i> <span>Input Loans</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarInputLoans">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Input Requests </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Orders </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Repayments </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Projects </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Microfinances </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Service Providers </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Distributors </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Buyers </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Reports </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarLoanSettings" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLoanSettings">
+                        <span>Settings</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarLoanSettings">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Loan Products </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> LPO </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Loan Charges </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Insurance Rates </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Input Commission </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Insurance Commission </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Input Pricing </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Output Pricing </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarTrainings" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarTrainings">
+            <i class="ri-parent-line"></i> <span>Training</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarTrainings">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Resources </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Trainings </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Reports </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarTrainingSettings" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarTrainingSettings">
+                        <span>Settings</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarTrainingSettings">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Topics </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Sub-Topics </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarElearning" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarElearning">
+            <i class="ri-dashboard-2-line"></i> <span>E-Learning</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarElearning">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Courses </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Instructors </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Students </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarElearningSettings" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarElearningSettings">
+                        <span>Settings</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarElearningSettings">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Instructions </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> System Calls </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Message Templates </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarMarketInfo" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarMarketInfo">
+            <i class="ri-shopping-cart-2-line"></i> <span>Market Information</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarMarketInfo">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#sidebarKeywordPrices" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarKeywordPrices">
+                        <span>Keyword Prices</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarKeywordPrices">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Subscription </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> On Request </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Retail Prices </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Wholesale Prices </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Subscriptions </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Outbox </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Transactions </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Reports </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarMarketSettings" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarMarketSettings">
+                        <span>Settings</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarMarketSettings">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Output Products </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Markets </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarWeather" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarWeather">
+            <i data-feather="cloud-drizzle"></i> <span>Weather Information</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarWeather">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Subscriptions </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Transactions </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Outbox </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Conditions </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Reports </a>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarConfigurations" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarConfigurations">
+            <i data-feather="settings"></i> <span>Configurations</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarConfigurations">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Value Chains </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Value Chain Items </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Seasons </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Languages </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarLocations" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLocations">
+                        <span>Locations</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarLocations">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Countries </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Administrative Units </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Unit 1 </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Unit 2 </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Unit 4 </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Unit 5 </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Unit 6 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#sidebarModules" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarModules">
+                        <span>Modules</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarModules">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Modules </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"> Country Access </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Identification Types </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Keyword Categories </a>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+    <li class="nav-item">
+        <a class="nav-link menu-link" href="#sidebarUserMgt" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUserMgt">
+            <i class="ri-group-line"></i> <span>User Management</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarUserMgt">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Users </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Roles </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Permissions </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> User Permissions </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link"> Audit Trail </a>
+                </li>
+            </ul>
+        </div>
+    </li> <!-- end Dashboard Menu -->
+
+</ul>
