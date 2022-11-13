@@ -33,13 +33,6 @@ class CreateSettingsTable extends Migration
 
             $table->index(['settingable_type', 'settingable_id'], 'settingable_index');
         });
-
-        Schema::table('permissions', function($table) {
-           $table->foreign('type_id')->on('types')->references('id')->onDelete('CASCADE');
-       });
-        Schema::table('roles', function($table) {
-           $table->foreign('type_id')->on('types')->references('id')->onDelete('CASCADE');
-       });
     }
 
     /**

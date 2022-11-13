@@ -29,6 +29,8 @@ class CreatePermissionTables extends Migration
             $table->string('group_name')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
+
+           $table->foreign('type_id')->on('types')->references('id')->onDelete('CASCADE');
         });
 
         Schema::connection('mysql')->create('roles', function (Blueprint $table) {
@@ -42,7 +44,8 @@ class CreatePermissionTables extends Migration
             $table->uuid('created_by')->nullable();
             $table->timestamps();
 
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');            
+           $table->foreign('type_id')->on('types')->references('id')->onDelete('CASCADE');
         });
 
 
@@ -98,6 +101,7 @@ class CreatePermissionTables extends Migration
         app('cache')
             ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
             ->forget(config('permission.cache.key'));
+
     }
 
     /**
