@@ -39,7 +39,7 @@ class CreateModulesTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('system_modules');
         Schema::dropIfExists('country_modules');
+        Schema::dropIfExists('system_modules');
     }
 }
