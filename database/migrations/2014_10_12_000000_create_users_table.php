@@ -39,7 +39,7 @@ class CreateUsersTable extends Migration
         });
 
         Schema::table('users', function($table) {
-           $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+           // $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
        });
 
         Schema::connection('mysql')->create('user_statuses', function (Blueprint $table) {
