@@ -13,129 +13,131 @@ class CreateELearningTables extends Migration
      */
     public function up()
     {
-        // Schema::create('e_learning_instructor_invitations', function (Blueprint $table) {
-        //     $table->uuid('id')->primary();
-        //     $table->string('full_name')->nullable();
-        //     $table->string('email')->unique();
-        //     $table->string('token')->nullable();
-        //     $table->uuid('role_id')->nullable();           
-        //     $table->uuid('user_id');
-        //     $table->timestamp('accepted_at')->nullable();
-        //     $table->timestamp('rejected_at')->nullable();
-        //     $table->timestamp('cancelled_at')->nullable();
-        //     $table->timestamp('expires_at')->nullable();
-        //     $table->timestamps();
+        /*
+        Schema::create('e_learning_instructor_invitations', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('full_name')->nullable();
+            $table->string('email')->unique();
+            $table->string('token')->nullable();
+            $table->uuid('role_id')->nullable();           
+            $table->uuid('user_id');
+            $table->timestamp('accepted_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
+            $table->timestamp('expires_at')->nullable();
+            $table->timestamps();
 
-        //     $table->foreign('role_id')->on('roles')->references('id')->onDelete('CASCADE');
-        //     $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
-        // });
+            $table->foreign('role_id')->on('roles')->references('id')->onDelete('CASCADE');
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
+        });
 
-        // Schema::create('e_learning_instructors', function (Blueprint $table) {
-        //     $table->uuid('id')->primary();
-        //     $table->string('full_name')->nullable();
-        //     $table->string('picture')->nullable();
-        //     $table->string('gender');
-        //     $table->string('age_group')->nullable();
-        //     $table->string('affiliation')->nullable();
-        //     $table->string('qualification')->nullable();
-        //     $table->string('country')->nullable();
-        //     $table->string('phone_number')->nullable();
-        //     $table->boolean('email_notifications')->default(false);
-        //     $table->boolean('sms_notifications')->default(false);
-        //     $table->uuid('organisation_id')->nullable();
-        //     $table->uuid('location_id')->nullable();
-        //     $table->string('address')->nullable();
-        //     $table->string('business')->nullable();            
-        //     $table->uuid('user_id');
-        //     $table->timestamps();
+        Schema::create('e_learning_instructors', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('full_name')->nullable();
+            $table->string('picture')->nullable();
+            $table->string('gender');
+            $table->string('age_group')->nullable();
+            $table->string('affiliation')->nullable();
+            $table->string('qualification')->nullable();
+            $table->string('country')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->boolean('email_notifications')->default(false);
+            $table->boolean('sms_notifications')->default(false);
+            $table->uuid('organisation_id')->nullable();
+            $table->uuid('location_id')->nullable();
+            $table->string('address')->nullable();
+            $table->string('business')->nullable();            
+            $table->uuid('user_id');
+            $table->timestamps();
 
-        //     $table->foreign('location_id')->on('locations')->references('id')->onDelete('CASCADE');
-        //     $table->foreign('organisation_id')->on('organisations')->references('id')->onDelete('CASCADE');
-        //     $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
-        // });
+            $table->foreign('location_id')->on('locations')->references('id')->onDelete('CASCADE');
+            $table->foreign('organisation_id')->on('organisations')->references('id')->onDelete('CASCADE');
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
+        });
 
-        // Schema::create('e_learning_students', function (Blueprint $table) {
-        //     $table->uuid('id')->primary();
-        //     $table->string('full_name')->nullable();
-        //     $table->string('picture')->nullable();
-        //     $table->string('gender');
-        //     $table->string('age_group')->nullable();
-        //     $table->string('affiliation')->nullable();
-        //     $table->string('qualification')->nullable();
-        //     $table->string('country')->nullable();
-        //     $table->string('phone_number')->nullable();
-        //     $table->string('email')->nullable();
-        //     $table->boolean('email_notifications')->default(false);
-        //     $table->boolean('sms_notifications')->default(false);
-        //     $table->uuid('organisation_id')->nullable();
-        //     $table->uuid('location_id')->nullable();
-        //     $table->string('address')->nullable();
-        //     $table->string('business')->nullable();            
-        //     $table->uuid('user_id');
-        //     $table->uuid('added_by');
-        //     $table->timestamps();
+        Schema::create('e_learning_students', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('full_name')->nullable();
+            $table->string('picture')->nullable();
+            $table->string('gender');
+            $table->string('age_group')->nullable();
+            $table->string('affiliation')->nullable();
+            $table->string('qualification')->nullable();
+            $table->string('country')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->string('email')->nullable();
+            $table->boolean('email_notifications')->default(false);
+            $table->boolean('sms_notifications')->default(false);
+            $table->uuid('organisation_id')->nullable();
+            $table->uuid('location_id')->nullable();
+            $table->string('address')->nullable();
+            $table->string('business')->nullable();            
+            $table->uuid('user_id');
+            $table->uuid('added_by');
+            $table->timestamps();
 
-        //     $table->foreign('location_id')->on('locations')->references('id')->onDelete('CASCADE');
-        //     $table->foreign('organisation_id')->on('organisations')->references('id')->onDelete('CASCADE');
-        //     $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
-        //     $table->foreign('added_by')->on('users')->references('id')->onDelete('CASCADE');
-        // });
+            $table->foreign('location_id')->on('locations')->references('id')->onDelete('CASCADE');
+            $table->foreign('organisation_id')->on('organisations')->references('id')->onDelete('CASCADE');
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
+            $table->foreign('added_by')->on('users')->references('id')->onDelete('CASCADE');
+        });
 
-        // Schema::create('e_learning_courses', function (Blueprint $table) {
-        //         $table->uuid('id')->primary();
-        //         $table->string('title');
-        //         $table->text('summary')->nullable();
-        //         $table->text('description');
-        //         $table->text('content')->nullable();
-        //         $table->text('audience')->nullable();
-        //         $table->text('outcomes')->nullable();
-        //         $table->uuid('user_id');
-        //         $table->string('image_banner')->nullable();
-        //         $table->string('video_url')->nullable();
-        //         $table->text('about_certificates')->nullable();
-        //         $table->date('start_date')->nullable();
-        //         $table->string('start_time')->nullable();
-        //         $table->date('end_date')->nullable();
-        //         $table->string('end_time')->nullable();
-        //         $table->integer('duration_in_days')->nullable();
-        //         $table->integer('duration_in_weeks')->nullable();
-        //         $table->text('team')->nullable();
-        //         $table->text('operations')->nullable();
-        //         $table->string('logo')->nullable();
-        //         $table->string('brochure')->nullable();
-        //         $table->string('status')->default('Open');
-        //         $table->boolean('read_only_mode')->default(false);
-        //         $table->string('enrollment_status')->default('Current');
-        //         $table->string('code')->unique();
-        //         $table->string('certificate_url')->nullable();
-        //         $table->timestamp('status_archived_at')->nullable();
-        //         $table->timestamp('enrollment_closed_at')->nullable();
-        //         $table->string('lecture_type')->nullable();
-        //         $table->timestamps(); 
+        Schema::create('e_learning_courses', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('title');
+                $table->text('summary')->nullable();
+                $table->text('description');
+                $table->text('content')->nullable();
+                $table->text('audience')->nullable();
+                $table->text('outcomes')->nullable();
+                $table->uuid('user_id');
+                $table->string('image_banner')->nullable();
+                $table->string('video_url')->nullable();
+                $table->text('about_certificates')->nullable();
+                $table->date('start_date')->nullable();
+                $table->string('start_time')->nullable();
+                $table->date('end_date')->nullable();
+                $table->string('end_time')->nullable();
+                $table->integer('duration_in_days')->nullable();
+                $table->integer('duration_in_weeks')->nullable();
+                $table->text('team')->nullable();
+                $table->text('operations')->nullable();
+                $table->string('logo')->nullable();
+                $table->string('brochure')->nullable();
+                $table->string('status')->default('Open');
+                $table->boolean('read_only_mode')->default(false);
+                $table->string('enrollment_status')->default('Current');
+                $table->string('code')->unique();
+                $table->string('certificate_url')->nullable();
+                $table->timestamp('status_archived_at')->nullable();
+                $table->timestamp('enrollment_closed_at')->nullable();
+                $table->string('lecture_type')->nullable();
+                $table->timestamps(); 
 
-        //         $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
-        // });
+                $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
+        });
 
 
-        // Schema::create('e_learning_chapters', function (Blueprint $table) {
-        //     $table->uuid('id')->primary();
-        //     $table->uuid('course_id');
-        //     $table->string('title');
-        //     $table->text('summary')->nullable();
-        //     $table->uuid('user_id');
-        //     $table->boolean('status')->default(true);
-        //     $table->integer('numbering');
+        Schema::create('e_learning_chapters', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('course_id');
+            $table->string('title');
+            $table->text('summary')->nullable();
+            $table->uuid('user_id');
+            $table->boolean('status')->default(true);
+            $table->integer('numbering');
 
-        //     $table->uuid('parent_id')->nullable();
-        //     $table->date('start_date')->nullable();
-        //     $table->date('end_date')->nullable();
+            $table->uuid('parent_id')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
 
-        //     $table->timestamps(); 
+            $table->timestamps(); 
 
-        //     $table->foreign('course_id')->on('e_learning_courses')->references('id')->onDelete('CASCADE');
-        //     // $table->foreign('parent_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
-        //     $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
-        // });
+            $table->foreign('course_id')->on('e_learning_courses')->references('id')->onDelete('CASCADE');
+            // $table->foreign('parent_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
+        });
+        */
 
         Schema::create('e_learning_lectures', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -149,7 +151,7 @@ class CreateELearningTables extends Migration
             $table->integer('numbering');
             $table->timestamps();
 
-            $table->foreign('chapter_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
+            // $table->foreign('chapter_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
             $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
         });
 
