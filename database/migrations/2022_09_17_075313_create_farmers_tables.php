@@ -114,25 +114,15 @@ class CreateFarmersTables extends Migration
             $table->foreign('enterprise_id')->on('enterprises')->references('id')->onDelete('CASCADE');
         });
 
-        Schema::create('farmer_farming_practices', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('farmer_id');
-            $table->uuid('farming_practice_id');
-            $table->timestamps();
+        // Schema::create('farmer_farming_challenges', function (Blueprint $table) {
+        //     $table->uuid('id')->primary();
+        //     $table->uuid('farmer_id');
+        //     $table->uuid('farming_challenge_id');
+        //     $table->timestamps();
 
-            $table->foreign('farmer_id')->on('farmers')->references('id')->onDelete('CASCADE');
-            $table->foreign('farming_practice_id')->on('farming_practices')->references('id')->onDelete('CASCADE');
-        });
-
-        Schema::create('farmer_farming_challenges', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('farmer_id');
-            $table->uuid('farming_challenge_id');
-            $table->timestamps();
-
-            $table->foreign('farmer_id')->on('farmers')->references('id')->onDelete('CASCADE');
-            $table->foreign('farming_challenge_id')->on('farming_challenges')->references('id')->onDelete('CASCADE');
-        });
+        //     $table->foreign('farmer_id')->on('farmers')->references('id')->onDelete('CASCADE');
+        //     $table->foreign('farming_challenge_id')->on('farming_challenges')->references('id')->onDelete('CASCADE');
+        // });
 
     }
 
@@ -143,8 +133,8 @@ class CreateFarmersTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('farmer_farming_challenges');
-        Schema::dropIfExists('farmer_farming_practices');
+        // Schema::dropIfExists('farmer_farming_challenges');
+        // Schema::dropIfExists('farmer_farming_practices');
         Schema::dropIfExists('farmer_enterprises');
         Schema::dropIfExists('farmers');
         Schema::dropIfExists('farmer_group_enterprises');
