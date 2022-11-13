@@ -21,7 +21,7 @@ class CreateVillageAgentsTable extends Migration
             $table->string('national_id_number')->nullable();
             $table->string('gender')->nullable();
             $table->string('phone')->nullable();
-            $table->boolean('is_mm_phone')->default(false);
+            $table->boolean('is_mm_phone')->default(0);
             $table->string('mm_phone')->nullable();
             $table->string('email')->nullable();
             $table->uuid('country_id');
