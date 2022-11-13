@@ -61,7 +61,7 @@ class CreateExtensionOfficersTables extends Migration
             $table->foreign('location_id')->on('locations')->references('id')->onDelete('CASCADE');
             $table->foreign('created_by')->on('users')->references('id')->onDelete('CASCADE');
             $table->foreign('position_id')->on('extension_officer_positions')->references('id')->onDelete('CASCADE');
-            $table->foreign('extension_officer_id')->on('extension_officers')->references('id')->onDelete('CASCADE');
+            // $table->foreign('extension_officer_id')->on('extension_officers')->references('id')->onDelete('CASCADE');
         });
 
         Schema::create('extension_officer_languages', function (Blueprint $table) {
