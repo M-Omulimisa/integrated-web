@@ -202,7 +202,7 @@ class CreateLoansTables extends Migration
             $table->date('end_date')->nullable();
             $table->timestamps();
 
-            $table->foreign('project_id')->on('projects')->references('id')->onDelete('CASCADE');
+            $table->foreign('project_id')->on('loan_projects')->references('id')->onDelete('CASCADE');
             $table->foreign('unit_id')->on('measure_units')->references('id')->onDelete('CASCADE');
             $table->foreign('season_id')->on('seasons')->references('id')->onDelete('CASCADE');
             $table->foreign('distributor_id')->on('distributors')->references('id')->onDelete('CASCADE');
