@@ -24,7 +24,7 @@ class CreateLocationsTable extends Migration
             $table->timestamps();
 
             $table->foreign('country_id')->on('countries')->references('id')->onDelete('CASCADE');
-            $table->foreign('parent_id')->on('locations')->references('id')->onDelete('CASCADE');
+            // $table->foreign('parent_id')->on('locations')->references('id')->onDelete('CASCADE');
         });
     }
 
