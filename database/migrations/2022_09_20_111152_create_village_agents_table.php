@@ -51,6 +51,11 @@ class CreateVillageAgentsTable extends Migration
             $table->foreign('created_by_agent_id')->on('agents')->references('id')->onDelete('CASCADE');
             $table->foreign('agent_id')->on('agents')->references('id')->onDelete('CASCADE');
         });
+
+        Schema::create('farmers', function (Blueprint $table) {
+            $table->foreign('created_by_agent_id')->on('agents')->references('id')->onDelete('CASCADE');
+            $table->foreign('agent_id')->on('agents')->references('id')->onDelete('CASCADE');
+        });
     }
 
     /**

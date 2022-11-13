@@ -96,12 +96,12 @@ class CreateFarmersTables extends Migration
             $table->timestamps();
 
             $table->foreign('created_by_user_id')->on('users')->references('id')->onDelete('CASCADE');
-            $table->foreign('created_by_agent_id')->on('agents')->references('id')->onDelete('CASCADE');
-            $table->foreign('agent_id')->on('agents')->references('id')->onDelete('CASCADE');
             $table->foreign('country_id')->on('countries')->references('id')->onDelete('CASCADE');
             $table->foreign('organisation_id')->on('organisations')->references('id')->onDelete('CASCADE');
             $table->foreign('location_id')->on('locations')->references('id')->onDelete('CASCADE');
             $table->foreign('farmer_group_id')->on('farmer_groups')->references('id')->onDelete('CASCADE');
+            // 'created_by_agent_id' --- in agents migration
+            // 'agent_id' --- in agents migration
         });
 
         Schema::create('farmer_enterprises', function (Blueprint $table) {
