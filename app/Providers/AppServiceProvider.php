@@ -49,8 +49,8 @@ class AppServiceProvider extends ServiceProvider
             $monolog = Log::getLogger();
             $slackHandler = new SlackWebhookHandler(
                 env('LOG_SLACK_WEBHOOK_URL'), 
-                '#crb-laravel-app-alerts',
-                'Laravel App Alerts', 
+                '#m-omulimisa-unified-logs',
+                'Alerts', 
                 false, 
                 'warning', 
                 true, 
