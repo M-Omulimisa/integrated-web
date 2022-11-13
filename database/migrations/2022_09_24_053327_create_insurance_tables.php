@@ -16,8 +16,8 @@ class CreateInsuranceTables extends Migration
         Schema::create('insurance_windows', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('season_id'); 
-            $table->timestamp('opening_date');
-            $table->timestamp('closing_date');
+            $table->date('opening_date');
+            $table->date('closing_date');
             $table->timestamps();
 
             $table->foreign('season_id')->on('seasons')->references('id')->onDelete('CASCADE');
