@@ -117,25 +117,25 @@ class CreateELearningTables extends Migration
         // });
 
 
-        Schema::create('e_learning_chapters', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('course_id');
-            $table->string('title');
-            $table->text('summary')->nullable();
-            $table->uuid('user_id');
-            $table->boolean('status')->default(true);
-            $table->integer('numbering');
+        // Schema::create('e_learning_chapters', function (Blueprint $table) {
+        //     $table->uuid('id')->primary();
+        //     $table->uuid('course_id');
+        //     $table->string('title');
+        //     $table->text('summary')->nullable();
+        //     $table->uuid('user_id');
+        //     $table->boolean('status')->default(true);
+        //     $table->integer('numbering');
 
-            $table->uuid('parent_id')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
+        //     $table->uuid('parent_id')->nullable();
+        //     $table->date('start_date')->nullable();
+        //     $table->date('end_date')->nullable();
 
-            $table->timestamps(); 
+        //     $table->timestamps(); 
 
-            $table->foreign('course_id')->on('e_learning_courses')->references('id')->onDelete('CASCADE');
-            // $table->foreign('parent_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
-            $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
-        });
+        //     $table->foreign('course_id')->on('e_learning_courses')->references('id')->onDelete('CASCADE');
+        //     // $table->foreign('parent_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
+        //     $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
+        // });
 
         Schema::create('e_learning_lectures', function (Blueprint $table) {
             $table->uuid('id')->primary();
