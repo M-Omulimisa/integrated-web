@@ -35,10 +35,10 @@ class CreateSettingsTable extends Migration
         });
 
         Schema::table('permissions', function($table) {
-           $table->foreign('type_id')->references('id')->on('types')->onDelete('NO ACTION');
+           $table->foreign('type_id')->on('types')->references('id')->onDelete('CASCADE');
        });
         Schema::table('roles', function($table) {
-           $table->foreign('type_id')->references('id')->on('types')->onDelete('SET NULL');
+           $table->foreign('type_id')->on('types')->references('id')->onDelete('CASCADE');
        });
     }
 
@@ -51,6 +51,5 @@ class CreateSettingsTable extends Migration
     {
         Schema::connection('mysql')->dropIfExists('settings');
         Schema::connection('mysql')->dropIfExists('types');
-        Schema::connection('mysql')->dropIfExists('statuses');
     }
 }
