@@ -69,7 +69,7 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::connection('mysql')->dropIfExists('users');
         Schema::connection('mysql')->dropIfExists('user_statuses');
+        Schema::connection('mysql')->dropIfExists('users');
     }
 }
