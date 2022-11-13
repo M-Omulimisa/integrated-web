@@ -127,7 +127,7 @@ class CreateSettings1Tables extends Migration
         Schema::dropIfExists('keyword_failure_responses');
         Schema::dropIfExists('keywords');
         Schema::dropIfExists('languages');
-        Schema::dropIfExists('measure_units');        
         Schema::dropIfExists('enterprises');
+        Schema::dropIfExists('measure_units');        
     }
 }
