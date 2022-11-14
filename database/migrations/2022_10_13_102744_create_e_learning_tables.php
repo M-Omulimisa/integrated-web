@@ -137,7 +137,6 @@ class CreateELearningTables extends Migration
             // $table->foreign('parent_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
             $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
         });
-        */
 
         Schema::create('e_learning_lectures', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -523,6 +522,7 @@ class CreateELearningTables extends Migration
             $table->foreign('student_id')->on('e_learning_students')->references('id')->onDelete('CASCADE');
             $table->foreign('added_by')->on('users')->references('id')->onDelete('CASCADE');
         });
+        */
 
         Schema::create('e_learning_assignments', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -541,7 +541,7 @@ class CreateELearningTables extends Migration
             $table->timestamps();
 
             $table->foreign('course_id')->on('e_learning_courses')->references('id')->onDelete('CASCADE');
-            $table->foreign('chapter_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
+            // $table->foreign('chapter_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
             $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
         });
 
@@ -555,7 +555,7 @@ class CreateELearningTables extends Migration
             $table->timestamps();
 
             $table->foreign('course_id')->on('e_learning_courses')->references('id')->onDelete('CASCADE');
-            $table->foreign('chapter_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
+            // $table->foreign('chapter_id')->on('e_learning_chapters')->references('id')->onDelete('CASCADE');
             $table->foreign('assignment_id')->on('e_learning_assignments')->references('id')->onDelete('CASCADE');
             $table->foreign('student_id')->on('e_learning_students')->references('id')->onDelete('CASCADE');
         });
