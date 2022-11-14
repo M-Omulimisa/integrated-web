@@ -139,5 +139,6 @@ class CreateFarmersTables extends Migration
         Schema::dropIfExists('farmers');
         Schema::dropIfExists('farmer_group_enterprises');
         Schema::dropIfExists('farmer_groups');
+        Schema::dropIfExists('agents');
     }
 }

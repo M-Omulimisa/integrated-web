@@ -68,6 +68,6 @@ class CreateVillageAgentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('agents');
+        // Schema::dropIfExists('agents');
     }
 }
