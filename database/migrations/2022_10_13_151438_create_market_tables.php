@@ -163,17 +163,17 @@ class CreateMarketTables extends Migration
      */
     public function down()
     {        
-        Schema::dropIfExists('market_package_enterprises');
-        Schema::dropIfExists('market_packages');
         Schema::dropIfExists('market_keyword_prices');
         Schema::dropIfExists('market_keyword_initiated_prices');
         Schema::dropIfExists('market_commodity_prices');
         Schema::dropIfExists('market_output_products');
-        Schema::dropIfExists('markets');
         Schema::dropIfExists('market_retail_prices');
         Schema::dropIfExists('market_wholesale_prices');
+        Schema::dropIfExists('market_package_enterprises');
         Schema::dropIfExists('market_subscriptions');
+        Schema::dropIfExists('market_packages');
         Schema::dropIfExists('market_outbox');
+        Schema::dropIfExists('markets');
     }
 }
 
