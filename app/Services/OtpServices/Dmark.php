@@ -96,9 +96,9 @@ class Dmark implements ServiceInterface
     public function sendOneTimePassword(User $user, $otp, $ref=null)
     {
         if (config('app.env') == "local") {
-            logger(str_replace(":password", $otp, $this->message));
-            return true;
         }
+        logger(str_replace(":password", $otp, $this->message));
+        return true;
 
         $factor_auth = data_get($user, $this->auth_column, false);
 
