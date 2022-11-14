@@ -703,20 +703,20 @@ class CreateELearningTables extends Migration
         Schema::dropIfExists('e_learning_incoming_calls');
         Schema::dropIfExists('e_learning_outgoing_calls');
 
-        Schema::dropIfExists('e_learning_forum_topics');
         Schema::dropIfExists('e_learning_forum_topic_responses');
         Schema::dropIfExists('e_learning_forum_topic_subscriptions');
         Schema::dropIfExists('e_learning_forum_topic_likes');
         Schema::dropIfExists('e_learning_forum_topic_response_likes');
+        Schema::dropIfExists('e_learning_forum_topics');
 
         Schema::dropIfExists('e_learning_resource_attachments');
-        Schema::dropIfExists('e_learning_resources');
         Schema::dropIfExists('e_learning_resource_views');
         Schema::dropIfExists('e_learning_resource_subscriptions');
+        Schema::dropIfExists('e_learning_resources');
 
-        Schema::dropIfExists('e_learning_announcements');
         Schema::dropIfExists('e_learning_announcement_views');
         Schema::dropIfExists('e_learning_announcement_subscriptions');
+        Schema::dropIfExists('e_learning_announcements');
 
         Schema::dropIfExists('e_learning_course_registrations');
         Schema::dropIfExists('e_learning_chapters');
