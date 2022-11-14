@@ -723,13 +723,14 @@ class CreateELearningTables extends Migration
 
         Schema::dropIfExists('e_learning_lecture_attendances');
         Schema::dropIfExists('e_learning_lecture_visits');
-        Schema::dropIfExists('e_learning_lectures');
 
-        Schema::dropIfExists('e_learning_lecture_topics');
         Schema::dropIfExists('e_learning_lecture_topic_responses');
         Schema::dropIfExists('e_learning_lecture_topic_subscriptions');
         Schema::dropIfExists('e_learning_lecture_topic_likes');
         Schema::dropIfExists('e_learning_lecture_topic_response_likes');
+        Schema::dropIfExists('e_learning_lecture_topics');
+        
+        Schema::dropIfExists('e_learning_lectures');
 
         Schema::dropIfExists('e_learning_courses');
         Schema::dropIfExists('e_learning_students');
