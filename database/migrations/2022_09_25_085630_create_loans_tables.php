@@ -333,8 +333,10 @@ class CreateLoansTables extends Migration
         Schema::dropIfExists('loan_limits');
         Schema::dropIfExists('yield_estimations');
         Schema::dropIfExists('microfinance_loan_charges');
+        Schema::dropIfExists('loan_project_microfinances');
         Schema::dropIfExists('microfinances');
         Schema::dropIfExists('buyer_enterprises');
+        Schema::dropIfExists('buyer_output_prices');
         Schema::dropIfExists('buyers'); 
         Schema::dropIfExists('distributor_agro_products');        
         Schema::dropIfExists('distributor_enterprise_types');
@@ -342,9 +344,7 @@ class CreateLoansTables extends Migration
         Schema::dropIfExists('distributor_enterprises');
         Schema::dropIfExists('distributor_input_prices');
         Schema::dropIfExists('distributors');
-        Schema::dropIfExists('buyer_output_prices');
         Schema::dropIfExists('loan_project_farmer_groups');
-        Schema::dropIfExists('loan_project_microfinances');
         Schema::dropIfExists('loan_input_commission_rates');
         Schema::dropIfExists('loan_input_commissions');
         Schema::dropIfExists('loan_projects');
