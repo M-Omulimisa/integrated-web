@@ -23,7 +23,7 @@ class CreateMarketTables extends Migration
             $table->timestamps();
 
             $table->foreign('enterprise_id')->references('id')->on('enterprises')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('unit_id')->references('id')->on('measure_units')->onDelete('cascade')->onUpdate('cascade');
         });
 
         Schema::create('markets', function (Blueprint $table) {
