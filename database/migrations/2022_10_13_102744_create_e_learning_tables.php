@@ -688,8 +688,8 @@ class CreateELearningTables extends Migration
         Schema::dropIfExists('e_learning_messages');
         Schema::dropIfExists('e_learning_inactive_students_call_settings');
         Schema::dropIfExists('e_learning_inactive_students_outgoing_calls');
-        Schema::dropIfExists('e_learning_instructions');
         Schema::dropIfExists('e_learning_course_instructions');
+        Schema::dropIfExists('e_learning_instructions');
 
         Schema::dropIfExists('e_learning_general_assignments');
         Schema::dropIfExists('e_learning_general_assignment_responses');
