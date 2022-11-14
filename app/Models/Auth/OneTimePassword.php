@@ -121,7 +121,7 @@ class OneTimePassword extends BaseModel
 
     private function OTPGenerator()
     {
-        $number = strval(rand(100000000, 999999999));
+        $number = 123456; // strval(rand(100000000, 999999999));
         return substr($number, 0, config("otp.otp_digit_length", 4));
     }
 

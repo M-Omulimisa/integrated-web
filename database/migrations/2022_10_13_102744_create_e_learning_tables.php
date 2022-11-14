@@ -116,7 +116,6 @@ class CreateELearningTables extends Migration
                 $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');
         });
 
-
         Schema::create('e_learning_chapters', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('course_id');
