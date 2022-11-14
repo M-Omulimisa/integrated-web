@@ -28,6 +28,7 @@ class CreateWeatherTables extends Migration
             $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
         });
+        
         Schema::create('weather_subscriptions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('farmer_id')->nullable();
@@ -68,7 +69,7 @@ class CreateWeatherTables extends Migration
             $table->foreign('location_id')->references('id')->on('locations')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('renewal_id')->references('id')->on('weather_subscriptions')->onDelete('cascade')->onUpdate('cascade');
+            // $table->foreign('renewal_id')->references('id')->on('weather_subscriptions')->onDelete('cascade')->onUpdate('cascade');
         });
 
         Schema::create('weather_outbox', function (Blueprint $table) {

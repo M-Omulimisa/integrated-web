@@ -13,7 +13,6 @@ class CreateELearningTables extends Migration
      */
     public function up()
     {
-        /*
         Schema::create('e_learning_instructor_invitations', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('full_name')->nullable();
@@ -522,7 +521,6 @@ class CreateELearningTables extends Migration
             $table->foreign('student_id')->on('e_learning_students')->references('id')->onDelete('CASCADE');
             $table->foreign('added_by')->on('users')->references('id')->onDelete('CASCADE');
         });
-        */
 
         Schema::create('e_learning_assignments', function (Blueprint $table) {
             $table->uuid('id')->primary();
