@@ -124,6 +124,16 @@ class CreateFarmersTables extends Migration
         //     $table->foreign('farming_challenge_id')->on('farming_challenges')->references('id')->onDelete('CASCADE');
         // });
 
+        Schema::table('farmer_groups', function (Blueprint $table) {
+            $table->foreign('created_by_agent_id')->on('agents')->references('id')->onDelete('CASCADE');
+            $table->foreign('agent_id')->on('agents')->references('id')->onDelete('CASCADE');
+        });
+
+        Schema::table('farmers', function (Blueprint $table) {
+            $table->foreign('created_by_agent_id')->on('agents')->references('id')->onDelete('CASCADE');
+            $table->foreign('agent_id')->on('agents')->references('id')->onDelete('CASCADE');
+        });
+
     }
 
     /**
@@ -139,6 +149,5 @@ class CreateFarmersTables extends Migration
         Schema::dropIfExists('farmers');
         Schema::dropIfExists('farmer_group_enterprises');
         Schema::dropIfExists('farmer_groups');
-        Schema::dropIfExists('agents');
     }
 }

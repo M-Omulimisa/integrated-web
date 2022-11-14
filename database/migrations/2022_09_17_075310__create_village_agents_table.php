@@ -49,16 +49,6 @@ class CreateVillageAgentsTable extends Migration
         Schema::table('agents', function($table) {
             // $table->foreign('agent_id')->on('agents')->references('id')->onDelete('CASCADE');
         });
-
-        Schema::table('farmer_groups', function (Blueprint $table) {
-            $table->foreign('created_by_agent_id')->on('agents')->references('id')->onDelete('CASCADE');
-            $table->foreign('agent_id')->on('agents')->references('id')->onDelete('CASCADE');
-        });
-
-        Schema::table('farmers', function (Blueprint $table) {
-            $table->foreign('created_by_agent_id')->on('agents')->references('id')->onDelete('CASCADE');
-            $table->foreign('agent_id')->on('agents')->references('id')->onDelete('CASCADE');
-        });
     }
 
     /**
@@ -68,6 +58,6 @@ class CreateVillageAgentsTable extends Migration
      */
     public function down()
     {
-        // Schema::dropIfExists('agents');
+        Schema::dropIfExists('agents');
     }
 }
