@@ -99,6 +99,11 @@
                     } ],
                 ajax: {
                     url: '{!! route('farmers.farmers.list') !!}',
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    dataType: 'JSON',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Authorization');
+                    },
                     data: function (d) { }
                 },
                 columns: [
