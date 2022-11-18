@@ -96,13 +96,12 @@
                 "bScrollCollapse": true,
                 "bProcessing": true,
                 "bServerSide": true,
-                "aoColumnDefs": [ {
-                      // "aTargets": [0],
-                      // "orderable": false,
-                      // "searchable": false
-                      //   "bSortable": false, 
-                        
-                    } ],
+                // "aoColumnDefs": [ {
+                //       "aTargets": [0],
+                //       "orderable": false,
+                //       "searchable": false
+                //         "bSortable": false,                        
+                //     } ],
                 "ajax": {
                     "url": '{!! route('farmers.farmers.list') !!}',
                     // error callback to handle error
@@ -112,7 +111,7 @@
                     },
                     "data": function (d) { }
                 },
-                columns: [
+                "columns": [
                     {data: 'bio', name: 'bio'},
                     {data: 'profile', name: 'profile'},
                     {data: 'activities', name: 'activities'},
