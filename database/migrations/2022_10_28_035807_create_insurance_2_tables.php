@@ -13,7 +13,7 @@ class CreateInsurance2Tables extends Migration
      */
     public function up()
     {
-        Schema::create('insurance_2_tables', function (Blueprint $table) {
+        Schema::create('insurance_farmer_compensations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ class CreateInsurance2Tables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('insurance_2_tables');
+        Schema::dropIfExists('insurance_farmer_compensations');
     }
 }
