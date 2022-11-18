@@ -83,6 +83,12 @@
 
     <script>
         $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
             var oTable = $('#dTable').DataTable({
                 "sDom": "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 "sScrollX": "100%",
@@ -104,9 +110,7 @@
                     // beforeSend: function (xhr) {
                     //     xhr.setRequestHeader('Authorization');
                     // },
-                    data: function (d) {
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    }
+                    data: function (d) { }
                 },
                 columns: [
                     {data: 'bio', name: 'bio'},
