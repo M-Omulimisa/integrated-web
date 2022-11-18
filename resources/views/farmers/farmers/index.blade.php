@@ -82,12 +82,12 @@
     <script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
 
     <script>
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
+        // $.ajaxSetup({
+        //     headers: {
+        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //     }
+        // });
+        
         $(document).ready(function() {
 
             var oTable = $('#dTable').DataTable({
@@ -104,7 +104,7 @@
                 //         "bSortable": false,                        
                 //     } ],
                 "ajax": {
-                    "url": '{{ route('farmers.farmers.list') }}',
+                    "url": '{!! route('farmers.farmers.list') !!}',
                     // error callback to handle error
                     "error": function(xhr, error, thrown) {
                         console.log("Error occurred!");
