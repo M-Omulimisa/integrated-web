@@ -87,7 +87,7 @@
         //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         //     }
         // });
-        
+
         $(document).ready(function() {
 
             var oTable = $('#dTable').DataTable({
@@ -127,6 +127,8 @@
                 "aButtons":    [ "csv", "pdf" ]
             });
 
+            /*
+
             var typingTimeout = null;
               $(".dataTables_filter input").on("keyup", function (event) {          
                 // Clear previous timer
@@ -137,6 +139,7 @@
                     oTable.search($(that).val()).draw();
                 }, 200); // Execute the search if user paused for 200 ms
               });
+              */
 
         });
     </script>
