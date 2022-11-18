@@ -103,14 +103,14 @@
                       //   "bSortable": false, 
                         
                     } ],
-                ajax: {
-                    url: '{!! route('farmers.farmers.list') !!}',
-                    // headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    // dataType: 'JSON',
-                    // beforeSend: function (xhr) {
-                    //     xhr.setRequestHeader('Authorization');
-                    // },
-                    data: function (d) { }
+                "ajax": {
+                    "url": '{!! route('farmers.farmers.list') !!}',
+                    // error callback to handle error
+                    "error": function(xhr, error, thrown) {
+                        console.log("Error occurred!");
+                        console.log(xhr, error, thrown);
+                    },
+                    "data": function (d) { }
                 },
                 columns: [
                     {data: 'bio', name: 'bio'},
