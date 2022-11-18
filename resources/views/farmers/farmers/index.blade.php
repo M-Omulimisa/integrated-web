@@ -99,13 +99,14 @@
                     } ],
                 ajax: {
                     url: '{!! route('farmers.farmers.list') !!}',
-                    type: 'post',
-                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                    dataType: 'JSON',
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader('Authorization');
-                    },
-                    data: function (d) { }
+                    // headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    // dataType: 'JSON',
+                    // beforeSend: function (xhr) {
+                    //     xhr.setRequestHeader('Authorization');
+                    // },
+                    data: function (d) {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    }
                 },
                 columns: [
                     {data: 'bio', name: 'bio'},

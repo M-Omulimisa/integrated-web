@@ -178,7 +178,7 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function() {
 
     Route::group(['prefix' => 'farmers', 'as' => 'farmers.'], function () {
         Route::resource('farmers', FarmerController::class);
-        Route::post('farmer/list', [FarmerController::class, 'list'])->name('farmers.list'); 
+        Route::get('farmer/list', [FarmerController::class, 'list'])->name('farmers.list'); 
         Route::resource('groups', FarmerGroupController::class);
         Route::get('group/list', [FarmerGroupController::class, 'list'])->name('groups.list');
 
