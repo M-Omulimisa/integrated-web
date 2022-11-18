@@ -99,6 +99,7 @@
                     } ],
                 ajax: {
                     url: '{!! route('farmers.farmers.list') !!}',
+                    type: 'post',
                     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     dataType: 'JSON',
                     beforeSend: function (xhr) {
