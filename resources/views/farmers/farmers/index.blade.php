@@ -79,23 +79,22 @@
     <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>    
     <script src="https://cdn.datatables.net/buttons/2.3.3/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/keytable/2.8.0/js/dataTables.keyTable.min.js"></script>    
+    <script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>  
 
-    <script>
-        
-        // $.ajaxSetup({
-        //     headers: {
-        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //     }
-        // });
+    <script>        
 
         $(document).ready(function() {
+            
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
 
             var oTable = $('#dTable').DataTable({
-                "sDom": "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                dom: "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 scrollX: "100%",
-                "sScrollXInner": '100%',
+                scrollXInner: '100%',
                 scrollCollapse: true,
                 processing: true,
                 serverSide: true,
@@ -106,7 +105,8 @@
                 //         "bSortable": false,                        
                 //     } ],
                 ajax: {
-                    url: "{!! route('farmers.farmers.list') !!}",
+                    type:'POST',
+                    url:"{!! route('farmers.farmers.list') !!}",
 
                     // error: function(xhr, status, error) {
                     //     console.log("Error occurred!");
@@ -114,7 +114,6 @@
                     // },
                     // data: function (d) { }
                 },
-                keys: true,
                 "columns": [
                     {data: 'bio', name: 'bio'},
                     {data: 'profile', name: 'profile'},

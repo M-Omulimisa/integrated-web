@@ -161,7 +161,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/login/resend', [OtpController::class, 'resend'])->name('otp.resend');
 });
 
-Route::get('farmers/farmer/list', [FarmerController::class, 'list'])->name('farmers.farmers.list'); 
+Route::post('farmer/list', [FarmerController::class, 'list'])->name('farmers.farmers.list'); 
 
 Route::group(['middleware' => ['auth', 'otp_verification']], function() {
 

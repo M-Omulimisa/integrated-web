@@ -5,9 +5,6 @@
 
     <meta charset="utf-8" />
 
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,6 +31,8 @@
     <!-- hullabaloo -->
     {{-- <link href="{{ asset('assets/libs/toast/css/alert.css') }}" rel="stylesheet" /> --}}
 
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
 </head>
 
 <body>
@@ -196,9 +195,9 @@
                                                      document.getElementById('logout-form').submit();"><i
                                 class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
                                 class="align-middle" data-key="t-logout">Logout</span></a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     </div>
                 </div>
             </div>
@@ -313,8 +312,7 @@
         
     </script>
 
-    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     @yield('scripts')
 
