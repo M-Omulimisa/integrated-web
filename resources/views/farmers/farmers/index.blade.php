@@ -80,6 +80,7 @@
     <script src="https://cdn.datatables.net/buttons/2.3.3/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/keytable/2.8.0/js/dataTables.keyTable.min.js"></script>    
 
     <script>
         
@@ -106,6 +107,7 @@
                 //     } ],
                 ajax: {
                     url: "{!! route('farmers.farmers.list') !!}",
+
                     // error: function(xhr, status, error) {
                     //     console.log("Error occurred!");
                     //     showErrorMessage(xhr, status, error);
