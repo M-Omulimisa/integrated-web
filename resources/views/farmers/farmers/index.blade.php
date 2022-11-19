@@ -106,10 +106,10 @@
                 //     } ],
                 ajax: {
                     url: "{!! route('farmers.farmers.list') !!}",
-                    // error callback to handle error
-                    error: function(data) {
+                    error: function(xhr, status, error) {
                         console.log("Error occurred!");
-                        console.log(data);
+                        var err = eval("(" + xhr.responseText + ")");
+                        alert(err.Message);
                     },
                     // data: function (d) { }
                 },
