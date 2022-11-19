@@ -11,8 +11,8 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="Themesbrand" name="author" />
+    <meta content="{{ config('app.name', 'Laravel') }}" name="description" />
+    <meta content="{{ config('app.name', 'Laravel') }}" name="author" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('path') }}">
 
