@@ -107,10 +107,10 @@
                 "ajax": {
                     "url": '{!! route('farmers.farmers.list') !!}',
                     // error callback to handle error
-                    "error": function(xhr, error, thrown) {
-                        console.log("Error occurred!");
-                        console.log(xhr, error, thrown);
-                    },
+                    // "error": function(xhr, error, thrown) {
+                    //     console.log("Error occurred!");
+                    //     console.log(xhr, error, thrown);
+                    // },
                     "data": function (d) { }
                 },
                 "columns": [
