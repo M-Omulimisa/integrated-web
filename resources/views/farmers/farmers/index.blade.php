@@ -95,7 +95,7 @@
                 "sDom": "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 scrollX: "100%",
                 "sScrollXInner": '100%',
-                "bScrollCollapse": true,
+                scrollCollapse: true,
                 processing: true,
                 serverSide: true,
                 // "aoColumnDefs": [ {
@@ -109,7 +109,7 @@
                     // error callback to handle error
                     error: function(data) {
                         console.log("Error occurred!");
-                        console.log(errors.message);
+                        console.log(data.message);
                     },
                     // data: function (d) { }
                 },
