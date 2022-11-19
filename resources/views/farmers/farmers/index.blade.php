@@ -109,7 +109,7 @@
                     // error callback to handle error
                     error: function(data) {
                         console.log("Error occurred!");
-                        console.log(data.message);
+                        console.log(data);
                     },
                     // data: function (d) { }
                 },
