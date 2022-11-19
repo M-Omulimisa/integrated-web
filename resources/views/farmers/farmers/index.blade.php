@@ -93,26 +93,27 @@
 
             var oTable = $('#dTable').DataTable({
                 "sDom": "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                "sScrollX": "100%",
+                scrollX: "100%",
                 "sScrollXInner": '100%',
                 "bScrollCollapse": true,
-                "bProcessing": true,
-                "bServerSide": true,
+                processing: true,
+                serverSide: true,
                 // "aoColumnDefs": [ {
                 //       "aTargets": [0],
                 //       "orderable": false,
                 //       "searchable": false
                 //         "bSortable": false,                        
                 //     } ],
-                "ajax": {
-                    "url": '{!! route('farmers.farmers.list') !!}',
+                ajax: {
+                    url: "{!! route('farmers.farmers.list') !!}",
                     // error callback to handle error
-                    "error": function(xhr, error, thrown) {
+                    error: function(data) {
                         console.log("Error occurred!");
-                        console.log(xhr, error, thrown);
+                        console.log(errors.message);
                     },
-                    "data": function (d) { }
+                    // data: function (d) { }
                 },
+                keys: true,
                 "columns": [
                     {data: 'bio', name: 'bio'},
                     {data: 'profile', name: 'profile'},
@@ -125,7 +126,7 @@
                 ],
                 "lengthMenu": {{ DT_LENGTH }},
                 "order": [[ 1, 'asc' ]],  
-                "aButtons":    [ "csv", "pdf" ]
+                buttons:    [ 'csv' ]
             });
 
             /*
