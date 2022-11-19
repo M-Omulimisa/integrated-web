@@ -75,25 +75,22 @@
 
     <script>
         $(document).ready(function() {
+
             var oTable = $('#dTable').DataTable({
-                "sDom": "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                "sScrollX": "100%",
-                "sScrollXInner": '100%',
-                "bScrollCollapse": true,
-                "bProcessing": true,
-                "bServerSide": true,
-                "aoColumnDefs": [ {
-                      // "aTargets": [0],
-                      // "orderable": false,
-                      // "searchable": false
-                      //   "bSortable": false, 
-                        
-                    } ],
+                dom: "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                scrollX: "100%",
+                scrollXInner: '100%',
+                scrollCollapse: true,
+                processing: true,
+                serverSide: true,
                 ajax: {
-                    url: '{!! route('farmers.groups.list') !!}',
+                    url: "{!! route('farmers.groups.list') !!}",
+                    xhrFields: {
+                        withCredentials: true
+                    },
                     data: function (d) { }
                 },
-                columns: [
+                "columns": [
                     {data: 'profile', name: 'profile'},
                     {data: 'membership', name: 'membership'},
                     {data: 'activities', name: 'activities'},
@@ -104,7 +101,7 @@
                 ],
                 "lengthMenu": {{ DT_LENGTH }},
                 "order": [[ 1, 'asc' ]],  
-                "aButtons":    [ "csv", "pdf" ]
+                buttons:    [ 'csv' ]
             });
 
                 var typingTimeout = null;

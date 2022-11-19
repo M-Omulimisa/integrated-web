@@ -85,11 +85,7 @@
 
         $(document).ready(function() {
 
-            // $.ajaxSetup({
-            //     headers: {
-            //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            //     }
-            // });
+            alert("{!! route('farmers.farmers.list') !!}");
 
             var oTable = $('#dTable').DataTable({
                 dom: "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -98,24 +94,12 @@
                 scrollCollapse: true,
                 processing: true,
                 serverSide: true,
-                // "aoColumnDefs": [ {
-                //       "aTargets": [0],
-                //       "orderable": false,
-                //       "searchable": false
-                //         "bSortable": false,                        
-                //     } ],
                 ajax: {
-                    // type:'POST',
                     url: "{!! route('farmers.farmers.list') !!}",
                     xhrFields: {
                         withCredentials: true
                     },
-
-                    // error: function(xhr, status, error) {
-                    //     console.log("Error occurred!");
-                    //     showErrorMessage(xhr, status, error);
-                    // },
-                    // data: function (d) { }
+                    data: function (d) { }
                 },
                 "columns": [
                     {data: 'bio', name: 'bio'},
