@@ -85,7 +85,7 @@
 
         $(document).ready(function() {
 
-            alert("{!! route('farmers.farmers.list') !!}");
+            alert("{!! route('farmers.farmers.list') !!} + {{ config('app.url') }}");
 
             var oTable = $('#dTable').DataTable({
                 dom: "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -95,7 +95,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{!! route('farmers.farmers.list') !!}",
+                    url: "{!! config('app.url').'/farmers/farmers/list' !!}",
                     xhrFields: {
                         withCredentials: true
                     },

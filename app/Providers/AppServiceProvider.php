@@ -6,7 +6,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Passport\Passport;
 use Log;
-use URL;
 use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Logger;
 
@@ -32,10 +31,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(125);
 
-        if (env('APP_ENV') === 'production') {
-            URL::forceSchema('https');
-        }
-
         /**
      * @param string      $webhookUrl             Slack Webhook URL
      * @param string|null $channel                Slack channel (encoded ID or name)
@@ -48,7 +43,8 @@ class AppServiceProvider extends ServiceProvider
      * @param bool        $bubble                 Whether the messages that are handled can bubble up the stack or not
      * @param array       $excludeFields          Dot separated list of fields to exclude from slack message. E.g. ['context.field1', 'extra.field2']
      */
-        if (env('APP_ENV') === 'production') {
+
+        if (env('APP_ENV') == 'production') {
             // Send errors to slack channel
             $monolog = Log::getLogger();
             $slackHandler = new SlackWebhookHandler(
