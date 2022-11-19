@@ -161,8 +161,6 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/login/resend', [OtpController::class, 'resend'])->name('otp.resend');
 });
 
-Route::post('farmer/list', [FarmerController::class, 'list'])->name('farmers.farmers.list'); 
-
 Route::group(['middleware' => ['auth', 'otp_verification']], function() {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -180,7 +178,7 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function() {
 
     Route::group(['prefix' => 'farmers', 'as' => 'farmers.'], function () {
         Route::resource('farmers', FarmerController::class);
-        // Route::get('farmer/list', [FarmerController::class, 'list'])->name('farmers.list'); 
+        Route::get('farmer/list', [FarmerController::class, 'list'])->name('farmers.list'); 
         Route::resource('groups', FarmerGroupController::class);
         Route::get('group/list', [FarmerGroupController::class, 'list'])->name('groups.list');
 

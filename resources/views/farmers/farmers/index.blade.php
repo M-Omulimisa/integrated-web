@@ -105,8 +105,8 @@
                 //         "bSortable": false,                        
                 //     } ],
                 ajax: {
-                    type:'POST',
-                    url:"{!! route('farmers.farmers.list') !!}",
+                    // type:'POST',
+                    url: "{!! route('farmers.farmers.list') !!}",
                     xhrFields: {
                         withCredentials: true
                     },
