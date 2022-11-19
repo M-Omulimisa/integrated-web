@@ -84,7 +84,7 @@
     <script>        
 
         $(document).ready(function() {
-            
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -107,6 +107,9 @@
                 ajax: {
                     type:'POST',
                     url:"{!! route('farmers.farmers.list') !!}",
+                    xhrFields: {
+                        withCredentials: true
+                    },
 
                     // error: function(xhr, status, error) {
                     //     console.log("Error occurred!");
