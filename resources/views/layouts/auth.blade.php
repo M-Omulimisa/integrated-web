@@ -139,7 +139,7 @@
     <script src="{{ asset('assets/js/pages/password-addon.init.js') }}"></script>
 
     <script>
-        alert("{!! url('/') !!} + {{ config('app.url') }}");
+        alert("{!! url('/') !!}");
     </script>
 </body>
 
