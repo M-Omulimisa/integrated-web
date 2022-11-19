@@ -30,7 +30,7 @@
     <!-- App Css-->
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
-    <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom.min.css?v=1') }}" rel="stylesheet" type="text/css" />
     <!-- hullabaloo -->
     {{-- <link href="{{ asset('assets/libs/toast/css/alert.css') }}" rel="stylesheet" /> --}}
 
