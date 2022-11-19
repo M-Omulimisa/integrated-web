@@ -107,12 +107,9 @@
                 ajax: {
                     type:'POST',
                     url:"{!! route('farmers.farmers.list') !!}",
-                    // xhrFields: {
-                    //     withCredentials: true
-                    // },
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                    }
+                    xhrFields: {
+                        withCredentials: true
+                    },
 
                     // error: function(xhr, status, error) {
                     //     console.log("Error occurred!");
