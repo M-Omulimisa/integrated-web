@@ -95,7 +95,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{!! config('app.url').'/farmers/farmers/list' !!}",
+                    url: "{!! config('app.url').'/farmers/farmer/list' !!}",
                     xhrFields: {
                         withCredentials: true
                     },
