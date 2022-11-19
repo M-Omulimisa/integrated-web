@@ -106,10 +106,10 @@
                 //     } ],
                 ajax: {
                     url: "{!! route('farmers.farmers.list') !!}",
-                    error: function(xhr, status, error) {
-                        console.log("Error occurred!");
-                        showErrorMessage(xhr, status, error);
-                    },
+                    // error: function(xhr, status, error) {
+                    //     console.log("Error occurred!");
+                    //     showErrorMessage(xhr, status, error);
+                    // },
                     // data: function (d) { }
                 },
                 keys: true,
