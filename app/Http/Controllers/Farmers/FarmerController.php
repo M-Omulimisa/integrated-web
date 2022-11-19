@@ -228,7 +228,7 @@ class FarmerController extends Controller
             $data = Farmer::select(['*', DB::raw('@DT_RowIndex  := @DT_RowIndex  + 1 AS DT_RowIndex') ]);
             $datatables = app('datatables')->of($data);
 
-            \Log::error($request->all());
+            \Log::error(['xxxxxxxxxxxxxxxxxxxxxxxxx' => $request->all()]);
 
             if ($search = $datatables->request->search['value']) {
                 // $data->where('name', 'LIKE', '%'.$search.'%');
