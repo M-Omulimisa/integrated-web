@@ -85,11 +85,11 @@
 
         $(document).ready(function() {
 
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
+            // $.ajaxSetup({
+            //     headers: {
+            //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //     }
+            // });
 
             var oTable = $('#dTable').DataTable({
                 dom: "<'row'<'col-sm-3'l><'col-sm-3'i><'col-sm-6'f>r>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -107,9 +107,12 @@
                 ajax: {
                     type:'POST',
                     url:"{!! route('farmers.farmers.list') !!}",
-                    xhrFields: {
-                        withCredentials: true
-                    },
+                    // xhrFields: {
+                    //     withCredentials: true
+                    // },
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                    }
 
                     // error: function(xhr, status, error) {
                     //     console.log("Error occurred!");
