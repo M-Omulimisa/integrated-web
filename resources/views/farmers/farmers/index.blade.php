@@ -108,7 +108,8 @@
                     url: "{!! route('farmers.farmers.list') !!}",
                     error: function(xhr, status, error) {
                         console.log("Error occurred!");
-                        alert(xhr.responseText);
+                        var err = JSON.parse(xhr.responseText);
+                        alert(err.Message);
                     },
                     // data: function (d) { }
                 },
