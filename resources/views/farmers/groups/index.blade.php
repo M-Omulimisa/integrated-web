@@ -85,9 +85,6 @@
                 serverSide: true,
                 ajax: {
                     url: "{!! route('farmers.groups.list') !!}",
-                    xhrFields: {
-                        withCredentials: true
-                    },
                     data: function (d) { }
                 },
                 "columns": [
