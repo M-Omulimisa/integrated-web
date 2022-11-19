@@ -108,8 +108,7 @@
                     url: "{!! route('farmers.farmers.list') !!}",
                     error: function(xhr, status, error) {
                         console.log("Error occurred!");
-                        var err = JSON.parse(xhr.responseText);
-                        alert(err.Message);
+                        showErrorMessage(xhr, status, error);
                     },
                     // data: function (d) { }
                 },
@@ -142,6 +141,27 @@
                 }, 200); // Execute the search if user paused for 200 ms
               });
               */
+
+            function showErrorMessage(xhr, status, error) {
+                if (xhr.responseText != "") {
+
+                    var jsonResponseText = $.parseJSON(xhr.responseText);
+                    var jsonResponseStatus = '';
+                    var message = '';
+                    $.each(jsonResponseText, function(name, val) {
+                        if (name == "ResponseStatus") {
+                            jsonResponseStatus = $.parseJSON(JSON.stringify(val));
+                             $.each(jsonResponseStatus, function(name2, val2) {
+                                 if (name2 == "Message") {
+                                     message = val2;
+                                 }
+                             });
+                        }
+                    });
+
+                    alert(message);
+                }
+            }
 
         });
     </script>
