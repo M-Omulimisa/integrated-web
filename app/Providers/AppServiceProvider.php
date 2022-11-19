@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Passport\Passport;
 use Log;
+use URL;
 use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Logger;
 
@@ -32,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(125);
 
         if (env('APP_ENV') === 'production') {
-            \URL::forceSchema('https');
+            URL::forceSchema('https');
         }
 
         /**
