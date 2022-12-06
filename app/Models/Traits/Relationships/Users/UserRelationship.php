@@ -14,6 +14,8 @@ use App\Models\Traits\Relationships\Users\CreatedByRelationship;
 use App\Models\Organisations\Organisation;
 use App\Models\Organisations\OrganisationUserPosition;
 
+use App\Models\Loans\Microfinance;
+
 /**
  * Class UserRelationship.
  */
@@ -85,6 +87,6 @@ trait UserRelationship
 
     public function microfinance()
     {
-        return $this->belongsTo(DsmPiBranch::class, 'branch_id');
+        return $this->belongsTo(Microfinance::class, 'microfinance_id');
     }
 }

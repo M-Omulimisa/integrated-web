@@ -36,7 +36,7 @@ return [
         |
         */
 
-        'username' => 'GnugridAfricaLtd@ROOT',
+        'username' => '',
 
         /*
         |--------------------------------------------------------------------------
@@ -46,7 +46,7 @@ return [
         | Account password
         */
 
-        'password' => 'y1htK%kQZ',
+        'password' => '',
 
     ]
 

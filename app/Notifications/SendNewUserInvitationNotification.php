@@ -49,14 +49,10 @@ class SendNewUserInvitationNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        // $role = Role::whereId($this->invite->role_id)->first();
-        $rejectUrl = url('account/reject/'.$this->invite->id.'/'.$this->invite->token);
-        $acceptUrl = url('account/accept/'.$this->invite->id.'/'.$this->invite->token);
-        $institution = !is_null($this->invite->institution_id) ? $this->invite->institution->participating_institution_id : $this->invite->institution_name;
         return (new MailMessage)
                     ->subject(config('app.name').' Invitation')
                     ->greeting('Hello '.$this->invite->name)
-                    ->line('You have been invited to '.config('app.name').' portal to create an account as '.$institution.'\'s '.$this->invite->role->name.'')
+                    ->line('You have been invited to '.config('app.name').' to create an account as []')
                     ->action('Accept Invitation', $acceptUrl)
                     ->line('This invitation expires in 48 Hours!')
                     ->markdown(

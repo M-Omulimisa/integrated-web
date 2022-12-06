@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'username' => env('YOPAY_USERNAME', '100765810417'),
+    'username' => env('YOPAY_USERNAME', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -21,7 +21,7 @@ return [
     | Account password
     */
 
-    'password' => env('YOPAY_PASSWORD', 'WkaB-7l3m-Lzq5-wFaB-C5kt-YUoL-NS8N-FOlL'),
+    'password' => env('YOPAY_PASSWORD', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ return [
     | Account reference
     */
 
-    'reference' => env('YOPAY_REFERENCE', 'CRBTransaction '),
+    'reference' => env('YOPAY_REFERENCE', 'OMTransaction '),
 
     'test' => [
 
@@ -44,7 +44,7 @@ return [
         |
         */
 
-        'username' => '1341617',
+        'username' => '',
 
         /*
         |--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ return [
         | Account password
         */
 
-        'password' => 'EBZy-G45Z-9UKV-Fta4-LwLO-nrI8-CtMP-VqOQ',
+        'password' => '',
 
     ]
 

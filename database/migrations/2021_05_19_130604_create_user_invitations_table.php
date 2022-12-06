@@ -25,7 +25,6 @@ class CreateUserInvitationsTable extends Migration
             $table->timestamp('rejected_at')->nullable();
             $table->timestamp('cancelled_at')->nullable();
             $table->timestamp('expires_at')->nullable();
-            // $table->unique(['name', 'institution', 'email']);
             $table->timestamps();
 
             $table->foreign('user_id')->on('users')->references('id')->onDelete('CASCADE');

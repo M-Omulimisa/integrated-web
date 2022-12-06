@@ -59,71 +59,13 @@ Route::group([
 });
 
 Route::group([
-    'namespace' => 'Api\v1\Enquiries',
+    'namespace' => 'Api\v1\Mobile',
     'prefix'=>'/v1'
 ], function () {
 
     Route::middleware('client_credentials', 'passport.client.set')->group(function(){
 
-        Route::post('credit-enquiries/consent-request', [CreditReportApiController::class, 'consentRequest']);
-        Route::post('credit-enquiries/consent-submission', [CreditReportApiController::class, 'consentSubmit']);
-
-        Route::post('credit-enquiries/request/by-identifier', [CreditReportApiController::class, 'searchByIdentifier']);
-
-        Route::post('credit-enquiries/individual/credit-report', [CreditReportApiController::class, 'individualReport']);
-        Route::post('credit-enquiries/non-individual/credit-report', [CreditReportApiController::class, 'nonIndividualReport']);     
-
-        Route::post('validate-personal-info', [NinIDCardValidationApiController::class, 'store']);
-        Route::get('personal-info-validations', [NinIDCardValidationApiController::class, 'index']);
-        Route::get('personal-info-validation/{validation}', [NinIDCardValidationApiController::class, 'show']);
-        Route::get('personal-info-validation-report/{validation}', [NinIDCardValidationApiController::class, 'report']);
-
-        // Route::post('validate_phone', [PhoneValidationMobileController::class, 'store']);
-        // Route::get('phone_validations', [PhoneValidationMobileController::class, 'index']);
-        // Route::get('phone_validation/{validation}', [PhoneValidationMobileController::class, 'show']);
-        // Route::get('phone_validation/report/{validation}', [PhoneValidationMobileController::class, 'report']);
-
-    }); 
-
-});
-
-Route::group([
-    'namespace' => 'AsigmaApi\v1',
-    'prefix'=>'/v1'
-], function () {
-
-    Route::middleware('client_credentials')->group(function(){
-
-        Route::get('fetch-loans', [CreditAccountApiController::class, 'index']);
-        Route::post('loan-notifications', [CreditAccountApiController::class, 'confirm']);        
-        Route::get('fetch-repayments', [RepaymentsApiController::class, 'index']);
-        Route::post('loan-repayments', [RepaymentsApiController::class, 'repayments']);
-        Route::get('aggregated-data', [AggregateApiController::class, 'index']);
-        Route::post('aggregated-data/institution', [AggregateApiController::class, 'institution']);
-        Route::get('reset-update-status', [RepaymentsApiController::class, 'reset_updates']);
-        Route::get('update-num-of-repayments', [RepaymentsApiController::class, 'update_num']);
-
-    }); 
-
-});
-
-Route::group([
-    'namespace' => 'Api\v1',
-    'prefix'=>'/v1/ogs/'
-], function () {
-
-    Route::middleware('client_credentials')->group(function(){
-
-        Route::post('participating-institution', [ParticipatingInstitutionApiController::class, 'store'])->name("participating-sacco");
-        Route::post('branch', [InstitutionBranchApiController::class, 'store'])->name("sacco-branch");
-        Route::post('credit-application', [CreditApplicationApiController::class, 'store']);
-        Route::post('credit-borrower-account', [CreditBorrowerAccountApiController::class, 'store']);
-        Route::post('borrower-stakeholder', [BorrowerStakeholderApiController::class, 'store']);
-        Route::post('collateral-material-collateral', [CollateralMaterialCollateralApiController::class, 'store']);
-        Route::post('collateral-credit-guarantor', [CollateralCreditGuarantorApiController::class, 'store']);
-        Route::post('financial-malpractice', [FinancialMalpracticeDataApiController::class, 'store']);
-        // Route::post('participating-sacco-stakeholder', [InstituitionStakeholderApiController::class, 'store']);
-        // Route::post('bounced-cheque', [BouncedChequeApiController::class, 'store']);
+        // Route::post('request', [ApiController::class, 'method']);
 
     }); 
 

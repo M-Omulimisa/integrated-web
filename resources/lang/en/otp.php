@@ -17,7 +17,7 @@
     "otp_status_valid" => "Enter your OTP code sent via :method.",
 
     // 'check_your_phone_for_otp'=>'Check your phone for OTP',
-    // 'your_otp' => "Your gnuGrid verification code is: ",
+    // 'your_otp' => "Your verification code is: ",
     // 'otp_check_phone' => 'Please check your phone for OTP code',
     // 'valid_otp'=>'Valid OTP',
     // 'in_valid_otp'=>'InValid OTP',
