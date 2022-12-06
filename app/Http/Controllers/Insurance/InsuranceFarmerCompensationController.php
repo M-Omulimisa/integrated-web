@@ -25,7 +25,7 @@ class InsuranceFarmerCompensationController extends Controller
     public function index(Request $request)
     {
         try {            
-            return view($this->_dir.'.index')->withErrors(trans('strings.any_errors'));
+            return view($this->_dir.'.index'); // any_errors
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage());
         }

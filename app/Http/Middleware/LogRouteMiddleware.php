@@ -17,15 +17,15 @@ class LogRouteMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-            Log::error([
-                // 'request'   => $request->all(),
-                // 'content'   => $request->server('CONTENT_TYPE'),
-                // 'http'      => $request->server('HTTP_CONTENT_TYPE'),
-                // 'auth'      => $request->server('HTTP_AUTHORIZATION'),
-                // 'accept'    => $request->server('HTTP_ACCEPT'),
-                'cookie'    => $request->server('HTTP_COOKIE'),
-            ]);
         if ($request->bearerToken() || isset($request->client_id)) {
+            // Log::error([
+            //     'request'   => $request->all(),
+            //     'content'   => $request->server('CONTENT_TYPE'),
+            //     'http'      => $request->server('HTTP_CONTENT_TYPE'),
+            //     'auth'      => $request->server('HTTP_AUTHORIZATION'),
+            //     'accept'    => $request->server('HTTP_ACCEPT'),
+            //     'cookie'    => $request->server('HTTP_COOKIE'),
+            // ]);
         }
 
         return $next($request);

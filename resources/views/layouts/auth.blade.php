@@ -137,10 +137,6 @@
     <script src="{{ asset('assets/js/pages/particles.app.js') }}"></script>
     <!-- password-addon init -->
     <script src="{{ asset('assets/js/pages/password-addon.init.js') }}"></script>
-
-    <script>
-        alert("{!! url('/') !!}");
-    </script>
 </body>
 
 </html>
