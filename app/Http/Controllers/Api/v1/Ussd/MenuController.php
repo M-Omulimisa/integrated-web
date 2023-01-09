@@ -77,10 +77,15 @@ class MenuController extends Controller
                 $response       .= "2) Another number";
                 $current_menu   = "insurance_phone_option";
             }
-            elseif ($input_text == '2' || $input_text == '3') {
-                // Ask language for Market and Weather information
+            elseif ($input_text == '2') {
+                // Ask language for Market information
                 $response     = $languages_menu;
-                $current_menu = "languages_menu";
+                $current_menu = "market_languages_menu";
+            }
+            elseif ($input_text == '3') {
+                // Ask language Weather information
+                $response     = $languages_menu;
+                $current_menu = "weather_languages_menu";
             }
             else {
                 $action         = "end";
@@ -119,7 +124,7 @@ class MenuController extends Controller
             $action         = "request";
             $response       = "Select season\n";
             // $response       .= $this->menu_helper->seasonList();
-            $response       .= "Season A (Mar23-May23)\nSeason B (Set23-Nov23)";
+            $response       .= "1) Season A (Mar23-May23)\n2) Season B (Set23-Nov23)";
             $current_menu   = "insurance_season";
         } 
         elseif ($last_menu == "insurance_season") {
@@ -167,7 +172,7 @@ class MenuController extends Controller
         
         /******************* START MARKET *******************/
 
-        elseif ($last_menu == "languages_menu" && $input_text == '2') {
+        elseif ($last_menu == "market_languages_menu") {
             $action         = "request";
             $response       = "Subscribing phone number\n";
             $response       .= "1) This number\n";
@@ -248,7 +253,7 @@ class MenuController extends Controller
         
         /******************* START WEATHER *******************/
 
-        elseif ($last_menu == "languages_menu" && $input_text == '3') {
+        elseif ($last_menu == "weather_languages_menu") {
             $action         = "request";
             $response       = "Subscribing phone number\n";
             $response       .= "1) This number\n";
