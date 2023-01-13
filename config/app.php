@@ -198,6 +198,8 @@ return [
         //Image compressor
         Intervention\Image\ImageServiceProvider::class,
 
+        App\Providers\CountryModuleProvider::class,
+
     ],
 
     /*

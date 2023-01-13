@@ -46,4 +46,6 @@ class Country extends BaseModel
      * @var bool
      */
     public $incrementing = false;
+
+    
 }
