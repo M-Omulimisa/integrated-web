@@ -44,7 +44,7 @@
             </ul>
         </div>
     </li> <!-- end Dashboard Menu -->
-
+    
     @php($extension=$request->segment(1)=='extension-officers')
     <li class="nav-item">
         <a class="nav-link menu-link collapsed {{ $extension?'active':'' }}" href="#sidebarExtension" data-bs-toggle="collapse" role="button" aria-expanded="{{ $extension?'true':'false' }}" aria-controls="sidebarExtension">
@@ -64,6 +64,7 @@
             </ul>
         </div>
     </li> <!-- end Dashboard Menu -->
+ 
 
     @php($organisations=$request->segment(1)=='organisations')
     <li class="nav-item">

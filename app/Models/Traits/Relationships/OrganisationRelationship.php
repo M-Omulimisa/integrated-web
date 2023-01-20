@@ -4,6 +4,7 @@ namespace App\Models\Traits\Relationships;
 
 use App\Models\User;
 use App\Models\Users\Role;
+use App\Models\Settings\Country;
 
 /**
  * Class LocationRelationship.
@@ -20,4 +21,13 @@ trait OrganisationRelationship
             $query->select('model_id')->where('role_id', $role->id)->from('model_has_roles');
         })->first();
     }
+
+
+    public function countries(){
+
+        return $this->belongsToMany(Country::class, 'country_organisation', 'organisation_id', 'country_id');
+
+    }
+
+    
 }

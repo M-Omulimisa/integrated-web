@@ -26,7 +26,7 @@
                 <div class="tab-content">
                     <div class="tab-pane active">
                         <!-- content starts here -->
-                            {!! Form::open(['files'=>true, 'method' => 'POST', 'route' => ['organisations.organisations.store']]) !!}
+                            {!! Form::open(['files'=>true, 'method' => 'POST', 'id' => 'create-organisation-form' , 'route' => ['organisations.organisations.store']]) !!}
 
                                 <div class="form-group mb-3">
                                     {!! Form::label('organisation', 'Name (required)', ['class' => 'col-sm-4 col-form-label']) !!}
@@ -34,6 +34,20 @@
                                         {!! Form::text('organisation', old('organisation'), ['class' => 'form-control', 'placeholder' => '', 'required' => '', 'id' => 'name']) !!}
                                     </div> 
                                 </div>
+
+                                <div class="form-group mb-3">
+                                {!! Form::label('country_id', 'Countries of operation (required)', ['class' => 'col-sm-3 form-label']) !!}                
+                                <div class="col-sm-5">
+
+                                    <select id="countries" name="country_id[]" multiple required>
+                                        <option></option>
+                                        @foreach($countries as $country)
+                                        <option value="{{$country->id}}">{{$country->name}}</option>
+                                        @endforeach
+                                    </select>   
+                                    
+                                </div>
+                            </div>
 
                                     <div class="form-group mb-3">
                                     {!! Form::label('address', 'Address (optional)', ['class' => 'col-sm-4 col-form-label']) !!}
@@ -58,7 +72,7 @@
                                 
                                 <h4><span>Organisation Administrator</span></h4>
 
-                                    <input type="hidden" name="roles" value="{{ $organisation_admin }}">
+                    
 
                                 <div class="form-group mb-3">
                                     {!! Form::label('name', 'Name (required)', ['class' => 'col-sm-4 col-form-label']) !!}
@@ -99,7 +113,7 @@
                                 <input type="hidden" name="status" value="1">
 
                                 <div class="form-buttons-w">
-                                    {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
+                                    {!! Form::submit('Save',  [ 'id' => 'Create-Organisation', 'class' => 'btn btn-primary button-prevent-multiple-submits']) !!}
                                 </div>
                            
                     {!! Form::close() !!}
@@ -121,5 +135,146 @@
 
 @section('scripts')
 
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+
+$(document).ready(function() {
+
+///////////////////////////AJAX CSRF SET UP //////////////////////////////////////////////
+    $.ajaxSetup({
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+//////////////////// SELECT2 INITIALISATION ///////////////////////////////////////////////
+
+    $('#countries').select2({
+        
+        'placeholder': 'select a country'
+    });
+
+
+    ///////////////// JQUERY FORM VALIDATION AND SUBMIT /////////////////////
+    $("#create-organisation-form").validate({
+        ignore: null,   
+        rules: {
+            
+        },
+        messages: {
+
+        },
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+            error.addClass('invalid-feedback');
+            element.closest('.form-group').append(error);
+        },
+        // Called when the element is invalid:
+        highlight: function (element, errorClass, validClass) {
+            $(element).addClass('is-invalid');
+        },
+  
+        // Called when the element is valid:
+        unhighlight: function (element, errorClass, validClass) {
+            $(element).removeClass('is-invalid');
+        },
+
+        submitHandler: function(form) {
+              
+            $('.button-prevent-multiple-submits').attr('disabled', true); // Disable button on clicking submit
+                var formData = new FormData(form);
+         
+                $.ajax({
+                url: "{{ route('organisations.organisations.store') }}",
+                type: 'post',
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend:function(){
+                $('#Create-Organisation').text('Processing...');
+                },
+                success: function(response) {
+
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Transfer completed successfully',
+                        icon: 'success',
+                        toast:'true',
+                        showConfirmButton:false,
+                        position:'top-end',
+                        timer:2000
+                        
+                    }).then(function() {
+                        window.location = "/view-money-transfers";
+                    });
+                
+                    $('.button-prevent-multiple-submits').attr('disabled', false);
+                    $('#Create-Organisation').text('Save');
+                },
+                error: function(response){
+                    
+                    console.log(response);
+    
+                    if(response.status == 422){
+                        var firstKey = Object.keys(response.responseJSON.errors)[0];
+                        Swal.fire({
+                        title: 'Error',
+                        text: response.responseJSON.errors[firstKey][0],
+                        icon: 'error',
+                        toast:'true',
+                        showConfirmButton:false,
+                        position:'top-end',
+                        timer:10000
+                        
+                        });
+                        $('.button-prevent-multiple-submits').attr('disabled', false);
+                        $('#Create-Organisation').text('Save');
+                    }
+                    else if(response.status == 404){
+
+                    }
+                    else if(response.status == 500){
+
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'An Unexpected error occured, Please contact support',
+                            icon: 'error',
+                            toast:'true',
+                            showConfirmButton:false,
+                            position:'top-end',
+                            timer:5000
+                            
+                        });
+
+                        $('.button-prevent-multiple-submits').attr('disabled', false);
+                        $('#Create-Organisation').text('Save');
+                    }
+                    else{
+
+                        Swal.fire({
+                        title: 'Error',
+                        text: 'Unexpected error. Please contact support',
+                        icon: 'error',
+                        toast:'true',
+                        showConfirmButton:false,
+                        position:'top-end',
+                        timer:10000
+                        
+                        });
+                    }
+                    $('.button-prevent-multiple-submits').attr('disabled', false);
+                    $('#Create-Organisation').text('Save');
+                }
+            });
+        }
+    });
+
+});
+
+</script>
 @endsection
 

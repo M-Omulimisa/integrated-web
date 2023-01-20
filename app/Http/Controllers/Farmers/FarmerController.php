@@ -51,13 +51,13 @@ class FarmerController extends Controller
     public function create()
     {
         try {   
-            $organisations = Organisation::pluck('name', 'id')->all();
-            $languages = Language::pluck('name', 'id')->all();
+            $organisations = Organisation::select('id', 'name')->get();
+            $languages = Language::select('id', 'name') ->get();
             $enterprises = Enterprise::get();
             $locations = Location::pluck('name', 'id')->all();
-            $countries = Country::pluck('name', 'id')->all();
+            $countries = Country::select('id', 'name')->get();
             $agents = Agent::pluck('name', 'id')->all();
-            $groups = FarmerGroup::pluck('name', 'id')->all();
+            $groups = FarmerGroup::select('id', 'name')->get();
             $education_levels = Setting::EDUCATION;
 
             return view($this->_dir.'.create', compact('organisations', 'languages', 'enterprises', 'locations', 'education_levels', 'countries', 'agents', 'groups'));
@@ -300,4 +300,5 @@ class FarmerController extends Controller
                 ->make(true);
         }
     }
+
 }

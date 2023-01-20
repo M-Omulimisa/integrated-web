@@ -180,6 +180,7 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function() {
         Route::resource('farmers', FarmerController::class);
         Route::get('farmer/list', [FarmerController::class, 'list'])->name('farmers.list'); 
         Route::resource('groups', FarmerGroupController::class);
+        Route::get('groups-by-organisation/{id}', [FarmerGroupController::class, 'getGroupsByOrganisaton']);
         Route::get('group/list', [FarmerGroupController::class, 'list'])->name('groups.list');
 
         Route::get('group/add-farmers', [FarmerGroupController::class, 'addFarmers'])->name('groups.add-farmers');
@@ -200,6 +201,7 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function() {
     Route::group(['prefix' => 'village-agents', 'as' => 'village-agents.'], function () {
         Route::resource('agents', AgentController::class);
         Route::get('agent/list', [AgentController::class, 'list'])->name('agents.list');
+        Route::get('agents-by-organisation/{id}', [AgentController::class, 'getAgentsByOrganisation']);
 
         Route::get('/maps', function(Request $request){
             return response()->json(['success' => true, 'message' => 'Welcome'], 200);
@@ -234,6 +236,7 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function() {
         Route::get('position/list', [OrganisationPositionController::class, 'list'])->name('positions.list');
         Route::resource('users', OrganisationUserController::class);
         Route::get('user/list', [OrganisationUserController::class, 'list'])->name('users.list');
+        Route::get('organisations-by-country/{id}', [OrganisationController::class, 'getOrganisationsByCountry']);
         
     });
 
@@ -505,6 +508,7 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function() {
          Route::get('country/list', [CountryController::class, 'list'])->name('countries.list');
          Route::resource('locations', LocationController::class);  
          Route::get('location/list', [LocationController::class, 'list'])->name('locations.list');
+         Route::get('/location-by-country/{id}', [LocationController::class, 'getLocationsByCountry']);
          Route::resource('languages', LanguageController::class);  
          Route::get('language/list', [LanguageController::class, 'list'])->name('languages.list');
          Route::resource('enterprises', EnterpriseController::class);  

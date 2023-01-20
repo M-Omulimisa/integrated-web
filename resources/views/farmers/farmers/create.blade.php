@@ -1,6 +1,11 @@
 @inject('set', 'App\Http\Controllers\Farmers\FarmerController')
 @extends('layouts.app')
 
+@section('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+@endsection
+
 @section('content')
 
 <!-- start page title -->
@@ -33,36 +38,56 @@
                             <div class="form-group mb-3">
                                 {!! Form::label('country_id', 'Country (required)', ['class' => 'col-sm-3 form-label']) !!}                
                                 <div class="col-sm-5">
-                               {!! Form::select('country_id', $countries, old('country_id'), ['class' => 'form-control select2','placeholder'=>'--Select--']) !!}    
+
+                                    <select id="countries" name="country_id" required>
+                                        <option></option>
+                                        @foreach($countries as $country)
+                                        <option value="{{$country->id}}">{{$country->name}}</option>
+                                        @endforeach
+                                    </select>   
+
                                 </div>
                             </div>
 
                             <div class="form-group mb-3">
-                                {!! Form::label('organisation_id', 'Organisation (optional)', ['class' => 'col-sm-3 form-label']) !!}                
+                                {!! Form::label('organisation_id', 'Organisation (required)', ['class' => 'col-sm-3 form-label']) !!}                
                                 <div class="col-sm-5">
-                               {!! Form::select('organisation_id', $organisations ?? [], old('organisation_id'), ['class' => 'form-control select2','placeholder'=>'--Select--']) !!}    
+                                    <select required id="organisations" name="organisation_id" class="form-control">
+                                        <option value="" selected>Choose Item...</option> 
+                                    </select>    
                                 </div>
                             </div>
 
                             <div class="form-group mb-3">
                                 {!! Form::label('farmer_group_id', 'Farmer Group (optional)', ['class' => 'col-sm-3 form-label']) !!}
                                 <div class="col-sm-5">
-                                    {!! Form::select('farmer_group_id', $groups, old('farmer_group_id'), ['class' => 'form-control select2','placeholder'=>'--Select--']) !!} 
+                                    <select required id="farmer_groups" name="farmer_group_id" class="form-control">
+                                        <option value="" selected>Choose Item...</option> 
+                                    </select>    
                                 </div>
+                               
                             </div>
 
                             <div class="form-group mb-3">
                                 {!! Form::label('agent_id', 'Managed by (optional)', ['class' => 'col-sm-3 form-label']) !!}
                                 <div class="col-sm-5">
-                                    {!! Form::select('agent_id', $agents, old('agent_id'), ['class' => 'form-control select2','placeholder'=>'--Select--']) !!} 
-                                    <span class="help-block">Agent supporting the farmer</span>
+                                    <select required id="agents" name="agent_id" class="form-control">
+                                        <option value="" selected>Choose Item...</option> 
+                                    </select>    
                                 </div>
                             </div>
 
                             <div class="form-group mb-3">
                                 {!! Form::label('language_id', 'Language (required)', ['class' => 'col-sm-3 form-label']) !!}                
                                 <div class="col-sm-5">
-                               {!! Form::select('language_id', $languages ?? [], old('language_id'), ['class' => 'form-control select2','required' => '','placeholder'=>'--Select--']) !!}    
+
+                                    <select id="languages" name="language_id" required>
+                                        <option></option>
+                                        @foreach($languages as $language)
+                                        <option value="{{$language->id}}">{{$language->name}}</option>
+                                        @endforeach
+                                    </select>   
+
                                 </div>
                             </div>
 
@@ -111,7 +136,14 @@
                             <div class="form-group mb-3">
                                 {!! Form::label('education_level', 'Education Level (required)', ['class' => 'col-sm-3 form-label']) !!}
                                 <div class="col-sm-5">
-                                    {!! Form::select('education_level', $education_levels, old('education_level'), ['class' => 'form-control select2','placeholder'=>'--Select--', 'required' => '']) !!} 
+
+                                    <select id="education_levels" name="education_level" required>
+                                        <option></option>
+                                        @foreach($education_levels as $education)
+                                        <option value="{{$education}}">{{$education}}</option>
+                                        @endforeach
+                                    </select>   
+
                                 </div>
                             </div>
 
@@ -233,13 +265,12 @@
                             <div class="form-group mb-3">
                                 {!! Form::label('location_id', 'Location (required)', ['class' => 'col-sm-3 form-label']) !!}
                                 <div class="col-sm-5">
-                                    @if (isset($locations) && count($locations) > 0)
-                                    {!! Form::select('location_id', $locations, old('location_id'), ['class' => 'form-control select2','required' => '','placeholder'=>'--Select--']) !!}
-                                    @else
-                                    No Locations in the system. Ensure they are set to continue
-                                    @endif 
+                                    <select required id="locations" name="location_id" class="form-control">
+                                        <option value="" selected>Choose Item...</option> 
+                                    </select>   
                                 </div> 
                             </div>
+                            <br/>
 
                             <div class="form-group mb-3">
                                 <div class="col-sm-5">
@@ -295,5 +326,184 @@
 
 @section('scripts')
 
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+<script>
+$(document).ready(function() {
+
+///////////////////////////AJAX CSRF SET UP //////////////////////////////////////////////
+    $.ajaxSetup({
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+
+
+//////////////////// SELECT2 INITIALISATION ///////////////////////////////////////////////
+
+    $('#organisations').select2({
+        
+        'placeholder': 'select an organisation'
+    });
+
+
+    $('#countries').select2({
+        
+        'placeholder': 'select a country'
+    });
+
+    $('#farmer_groups').select2({
+        
+        'placeholder': 'select a farmer group'
+    });
+
+    $('#languages').select2({
+        
+        'placeholder': 'select a language '
+    });
+
+    $('#agents').select2({
+        
+        'placeholder': 'select a agent'
+    });
+
+
+    $('#education_levels').select2({
+        
+        'placeholder': 'select an education level'
+    });
+
+    $('#locations').select2({
+        
+        'placeholder': 'select a location'
+    });
+
+
+
+    $('#countries').change(function () {
+        var id = $(this).val();
+
+        $.ajax({
+            url:'/organisations/organisations-by-country/'+id,
+            type:'get',
+            dataType:'json',
+            success:function (response) {
+                $("#organisations").empty();
+                console.log(response);
+                var len = 0;
+                if (response.items != null) {
+                    len = response.items.length;
+                }
+
+                if (len>0) {
+
+                    first_option_line = '<option value ="">Choose Item... </option>'
+                    $("#organisations").append(first_option_line);
+                    for (var i = 0; i<len; i++) {
+                            var id = response.items[i].id;
+                            var name = response.items[i].name;
+
+                            var option = "<option value='"+id+"'>"+name+"</option>"; 
+
+                            $("#organisations").append(option);
+                    }
+                }
+            }
+        });
+
+        $.ajax({
+            url:'/settings/location-by-country/'+id,
+            type:'get',
+            dataType:'json',
+            success:function (response) {
+                $("#locations").empty();
+                console.log(response);
+                var len = 0;
+                if (response.items != null) {
+                    len = response.items.length;
+                }
+
+                if (len>0) {
+
+                    first_option_line = '<option value ="">Choose Item... </option>'
+                    $("#locations").append(first_option_line);
+                    for (var i = 0; i<len; i++) {
+                            var id = response.items[i].id;
+                            var name = response.items[i].name;
+
+                            var option = "<option value='"+id+"'>"+name+"</option>"; 
+
+                            $("#locations").append(option);
+                    }
+                }
+            }
+        })
+    });
+
+    $('#organisations').change(function () {
+        var id = $(this).val();
+
+        $.ajax({
+            url:'/farmers/groups-by-organisation/'+id,
+            type:'get',
+            dataType:'json',
+            success:function (response) {
+                $("#farmer_groups").empty();
+                console.log(response);
+                var len = 0;
+                if (response.items != null) {
+                    len = response.items.length;
+                }
+
+                if (len>0) {
+
+                    first_option_line = '<option value ="">Choose Item... </option>'
+                    $("#farmer_groups").append(first_option_line);
+                    for (var i = 0; i<len; i++) {
+                            var id = response.items[i].id;
+                            var name = response.items[i].name;
+
+                            var option = "<option value='"+id+"'>"+name+"</option>"; 
+
+                            $("#farmer_groups").append(option);
+                    }
+                }
+            }
+        })
+
+        $.ajax({
+            url:'/village-agents/agents-by-organisation/'+id,
+            type:'get',
+            dataType:'json',
+            success:function (response) {
+                $("#agents").empty();
+                console.log(response);
+                var len = 0;
+                if (response.items != null) {
+                    len = response.items.length;
+                }
+
+                if (len>0) {
+
+                    first_option_line = '<option value ="">Choose Item... </option>'
+                    $("#agents").append(first_option_line);
+                    for (var i = 0; i<len; i++) {
+                            var id = response.items[i].id;
+                            var name = response.items[i].name;
+
+                            var option = "<option value='"+id+"'>"+name+"</option>"; 
+
+                            $("#agents").append(option);
+                    }
+                }
+            }
+        })
+    });
+
+});
+
+</script>
 @endsection
 
