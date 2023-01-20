@@ -28,6 +28,8 @@ class Organisation extends BaseModel
         });
     }
 
+    
+
     /**
      * The "type" of the auto-incrementing ID.
      *

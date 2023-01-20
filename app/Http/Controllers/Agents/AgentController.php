@@ -246,4 +246,13 @@ class AgentController extends Controller
                 ->make(true);
         }
     }
+
+
+    public function getAgentsByOrganisation($organisation_id){
+
+        $agents = Agent::select('id', 'name')->where('organisation_id', $organisation_id)->get();
+
+        return response()->json(['items' => $agents]);
+
+    }
 }

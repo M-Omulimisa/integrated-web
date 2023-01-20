@@ -332,4 +332,12 @@ class FarmerGroupController extends Controller
             return redirect()->back()->withErrors($r->getMessage());
         }
     }
+
+    public function getGroupsByOrganisaton($organisation_id){
+
+        $farmer_groups =  FarmerGroup::select('id', 'name')->where('organisation_id', $organisation_id)->get();
+
+        return response()->json(['items' => $farmer_groups]);
+
+    }
 }

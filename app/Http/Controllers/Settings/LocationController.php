@@ -202,4 +202,13 @@ class LocationController extends Controller
                 ->make(true);
         }
     }
+
+
+    public function getLocationsByCountry($country_id){
+
+        $locations = Location::select('id', 'name')->where('country_id', $country_id)->get();
+
+        return response()->json(['items' => $locations]);
+
+    }
 }

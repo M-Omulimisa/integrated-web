@@ -15,6 +15,9 @@ use App\Notifications\SendNewUserNotification;
 use App\Models\Organisations\Organisation;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Organisations\StoreOrganisationRequest;
+USE Str;
+
     
 class OrganisationController extends Controller
 {
@@ -48,10 +51,11 @@ class OrganisationController extends Controller
     public function create()
     {
         try {
+            $countries = Country::select('id', 'name')->get();
             $dialing_codes = Country::pluck('dialing_code', 'dialing_code')->all();
             $organisation_admin = Role::ROLE_ORG_ADMIN; 
 
-            return view($this->_dir.'.create', compact('dialing_codes', 'organisation_admin'));
+            return view($this->_dir.'.create', compact('dialing_codes', 'organisation_admin', 'countries'));
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage());
         }
@@ -63,55 +67,118 @@ class OrganisationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreOrganisationRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required',
-            'roles' => 'required',
-            'dialing_code' => 'required',
-            'phone' => 'required',
-            'status' => 'required',
-            'file' => 'nullable|mimes:png,jpg,jpeg|max:5120',
-        ]);
+        $validated =  $request->validated();
 
-        try {            
-            $organisation = [
-                'name' => $request->organisation,
-                'address' => $request->address,
-                'services' => $request->services
-            ];
+        try{
 
-            $organisation = Organisation::create($organisation);
+            \DB::beginTransaction();
 
-            if ($organisation) {
 
-                $country = Country::where('dialing_code', $request->dialing_code)->first();
+            ////////////INSERT INTO ORGANISATION  TABLE ////////////////
 
-                $user = [
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'dialing_code' => $request->dialing_code,
-                    'phone' => $request->phone,
-                    'organisation_id' => $organisation->id,
-                    'password' => $request->password, 
-                    'status' => $request->status == "1" ? "Active" : "Suspended",
-                    'country_id' => $country->id,
-                    'created_by' => auth()->user()->id
-                ];
+            $organisation  =  new Organisation();
+            $organisation->name  =  $validated['organisation'];
+            $organisation->address = $validated['address'];
+            $organisation->services = $validated['services'];
+            $organisation->save();
 
-                $user = User::create($user);
-                $user->assignRole($request->input('roles'));
+            ////////////////////ATTACH SELECTED COUNTIRES TO THE ORGANISATION /////////////////////////////
 
-                Notification::route('mail', $request->email)->notify(new SendNewUserNotification($request));
-            }
+            foreach($validated['country_id'] as $country){      
 
-            return redirect()->route($this->_route.'.index')->with('success','Operation successfully');
+                    DB::table('country_organisation')->insert([
 
-        } catch (\Throwable $r) {
-            return redirect()->back()->withErrors($r->getMessage())->withInput();
-        }    
+                        [
+                            'id' => Str::orderedUuid(),
+                            'country_id' => $country, 
+                            'organisation_id' => $organisation->id, 
+                        ]
+                    ]);
+                }
+
+            //////////// GET THE COUNTRY ID OF THE ADMINSITRATOR BASED OFF THE DIALING CODE ////////////////
+
+            $country = Country::select('id')->where('dialing_code', $request->dialing_code)->first();
+
+            /////////// INSERT INTO THE ADMINISTRATIR DETAILS INTO THE USERS TABLE
+
+            $user = new User();
+            $user->name = $validated['name'];
+            $user->email = $validated['email'];
+            $user->phone = $validated['phone'];
+            $user->organisation_id = $organisation->id;
+            $user->password  = $validated['password'];
+            $user->status = $validated['status'];
+            $user->country_id =  $country->id;
+            $user->created_by = $validated['created_by'];
+            $user->save();
+
+            ///////////////// ASSIGN THE ADMINSTRATOR USER WITH THE CORRECT ROLE ////////////////////////////
+
+            $user->assignRole($validated['roles']);
+
+            \DB::commit();
+
+            ////////////////////////SEND OUT AN EMAIL NOTIFICATION //////////////////////////////////
+
+            Notification::route('mail', $validated['email'])->notify(new SendNewUserNotification($request));
+
+            return response()->json(['message' => 'Organisation created successfully']);
+
+        }
+        catch(\Exception $e){
+       
+            \DB::rollBack();
+
+            $error_message = array('server_error' => array( $e->getMessage() ));
+            return response()->json([
+                'message' => 'The given data was invalid',
+                'errors' => $error_message
+            ], 422);
+        
+        }
+
+        
+
+        // try {           
+
+        //     $organisation = [
+        //         'name' => $request->organisation,
+        //         'address' => $request->address,
+        //         'services' => $request->services
+        //     ];
+
+        //     $organisation = Organisation::create($organisation);
+
+        //     if ($organisation) {
+
+        //         $country = Country::where('dialing_code', $request->dialing_code)->first();
+
+        //         $user = [
+        //             'name' => $request->name,
+        //             'email' => $request->email,
+        //             'dialing_code' => $request->dialing_code,
+        //             'phone' => $request->phone,
+        //             'organisation_id' => $organisation->id,
+        //             'password' => $request->password, 
+        //             'status' => $request->status == "1" ? "Active" : "Suspended",
+        //             'country_id' => $country->id,
+        //             'created_by' => auth()->user()->id
+        //         ];
+
+        //         $user = User::create($user);
+        //         $user->assignRole($request->input('roles'));
+
+        //         Notification::route('mail', $request->email)->notify(new SendNewUserNotification($request));
+        //     }
+
+        //     return redirect()->route($this->_route.'.index')->with('success','Operation successfully');
+
+        // } catch (\Throwable $r) {
+        //     return redirect()->back()->withErrors($r->getMessage())->withInput();
+        // }    
     }
     
     /**
@@ -246,5 +313,18 @@ class OrganisationController extends Controller
     public static function deleteLogo(string $file_name): bool
     {
         return Storage::delete(self::LPO_SIGNATURE_PATH . '/' . $file_name);
+    }
+
+
+    public function getOrganisationsByCountry($country_id){
+
+        $organisations = Organisation::select('organisations.id', 'organisations.name')->whereHas('countries', function($q) use($country_id) {
+
+            $q->where('countries.id', '=', $country_id);
+
+        })->get();
+
+        return response()->json(['items' => $organisations]);
+        
     }
 }
