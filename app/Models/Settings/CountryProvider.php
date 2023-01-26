@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Models\Market;
+namespace App\Models\Settings;
   
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
-use App\Models\Traits\Relationships\MarketPackageEnterpriseRelationship;
+use App\Models\Traits\Relationships\CountryProviderRelationship;
   
-class MarketPackageEnterprise extends BaseModel
+class CountryProvider extends BaseModel
 {
-    use Uuid, MarketPackageEnterpriseRelationship;
+    use Uuid, CountryProviderRelationship;
   
     protected $fillable = [
-        'package_id',
-        'enterprise_id',
+        'country_id',
+        'name',
+        'codes'
     ];
-
+    
     /**
      * every time a model is created
      * automatically assign a UUID to it
@@ -25,8 +26,9 @@ class MarketPackageEnterprise extends BaseModel
     protected static function boot()
     {
         parent::boot();
-        self::creating(function (MarketPackageEnterprise $model) {
+        self::creating(function (CountryProvider $model) {
             $model->id = $model->generateUuid();
+            $model->codes = str_replace(' ', '', $model->codes);
         });
     }
 
