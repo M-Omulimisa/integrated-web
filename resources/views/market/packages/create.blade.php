@@ -41,9 +41,16 @@
                                     <div class="col-sm-5">
                                     {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}               
                                     </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    {!! Form::label('name', 'Menu Display (required)', ['class' => 'col-sm-4 col-form-label']) !!}                
+                                    <div class="col-sm-5">
+                                    {!! Form::text('menu', old('menu'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}               
+                                    </div>
                                 </div>                                
 
-                              <div class="row">
+                              <div class="row mb-3">
                                 {!! Form::label('activity', 'Choose Enterprise (required)', ['class' => 'col-sm-12 form-label']) !!}
                                 @if (isset($enterprises) && count($enterprises) > 0)
                                     @foreach ($enterprises as $activity)
@@ -56,32 +63,49 @@
                                 @endif
                               </div><!-- row -->
 
-                                <div class="form-group mb-3">
-                                    {!! Form::label('frequency', 'Frequency (required)', ['class' => 'col-sm-4 col-form-label']) !!}                
-                                    <div class="col-sm-5">
-                                   {!! Form::select('frequency', $frequencies, old('frequency'), ['class' => 'form-control select2','required' => '','placeholder'=>'--Select--']) !!}    
-                                    </div>
-                                </div>
+                              {!! Form::label('languages', 'Languages (required)', ['class' => 'col-sm-12 form-label']) !!}
 
-                                <div class="form-group mb-3">
-                                    {!! Form::label('days', 'No. of Messages (required)', ['class' => 'col-sm-4 col-form-label']) !!}                
-                                    <div class="col-sm-5">
-                                    {!! Form::text('messages', old('messages'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}               
-                                    </div>
-                                </div>
+                              @if (count($languages) > 0)
+                                  @foreach ($languages as $language)
+                                    <div class="row mb-3">
+                                        <div class="col-md-1">
+                                            {{ $language->name }}
+                                            {{ Form::hidden('languages[]', $language->id) }}
+                                        </div>
+                                        <div class="col-md-1">
+                                            {!! Form::text('menus[]', old('menus'), ['class' => 'form-control', 'placeholder' => '#Menu Display']) !!}                                         
+                                        </div>
+                                    </div>         
+                                  @endforeach
+                              @endif
 
-                                <div class="form-group mb-3">
-                                    {!! Form::label('cost', 'Cost (required)', ['class' => 'col-sm-4 col-form-label']) !!}                
-                                    <div class="col-sm-5">
-                                    {!! Form::text('cost', old('cost'), ['class' => 'form-control', 'placeholder' => '0.0']) !!}               
-                                    </div>
-                                </div>         
+                              {!! Form::label('pricing', 'Pricing (required)', ['class' => 'col-sm-12 form-label']) !!}
 
-                                <div class="form-buttons-w">
+                              @if (count($frequencies) > 0)
+                                  @foreach ($frequencies as $frequency)
+                                    <div class="row mb-3">
+                                        <div class="col-md-1">
+                                            {{ $frequency }}
+                                            {{ Form::hidden('frequency[]', $frequency) }}
+                                        </div>
+                                        <div class="col-md-1">
+                                            {!! Form::text('frequency_menus[]', old('frequency_menus'), ['class' => 'form-control', 'placeholder' => 'Menu']) !!}                                         
+                                        </div>
+                                        <div class="col-md-1">
+                                            {!! Form::text('messages[]', old('messages'), ['class' => 'form-control', 'placeholder' => 'No. of Messages']) !!}                                         
+                                        </div>
+                                        <div class="col-md-1">{!! Form::text('cost[]', old('costs'), ['class' => 'form-control', 'placeholder' => 'Cost']) !!}                                        
+                                        </div>
+                                    </div>         
+                                  @endforeach
+                              @endif
+
+
+                            <div class="form-buttons-w">
                                 {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
-                                </div>
+                            </div>
 
-                                {!! Form::close() !!}
+                            {!! Form::close() !!}
 
                         <!-- content ends here -->
                     </div>

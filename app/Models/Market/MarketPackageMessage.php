@@ -5,15 +5,17 @@ namespace App\Models\Market;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
-use App\Models\Traits\Relationships\MarketPackageEnterpriseRelationship;
+use App\Models\Traits\Relationships\MarketPackageLanguageRelationship;
   
-class MarketPackageEnterprise extends BaseModel
+class MarketPackageMessage extends BaseModel
 {
-    use Uuid, MarketPackageEnterpriseRelationship;
+    use Uuid, MarketPackageLanguageRelationship;
   
     protected $fillable = [
         'package_id',
-        'enterprise_id',
+        'language_id',
+        'menu',
+        'message'
     ];
 
     /**
@@ -25,7 +27,7 @@ class MarketPackageEnterprise extends BaseModel
     protected static function boot()
     {
         parent::boot();
-        self::creating(function (MarketPackageEnterprise $model) {
+        self::creating(function (MarketPackageMessage $model) {
             $model->id = $model->generateUuid();
         });
     }

@@ -56,10 +56,6 @@ class CreateMarketTables extends Migration
             $table->uuid('id')->primary();
             $table->uuid('country_id');
             $table->string('name');
-            $table->string('frequency');
-            $table->integer('messages');
-            $table->double('cost', 15, 2)->default(0);
-            // $table->unique(['country_id', 'name', 'frequency', 'cost'], 'country_package');
             $table->timestamps();
 
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade')->onUpdate('cascade');

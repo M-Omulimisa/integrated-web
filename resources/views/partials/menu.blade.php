@@ -388,6 +388,9 @@
                     <a href="{{ route('settings.country-units.index') }}" class="nav-link"> Country Units </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('settings.country-providers.index') }}" class="nav-link"> Country Providers </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('settings.country-modules.index') }}" class="nav-link"> Country Access </a>
                 </li>
                 <li class="nav-item">

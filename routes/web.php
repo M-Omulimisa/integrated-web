@@ -132,6 +132,7 @@ use App\Http\Controllers\Settings\KeywordFailureResponseController;
 use App\Http\Controllers\Settings\CommissionRankingController;
 use App\Http\Controllers\Settings\EnterpriseTypeController;
 use App\Http\Controllers\Settings\UnitController;
+use App\Http\Controllers\Settings\CountryProviderController;
 
 use App\Http\Controllers\InformationController;
 
@@ -454,6 +455,8 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function() {
          Route::get('outbox-message/list', [MarketOutboxController::class, 'list'])->name('outbox-messages.list');
          Route::resource('packages', MarketPackageController::class); 
          Route::get('package/list', [MarketPackageController::class, 'list'])->name('packages.list');
+         Route::get('package/messages/{package}', [MarketPackageController::class, 'messages']);
+         Route::post('package/messages', [MarketPackageController::class, 'storeMessages'])->name('packages.messages.store');
                          
     });
 
@@ -536,7 +539,9 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function() {
          Route::resource('commission-rankings', CommissionRankingController::class);  
          Route::get('commission-ranking/list', [CommissionRankingController::class, 'list'])->name('commission-rankings.list');
          Route::resource('units', UnitController::class);  
-         Route::get('unit/list', [UnitController::class, 'list'])->name('units.list');     
+         Route::get('unit/list', [UnitController::class, 'list'])->name('units.list');
+         Route::resource('country-providers', CountryProviderController::class);  
+         Route::get('country-provider/list', [CountryProviderController::class, 'list'])->name('country-providers.list');              
     }); 
 
     Route::get('get_dialing_code_by_country', [CountryController::class, 'autoPickDialingCode']);

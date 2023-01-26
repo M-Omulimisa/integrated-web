@@ -50,79 +50,77 @@ class MenuController extends Controller
         $main_menu .= "2) Market Information \n";
         $main_menu .= "3) Weather Information";
 
-        $languages_menu  = "Select your preferred language!\n";
-        $languages_menu .= "1) Acholi\n";
-        $languages_menu .= "2) English\n";
+        $languages_menu  = "Select language!\n";
+        $languages_menu .= "1) English\n";
+        $languages_menu .= "2) Acholi & Lango\n";
         $languages_menu .= "3) Lango\n";
         $languages_menu .= "4) Luganda\n";
-        $languages_menu .= "5) Lugbara\n";
-        $languages_menu .= "6) Runyakitara\n";
-        $languages_menu .= "7) Other";
+        $languages_menu .= "5) Runyakitara";
+
+        $subscriber     = "Subscribing for\n";
+        $subscriber     .= "1) Self\n";
+        $subscriber     .= "2) Another";
+
+        $enter_phone = "Enter phone e.g 07XXXXXXXX";
+        $invalid_phone = "Invalid phone number";
 
         if ($last_menu == null) {
             $response  = $main_menu;
             $action = "request";
             $current_menu = "main_menu";
-
-            //create record
-            // $this->menu_helper->startSubscription($sessionId, $phoneNumber, $user_type);
-
         }
         elseif ($last_menu == "main_menu") {            
             $action = "request";
 
             if($input_text == '1'){
-                $response       = "Farmer's phone number\n";
-                $response       .= "1) This number\n";
-                $response       .= "2) Another number";
+                $response       = $subscriber;
                 $current_menu   = "insurance_phone_option";
+                $module         = 'insurance';
             }
             elseif ($input_text == '2') {
-                // Ask language for Market information
-                $response     = $languages_menu;
-                $current_menu = "market_languages_menu";
+                $response       = $subscriber;
+                $current_menu   = "market_phone_option";
+                $module         = 'market';
             }
             elseif ($input_text == '3') {
                 // Ask language Weather information
-                $response     = $languages_menu;
-                $current_menu = "weather_languages_menu";
+                $response       = $subscriber;
+                $current_menu   = "weather_phone_option";
+                $module         = 'weather';
             }
             else {
                 $action         = "end";
                 $response       = "Invalid input!\n";
                 $current_menu   = "invalid_input"; 
             }
+            //create record
+            if(isset($module)) $this->menu_helper->startMenu($sessionId, $phoneNumber, $module);
         }
 
         /******************* START INSURANCE *******************/
 
         elseif ($last_menu == "insurance_phone_option" && $input_text == '1' || $last_menu == "insurance_phone") {
-            $action         = "request";
-            $response       = "Enter farmer's name e.g Ninsiima Daniel";
-            $current_menu   = "insurance_name";
-        } 
-        elseif ($last_menu == "insurance_phone_option" && $input_text == '2') {
-            $action         = "request";
-            $response       = "Enter farmer's phone e.g 07XXXXXXXX";
-            $current_menu   = "insurance_phone";
-        }
-        elseif ($last_menu == "insurance_phone_option") {
-            $action         = "end";
-            $response       = "Invalid input!\n";
-            $current_menu   = "invalid_input"; 
-        } 
-        elseif ($last_menu == "insurance_name") {
             // check if name is valid
             // check if phone no is valid
             $action         = "request";
             $response       = "Enter District e.g Kampala";
             $current_menu   = "insurance_district";
         } 
+        elseif ($last_menu == "insurance_phone_option" && $input_text == '2') {
+            $action         = "request";
+            $response       = "Enter phone e.g 07XXXXXXXX";
+            $current_menu   = "insurance_phone";
+        }
+        elseif ($last_menu == "insurance_phone_option") {
+            $action         = "end";
+            $response       = "Invalid input!\n";
+            $current_menu   = "invalid_input"; 
+        }
         elseif ($last_menu == "insurance_district") {
             // check if district is valid
             // fetch active/available seasons
             $action         = "request";
-            $response       = "Select season\n";
+            $response       = "Select season:\n";
             // $response       .= $this->menu_helper->seasonList();
             $response       .= "1) Season A (Mar23-May23)\n2) Season B (Set23-Nov23)";
             $current_menu   = "insurance_season";
@@ -131,7 +129,7 @@ class MenuController extends Controller
             // check if season is valid
             // fetch crop list
             $action         = "request";
-            $response       = "Select item to insure\n";
+            $response       = "Select item to insure:\n";
             $response       = "1) Beans\n2)Maize\n3)SoyaBean\n4)Sorghum";
             $current_menu   = "insurance_item";
         }  
@@ -172,63 +170,138 @@ class MenuController extends Controller
         
         /******************* START MARKET *******************/
 
-        elseif ($last_menu == "market_languages_menu") {
-            $action         = "request";
-            $response       = "Subscribing phone number\n";
-            $response       .= "1) This number\n";
-            $response       .= "2) Another number";
-            $current_menu   = "market_phone_option";
-        }
         elseif ($last_menu == "market_phone_option" && $input_text == '1' || $last_menu == "market_phone") {
+            
             $action         = "request";
-            $response       = "Enter farmer's name e.g Ninsiima Daniel";
-            $current_menu   = "market_name";
+
+            if ($last_menu == "market_phone" && ! $this->menu_helper->isLocalPhoneValid($input_text, '256')) {
+                $response       = $invalid_phone."\n";
+                $response       .= $enter_phone;
+                $current_menu   = "market_phone";
+            }
+            else{
+                $response       = "Select package:\n";
+                $response       .= $this->menu_helper->getPackageList();
+                $current_menu   = "market_package";
+
+                if ($last_menu != "market_phone") {
+                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_subscrption_for', 'self');
+                    $input_text = $phoneNumber;
+                }
+                else{
+                    $input_text = $this->menu_helper->formatPhoneNumbers($phoneNumber, '256', 'international');
+                }
+
+                $field          = 'market_subscriber';
+            }
         } 
         elseif ($last_menu == "market_phone_option" && $input_text == '2') {
             $action         = "request";
-            $response       = "Enter farmer's phone e.g 07XXXXXXXX";
+            $response       = $enter_phone;
             $current_menu   = "market_phone";
+
+            $field          = 'market_subscrption_for';
+            $input_text     = 'another';
         }
         elseif ($last_menu == "market_phone_option") {
-            $action         = "end";
+            $action         = "request";
             $response       = "Invalid input!\n";
-            $current_menu   = "invalid_input"; 
-        } 
-        elseif ($last_menu == "market_name") {
-            // check if name is valid
-            // check if phone no is valid
-            $action         = "request";
-            $response       = "Enter District e.g Kampala";
-            $current_menu   = "market_district";
-        } 
-        elseif ($last_menu == "market_district") {
-            // check if district is valid
-            $action         = "request";
-            $response       = "Select package\n";
-            $response       .= "1) Cereals\n2) Legumes\n3) Tubers\n4) Cereal, Legumes\n5) Cereal, Tubers\n6) Legumes, Tubers\n7) All";
-            $current_menu   = "market_package";
+            $response       .= $subscriber;
+            $current_menu   = "market_phone_option"; 
         } 
         elseif ($last_menu == "market_package") {
+            $action         = "request";
+            if (! $this->menu_helper->isPackageMenuValid($input_text)) {
+                $response       = "Invalid input!\n";
+                $response       .= $this->menu_helper->getPackageList();
+                $current_menu   = "market_package";
+            }
+            else{
+                $package_id   = $this->menu_helper->getPackageId($input_text);
+                $response     = "Select language:\n";
+                $response     .= $this->menu_helper->getPackageLanguages($package_id);
+                $current_menu = "market_languages_menu"; 
+
+                $field          = 'market_package_id';
+                $input_text     = $package_id;
+            }
+        }        
+        elseif ($last_menu == "market_languages_menu") {
+            $action         = "request";
+            $package_id   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
+
             // check if package is valid
-            $action         = "request";
-            $response       = "Select frequency\n";
-            $response       .= "1) Trial\n2) Weekly\n3) Monthly\n4) Yearly";
-            $current_menu   = "market_frequency";
+            if (! $this->menu_helper->isPackageLanguageValid($package_id, $input_text)) {
+                $response       = "Invalid input! Select language:\n";
+                $response       .= $this->menu_helper->getPackageLanguages($package_id);
+                $current_menu = "market_languages_menu"; 
+            }
+            else{
+                $response       = "Select frequency:\n";
+                $response       .= $this->menu_helper->getPackageFrequencies($package_id);
+                $current_menu   = "market_frequency"; 
+
+                $field          = 'market_language_id';
+                $input_text     = $this->menu_helper->getPackageLanguageId($package_id, $input_text);               
+            }
         }  
-        elseif ($last_menu == "market_frequency" && $input_text != '1') {
-            // check if frequency is valid
-            // check if input is valid
+        elseif ($last_menu == "market_frequency") {
             $action         = "request";
-            $response       = "Enter number of [frequency]";
-            $current_menu   = "market_period";
+            $package_id   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
+
+            // check if frequency is valid -- check if input is valid
+            if (! $this->menu_helper->isPackageFrequencyValid($package_id, $input_text)) {
+                $response       = "Invalid input! Select frequency:\n";
+                $response       .= $this->menu_helper->getPackageFrequencies($package_id);
+                $current_menu   = "market_frequency"; 
+            }
+            else{
+                $input_text     = $this->menu_helper->getPackageFrequency($package_id, $input_text);
+
+                $response       = "Enter number of ".str_replace('ly', 's', $input_text);
+                $current_menu   = "market_period";                
+                
+                $field = 'market_frequency';
+            }
         }  
-        elseif ($last_menu == "market_period" || $last_menu == "market_frequency" && $input_text == '1') {
-            // check if acreage value is valid
+        elseif ($last_menu == "market_period" || $last_menu == "market_confirmation" && $input_text != "1" && $input_text != "2") {
             $action    = "request";
-            $response  = "Subscribing for [package] market info for [period] at ugx [amount]\n";
-            $response .= "1) Confirm\n";
-            $response .= "2) Cancel";
-            $current_menu   = "market_confirmation";
+            $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_frequency');
+            $_frequency = str_replace('ly', 's', $frequency);
+
+            // Back to this step -- Retrieve previous input
+            if($last_menu == "market_confirmation") $input_text = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_frequency_count');
+
+            // check if acreage value is valid
+            if (!is_numeric($input_text) && $input_text >= 0) {
+                $response       = "Invalid input!\n";
+                $response       .= "Enter number of ".$_frequency;
+                $current_menu   = "market_period";  
+            }
+            else{
+                $package_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
+                $enterprises = $this->menu_helper->getPackageEnterprises($package_id);
+                $cost        = $this->menu_helper->getPackageCost($package_id, $frequency, $input_text);
+                $currency    = 'UGX';   
+
+                if (!is_null($cost)) {
+                    // code...
+                    $response  = "Subscribing for ".$enterprises." market info for ".$input_text.$_frequency." at ".$currency.''.number_format($cost * $input_text)."\n";
+                    $response .= "1) Confirm\n";
+                    $response .= "2) Cancel";
+                    $current_menu   = "market_confirmation"; 
+
+                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_currency', $currency);
+                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_cost', ($cost * $input_text));  
+
+                    $field = 'market_frequency_count';             
+                }
+                else{
+                    $action         = "end";
+                    $response       = "Selected package has no pricing";
+                    $current_menu   = "market_cost_error"; 
+                }
+            }
         }  
         elseif ($last_menu == "market_confirmation") {
             // check if crop is valid
@@ -236,9 +309,12 @@ class MenuController extends Controller
             $action         = "end";
             
             if ($input_text == '1') {
+                $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_subscriber');
                 $response       = "Thank you for subscribing.\n";
-                $response       .= "Check [phone] to approve the payment\n";
+                $response       .= "Check ".$phone." to approve the payment\n";
                 $current_menu   = "market_confirmed";
+
+                $field = 'market_confirmation';
             }
             elseif($input_text == '2'){
                 $response       = "Transaction has been cancelled";
@@ -253,34 +329,22 @@ class MenuController extends Controller
         
         /******************* START WEATHER *******************/
 
-        elseif ($last_menu == "weather_languages_menu") {
-            $action         = "request";
-            $response       = "Subscribing phone number\n";
-            $response       .= "1) This number\n";
-            $response       .= "2) Another number";
-            $current_menu   = "weather_phone_option";
-        }
         elseif ($last_menu == "weather_phone_option" && $input_text == '1' || $last_menu == "weather_phone") {
+            // check if name is valid
+            // check if phone no is valid
             $action         = "request";
-            $response       = "Enter farmer's name e.g Ninsiima Daniel";
-            $current_menu   = "weather_name";
-        } 
+            $response       = "Enter District e.g Kampala";
+            $current_menu   = "weather_district";
+        }
         elseif ($last_menu == "weather_phone_option" && $input_text == '2') {
             $action         = "request";
-            $response       = "Enter farmer's phone e.g 07XXXXXXXX";
+            $response       = "Enter phone e.g 07XXXXXXXX";
             $current_menu   = "weather_phone";
         }
         elseif ($last_menu == "weather_phone_option") {
             $action         = "end";
             $response       = "Invalid input!\n";
             $current_menu   = "invalid_input"; 
-        } 
-        elseif ($last_menu == "weather_name") {
-            // check if name is valid
-            // check if phone no is valid
-            $action         = "request";
-            $response       = "Enter District e.g Kampala";
-            $current_menu   = "weather_district";
         } 
         elseif ($last_menu == "weather_district") {
             // check if district is valid
@@ -297,6 +361,12 @@ class MenuController extends Controller
             $current_menu   = "weather_parish";
         } 
         elseif ($last_menu == "weather_parish") {
+            // check if parish is valid
+            $action         = "request";
+            $response       = $languages_menu;
+            $current_menu   = "weather_languages_menu";
+        }  
+        elseif ($last_menu == "weather_languages_menu") {
             // check if parish is valid
             $action         = "request";
             $response       = "Select frequency\n";
@@ -349,8 +419,8 @@ class MenuController extends Controller
         $this->menu_helper->saveLastMenu($sessionId, $phoneNumber, $current_menu);
 
         //save the field in the step
-        if (!is_null($field)) {
-            // $this->menu_helper->saveToField($sessionId, $phoneNumber, $field, $input_text);
+        if (!is_null($field) && $input_text != "0" && !is_null($input_text)) {
+            $this->menu_helper->saveToField($sessionId, $phoneNumber, $field, $input_text);
         }
 
         header('Content-Type: text/html');  // plain

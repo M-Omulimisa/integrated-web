@@ -1,4 +1,4 @@
-@inject('set', 'App\Http\Controllers\MarketInformation\MarketPackageController')
+@inject('set', 'App\Http\Controllers\Settings\CountryProviderController')
 @extends('layouts.app')
 
 @section('content')
@@ -7,7 +7,7 @@
 @include('partials.breadcrumb',[
     'page_title'    => $set->_page_title,
     'menu_group'    => $set->_menu_group,
-    'menu_item'     => 'Packages',
+    'menu_item'     => 'Country providers',
     'menu_item_url' => route($set->_route.'.index'),
     'current'       => 'List'
 ])
@@ -19,28 +19,25 @@
             <div class="card-body">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item"><a class="nav-link active" href="{{ url()->current() }}">List of packages</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route($set->_route.'.create') }}">Add new packages</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{{ url()->current() }}">List of country providers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route($set->_route.'.create') }}">Add new country provider</a></li>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
                     <div class="tab-pane active">
                         <!-- content starts here -->
-                            <div class="table-responsive">
+
                                 <table id="dTable" class="table table-striped table-bordered" >
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Enterprises</th>
-                                            <th>Languages</th>
-                                            <th>Pricing</th>   
-                                            <th>Messages</th>
-                                            <th>Displayed</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Country</th>
+                                        <th>Codes</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
                         <!-- content ends here -->
                     </div>
                 </div>
@@ -91,16 +88,13 @@
                         
                     } ],
                 ajax: {
-                    url: '{!! route('market.packages.list') !!}',
+                    url: '{!! route('settings.country-providers.list') !!}',
                     data: function (d) { }
                 },
                 columns: [
-                    {data: 'package', name: 'package'},
-                    {data: 'enterprises', name: 'enterprises'},
-                    {data: 'languages', name: 'languages'},
-                    {data: 'pricing', name: 'pricing'},
-                    {data: 'messages', name: 'messages'},
-                    {data: 'listing', name: 'listing'},
+                    {data: 'name', name: 'name'},
+                    {data: 'country', name: 'country'},
+                    {data: 'codes', name: 'codes'},
                     {data: 'action', name: 'action'},
                 ],
                 "lengthMenu": {{ DT_LENGTH }},

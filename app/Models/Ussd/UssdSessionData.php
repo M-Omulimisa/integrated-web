@@ -5,7 +5,7 @@ namespace App\Models\Ussd;
 use App\Models\BaseModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 
-class UssdSession extends BaseModel
+class UssdSessionData extends BaseModel
 {
     use Uuid;
 
@@ -14,7 +14,19 @@ class UssdSession extends BaseModel
     protected $fillable = [
             'session_id',
             'phone_number',
-            'last_menu'
+
+            // Market subscription columns
+            'module',
+            'market_subscrption_for',
+            'market_subscriber',
+            'market_package_id',
+            'market_language_id',
+            'market_frequency',
+            'market_frequency_count',
+            'market_confirmation',
+            'market_payment_status',
+            'market_currency',
+            'market_cost'
         ];
 
     /**
@@ -25,7 +37,7 @@ class UssdSession extends BaseModel
     protected static function boot()
     {
         parent::boot();
-        self::creating(function (UssdSession $model) {
+        self::creating(function (UssdSessionData $model) {
             $model->id = $model->generateUuid();
         });
     }

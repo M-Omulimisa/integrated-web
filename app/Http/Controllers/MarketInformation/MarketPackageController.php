@@ -7,17 +7,27 @@ use App\Http\Controllers\Controller;
 
 use DB;
 use App\Models\Settings\Country;
+use App\Models\Settings\Language;
 use App\Models\Settings\Enterprise;
 use App\Models\Market\MarketPackage;
+use App\Models\Market\MarketPackageMessage;
+use App\Models\Market\MarketPackagePricing;
 use App\Models\Market\MarketPackageEnterprise;
     
 class MarketPackageController extends Controller
 {
-    public $_permission    = "market-prices";
+    public $_permission    = "settings";
     public $_route         = "market.packages";
     public $_dir           = "market.packages";
     public $_menu_group    = "Market Information";
     public $_page_title    = 'Market Packages';
+
+    const FREQUENCIES = [
+                'Trial'    => 'Trial',
+                'Weekly'    => 'Weekly', 
+                'Monthly'   => 'Monthly', 
+                'Yearly'    => 'Yearly'
+            ];
 
     /**
      * Display a listing of the resource.
@@ -41,15 +51,12 @@ class MarketPackageController extends Controller
     public function create()
     {
         try { 
-            $countries = Country::orderBy('name', 'ASC')->pluck('name', 'id')->all();
-            $enterprises = Enterprise::orderBy('name', 'ASC')->get();
-            $frequencies = [
-                'Trial'    => 'Trial',
-                'Weekly'    => 'Weekly', 
-                'Monthly'   => 'Monthly', 
-                'Yearly'    => 'Yearly'
-            ];           
-            return view($this->_dir.'.create', compact('countries', 'enterprises', 'frequencies'));
+            $countries  = Country::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+            $languages  = Language::orderBy('name', 'ASC')->get();
+            $enterprises= Enterprise::orderBy('name', 'ASC')->get();
+            $frequencies= self::FREQUENCIES;  
+
+            return view($this->_dir.'.create', compact('countries', 'enterprises', 'frequencies', 'languages'));
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage());
         }
@@ -64,33 +71,54 @@ class MarketPackageController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'country_id' => 'required',
-            'name' => 'required',
+            'country_id'  => 'required',
+            'name'        => 'required',
+            'menu'        => 'required',
             'enterprises' => 'required',
-            'frequency' => 'required',
-            'messages' => 'required',
-            'cost' => 'required',
+            'frequency'   => 'required',
+            'messages'    => 'required',
+            'cost'        => 'required',
+            'languages'   => 'required',
         ]);
 
-        try {
-
+        try {            
             $package = MarketPackage::create($request->all()); 
 
             if ($package) {
                 for ($i=0; $i < count($request->enterprises); ++$i) {
                       MarketPackageEnterprise::create([
-                        'package_id' => $package->id,
+                        'package_id'    => $package->id,
                         'enterprise_id' => $request->enterprises[$i]
                       ]);
-                  }                
+                  }
+
+                  for ($i=0; $i < count($request->frequency); ++$i) {
+                    if (!is_null($request->messages[$i]) && !is_null($request->cost[$i])) {
+                          MarketPackagePricing::create([
+                            'package_id'=> $package->id,
+                            'frequency' => $request->frequency[$i],
+                            'menu'      => $request->frequency_menus[$i],
+                            'messages'  => $request->messages[$i],
+                            'cost'      => $request->cost[$i]
+                          ]);
+                    }
+                  }
+
+                  for ($i=0; $i < count($request->languages); ++$i) {
+                    if (!is_null($request->menus[$i])) {
+                          MarketPackageMessage::create([
+                            'package_id'=> $package->id,
+                            'language_id' => $request->languages[$i],
+                            'menu'        => $request->menus[$i],
+                          ]);
+                    }
+                  }               
             }
 
-            return redirect()->route($this->_route.'.index')
-                            ->with('success','Operation was successfully');
+            return redirect()->route($this->_route.'.index')->with('success','Operation was successfully');
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage())->withInput();
-        }
-    
+        }    
     }
     
     /**
@@ -116,10 +144,15 @@ class MarketPackageController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {    
-        try {            
-            $data = [];
-            return view($this->_dir.'.edit', compact('data', 'id'));
+    {      
+        try { 
+            $package    = MarketPackage::findorFail($id);
+            $countries  = Country::orderBy('name', 'ASC')->pluck('name', 'id')->all();
+            $languages  = Language::orderBy('name', 'ASC')->get();
+            $enterprises= Enterprise::orderBy('name', 'ASC')->get();
+            $frequencies= self::FREQUENCIES;  
+
+            return view($this->_dir.'.edit', compact('package', 'id', 'countries', 'enterprises', 'frequencies', 'languages'));
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage());
         }
@@ -135,17 +168,57 @@ class MarketPackageController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,'.$id,
-            'password' => 'same:confirm-password',
-            'roles' => 'required'
+            'country_id'  => 'required',
+            'name'        => 'required',
+            'menu'        => 'required',
+            'enterprises' => 'required',
+            'frequency'   => 'required',
+            'num_message'=> 'required',
+            'cost'        => 'required',
+            'languages'   => 'required',
+            'status'      => 'required'
         ]);
-    
+
         try {            
-            return redirect()->route($this->_route.'.index')
-                            ->with('success','Operation was successful');
+            $package = MarketPackage::findorFail($id);
+
+            if ($package->update($request->all())) {
+                MarketPackageEnterprise::wherePackageId($id)->delete(); // remove existing settings
+                for ($i=0; $i < count($request->enterprises); ++$i) {
+                      MarketPackageEnterprise::create([
+                        'package_id'    => $id,
+                        'enterprise_id' => $request->enterprises[$i]
+                      ]);
+                  }
+
+                  MarketPackagePricing::wherePackageId($id)->delete(); // remove existing settings
+                  for ($i=0; $i < count($request->frequency); ++$i) {
+                    if (!is_null($request->num_message[$i]) && !is_null($request->cost[$i])) {
+                          MarketPackagePricing::create([
+                            'package_id'=> $id,
+                            'frequency' => $request->frequency[$i],
+                            'menu'      => $request->frequency_menus[$i],
+                            'messages'  => $request->num_message[$i],
+                            'cost'      => $request->cost[$i]
+                          ]);
+                    }
+                  }
+
+                  MarketPackageMessage::wherePackageId($id)->delete(); // remove existing settings
+                  for ($i=0; $i < count($request->languages); ++$i) {
+                    if (!is_null($request->language_menu[$i])) {
+                          MarketPackageMessage::create([
+                            'package_id'  => $id,
+                            'language_id' => $request->languages[$i],
+                            'menu'        => $request->language_menu[$i],
+                            'message'     => $request->message[$i],
+                          ]);
+                    }
+                  }                
+            }            
+            return redirect()->route($this->_route.'.index')->with('success','Operation was successful');
         } catch (\Throwable $r) {
-            return redirect()->back()->withErrors($r->getMessage());
+            return redirect()->back()->withErrors($r->getMessage())->withInput();
         }
     }
     
@@ -188,6 +261,36 @@ class MarketPackageController extends Controller
                 ->addColumn('id', function($data) {
                     return $data->id;
                   })
+                ->addColumn('package', function($data) {
+                    return $data->menu.'. '.$data->name;
+                  })
+                ->addColumn('enterprises', function($data) {
+                    $list = '';
+                    foreach ($data->enterprises as $enterprise) {
+                        $list .= $enterprise->enterprise->name.', ';
+                    }
+                    return $list;
+                  })
+                ->addColumn('pricing', function($data) {
+                    $list = '';
+                    foreach ($data->pricing as $pricing) {
+                        $list .= $pricing->menu.'. '.$pricing->frequency.', '.$pricing->messages.'msg @'.number_format($pricing->cost).'<br/>';
+                    }
+                    return $list;
+                  })
+                ->addColumn('languages', function($data) {
+                    $list = '';
+                    foreach ($data->messages as $language) {
+                        $list .= $language->language->name.', ';
+                    }
+                    return $list;
+                  })
+                ->addColumn('listing', function($data) {
+                    return $data->status ? 'YES' : 'NO';
+                  })
+                ->addColumn('messages', function($data) {
+                    if(count($data->enterprises) > 0 && count($data->pricing) > 0 && count($data->messages) > 0) return '<a href="'.url('market/package/messages/'.$data->id).'">Set</a>';
+                  })
                 ->addColumn('action', function($data){
                     $route   = $this->_route;
                     $id      = $data->id;
@@ -196,8 +299,47 @@ class MarketPackageController extends Controller
                     $view    = 'view_'.$this->_permission;
                     return view('partials.actions', compact('route','id','manage','view','delete'))->render();
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'enterprises', 'pricing', 'languages', 'messages'])
                 ->make(true);
+        }
+    }
+
+    /**
+     * Display a listing messages of a package.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function messages(MarketPackage $package)
+    {
+        try {            
+            return view($this->_dir.'.messages', compact('package'));
+        } catch (\Throwable $r) {
+            return redirect()->back()->withErrors($r->getMessage());
+        }
+    }
+    
+    /**
+     * Updates messgaes of a package in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeMessages(Request $request)
+    {
+        $this->validate($request, [
+            'package_id'  => 'required|exists:market_packages,id',
+            'message'     => 'required',
+        ]);
+
+        try {            
+              for ($i=0; $i < count(array_filter($request->message)); ++$i) {
+                  MarketPackageMessage::wherePackageId($request->package_id)
+                                        ->whereLanguageId($request->languages[$i])
+                                        ->update(['message' => trim($request->message[$i]) ]);
+              }  
+            return redirect()->back()->with('success', 'Operation was successful')->withInput();
+        } catch (\Throwable $r) {
+            return redirect()->back()->withErrors($r->getMessage())->withInput();
         }
     }
 }
