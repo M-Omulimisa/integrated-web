@@ -45,6 +45,13 @@
                                   </div>
                               </div>  
 
+                            <div class="form-group mb-3">
+                                {!! Form::label('category', 'Category (required)', ['class' => 'col-sm-4 col-form-label']) !!}             
+                                <div class="col-sm-5">
+                                    {!! Form::select('category', ['Crop'=>'Crop', 'Livestock' => 'Livestock'], old('category'), array('class' => 'chzn_a form-control')) !!}           
+                                </div>
+                            </div> 
+
                             <div class="form-buttons-w">
                             {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
                             </div>
