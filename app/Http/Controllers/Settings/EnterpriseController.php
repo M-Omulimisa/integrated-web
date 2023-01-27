@@ -63,17 +63,17 @@ class EnterpriseController extends Controller
      */
     public function store(Request $request)
     {
+        request()->validate([
+            'name' => 'required',
+            'unit_id' => 'required',
+            'category' => 'required',
+        ]);
+
         try {            
-            request()->validate([
-                'name' => 'required',
-                'unit_id' => 'required',
-                'category' => 'required',
-            ]);
         
             Enterprise::create($request->all());
         
-            return redirect()->route($this->_route.'.index')
-                            ->with('success','Operation successfully.');
+            return redirect()->route($this->_route.'.index')->with('success','Operation successfully.');
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage())->withInput();
         }
@@ -119,17 +119,17 @@ class EnterpriseController extends Controller
      */
     public function update(Request $request, Enterprise $enterprise)
     {
+         request()->validate([
+            'name' => 'required',
+            'unit_id' => 'required',
+            'category' => 'required',
+        ]);
+
         try {            
-             request()->validate([
-                'name' => 'required',
-                'unit_id' => 'required',
-                'category' => 'required',
-            ]);
         
             $enterprise->update($request->all());
         
-            return redirect()->route($this->_route.'.index')
-                            ->with('success','Enterprise updated successfully');
+            return redirect()->route($this->_route.'.index')->with('success','Enterprise updated successfully');
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage())->withInput();
         }
