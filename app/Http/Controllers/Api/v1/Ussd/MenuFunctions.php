@@ -381,7 +381,7 @@ class MenuFunctions
         }
 
         // If an error occurred or data was missing, return false.
-        return
+        return false;
     }
 
     /**
