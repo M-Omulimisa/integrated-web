@@ -6,7 +6,7 @@ use Log;
 use SimpleXMLElement;
 use Illuminate\Http\Request;
 
-class YoAPI {
+class YoUganda {
     /**
      * The Yo! Payments API Username
      * Required.
@@ -184,14 +184,15 @@ class YoAPI {
     private $private_key_file_location = NULL;
 
     /**
-     * YoAPI constructor.
+     * YoUganda constructor.
      * @param string $username
      * @param string $password
      */
-    public function __construct($username, $password)
+    public function __construct()
     {
-        $this->username = $username;
-        $this->password = $password;
+        $this->url = config('payments.services.yo_ug.url', "");
+        $this->username = config('payments.services.yo_ug.username', "");
+        $this->password = config('payments.services.yo_ug.password', "");
     }
 
     /**
@@ -277,25 +278,6 @@ class YoAPI {
      */
     public function get_nonblocking(){
         return $this->NonBlocking;
-    }
-
-    /**
-    * Set the External Reference
-    * @param string $external_reference Used when submitting payment requests
-    * @return void
-    */
-    public function set_external_reference($external_reference)
-    {
-        $this->external_reference = $external_reference;
-    }
-
-    /**
-     * Returns the external_reference Variable
-     * @return string 
-     */
-    public function get_external_reference()
-    {
-        return $this->external_reference;
     }
 
     /**
@@ -486,7 +468,7 @@ class YoAPI {
     * @param string $narrative the reason for the mobile money user to deposit funds 
     * @return array
     */
-    public function ac_deposit_funds($msisdn, $amount, $narrative)
+    public function depositFunds($msisdn, $amount, $narrative, $reference = null)
     {
         $xml = '';
         $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
@@ -499,7 +481,7 @@ class YoAPI {
         $xml .= '<Account>'.$msisdn.'</Account>';
         $xml .= '<Amount>'.$amount.'</Amount>';
         $xml .= '<Narrative>'.$narrative.'</Narrative>';
-        if( $this->external_reference != NULL ){ $xml .= '<ExternalReference>'.$this->external_reference.'</ExternalReference>'; }
+        if( $reference != NULL ){ $xml .= '<ExternalReference>'.$reference.'</ExternalReference>'; }
         if( $this->internal_reference != NULL ) { $xml .= '<InternalReference>'.$this->internal_reference.'</InternalReference>'; }
         if( $this->provider_reference_text != NULL ){ $xml .= '<ProviderReferenceText>'.$this->provider_reference_text.'</ProviderReferenceText>'; }
         if( $this->instant_notification_url != NULL ){ $xml .= '<InstantNotificationUrl>'.$this->instant_notification_url.'</InstantNotificationUrl>'; }
@@ -519,30 +501,29 @@ class YoAPI {
         $simpleXMLObject =  new SimpleXMLElement($xml_response);
         $response = $simpleXMLObject->Response;
 
-        $result = array();
-        $result['Status'] = (string) $response->Status;
-        $result['StatusCode'] = (string) $response->StatusCode;
-        $result['StatusMessage'] = (string) $response->StatusMessage;
-        $result['TransactionStatus'] = (string) $response->TransactionStatus;
+        $result = new Request;
+        $result->Status = (string) $response->Status;
+        $result->StatusCode = (string) $response->StatusCode;
+        $result->StatusMessage = (string) $response->StatusMessage;
+        $result->TransactionStatus = (string) $response->TransactionStatus;
 
         if (!empty($response->ErrorMessageCode)) {
-            $result['ErrorMessageCode'] = (string) $response->ErrorMessageCode;
+            $result->ErrorMessageCode = (string) $response->ErrorMessageCode;
         }
         if (!empty($response->ErrorMessage)) {
-            $result['ErrorMessage'] = (string) $response->ErrorMessage;
+            $result->ErrorMessage = (string) $response->ErrorMessage;
         }
         if (!empty($response->TransactionReference)) {
-            $result['TransactionReference'] = (string) $response->TransactionReference;
+            $result->TransactionReference = (string) $response->TransactionReference;
         }
         if (!empty($response->MNOTransactionReferenceId)) {
-            $result['MNOTransactionReferenceId'] = (string) $response->MNOTransactionReferenceId;
+            $result->MNOTransactionReferenceId = (string) $response->MNOTransactionReferenceId;
         }
         if (!empty($response->IssuedReceiptNumber)) {
-            $result['IssuedReceiptNumber'] = (string) $response->IssuedReceiptNumber;
+            $result->IssuedReceiptNumber = (string) $response->IssuedReceiptNumber;
         }
 
-        return $result;
-        
+        return $result;        
     }
 
     /**
@@ -1304,7 +1285,7 @@ class YoAPI {
     protected function get_xml_response($xml)
     {
         $soap_do = curl_init();
-        curl_setopt($soap_do, CURLOPT_URL, $this->YOURL);
+        curl_setopt($soap_do, CURLOPT_URL, $this->url);
         curl_setopt($soap_do, CURLOPT_CONNECTTIMEOUT, 120);
         curl_setopt($soap_do, CURLOPT_TIMEOUT, 120);
         curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true);

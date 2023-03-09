@@ -49,6 +49,20 @@
                                 </div> 
                             </div> 
 
+                            <div class="form-group mb-3">
+                                {!! Form::label('payment_api', 'Payment API Service (optional)', ['class' => 'col-sm-4 col-form-label']) !!}
+                                <div class="col-sm-5">
+                                    {!! Form::text('payment_api', old('payment_api'), ['class' => 'form-control', 'placeholder' => '']) !!} 
+                                </div> 
+                            </div> 
+
+                            <div class="form-group mb-3">
+                                {!! Form::label('sms_api', 'SMS API Service (optional)', ['class' => 'col-sm-4 col-form-label']) !!}
+                                <div class="col-sm-5">
+                                    {!! Form::text('sms_api', old('sms_api'), ['class' => 'form-control', 'placeholder' => '']) !!} 
+                                </div> 
+                            </div> 
+
                             <div class="form-buttons-w">
                             {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
                             </div>

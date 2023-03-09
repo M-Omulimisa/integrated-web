@@ -6,8 +6,6 @@ use Log;
 use Response;
 use Validator;
 use Carbon\Carbon;
-// use App\Api\v1\YoPay;
-// use App\Api\v1\MtnPay;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -290,8 +288,7 @@ class MenuController extends Controller
                     $response .= "1) Confirm\n";
                     $response .= "2) Cancel";
                     $current_menu   = "market_confirmation"; 
-
-                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_currency', $currency);
+                    
                     $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_cost', ($cost * $input_text));  
 
                     $field = 'market_frequency_count';             
@@ -309,11 +306,18 @@ class MenuController extends Controller
             $action         = "end";
             
             if ($input_text == '1') {
-                $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_subscriber');
-                $response       = "Thank you for subscribing.\n";
-                $response       .= "Check ".$phone." to approve the payment\n";
-                $current_menu   = "market_confirmed";
 
+                // create the subscription and payment 
+                if ($this->menu_helper->completeMarketSubscription($sessionId, $phoneNumber)) {
+                    $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_subscriber');
+                    $response       = "Thank you for subscribing.\n";
+                    $response       .= "Check ".$phone." to approve the payment\n";
+                }
+                else{
+                    $response = "Subscription was unsuccessful. Please try again";
+                }
+
+                $current_menu   = "market_confirmed";
                 $field = 'market_confirmation';
             }
             elseif($input_text == '2'){

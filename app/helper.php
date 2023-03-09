@@ -222,92 +222,6 @@ function processXML($raw_XML, $namespace=null, $registerXPath=null, $xpath=null)
     return $response;
 }
 
-function format_locations(
-    $unit_number=null, 
-    $building_number=null, 
-    $floor_number=null, $plot_or_street_number=null, 
-    $lc_or_stree_name=null, 
-    $parish=null, 
-    $surburb=null, 
-    $village=null, 
-    $county_or_town=null, 
-    $district=null, 
-    $region=null, 
-    $country_code=null
-)
-{
-    $unit_number            = !is_null($unit_number) && $unit_number != '0' ? $unit_number.', ' : '';
-    $building_number        = !is_null($building_number) && $building_number != '0' ? $building_number.', ' : '';
-    $floor_number           = !is_null($floor_number) && $floor_number != '0' ? $floor_number.', ' : '';
-    $plot_or_street_number  = !is_null($plot_or_street_number) && $plot_or_street_number != '0' ? 'Plot '.$plot_or_street_number.', ' : '';
-    $lc_or_stree_name       = !is_null($lc_or_stree_name) && $lc_or_stree_name != '0' ? $lc_or_stree_name.', ' : '';
-    
-    $parish                 = !is_null($parish) && $parish != '0' ? $parish.', ' : '';
-    $surburb                = !is_null($surburb) && $surburb != '0' ? $surburb.', ' : '';
-    $village                = !is_null($village) && $village != '0' ? $village.', ' : '';
-    $county_or_town         = !is_null($county_or_town) && $county_or_town != '0' ? $county_or_town.', ' : '';
-    
-    $district               = !is_null($district) && $district != '0' ? $district.', ' : '';
-    $region                 = !is_null($region) && $region != '0' ? $region.', ' : '';
-    $country_code           = !is_null($country_code) && $country_code != '0' ? $country_code.', ' : '';
-
-    $location = '';
-
-    if ($unit_number!='' || $building_number!='' || $floor_number!='' || $plot_or_street_number!='' || $lc_or_stree_name!='') {
-        // $admin_unit_1 = '<br>';
-        $location .= strtoupper(rtrim(rtrim($unit_number.$building_number.$floor_number.$plot_or_street_number.$lc_or_stree_name),','));
-    }
-
-    if ($parish!='' || $surburb!='' || $village!='' || $county_or_town!='') {
-        // $admin_unit_2 = '<br>';
-        $location .= ($admin_unit_1 ?? '').strtoupper(rtrim(rtrim($parish.$surburb.$village.$county_or_town),','));
-    }
-
-    if ($district!='' || $region!='' || $country_code!='') {
-        $location .= ($admin_unit_2 ?? '').strtoupper(rtrim(rtrim($district.$region.$country_code),','));
-    }
-
-    return $location;
-}
-
-function format_contacts(
-    $primary_number=null, 
-    $mobile_number=null, 
-    $other_number=null,
-    $primary_code=null, 
-    $mobile_code=null, 
-    $other_code=null
-)
-{
-    $primary_code       = !is_null($primary_code) && $primary_code != '0' ? $primary_code : '';
-    $mobile_code        = !is_null($mobile_code) && $mobile_code != '0' ? $mobile_code : '';
-    $other_code         = !is_null($other_code) && $other_code != '0' ? $other_code : '';
-
-    $primary_number       = !is_null($primary_number) && $primary_number != '0' ? 'Telephone: '.$primary_code.$primary_number.', ' : '';
-    $mobile_number        = !is_null($mobile_number) && $mobile_number != '0' ? 'Mobile: '.$mobile_code.$mobile_number.', ' : '';
-    $other_number         = !is_null($other_number) && $other_number != '0' ? 'Other: '.$other_code.$other_number.', ' : '';
-
-    $primary_number = strlen($primary_number) > 16 ? $primary_number : '';
-    $mobile_number = strlen($mobile_number) > 13 ? $mobile_number : '';
-    $other_number = strlen($other_number) > 12 ? $other_number : '';
-
-    $contact = '';
-
-    if ($primary_number!='' || $mobile_number!='' || $other_number!='') {
-        $contact .= rtrim(rtrim($primary_number.$mobile_number.$other_number),',');
-    }
-
-    return $contact;
-}
-
-function format_postal_addresses($po_box_number, $post_office_town=null, $country_code=null)
-{
-    $post_office_town     = !is_null($post_office_town) ? $post_office_town.', ' : '';
-    $country_code    = !is_null($country_code) ? $country_code.', ' : '';
-
-    return 'P.O Box '.$po_box_number.', '.rtrim(rtrim($post_office_town.$country_code),',');
-}
-
 function days_to_ymd($days_to_convert)
 {
     $years = ($days_to_convert / 365) ; // days / 365 days
@@ -382,8 +296,6 @@ function generateCode($length)
     return $code;
 }
 
-
-
 function generateRandomString($from, $to, $length, $letters = false, $numbers = false)
 {
     if ($letters)
@@ -406,4 +318,22 @@ function generateRandomString($from, $to, $length, $letters = false, $numbers = 
         $key .= $pool[mt_rand(0, count($pool) - 1) ];
     }
     return $key;
+}
+
+function getSubscritionEndDate($frequency, $period, $start_date)
+{    
+    if ($frequency == 'Weekly' || $frequency == 'Trial') {
+        $days       = 7 * $period;
+        $end_date   = date("Y-m-d",strtotime($start_date. "+ ".$days." days"));
+    }
+    elseif ($frequency == 'Monthly') {
+        $days       = 30 * $period;
+        $end_date   = date("Y-m-d",strtotime($start_date. "+ ".$days." days"));
+    }
+    elseif ($frequency == 'Yearly') {
+        $days       = 365 * $period;
+        $end_date   = date("Y-m-d",strtotime($start_date. "+ ".$days." days"));
+    }
+
+    return $end_date;
 }

@@ -33,6 +33,8 @@
                                         <th>Name</th>
                                         <th>Country</th>
                                         <th>Codes</th>
+                                        <th>Payment Service</th>
+                                        <th>SMS Service</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -95,6 +97,8 @@
                     {data: 'name', name: 'name'},
                     {data: 'country', name: 'country'},
                     {data: 'codes', name: 'codes'},
+                    {data: 'payment_api', name: 'payment_api'},
+                    {data: 'sms_api', name: 'sms_api'},
                     {data: 'action', name: 'action'},
                 ],
                 "lengthMenu": {{ DT_LENGTH }},

@@ -41,27 +41,18 @@ class CreateWeatherTables extends Migration
             $table->integer('period_paid');
             $table->string('start_date')->nullable();
             $table->string('end_date')->nullable();
-            $table->string('paying_account');
-            $table->double('payment_amount',15, 2)->default(0);
-            $table->boolean('payment_confirmation')->default(false);
-            $table->string('reference_id')->nullable();
-            $table->string('payment_reference')->nullable();
-            $table->string('payment_status')->nullable();
-            $table->string('payment_provider')->nullable(); //AIRTEL, MTN, 
-            $table->string('payment_method')->nullable(); //Mobile Money or Bank
-            $table->text('payment_details')->nullable();
-            $table->text('payment_failure_reason')->nullable();
             $table->boolean('status')->default(false);
             $table->uuid('user_id')->nullable();
+            $table->uuid('renewal_id')->nullable();
+            $table->uuid('organisation_id')->nullable();
+            $table->boolean('seen_by_admin')->default(false);
+
             $table->boolean('outbox_generation_status')->default(false);
             $table->boolean('outbox_reset_status')->default(false);
             $table->date('outbox_last_date')->nullable();
             $table->string('awhere_field_id')->nullable();
-            $table->boolean('seen_by_admin')->default(false);
             $table->timestamp('trial_expiry_sms_sent_at')->nullable();
             $table->text('trial_expiry_sms_failure_reason')->nullable();
-            $table->uuid('renewal_id')->nullable();
-            $table->uuid('organisation_id')->nullable();
             $table->timestamps();
 
             $table->foreign('farmer_id')->references('id')->on('farmers')->onDelete('cascade')->onUpdate('cascade');
