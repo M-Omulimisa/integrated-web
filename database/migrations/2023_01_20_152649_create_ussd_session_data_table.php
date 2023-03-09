@@ -26,7 +26,6 @@ class CreateUssdSessionDataTable extends Migration
             $table->uuid('market_language_id')->nullable();
             $table->string('market_frequency')->nullable();
             $table->integer('market_frequency_count')->nullable();
-            $table->string('market_currency')->nullable();
             $table->double('market_cost', 15,2)->nullable();
             $table->boolean('market_confirmation')->default(false);
             $table->string('market_payment_status')->default('PENDING');

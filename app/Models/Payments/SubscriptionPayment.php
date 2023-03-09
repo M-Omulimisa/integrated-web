@@ -1,20 +1,30 @@
 <?php
 
-namespace App\Models\Settings;
+namespace App\Models\Payments;
   
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
-use App\Models\Traits\Relationships\CountryProviderRelationship;
+use App\Models\Traits\Relationships\SubscriptionPaymentRelationship;
   
-class CountryProvider extends BaseModel
+class SubscriptionPayment extends BaseModel
 {
-    use Uuid, CountryProviderRelationship;
+    use Uuid, SubscriptionPaymentRelationship;
   
     protected $fillable = [
-        'country_id',
-        'name',
-        'codes',
+        'weather_subscription_id',
+        'market_subscription_id',
+        'insurance_subscription_id',
+        'method',
+        'provider',
+        'account',
+        'reference_id',
+        'reference',
+        'amount',
+        'status',
+        'details',
+        'error_message',
+        'narrative',
         'payment_api',
         'sms_api'
     ];
@@ -28,9 +38,8 @@ class CountryProvider extends BaseModel
     protected static function boot()
     {
         parent::boot();
-        self::creating(function (CountryProvider $model) {
+        self::creating(function (SubscriptionPayment $model) {
             $model->id = $model->generateUuid();
-            $model->codes = str_replace(' ', '', $model->codes);
         });
     }
 

@@ -14,8 +14,12 @@ use App\Models\Ussd\UssdSession;
 use App\Models\Market\MarketPackage;
 use App\Models\Ussd\UssdSessionData;
 use App\Models\Settings\CountryProvider;
+use App\Models\Market\MarketSubscription;
 use App\Models\Market\MarketPackageMessage;
 use App\Models\Market\MarketPackagePricing;
+use App\Models\Payments\SubscriptionPayment;
+
+use App\Services\Payments\PaymentServiceFactory;
 
 class MenuFunctions
 {
@@ -165,6 +169,13 @@ class MenuFunctions
             }
             return $formatted_number;
         }        
+    }
+
+    public function getServiceProvider($phoneNumber, $param)
+    {
+        $dialing_code = substr($phoneNumber, 0, 5);
+        $provider = CountryProvider::where('codes', 'LIKE', '%'.$dialing_code.'%')->first();
+        return $provider ? $provider->$param : null;
     }
 
     /**********************************MARKET***********************************************/
@@ -328,5 +339,63 @@ class MenuFunctions
     {
         $cost = MarketPackagePricing::wherePackageId($packageId)->whereFrequency($frequency)->first();
         return $cost->cost ?? null;
+    }
+
+    /**
+     * This function completes a market subscription by creating a MarketSubscription and a SubscriptionPayment record
+     * using the session data and provided phone number.
+     */
+    public function completeMarketSubscription($sessionId, $phoneNumber)
+    {
+        // Retrieve the session data for the given session ID and phone number.
+        $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
+
+        // Create an array containing the data for the new MarketSubscription record.
+        $subscription_data = [
+            'language_id'   => $sessionData->market_language_id,
+            'phone'         => $sessionData->market_subscriber,
+            'package_id'    => $sessionData->market_package_id,
+            'frequency'     => $sessionData->market_frequency,
+            'period_paid'   => $sessionData->market_frequency_count,
+        ];
+
+        // Create a new MarketSubscription record using the subscription_data array and assign it to $subscription variable.
+        if ($subscription = MarketSubscription::create($subscription_data)) {
+            // Get the payment API for the subscriber's phone number.
+            $api = $this->getServiceProvider($sessionData->market_subscriber, 'payment_api');
+
+            // Create an array containing the data for the new SubscriptionPayment record.
+            $payment = [
+                'market_subscription_id' => $subscription->id,
+                'method'    => 'MM',
+                'provider'  => $this->getServiceProvider($sessionData->market_subscriber, 'name'),
+                'account'   => $sessionData->market_subscriber,
+                'amount'    => $sessionData->market_cost,
+                'sms_api'   => $this->getServiceProvider($sessionData->market_subscriber, 'sms_api'),
+                'reference_id' => $this->generateReference($api),
+                'payment_api'  => $api,
+            ];
+
+            // Create a new SubscriptionPayment record using the payment array and return true if successful.
+            if(SubscriptionPayment::create($payment)) return true;
+        }
+
+        // If an error occurred or data was missing, return false.
+        return
+    }
+
+    /**
+     * This function generates a unique reference ID for a subscription payment using the given payment API.
+     * A do-while loop is used to ensure a unique reference ID is generated.
+     * Generate a random number between 100 and 999999999 using mt_rand and remove any leading zeros using ltrim.
+     * Check if there is already a subscription payment with the generated reference ID for the given payment API.
+     * return Reference ID
+     */
+    public function generateReference($api){
+      do{
+        $reference_id = ltrim(mt_rand(100, 999999999), '0');
+      }
+      while (!is_null(SubscriptionPayment::whereReferenceId($reference_id)->wherePaymentApi($api)->first()));
+          return $reference_id;      
     }
 }
