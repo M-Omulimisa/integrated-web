@@ -271,7 +271,7 @@ class MenuFunctions
     public function getPackageLanguageId($packageId, $languageMenu)
     {
         $language = MarketPackageMessage::wherePackageId($packageId)->whereMenu($languageMenu)->first();
-        return $language->id ?? null;
+        return $language->language_id ?? null;
     }
 
     /**
