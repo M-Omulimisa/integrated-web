@@ -375,6 +375,7 @@ class MenuFunctions
                 'narrative' => $sessionData->market_frequency .' Market subscription',
                 'reference_id' => $this->generateReference($api),
                 'payment_api'  => $api,
+                'status' => 'INITIATED'
             ];
 
             // Create a new SubscriptionPayment record using the payment array and return true if successful.

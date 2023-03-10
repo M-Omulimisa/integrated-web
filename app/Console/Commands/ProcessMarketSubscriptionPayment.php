@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Models\Settings\CountryProvider;
 use App\Models\Market\MarketSubscription;
@@ -44,7 +43,7 @@ class ProcessMarketSubscriptionPayment extends Command
      */
     public function handle()
     {
-        $payments = SubscriptionPayment::whereStatus('PENDING')->whereNotNull('payment_api')->whereNotNull('reference_id')->whereIn('provider',function($query) {
+        $payments = SubscriptionPayment::whereStatus('INITIATED')->whereNotNull('payment_api')->whereNotNull('reference_id')->whereIn('provider',function($query) {
             $query->select('name')->from(with(new CountryProvider)->getTable());
         })->get();
 
