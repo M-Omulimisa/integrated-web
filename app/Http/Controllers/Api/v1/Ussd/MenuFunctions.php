@@ -372,6 +372,7 @@ class MenuFunctions
                 'account'   => $sessionData->market_subscriber,
                 'amount'    => $sessionData->market_cost,
                 'sms_api'   => $this->getServiceProvider($sessionData->market_subscriber, 'sms_api'),
+                'narrative' => $sessionData->market_frequency .' Market subscription',
                 'reference_id' => $this->generateReference($api),
                 'payment_api'  => $api,
             ];
