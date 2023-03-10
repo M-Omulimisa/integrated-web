@@ -477,7 +477,7 @@ class YoUganda {
         $xml .= '<APIUsername>'.$this->username.'</APIUsername>';
         $xml .= '<APIPassword>'.$this->password.'</APIPassword>';
         $xml .= '<Method>acdepositfunds</Method>';
-        $xml .= '<NonBlocking>'.$this->NonBlocking.'</NonBlocking>';
+        $xml .= '<NonBlocking>TRUE</NonBlocking>';
         $xml .= '<Account>'.$msisdn.'</Account>';
         $xml .= '<Amount>'.$amount.'</Amount>';
         $xml .= '<Narrative>'.$narrative.'</Narrative>';
@@ -534,7 +534,7 @@ class YoUganda {
     * @param string $private_transaction_reference The External Reference that was used to carry out a transaction
     * @return array
     */
-    public function ac_transaction_check_status($transaction_reference, $private_transaction_reference=NULL)
+    public function getTransactionStatus($transaction_reference, $private_transaction_reference=NULL, $payment_type=NULL)
     {
         $xml = '';
         $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
@@ -557,110 +557,41 @@ class YoUganda {
         $simpleXMLObject =  new SimpleXMLElement($xml_response);
         $response = $simpleXMLObject->Response;
 
-        $result = array();
-        $result['Status'] = (string) $response->Status;
-        $result['StatusCode'] = (string) $response->StatusCode;
-        $result['StatusMessage'] = (string) $response->StatusMessage;
-        $result['TransactionStatus'] = (string) $response->TransactionStatus;
+        $result = new Request;
+        $result->Status = (string) $response->Status;
+        $result->StatusCode = (string) $response->StatusCode;
+        $result->StatusMessage = (string) $response->StatusMessage;
+        $result->TransactionStatus = (string) $response->TransactionStatus;
+
         if (!empty($response->ErrorMessageCode)) {
-            $result['ErrorMessageCode'] = (string) $response->ErrorMessageCode;
+            $result->ErrorMessageCode = (string) $response->ErrorMessageCode;
         }
         if (!empty($response->ErrorMessage)) {
-            $result['ErrorMessage'] = (string) $response->ErrorMessage;
+            $result->ErrorMessage = (string) $response->ErrorMessage;
         }
         if (!empty($response->TransactionReference)) {
-            $result['TransactionReference'] = (string) $response->TransactionReference;
+            $result->TransactionReference = (string) $response->TransactionReference;
         }
         if (!empty($response->MNOTransactionReferenceId)) {
-            $result['MNOTransactionReferenceId'] = (string) $response->MNOTransactionReferenceId;
+            $result->MNOTransactionReferenceId = (string) $response->MNOTransactionReferenceId;
         }
         if (!empty($response->Amount)) {
-            $result['Amount'] = (string) $response->Amount;
+            $result->Amount = (string) $response->Amount;
         }
         if (!empty($response->AmountFormatted)) {
-            $result['AmountFormatted'] = (string) $response->AmountFormatted;
+            $result->AmountFormatted = (string) $response->AmountFormatted;
         }
         if (!empty($response->CurrencyCode)) {
-            $result['CurrencyCode'] = (string) $response->CurrencyCode;
+            $result->CurrencyCode = (string) $response->CurrencyCode;
         }
         if (!empty($response->TransactionInitiationDate)) {
-            $result['TransactionInitiationDate'] = (string) $response->TransactionInitiationDate;
+            $result->TransactionInitiationDate = (string) $response->TransactionInitiationDate;
         }
         if (!empty($response->TransactionCompletionDate)) {
-            $result['TransactionCompletionDate'] = (string) $response->TransactionCompletionDate;
+            $result->TransactionCompletionDate = (string) $response->TransactionCompletionDate;
         }
         if (!empty($response->IssuedReceiptNumber)) {
-            $result['IssuedReceiptNumber'] = (string) $response->IssuedReceiptNumber;
-        }
-
-        return $result;
-    }
-
-    /**
-    * Transfer funds from your Payment Account to another Yo! Payments Account
-    * @param string $currency_code 
-    * Options
-    * * "UGX-MTNMM" -> Uganda Shillings - MTN Mobile Money
-    * * "UGX-MTNAT" -> Uganda Shillings - MTN Airtime
-    * * "UGX-WTLAT" -> Uganda Shillings - Warid Airtime
-    * * "UGX-OULAT" -> Uganda Shillings - Orange Airtime
-    * * "UGX-AIRAT" -> Uganda Shillings - Airtel Airtime
-    * @param double $amount  The amount to be transferred
-    * @param int $beneficiary_account Account number of Yo! Payments User
-    * @param string $beneficiary_email Email Address of the recipient of funds
-    * @param string $narrative Textual narrative about the transaction
-    * @return array
-    */
-    public function ac_internal_transfer($currency_code, $amount, $beneficiary_account, $beneficiary_email, $narrative)
-    {
-        $xml = '';
-        $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<AutoCreate>';
-        $xml .= '<Request>';
-        $xml .= '<APIUsername>'.$this->username.'</APIUsername>';
-        $xml .= '<APIPassword>'.$this->password.'</APIPassword>';
-        $xml .= '<Method>acinternaltransfer</Method>';
-        $xml .= '<CurrencyCode>'.$currency_code.'</CurrencyCode>';
-        $xml .= '<Amount>'.$amount.'</Amount>';
-        $xml .= '<BeneficiaryAccount>'.$beneficiary_account.'</BeneficiaryAccount>';
-        $xml .= '<BeneficiaryEmail>'.$beneficiary_email.'</BeneficiaryEmail>';
-        $xml .= '<Narrative>'.$narrative.'</Narrative>';
-        if($this->internal_reference != NULL) { 
-            $xml .= '<InternalReference>'.$this->internal_reference.'</InternalReference>'; 
-        }
-        if($this->external_reference != NULL) { 
-            $xml .= '<ExternalReference>'.$this->external_reference.'</ExternalReference>'; 
-        }
-        $xml .= '</Request>';
-        $xml .= '</AutoCreate>';
-
-        $response = $this->get_xml_response($xml);
-
-        $xml_response = curl_exec($response);
-        curl_close($response);
-
-        $simpleXMLObject =  new SimpleXMLElement($xml_response);
-        $response = $simpleXMLObject->Response;
-
-        $result = array();
-        $result['Status'] = (string) $response->Status;
-        $result['StatusCode'] = (string) $response->StatusCode;
-        $result['StatusMessage'] = (string) $response->StatusMessage;
-        $result['TransactionStatus'] = (string) $response->TransactionStatus;
-        if (!empty($response->ErrorMessageCode)) {
-            $result['ErrorMessageCode'] = (string) $response->ErrorMessageCode;
-        }
-        if (!empty($response->ErrorMessage)) {
-            $result['ErrorMessage'] = (string) $response->ErrorMessage;
-        }
-        if (!empty($response->TransactionReference)) {
-            $result['TransactionReference'] = (string) $response->TransactionReference;
-        }
-        if (!empty($response->MNOTransactionReferenceId)) {
-            $result['MNOTransactionReferenceId'] = (string) $response->MNOTransactionReferenceId;
-        }
-        if (!empty($response->IssuedReceiptNumber)) {
-            $result['IssuedReceiptNumber'] = (string) $response->IssuedReceiptNumber;
+            $result->IssuedReceiptNumber = (string) $response->IssuedReceiptNumber;
         }
 
         return $result;
@@ -709,250 +640,6 @@ class YoUganda {
         }
         if (!empty($response->ErrorMessage)) {
             $result['ErrorMessage'] = (string) $response->ErrorMessage;
-        }
-
-        return $result;
-    }
-
-    /**
-    * Return an array of transactions which were carried out on your account for a certain period of time
-    * @param string $start_date format YYYY-MM-DD HH:MM:SS
-    * @param string $end_date  format YYYY-MM-DD HH:MM:SS
-    * @param string $transaction_status 
-    * Options
-    * * "FAILED"
-    * * "PENDING"
-    * * "INDETERMINATE"
-    * * "SUCCEEDED"
-    * * "FAILED,SUCCEEDED" (comma separated)
-    * @param string $currency_code
-    * Options
-    * * "UGX-MTNMM" -> Uganda Shillings - MTN Mobile Money
-    * * "UGX-WARIDMM" -> Uganda Shillings - Airtel Money
-    * * "UGX-MTNAT" -> Uganda Shillings - MTN Airtime
-    * * "UGX-WTLAT" -> Uganda Shillings - Warid Airtime
-    * * "UGX-OULAT" -> Uganda Shillings - Orange Airtime
-    * * "UGX-AIRAT" -> Uganda Shillings - Airtel Airtime
-    * @param int $result_set_limit A value of 0 returns all. Default limit = 15 
-    * @param string $transaction_entry_designation
-    * Options
-    * * "TRANSACTION"
-    * * "CHARGES"
-    * * "ANY"
-    * @param string $external_reference Filter using this external_reference
-    * @return array
-    */
-    public function ac_get_ministatement($start_date=NULL, $end_date=NULL, $transaction_status=NULL, $currency_code=NULL, $result_set_limit=NULL, $transaction_entry_designation='ANY', $external_reference=NULL)
-    {
-        // Do a string to time formatting to get the date format required
-        $xml = '';
-        $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<AutoCreate>';
-        $xml .= '<Request>';
-        $xml .= '<APIUsername>'.$this->username.'</APIUsername>';
-        $xml .= '<APIPassword>'.$this->password.'</APIPassword>';
-        $xml .= '<Method>acgetministatement</Method>';
-        if($start_date != NULL){
-            $xml .= '<StartDate>'.$start_date.'</StartDate>';
-        }
-        if($end_date != NULL){
-            $xml .= '<EndDate>'.$end_date.'</EndDate>';
-        }
-        if($transaction_status != NULL){
-            $xml .= '<TransactionStatus>'.$transaction_status.'</TransactionStatus>';
-        }
-        if($currency_code != NULL){
-            $xml .= '<CurrencyCode>'.$currency_code.'</CurrencyCode>';
-        }
-        if($result_set_limit != NULL){
-            $xml .= '<ResultSetLimit>'.$result_set_limit.'</ResultSetLimit>';
-        }
-        $xml .= '<TransactionEntryDesignation>'.$transaction_entry_designation.'</TransactionEntryDesignation>';
-        if($external_reference != NULL){
-            $xml .= '<ExternalReference>'.$external_reference.'</ExternalReference>';
-        }
-        $xml .= '</Request>';
-        $xml .= '</AutoCreate>';
-
-        $response = $this->get_xml_response($xml);
-
-        $xml_response = curl_exec($response);
-        curl_close($response);
-
-        $simpleXMLObject =  new SimpleXMLElement($xml_response);
-        $response = $simpleXMLObject->Response;
-
-        $result = array();
-        $result['Status'] = (string) $response->Status;
-        $result['StatusCode'] = (string) $response->StatusCode;
-        $result['TotalTransactions'] = (string) $response->TotalTransactions;
-        $result['ReturnedTransactions'] = (string) $response->ReturnedTransactions;
-        
-        $transactions = array();
-        if($response->Transactions->Transaction != null){
-            foreach($response->Transactions->Transaction as $transaction){
-                $transaction_detail = array();
-                $transaction_detail['TransactionSystemId'] = (string) $transaction->TransactionSystemId;
-                $transaction_detail['TransactionReference'] = (string) $transaction->TransactionReference;
-                $transaction_detail['TransactionStatus'] = (string) $transaction->TransactionStatus;
-                $transaction_detail['InitiationDate'] = (string) $transaction->InitiationDate;
-                $transaction_detail['CompletionDate'] = (string) $transaction->CompletionDate;
-                $transaction_detail['NarrativeBase64'] = (string) $transaction->NarrativeBase64[0];
-                $transaction_detail['Currency'] = (string) $transaction->Currency;
-                $transaction_detail['Amount'] = (string) $transaction->Amount;
-                $transaction_detail['Balance'] = (string) $transaction->Balance;
-                $transaction_detail['GeneralType'] = (string) $transaction->GeneralType;
-                $transaction_detail['DetailedType'] = (string) $transaction->DetailedType;
-                if(!empty($transaction->BeneficiaryMsisdn)){
-                    $transaction_detail['BeneficiaryMsisdn'] = (string) $transaction->BeneficiaryMsisdn;
-                }
-                $transaction_detail['BeneficiaryBase64'] = (string) $transaction->BeneficiaryBase64;
-                if(!empty($transaction->SenderMsisdn)){
-                    $transaction_detail['SenderMsisdn'] = (string) $transaction->SenderMsisdn;
-                }
-                $transaction_detail['SenderBase64'] = (string) $transaction->SenderBase64;
-                if(!empty($transaction->Base64TransactionExternalReference)){
-                    $transaction_detail['Base64TransactionExternalReference'] = (string) $transaction->Base64TransactionExternalReference;
-                }
-                $transaction_detail['TransactionEntryDesignation'] = (string) $transaction->TransactionEntryDesignation;
-                
-                $transactions[] = $transaction_detail;
-            }
-        }
-        $result['Transactions'] = $transactions;
-
-        if (!empty($response->ErrorMessageCode)) {
-            $result['ErrorMessageCode'] = (string) $response->ErrorMessageCode;
-        }
-        if (!empty($response->ErrorMessage)) {
-            $result['ErrorMessage'] = (string) $response->ErrorMessage;
-        }
-
-        return $result;
-    }
-
-    /**
-    * Send airtime to a mobile phone user
-    * @param string $msisdn the mobile phone number in the format 256772123456
-    * @param int $amount the amount of airtime to be sent to the mobile user
-    * @param string $narrative textual narrative about the transfer
-    * @return array
-    */
-    public function ac_send_airtime_mobile($msisdn, $amount, $narrative)
-    {
-        $xml = '';
-        $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<AutoCreate>';
-        $xml .= '<Request>';
-        $xml .= '<APIUsername>'.$this->username.'</APIUsername>';
-        $xml .= '<APIPassword>'.$this->password.'</APIPassword>';
-        $xml .= '<Method>acsendairtimemobile</Method>';
-        $xml .= '<NonBlocking>'.$this->NonBlocking.'</NonBlocking>';
-        $xml .= '<Account>'.$msisdn.'</Account>';
-        $xml .= '<Amount>'.$amount.'</Amount>';
-        $xml .= '<Narrative>'.$narrative.'</Narrative>';
-        if( $this->external_reference != NULL ){ $xml .= '<ExternalReference>'.$this->externalReference.'</ExternalReference>'; }
-        if( $this->internal_reference != NULL ) { $xml .= '<InternalReference>'.$this->internal_reference.'</InternalReference>'; }
-        if( $this->provider_reference_text != NULL ){ $xml .= '<ProviderReferenceText>'.$this->provider_reference_text.'</ProviderReferenceText>'; }
-        $xml .= '</Request>';
-        $xml .= '</AutoCreate>';
-
-        $response = $this->get_xml_response($xml);
-
-        $xml_response = curl_exec($response);
-        curl_close($response);
-
-        $simpleXMLObject =  new SimpleXMLElement($xml_response);
-        $response = $simpleXMLObject->Response;
-
-        $result = array();
-        $result['Status'] = (string) $response->Status;
-        $result['StatusCode'] = (string) $response->StatusCode;
-        $result['StatusMessage'] = (string) $response->StatusMessage;
-        $result['TransactionStatus'] = (string) $response->TransactionStatus;
-        if ($response->ErrorMessageCode != null) {
-            $result['ErrorMessageCode'] = (string) $response->ErrorMessageCode;
-        }
-        if ($response->ErrorMessage != null) {
-            $result['ErrorMessage'] = (string) $response->ErrorMessage;
-        }
-        if ($response->TransactionReference != null) {
-            $result['TransactionReference'] = (string) $response->TransactionReference;
-        }
-        if ($response->MNOTransactionReferenceId != null) {
-            $result['MNOTransactionReferenceId'] = (string) $response->MNOTransactionReferenceId;
-        }
-        if ($response->IssuedReceiptNumber != null) {
-            $result['IssuedReceiptNumber'] = (string) $response->IssuedReceiptNumber;
-        }
-
-        return $result;
-    }
-
-    /**
-    * Send airtime from your Yo! Payments account to another Yo! Payments user account
-    * @param string $currency_code
-    * Options
-    * * "UGX-MTNAT" -> Uganda Shillings - MTN Airtime
-    * * "UGX-WTLAT" -> Uganda Shillings - Warid Airtime
-    * * "UGX-OULAT" -> Uganda Shillings - Orange Airtime
-    * * "UGX-AIRAT" -> Uganda Shillings - Airtel Airtime
-    * @param int $amount the amount of airtime to be sent to the beneficiary Yo! Payments User
-    * @param int $beneficiary_account
-    * @param string $beneficiary_email 
-    * @param string $narrative textual narrative about the transfer
-    * @return array
-    */
-    public function ac_send_airtime_internal($currency_code, $amount, $beneficiary_account, $beneficiary_email, $narrative)
-    {
-        $xml = '';
-        $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<AutoCreate>';
-        $xml .= '<Request>';
-        $xml .= '<APIUsername>'.$this->username.'</APIUsername>';
-        $xml .= '<APIPassword>'.$this->password.'</APIPassword>';
-        $xml .= '<Method>acsendairtimeinternal</Method>';
-        $xml .= '<CurrencyCode>'.$currency_code.'</CurrencyCode>';
-        $xml .= '<Amount>'.$amount.'</Amount>';
-        $xml .= '<BeneficiaryAccount>'.$beneficiary_account.'</BeneficiaryAccount>';
-        $xml .= '<BeneficiaryEmail>'.$beneficiary_email.'</BeneficiaryEmail>';
-        $xml .= '<Narrative>'.$narrative.'</Narrative>';
-        if($this->internal_reference != NULL) { 
-            $xml .= '<InternalReference>'.$this->internal_reference.'</InternalReference>'; 
-        }
-        if($this->external_reference != NULL) { 
-            $xml .= '<ExternalReference>'.$this->external_reference.'</ExternalReference>'; 
-        }
-        $xml .= '</Request>';
-        $xml .= '</AutoCreate>';
-
-        $response = $this->get_xml_response($xml);
-
-        $xml_response = curl_exec($response);
-        curl_close($response);
-
-        $simpleXMLObject =  new SimpleXMLElement($xml_response);
-        $response = $simpleXMLObject->Response;
-
-        $result = array();
-        $result['Status'] = (string) $response->Status;
-        $result['StatusCode'] = (string) $response->StatusCode;
-        $result['StatusMessage'] = (string) $response->StatusMessage;
-        $result['TransactionStatus'] = (string) $response->TransactionStatus;
-        if ($response->ErrorMessageCode != null) {
-            $result['ErrorMessageCode'] = (string) $response->ErrorMessageCode;
-        }
-        if ($response->ErrorMessage != null) {
-            $result['ErrorMessage'] = (string) $response->ErrorMessage;
-        }
-        if ($response->TransactionReference != null) {
-            $result['TransactionReference'] = (string) $response->TransactionReference;
-        }
-        if ($response->MNOTransactionReferenceId != null) {
-            $result['MNOTransactionReferenceId'] = (string) $response->MNOTransactionReferenceId;
-        }
-        if ($response->IssuedReceiptNumber != null) {
-            $result['IssuedReceiptNumber'] = (string) $response->IssuedReceiptNumber;
         }
 
         return $result;
@@ -1023,67 +710,6 @@ class YoUganda {
 
         return $result;
         
-    }
-
-    /**
-    * Purchase airtime using your Mobile Money Credit
-    * @param string $airtime_currency_code the currency of the airtime you would like to buy
-    * Options
-    * * "UGX-MTNAT"
-    * * "UGX-AIRAT"
-    * * "UGX-OULAT"
-    * * "UGX-UTLAT"
-    * * "UGX-SMTAT"
-    * @param double $amount the amount of money to withdraw from your account (floats are supported)
-    * @return array
-    */
-    public function ac_user_purchase_airtimestock($airtime_currency_code, $amount)
-    {
-        $xml = '';
-        $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<AutoCreate>';
-        $xml .= '<Request>';
-        $xml .= '<APIUsername>'.$this->username.'</APIUsername>';
-        $xml .= '<APIPassword>'.$this->password.'</APIPassword>';
-        $xml .= '<Method>acuserpurchaseairtimestock</Method>';
-        $xml .= '<AirtimeCurrencyCode>'.$airtime_currency_code.'</AirtimeCurrencyCode>';
-        $xml .= '<Amount>'.$amount.'</Amount>';
-        if( $this->external_reference != NULL ){ $xml .= '<TransactionReference>'.$this->external_reference.'</TransactionReference>'; }
-        $xml .= '</Request>';
-        $xml .= '</AutoCreate>';
-
-        $response = $this->get_xml_response($xml);
-
-        $xml_response = curl_exec($response);
-        curl_close($response);
-
-        $simpleXMLObject =  new SimpleXMLElement($xml_response);
-        $response = $simpleXMLObject->Response;
-
-        $result = array();
-        $result['Status'] = (string) $response->Status;
-        $result['StatusCode'] = (string) $response->StatusCode;
-
-        if (!empty($response->StatusMessage)) {
-            $result['StatusMessage'] = (string) $response->StatusMessage;
-        }
-        if (!empty($response->TransactionReference)) {
-            $result['TransactionReference'] = (string) $response->TransactionReference;
-        }
-        if (!empty($response->TotalCurrencyDebited)) {
-            $result['TotalCurrencyDebited'] = (string) $response->TotalCurrencyDebited;
-        }
-        if (!empty($response->CommissionAmount)) {
-            $result['CommissionAmount'] = (string) $response->CommissionAmount;
-        }
-        if (!empty($response->ErrorMessageCode)) {
-            $result['ErrorMessageCode'] = (string) $response->ErrorMessageCode;
-        }
-        if (!empty($response->ErrorMessage)) {
-            $result['ErrorMessage'] = (string) $response->ErrorMessage;
-        }
-
-        return $result;
     }
 
     /**
