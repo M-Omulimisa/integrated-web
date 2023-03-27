@@ -4,18 +4,18 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Settings\CountryProvider;
-use App\Models\Market\MarketSubscription;
 use App\Models\Payments\SubscriptionPayment;
+use App\Models\Insurance\InsuranceSubscription;
 use App\Services\Payments\PaymentServiceFactory;
 
-class ProcessMarketSubscriptionPayment extends Command
+class ProcessInsuranceSubscriptionPayment extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'unified:process-market-subscription-payment';
+    protected $signature = 'unified:process-insurance-subscription-payment';
 
     /**
      * The console command description.
@@ -43,7 +43,7 @@ class ProcessMarketSubscriptionPayment extends Command
      */
     public function handle()
     {
-        $payments = SubscriptionPayment::whereStatus('INITIATED')->whereNotNull('market_subscription_id')->whereNotNull('payment_api')->whereNotNull('reference_id')->whereIn('provider',function($query) {
+        $payments = SubscriptionPayment::whereStatus('INITIATED')->whereNotNull('insurance_subscription_id')->whereNotNull('payment_api')->whereNotNull('reference_id')->whereIn('provider',function($query) {
             $query->select('name')->from(with(new CountryProvider)->getTable());
         })->get();
 
@@ -72,17 +72,11 @@ class ProcessMarketSubscriptionPayment extends Command
 
                             // TODO Send notification to the subscriber
 
-                            $subscription = MarketSubscription::find($payment->market_subscription_id);
-
-                            $start_date = date("Y-m-d");
-                            $subscription->update([
-                                'start_date' => $start_date,
-                                'end_date' => getSubscritionEndDate($subscription->frequency, $subscription->period_paid, $start_date),
-                                'status' => true
-                            ]);
+                            $subscription = InsuranceSubscription::find($payment->insurance_subscription_id);
+                            $subscription->update([ 'status' => true ]);
                         }
                         
-                        if (!$update) logger(['ProcessMarketSubscriptionPayment' => 'Not updating for TxnID: '.$payment->id]);
+                        if (!$update) logger(['ProcessInsuranceSubscriptionPayment' => 'Not updating for TxnID: '.$payment->id]);
                     }
                     else{
                         $payment->update([
