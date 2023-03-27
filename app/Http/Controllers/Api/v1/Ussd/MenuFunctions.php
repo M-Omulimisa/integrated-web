@@ -9,8 +9,11 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
+use App\Models\Settings\Season;
 use App\Models\Settings\Country;
 use App\Models\Ussd\UssdSession;
+use App\Models\Settings\Location;
+use App\Models\Settings\Enterprise;
 use App\Models\Market\MarketPackage;
 use App\Models\Ussd\UssdSessionData;
 use App\Models\Settings\CountryProvider;
@@ -18,8 +21,10 @@ use App\Models\Market\MarketSubscription;
 use App\Models\Market\MarketPackageMessage;
 use App\Models\Market\MarketPackagePricing;
 use App\Models\Payments\SubscriptionPayment;
+use App\Models\Insurance\InsuranceSubscription;
 
 use App\Services\Payments\PaymentServiceFactory;
+use App\Models\Insurance\InsurancePremiumOption;
 
 class MenuFunctions
 {
@@ -399,5 +404,184 @@ class MenuFunctions
       }
       while (!is_null(SubscriptionPayment::whereReferenceId($reference_id)->wherePaymentApi($api)->first()));
           return $reference_id;      
+    }
+
+    public function checkIfDistrictIsValid($country_name, $district_name)
+    {
+        $country = Country::whereName($country_name)->first();
+
+        if ($country) {
+            $location = Location::where('name', 'LIKE', $district_name.'%')
+                                    ->whereIn('parent_id',function($query) {
+                                        $query->select('id')->whereNull('parent_id')->from('locations');
+                                    })
+                                    ->whereIn('country_id',function($query) use ($country){
+                                        $query->select('id')->where('id', $country->id)->from('countries');
+                                    })
+                                    ->first();
+
+            return $location ? true : false;
+        }
+
+        return false;
+    }
+
+    public function getDistrict($country_name, $district_name, $param)
+    {
+        $country = Country::whereName($country_name)->first();
+
+        if ($country) {
+            $location = Location::where('name', 'LIKE', $district_name.'%')
+                                    ->whereIn('parent_id',function($query) {
+                                        $query->select('id')->whereNull('parent_id')->from('locations');
+                                    })
+                                    ->whereIn('country_id',function($query) use ($country){
+                                        $query->select('id')->where('id', $country->id)->from('countries');
+                                    })
+                                    ->first();
+
+            return $location->$param ?? null;
+        }
+
+        return null;
+    }
+
+    public function insuranceSeasonList()
+    {
+        $seasons = Season::whereStatus(TRUE)->orderBy('start_date', 'ASC')->get();
+
+        if (count($seasons) > 0) {
+            $list = '';
+            $count = 0;
+            foreach ($seasons as $season) {
+                $list .= (++$count).") ".$season->name."\n";
+            }
+            return $list;
+        }
+        else{
+            return null;
+        }
+    }
+
+    public function checkIfSeasonIsValid($season_menu)
+    {
+        $seasons = Season::whereStatus(TRUE)->orderBy('start_date', 'ASC')->get();
+
+        if (count($seasons) > 0) {
+            $list = array();
+            $count = 0;
+            foreach ($seasons as $season) {
+                $list[] = ++$count;
+            }
+        }
+
+        return in_array($season_menu, $list) ? true : false;
+    }
+
+    // public function checkIfSeasonIsValid($season_menu_id)
+    // {
+    //     $season = Season::whereStatus(TRUE)->orderBy('start_date', 'ASC')->skip($season_menu_id-1)->first();
+    //     return $season ? true : false;
+    // }
+
+    public function getSeasonDetail($menu, $param)
+    {
+        $season = Season::whereStatus(TRUE)->orderBy('start_date', 'ASC')->skip($menu-1)->first();
+        return $season->$param ?? null;
+    }
+
+    public function getSeason($season_id, $param)
+    {
+        $season = Season::whereId($season_id)->first();
+        return $season->$param ?? null;
+    }
+
+    public function seasonItemList($season_id)
+    {
+        $enterprises = InsurancePremiumOption::whereSeasonId($season_id)->whereStatus(TRUE)->orderBy('menu', 'ASC')->get();
+
+        if (count($enterprises) > 0) {
+            $list = '';
+            foreach ($enterprises as $enterprise) {
+                $list .= $enterprise->menu.") ".$enterprise->enterprise->name."\n";
+            }
+            return $list;
+        }
+        else{
+            return null;
+        }
+    }
+
+    public function getEnterprise($enterprise_id, $param)
+    {
+        $enterprise = Enterprise::whereId($enterprise_id)->first();
+        return $enterprise->$param ?? null;
+    }
+
+    public function checkIfSeasonItemIsValid($season_id, $item_menu)
+    {
+        $enterprise = InsurancePremiumOption::whereSeasonId($season_id)->whereMenu($item_menu)->whereStatus(TRUE)->first();
+        return $enterprise ? true : false;
+    }
+
+    public function getSeasonItemDetails($season_id, $item_menu, $param)
+    {
+        $enterprise = InsurancePremiumOption::whereSeasonId($season_id)->whereMenu($item_menu)->whereStatus(TRUE)->first();
+        return $enterprise->$param ?? null;
+    }
+
+    public function getPremiumOptionDetails($season_id, $enterprise_id, $param)
+    {
+        $enterprise = InsurancePremiumOption::whereSeasonId($season_id)->whereEnterpriseId($enterprise_id)->whereStatus(TRUE)->first();
+        return $enterprise->$param ?? null;
+    }
+
+    /**
+     * This function completes a insurance subscription by creating a InsuranceSubscription and a SubscriptionPayment record
+     * using the session data and provided phone number.
+     */
+    public function completeInsuranceSubscription($sessionId, $phoneNumber)
+    {
+        // Retrieve the session data for the given session ID and phone number.
+        $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
+
+        // Create an array containing the data for the new InsuranceSubscription record.
+        $subscription_data = [
+            'first_name'    => 'None',
+            'last_name'     => 'None',
+            'location_id'   => $sessionData->insurance_district_id,
+            'phone'         => $sessionData->insurance_subscriber,
+            'season_id'     => $sessionData->insurance_season_id,
+            'enterprise_id' => $sessionData->insurance_enterprise_id,
+            'acreage'       => $sessionData->insurance_acreage,
+            'sum_insured'   => $sessionData->insurance_sum_insured,
+            'premium'       => $sessionData->insurance_premium
+        ];
+
+        // Create a new MarketSubscription record using the subscription_data array and assign it to $subscription variable.
+        if ($subscription = InsuranceSubscription::create($subscription_data)) {
+            // Get the payment API for the subscriber's phone number.
+            $api = $this->getServiceProvider($sessionData->market_subscriber, 'payment_api');
+
+            // Create an array containing the data for the new SubscriptionPayment record.
+            $payment = [
+                'insurance_subscription_id' => $subscription->id,
+                'method'    => 'MM',
+                'provider'  => $this->getServiceProvider($sessionData->insurance_subscriber, 'name'),
+                'account'   => $sessionData->insurance_subscriber,
+                'amount'    => $sessionData->insurance_premium,
+                'sms_api'   => $this->getServiceProvider($sessionData->insurance_subscriber, 'sms_api'),
+                'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' Insurance subscription',
+                'reference_id' => $this->generateReference($api),
+                'payment_api'  => $api,
+                'status'       => 'INITIATED'
+            ];
+
+            // Create a new SubscriptionPayment record using the payment array and return true if successful.
+            if(SubscriptionPayment::create($payment)) return true;
+        }
+
+        // If an error occurred or data was missing, return false.
+        return false;
     }
 }

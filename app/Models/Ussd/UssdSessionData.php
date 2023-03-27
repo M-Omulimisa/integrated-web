@@ -26,7 +26,26 @@ class UssdSessionData extends BaseModel
             'market_confirmation',
             'market_payment_status',
             'market_currency',
-            'market_cost'
+            'market_cost',
+
+            'insurance_subscrption_for',
+            'insurance_subscriber',
+            // 'insurance_subscriber_name',
+            'insurance_district',
+            'insurance_district_id',
+            //--- 'insurance_subcounty',
+            //--- 'insurance_subcounty_id',
+            //--- 'insurance_parish',
+            //--- 'insurance_parish_id',
+            'insurance_season_id',
+            'insurance_enterprise_id',
+            'insurance_acreage',
+            'insurance_sum_insured',
+            'insurance_premium',
+            'insurance_confirmation',
+            'insurance_payment_status',
+
+            'confirmation_message'
         ];
 
     /**
