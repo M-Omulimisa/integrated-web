@@ -136,6 +136,8 @@ use App\Http\Controllers\Settings\CountryProviderController;
 
 use App\Http\Controllers\InformationController;
 
+use App\Http\Controllers\IdValidations\PhoneValidationController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -542,6 +544,11 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function() {
          Route::get('unit/list', [UnitController::class, 'list'])->name('units.list');
          Route::resource('country-providers', CountryProviderController::class);  
          Route::get('country-provider/list', [CountryProviderController::class, 'list'])->name('country-providers.list');              
+    }); 
+
+    Route::group(['prefix' => 'validations', 'as' => 'validations.'], function () {
+         Route::resource('phones', PhoneValidationController::class);  
+         Route::get('phone/list', [PhoneValidationController::class, 'list'])->name('phones.list');          
     }); 
 
     Route::get('get_dialing_code_by_country', [CountryController::class, 'autoPickDialingCode']);

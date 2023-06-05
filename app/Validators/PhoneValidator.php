@@ -7,9 +7,9 @@ use App\Models\Settings\Country;
 
 class PhoneValidator implements Rule
 {
-    public function passes($attribute, $value, $id)
+    public function passes($attribute, $value)
     {
-        $country = Country::whereId($id)->first();
+        $country = Country::where('dialing_code','LIKE', '%'.(substr($value, 0, 3)).'%')->first();
         $country_code = $country->dialing_code;
         $length = $country->length;
 
