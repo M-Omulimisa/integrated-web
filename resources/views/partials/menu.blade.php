@@ -459,4 +459,10 @@
         </div>
     </li> <!-- end Dashboard Menu -->
 
+    <li class="nav-item">
+        <a class="nav-link menu-link collapsed" href="{{ route('validations.phones.index') }}">
+            <i data-feather="phone"></i> <span>Phone Validations</span>
+        </a>
+    </li>
+
 </ul>

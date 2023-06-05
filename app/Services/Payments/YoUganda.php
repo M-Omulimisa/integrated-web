@@ -821,6 +821,10 @@ class YoUganda {
                     $status = 'FAILED';
                     $errorResponseMsg = 'Authentication Problem';
                 }
+                elseif (stripos($errorResponseMsg, 'is not permitted') !== false || stripos($errorResponseMsg, 'API Access Control Rules') !== false) {
+                    $status = 'FAILED';
+                    $errorResponseMsg = 'Access Denied';
+                }
             }
         }
 

@@ -200,6 +200,8 @@ return [
 
         App\Providers\CountryModuleProvider::class,
 
+         App\Providers\PhoneValidationServiceProvider::class,
+
     ],
 
     /*
