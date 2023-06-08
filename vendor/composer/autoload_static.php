@@ -429,8 +429,8 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -494,8 +494,8 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces/src',
-            1 => __DIR__ . '/..' . '/league/uri/src',
+            0 => __DIR__ . '/..' . '/league/uri/src',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces/src',
         ),
         'League\\OAuth2\\Server\\' => 
         array (
@@ -787,6 +787,11 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         'AfricasTalking\\SDK\\Tests\\VoiceTest' => __DIR__ . '/..' . '/africastalking/africastalking/tests/VoiceTest.php',
         'AfricasTalking\\SDK\\Token' => __DIR__ . '/..' . '/africastalking/africastalking/src/Token.php',
         'AfricasTalking\\SDK\\Voice' => __DIR__ . '/..' . '/africastalking/africastalking/src/Voice.php',
+        'App\\Admin\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Admin/Controllers/AuthController.php',
+        'App\\Admin\\Controllers\\ExampleController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ExampleController.php',
+        'App\\Admin\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Admin/Controllers/HomeController.php',
+        'App\\Admin\\Controllers\\OrganisationController' => __DIR__ . '/../..' . '/app/Admin/Controllers/OrganisationController.php',
+        'App\\Admin\\Controllers\\UserController' => __DIR__ . '/../..' . '/app/Admin/Controllers/UserController.php',
         'App\\Console\\Commands\\ProcessInsuranceSubscriptionPayment' => __DIR__ . '/../..' . '/app/Console/Commands/ProcessInsuranceSubscriptionPayment.php',
         'App\\Console\\Commands\\ProcessMarketSubscriptionPayment' => __DIR__ . '/../..' . '/app/Console/Commands/ProcessMarketSubscriptionPayment.php',
         'App\\Console\\Commands\\UpdateInsuranceSubscriptionPayment' => __DIR__ . '/../..' . '/app/Console/Commands/UpdateInsuranceSubscriptionPayment.php',

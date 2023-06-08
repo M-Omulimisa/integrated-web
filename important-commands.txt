@@ -1,0 +1,9 @@
+php artisan make:migration create_courses_table
+
+ 
+php artisan admin:make OrganisationController --model=App\Models\Organisations\Organisation
+
+php artisan make:model MyClass
+
+php artisan make:migration add_column_to_organisations --table=organisations
+php artisan make:migration add_column_to_organisations_user --table=users

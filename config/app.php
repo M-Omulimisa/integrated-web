@@ -14,6 +14,8 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    'app_storage' => env('APP_STORAGE', storage_path()),
+
 
     /*
     |--------------------------------------------------------------------------

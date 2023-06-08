@@ -48,6 +48,18 @@ class User extends Authenticatable implements AuthenticatableContract
         'buyer_id'
     ];
 
+    public function __construct(array $attributes = [])
+    {
+        $connection = config('admin.database.connection') ?: config('database.default');
+
+        $this->setConnection($connection);
+
+        $this->setTable(config('admin.database.users_table'));
+
+        parent::__construct($attributes);
+    }
+
+    
     public const STATUS_INACTIVE   = "Inactive";
     public const STATUS_ACTIVE     = "Active";
     public const STATUS_SUSPENDED  = "Suspended";
