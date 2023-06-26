@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\User;
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -26,24 +27,21 @@ class UserController extends AdminController
     {
         $grid = new Grid(new User());
 
-        $grid->column('id', __('Id'));
-        $grid->column('name', __('Name'));
+        $grid->column('id', __('ID'))->sortable();
+        $grid->column('name', __('Name'))->sortable();
+        $grid->column('organisation_id', __('Organisation'))
+            ->display(function ($x) {
+                if ($this->organisation == null) {
+                    return $x;
+                }
+                return $this->organisation->name;
+            });
         $grid->column('phone', __('Phone'));
         $grid->column('email', __('Email'));
         $grid->column('photo', __('Photo'));
-        $grid->column('password', __('Password'));
-        $grid->column('password_last_updated_at', __('Password last updated at'));
-        $grid->column('last_login_at', __('Last login at'));
-        $grid->column('created_by', __('Created by'));
-        $grid->column('status', __('Status'));
-        $grid->column('verified', __('Verified'));
-        $grid->column('email_verified_at', __('Email verified at'));
         $grid->column('country_id', __('Country id'));
-        $grid->column('organisation_id', __('Organisation id'));
-        $grid->column('microfinance_id', __('Microfinance id'));
+        $grid->column('roles', trans('admin.roles'))->pluck('name')->label();
         $grid->column('distributor_id', __('Distributor id'));
-        $grid->column('buyer_id', __('Buyer id'));
-        $grid->column('two_auth_method', __('Two auth method'));
         $grid->column('user_hash', __('User hash'));
         $grid->column('remember_token', __('Remember token'));
         $grid->column('created_at', __('Created at'));
@@ -100,10 +98,12 @@ class UserController extends AdminController
     protected function form()
     {
         $form = new Form(new User());
+        $roleModel = config('admin.database.roles_model');
 
         $form->text('name', __('Name'));
         $form->mobile('phone', __('Phone'));
         $form->email('email', __('Email'));
+        $form->multipleSelect('roles', trans('admin.roles'))->options($roleModel::all()->pluck('name', 'id')); 
         $form->textarea('photo', __('Photo'));
         $form->password('password', __('Password'));
         $form->datetime('password_last_updated_at', __('Password last updated at'))->default(date('Y-m-d H:i:s'));

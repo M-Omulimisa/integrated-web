@@ -1,23 +1,29 @@
 <?php
 
 namespace App\Models\Training;
-  
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\TrainingResourceRelationship;
-  
+use App\Models\User;
+
 class TrainingResource extends BaseModel
 {
     use Uuid, TrainingResourceRelationship;
-  
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     protected $fillable = [
         'heading',
         'thumbnail',
         'order',
         'status',
         'user_id'
-        
+
     ];
 
     /**

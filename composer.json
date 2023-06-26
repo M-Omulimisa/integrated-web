@@ -19,6 +19,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "image-charts/image-charts": "^6.0",
         "intervention/image": "^2.7",
+        "jxlwqq/quill": "^1.0",
         "laravel/framework": "^8.0",
         "laravel/legacy-factories": "^1.1",
         "laravel/passport": "^10.1",

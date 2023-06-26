@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Organisations\Organisation;
+use App\Models\Settings\Country;
 use App\Models\User;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -26,14 +27,13 @@ class OrganisationController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Organisation());
+        $grid->disableBatchActions();
 
-        $grid->column('id', __('Id'));
-        $grid->column('name', __('Name'));
+        $grid->column('id', __('Id'))->hide();
+        $grid->column('name', __('Name'))->sortable();
         $grid->column('logo', __('Logo'));
         $grid->column('address', __('Address'));
         $grid->column('services', __('Services'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
 
         return $grid;
     }
@@ -73,7 +73,13 @@ class OrganisationController extends AdminController
             $acs[$x->id] = $x->name;
         }
         $form->text('name', __('Name'))->rules('required');
-        $form->select('user_id', __('Select Organization'))
+        $form->select('country_id', __('Select Country'))
+            ->options(Country::pluck('name', 'id'))
+            ->help('Where this organizaion is based')
+            ->rules('required');
+
+        $form->select('user_id', __('Select Organization Owner'))
+            ->help('Admin of this organization')
             ->options($acs)
             ->rules('required');
         $form->image('logo', __('Organization\'s Logo'));

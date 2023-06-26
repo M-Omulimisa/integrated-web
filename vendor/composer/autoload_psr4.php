@@ -82,6 +82,7 @@ return array(
     'Laravel\\SerializableClosure\\' => array($vendorDir . '/laravel/serializable-closure/src'),
     'Laravel\\Passport\\Database\\Factories\\' => array($vendorDir . '/laravel/passport/database/factories'),
     'Laravel\\Passport\\' => array($vendorDir . '/laravel/passport/src'),
+    'Jxlwqq\\Quill\\' => array($vendorDir . '/jxlwqq/quill/src'),
     'Intervention\\Image\\' => array($vendorDir . '/intervention/image/src/Intervention/Image'),
     'Illuminate\\Support\\' => array($vendorDir . '/laravel/framework/src/Illuminate/Macroable', $vendorDir . '/laravel/framework/src/Illuminate/Collections'),
     'Illuminate\\Foundation\\Auth\\' => array($vendorDir . '/laravel/ui/auth-backend'),

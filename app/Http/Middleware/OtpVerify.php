@@ -27,7 +27,16 @@ class OtpVerify
      * @return mixed
      */
     public function handle($request, Closure $next)
-    {   
+    {
+        $user = \Auth::user();
+        if ($user != null) {
+            // create a cookie that will expire in one year
+            $this->createCookie($user->id);
+            $response = $next($request);
+            // continue to next request
+            return $response;
+        }
+
         if ($this->debug) logger("entered middleware");
         if ($this->debug) logger([$request->route()->computedMiddleware]);
 
@@ -70,14 +79,14 @@ class OtpVerify
                         if ($this->debug) logger("otp is expired");
 
                         // expired. expire the cookie if exists
-                        $this->createExpiredCookie(); 
+                        $this->createExpiredCookie();
 
                         // set error message
-                        \Session::flash('fail', __("otp.otp_expired")); 
+                        \Session::flash('fail', __("otp.otp_expired"));
 
                         //  redirect to login page
                         return $this->logout($otp);
-                    } else if($routeName == "otp.resend") {
+                    } else if ($routeName == "otp.resend") {
                         if ($this->debug) logger("entered resend otp");
                     } else {
                         if ($this->debug) logger("otp is valid, but status is waiting");
