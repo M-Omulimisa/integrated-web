@@ -22,4 +22,6 @@ Route::group([
     $router->resource('e-learning-courses', ELearningCourseController::class);
     $router->resource('training-resources', TrainingResourceCourseController::class);
     $router->resource('training-sessions', TrainingSessionCourseController::class);
+    $router->resource('farmer-groups', FarmerGroupController::class);
+    $router->resource('farmers', FarmerController::class);
 });

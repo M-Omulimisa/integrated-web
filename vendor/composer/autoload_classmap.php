@@ -28,6 +28,7 @@ return array(
     'App\\Admin\\Controllers\\ELearningCourseController' => $baseDir . '/app/Admin/Controllers/ELearningCourseController.php',
     'App\\Admin\\Controllers\\ELearningResourceController' => $baseDir . '/app/Admin/Controllers/ELearningResourceController.php',
     'App\\Admin\\Controllers\\ExampleController' => $baseDir . '/app/Admin/Controllers/ExampleController.php',
+    'App\\Admin\\Controllers\\FarmerGroupController' => $baseDir . '/app/Admin/Controllers/FarmerGroupController.php',
     'App\\Admin\\Controllers\\HomeController' => $baseDir . '/app/Admin/Controllers/HomeController.php',
     'App\\Admin\\Controllers\\OrganisationController' => $baseDir . '/app/Admin/Controllers/OrganisationController.php',
     'App\\Admin\\Controllers\\TrainingController' => $baseDir . '/app/Admin/Controllers/TrainingController.php',

@@ -2,11 +2,7 @@ ALTER TABLE `trainings` ADD `organisation_id` VARCHAR(355) NULL DEFAULT '5715977
 ALTER TABLE `training_resources` ADD `training_id` VARCHAR(355) NULL DEFAULT '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
 ALTER TABLE `training_resources` ADD `body` VARCHAR(355) NULL DEFAULT NULL;
  
-ALTER TABLE `training_resources` ADD `photo` TEXT NULL DEFAULT NULL;
-ALTER TABLE `training_resources` ADD `audio` TEXT NULL DEFAULT NULL;
-ALTER TABLE `training_resources` ADD `video` TEXT NULL DEFAULT NULL;
-ALTER TABLE `training_resources` ADD `youtube` TEXT NULL DEFAULT NULL;
-ALTER TABLE `training_resources` ADD `body` TEXT NULL DEFAULT NULL;
+ALTER TABLE `training_resources` ADD `photo` TEXT NULL DEFAULT NULL; 
 
  
  
@@ -15,9 +11,9 @@ php artisan make:migration create_training_training_session_has_members_table
  
 
 
-php artisan admin:make TrainingSessionCourseController --model=App\Models\TrainingSession
+php artisan admin:make FarmerController --model=App\Models\Farmers\Farmer
 
-php artisan make:model TrainingSession
+php artisan make:model FarmerGroup
 
 php artisan make:migration add_column_to_ELearningResources --table=ELearningResources
-php artisan make:migration add_column_to_ELearningResources_user --table=users
+php artisan make:migration add_columns_to_farmers --table=farmers

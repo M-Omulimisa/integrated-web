@@ -800,6 +800,7 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         'App\\Admin\\Controllers\\ELearningCourseController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ELearningCourseController.php',
         'App\\Admin\\Controllers\\ELearningResourceController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ELearningResourceController.php',
         'App\\Admin\\Controllers\\ExampleController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ExampleController.php',
+        'App\\Admin\\Controllers\\FarmerGroupController' => __DIR__ . '/../..' . '/app/Admin/Controllers/FarmerGroupController.php',
         'App\\Admin\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Admin/Controllers/HomeController.php',
         'App\\Admin\\Controllers\\OrganisationController' => __DIR__ . '/../..' . '/app/Admin/Controllers/OrganisationController.php',
         'App\\Admin\\Controllers\\TrainingController' => __DIR__ . '/../..' . '/app/Admin/Controllers/TrainingController.php',

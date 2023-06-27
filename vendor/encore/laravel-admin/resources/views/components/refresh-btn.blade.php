@@ -1,4 +1,4 @@
-<li>
+<li class="dropdown user user-menu">
     <a href="javascript:void(0);" class="container-refresh">
         <i class="fa fa-refresh"></i>
     </a>
