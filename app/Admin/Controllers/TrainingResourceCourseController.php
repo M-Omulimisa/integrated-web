@@ -95,14 +95,6 @@ class TrainingResourceCourseController extends AdminController
         $form->hidden('user_id', __('user_id'))
             ->default($u->id);
 
-        $form->select('training_id', __('Select Training'))
-            ->options(Training::where(
-                'organisation_id',
-                Auth::user()->organisation_id
-            )
-                ->orderBy('name', 'asc')
-                ->get()->pluck('name', 'id'));
-
         $form->text('heading', __('Resource Title'));
         $form->image('thumbnail', __('Resource Thumbnail'));
         $form->radioCard('type', __('Select Resource Type'))

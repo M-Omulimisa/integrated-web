@@ -28,34 +28,32 @@ class FarmerGroupController extends AdminController
     {
         $grid = new Grid(new FarmerGroup());
 
-        $grid->column('id', __('Id'));
-        $grid->column('name', __('Name'));
-        $grid->column('country_id', __('Country id'));
-        $grid->column('organisation_id', __('Organisation id'));
-        $grid->column('code', __('Code'));
+        $grid->disableBatchActions();
+        $grid->column('name', __('Group Name'))->sortable();
+        $grid->column('organisation_id', __('Organisation'))->display(function ($x) {
+            if ($this->organisation == 'null') {
+                return $x;
+            }
+            return $this->organisation->name;
+        })->sortable();
         $grid->column('address', __('Address'));
         $grid->column('group_leader', __('Group leader'));
-        $grid->column('group_leader_contact', __('Group leader contact'));
+        $grid->column('group_leader_contact', __('Contact'));
         $grid->column('establishment_year', __('Establishment year'));
-        $grid->column('registration_year', __('Registration year'));
-        $grid->column('meeting_venue', __('Meeting venue'));
-        $grid->column('meeting_days', __('Meeting days'));
-        $grid->column('meeting_time', __('Meeting time'));
-        $grid->column('meeting_frequency', __('Meeting frequency'));
-        $grid->column('location_id', __('Location id'));
-        $grid->column('last_cycle_savings', __('Last cycle savings'));
+        $grid->column('registration_year', __('Registration year'))->hide();
+        $grid->column('meeting_venue', __('Meeting venue'))->hide();
+        $grid->column('meeting_days', __('Meeting days'))->hide();
+        $grid->column('meeting_time', __('Meeting time'))->hide();
+        $grid->column('meeting_frequency', __('Meeting frequency'))->hide();
+        $grid->column('location_id', __('Location'))->hide();
+        $grid->column('last_cycle_savings', __('Last cycle savings'))->hide();
         $grid->column('registration_certificate', __('Registration certificate'));
-        $grid->column('latitude', __('Latitude'));
-        $grid->column('longitude', __('Longitude'));
-        $grid->column('status', __('Status'));
-        $grid->column('photo', __('Photo'));
-        $grid->column('id_photo_front', __('Id photo front'));
-        $grid->column('id_photo_back', __('Id photo back'));
-        $grid->column('created_by_user_id', __('Created by user id'));
-        $grid->column('created_by_agent_id', __('Created by agent id'));
-        $grid->column('agent_id', __('Agent id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
+        $grid->column('latitude', __('Latitude'))->hide();
+        $grid->column('longitude', __('Longitude'))->hide();
+        $grid->column('status', __('Status'))->hide();
+        $grid->column('photo', __('Photo'))->hide();
+        $grid->column('id_photo_front', __('Id photo front'))->hide();
+        $grid->column('id_photo_back', __('Id photo back'))->hide();
 
         return $grid;
     }
@@ -132,9 +130,9 @@ class FarmerGroupController extends AdminController
         $form->text('meeting_time', __('Meeting time'));
         $form->text('location_id', __('Location id'));
         $form->decimal('last_cycle_savings', __('Last cycle savings'))->default(0.00);
-        $form->textarea('registration_certificate', __('Registration certificate'));
-        $form->text('latitude', __('Latitude'));
-        $form->text('longitude', __('Longitude'));
+        $form->file('registration_certificate', __('Registration certificate'));
+        $form->text('latitude', __('GPS Latitude'));
+        $form->text('longitude', __('GPS Longitude'));
         $form->select('status', __('Status'))
             ->options([
                 'Invited' => 'Invited',
