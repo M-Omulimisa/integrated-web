@@ -16,6 +16,7 @@ class Training extends BaseModel
         'extension_officer_id',
         'user_id',
         'subtopic_id',
+        'training_topic_id',
         'details',
         'date',
         'time',
@@ -25,6 +26,13 @@ class Training extends BaseModel
         'latitude',
         'longitude'
     ];
+
+    
+    public function training_topic()
+    {
+        return $this->belongsTo(TrainingTopic::class, 'training_topic_id');
+    }
+    
 
 
     /**
