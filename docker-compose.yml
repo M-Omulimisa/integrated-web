@@ -1,0 +1,23 @@
+version: '3.7'
+services: 
+  app:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    image: 'omulimisa_integrated'
+    ports:
+      - 9000:80
+      - 9001:443
+    volumes:
+      - ./:/var/www/html
+  db:
+    image: mysql:5.7
+    restart: always
+    ports: 
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: 'omulimisa_integrated'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 0
+      MYSQL_ROOT_PASSWORD: "omg!@thisOne"
+    volumes:
+      - ./db:/var/lib/mysql
