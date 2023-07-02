@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Organisations\Organisation;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,12 +14,28 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements AuthenticatableContract
 {
     use HasFactory, Notifiable, HasRoles, UserRelationship, Uuid, HasApiTokens;
 
     protected $connection = 'mysql';
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class, 'organisation_id');
+    }
+
+    public function roles(): BelongsToMany
+    {
+        $pivotTable = config('admin.database.role_users_table');
+
+        $relatedModel = config('admin.database.roles_model');
+
+        return $this->belongsToMany($relatedModel, $pivotTable, 'user_id', 'role_id');
+    }
+
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +64,18 @@ class User extends Authenticatable implements AuthenticatableContract
         'distributor_id',
         'buyer_id'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $connection = config('admin.database.connection') ?: config('database.default');
+
+        $this->setConnection($connection);
+
+        $this->setTable(config('admin.database.users_table'));
+
+        parent::__construct($attributes);
+    }
+
 
     public const STATUS_INACTIVE   = "Inactive";
     public const STATUS_ACTIVE     = "Active";
@@ -105,7 +134,7 @@ class User extends Authenticatable implements AuthenticatableContract
 
     public function setLastLogin()
     {
-        $this->update(['last_login_at' => Carbon::now() ]);
+        $this->update(['last_login_at' => Carbon::now()]);
     }
 
     public function routeNotificationForSlack($notification)
@@ -113,15 +142,14 @@ class User extends Authenticatable implements AuthenticatableContract
         return env('LOG_SLACK_WEBHOOK_URL');
     }
 
-    public function swap($reset=false)
+    public function swap($reset = false)
     {
         if ($reset) {
             // set hash value to null
             $hash = NULL;
-        }
-        else{
+        } else {
             // set hash value
-            $hash = bcrypt(auth()->user()->getKey().microtime());
+            $hash = bcrypt(auth()->user()->getKey() . microtime());
             \Session::put('userhash', $hash);
         }
 

@@ -43,20 +43,20 @@ class ResourcesController extends Controller
         $course = ELearningCourse::find($courseId);
         $resources = ELearningResource::orderBy('created_at', 'DESC')->get();
         return view('e_learning.resources.sources', compact('course', 'resources'));
-    } 
+    }
 
     public function single($id)
     {
         $announcement = ELearningResource::find($id);
         $course = ELearningCourse::find($announcement->course_id);
 
-        if (! $announcement->hasBeenRead()) {
+        if (!$announcement->hasBeenRead()) {
             ELearningResourceView::create([
                 'resource_id' => $id,
                 'user_id' => auth()->user()->id
             ]);
         }
-        return view('e_learning.resources.sourve', compact('course','announcement'));
+        return view('e_learning.resources.sourve', compact('course', 'announcement'));
     }
 
     /**
@@ -68,9 +68,9 @@ class ResourcesController extends Controller
     {
         $course = ELearningCourse::find($courseId);
         return view('e_learning.resources.index', compact('course'));
-    } 
+    }
 
-       /**
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -80,7 +80,7 @@ class ResourcesController extends Controller
         $status     = ELearningResource::status;
         $course     = ELearningCourse::find($courseId);
 
-        return view('e_learning.resources.create',compact('status', 'course'));
+        return view('e_learning.resources.create', compact('status', 'course'));
     }
 
     /**
@@ -97,18 +97,18 @@ class ResourcesController extends Controller
             'user_id'   => 'required',
             'course_id' => 'required',
             'body'      => 'required',
-            'start_date'=> 'nullable',
+            'start_date' => 'nullable',
             'end_date'  => 'nullable',
-            'display_days'=> 'nullable|numeric',
+            'display_days' => 'nullable|numeric',
             'user_id' => 'required'
         ]);
 
         try {
             $audio = null;
-            if ($request->hasFile('audio')){
+            if ($request->hasFile('audio')) {
                 $file = $request->audio;
 
-                $audio = $file->store('resources', 'courses');     
+                $audio = $file->store('resources', 'courses');
             }
 
             $data = [
@@ -125,16 +125,14 @@ class ResourcesController extends Controller
                 // 'audio_url'         => $audio,
             }
 
-            if (ELearningResource::create($data)) {  
-              return redirect('e-learning/courses/resources/'.$request->course_id)->with('success', 'Resource successfully created');
+            if (ELearningResource::create($data)) {
+                return redirect('e-learning/courses/resources/' . $request->course_id)->with('success', 'Resource successfully created');
+            } else {
+                return redirect()->back()->withErrors('Resource NOT Created')->withInput();
             }
-            else{
-              return redirect()->back()->withErrors('Resource NOT Created')->withInput();
-            }
-
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage())->withInput();
-        } 
+        }
     }
 
     public function show($id)
@@ -145,7 +143,7 @@ class ResourcesController extends Controller
         return view('e_learning.resources.show', compact('data', 'course'));
     }
 
-        /**
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -173,28 +171,28 @@ class ResourcesController extends Controller
             'audio'     => 'nullable|file|mimes:mp3,mpga|max:5120',
             'status'    => 'required',
             'body'      => 'required',
-            'start_date'=> 'nullable',
+            'start_date' => 'nullable',
             'end_date'  => 'nullable',
-            'display_days'=> 'nullable|numeric',
+            'display_days' => 'nullable|numeric',
         ]);
 
         try {
             if ($data   = ELearningChapter::find($id)) {
 
                 $audio = $data->audio_url;
-                    
-                if ($request->hasFile('audio')){
+
+                if ($request->hasFile('audio')) {
                     $file = $request->audio;
-                
-                    if(!is_null($audio)){
-                        if (file_exists('uploads/courses/'.$audio)) {
-                            File::delete('uploads/courses/'.$audio);
+
+                    if (!is_null($audio)) {
+                        if (file_exists('uploads/courses/' . $audio)) {
+                            File::delete('uploads/courses/' . $audio);
                         }
                     }
-                    $audio = $file->store('resources', 'courses');      
+                    $audio = $file->store('resources', 'courses');
                 }
 
-              $chapter = [
+                $chapter = [
                     'title'             => $request->title,
                     'body'              => $request->body,
                     'display_days'      => $request->display_days,
@@ -207,29 +205,25 @@ class ResourcesController extends Controller
                     // 'audio_url'         => $audio,
                 }
 
-                if ($data->update($chapter)) {  
-                  return redirect('e-learning/courses/resources/'.$data->course_id)->with('success', 'Resource successfully updated');
+                if ($data->update($chapter)) {
+                    return redirect('e-learning/courses/resources/' . $data->course_id)->with('success', 'Resource successfully updated');
+                } else {
+                    return redirect()->back()->withErrors('Resource NOT Updated')->withInput();
                 }
-                else{
-                  return redirect()->back()->withErrors('Resource NOT Updated')->withInput();
-                }
+            } else {
+                return redirect()->back()->withErrors('Resource NOT Found')->withInput();
             }
-            else{
-              return redirect()->back()->withErrors('Resource NOT Found')->withInput();
-            }
-
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage())->withInput();
-        } 
+        }
     }
 
     public function destroy($id)
     {
-        if($data = ELearningChapter::findOrFail($id)) {
+        if ($data = ELearningChapter::findOrFail($id)) {
 
             // code
-        } 
-        else {
+        } else {
             return redirect()->back()->withErrors('Operation was NOT successful');
         }
     }
@@ -237,50 +231,49 @@ class ResourcesController extends Controller
     public function massData(Request $request)
     {
         \DB::statement(\DB::raw('set @rownum=0'));
-        $data = ELearningResource::select(['*', \DB::raw('@rownum  := @rownum  + 1 AS rownum') ]);
+        $data = ELearningResource::select(['*', \DB::raw('@rownum  := @rownum  + 1 AS rownum')]);
 
         $datatables = app('datatables')->of($data);
 
         $course_id = $datatables->request->get('course');
 
-        $data->whereIn('course_id',function($query) use ($course_id){
+        $data->whereIn('course_id', function ($query) use ($course_id) {
             $query->select('id')->where('course_id', $course_id)->from('e_learning_courses');
         });
 
         return $datatables
-        ->addColumn('user', function ($data){
-            return $data->user->name;
+            ->addColumn('user', function ($data) {
+                return $data->user->name;
             })
-        ->addColumn('_body', function ($data){
-            return $data->body;
+            ->addColumn('_body', function ($data) {
+                return $data->body;
             })
-        ->addColumn('_status', function ($data){
-            return $data->status ? 'Visible' : 'Invisible';
+            ->addColumn('_status', function ($data) {
+                return $data->status ? 'Visible' : 'Invisible';
             })
-        ->addColumn('_course', function ($data){
-            return $data->course->title;
+            ->addColumn('_course', function ($data) {
+                return $data->course->title;
             })
-        ->addColumn('attachment', function ($data){
-            // '<audio src="'.asset('uploads/courses/'.$data->audio_url).'" controls></audio>'
-            return '';
+            ->addColumn('attachment', function ($data) {
+                // '<audio src="'.asset('uploads/courses/'.$data->audio_url).'" controls></audio>'
+                return '';
             })
-        ->addColumn('actions', function ($data){
+            ->addColumn('actions', function ($data) {
                 $entity = "e-learning.resources";
                 $id = $data->id;
                 $edit_rights = 'edit_el_resources';
                 // $view_rights = 'view_el_resources';
-                return view('partials.actions', compact('entity', 'id','edit_rights'))->render();
-           
+                return view('partials.actions', compact('entity', 'id', 'edit_rights'))->render();
             })
-        ->rawColumns(['check', 'actions', '_body','attachment'])
-        ->make(true);
+            ->rawColumns(['check', 'actions', '_body', 'attachment'])
+            ->make(true);
     }
 
     public function subscribeResource($courseId)
     {
         $course = ELearningCourse::find($courseId);
 
-        if (! $course->userHasResourceSubscription()) {
+        if (!$course->userHasResourceSubscription()) {
             ELearningResourceSubscription::create([
                 'course_id' => $course->id,
                 'user_id' => auth()->user()->id
@@ -288,6 +281,4 @@ class ResourcesController extends Controller
         }
         return redirect()->back()->with('success', 'Subscription successfully');
     }
-
-
 }
