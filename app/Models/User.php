@@ -8,19 +8,35 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-use App\Models\Traits\Relationships\Users\UserRelationship;
-use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
+use App\Models\Traits\Relationships\Users\UserRelationship; 
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements AuthenticatableContract
+class User extends Authenticatable implements AuthenticatableContract, JWTSubject
 {
-    use HasFactory, Notifiable, HasRoles, UserRelationship, Uuid, HasApiTokens;
+    use HasFactory, Notifiable, HasRoles, UserRelationship, HasApiTokens;
 
     protected $connection = 'mysql';
+
+    
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 
     public function organisation()
     {
@@ -102,9 +118,8 @@ class User extends Authenticatable implements AuthenticatableContract
     {
         parent::boot();
         self::creating(function (User $model) {
-            $model->id = $model->generateUuid();
-            $model->password = Hash::make($model->password);
-            $model->created_by = auth()->user()->id ?? null;
+            //$model->id = $model->generateUuid(); 
+            //$model->created_by = auth()->user()->id ?? null;
         });
     }
 

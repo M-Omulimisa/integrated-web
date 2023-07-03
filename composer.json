@@ -30,6 +30,7 @@
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-activitylog": "^3.9",
         "spatie/laravel-permission": "^3.17",
+        "tymon/jwt-auth": "*",
         "yajra/laravel-datatables-oracle": "^9.17"
     },
     "require-dev": {

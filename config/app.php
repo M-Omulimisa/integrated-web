@@ -203,6 +203,7 @@ return [
         App\Providers\CountryModuleProvider::class,
 
          App\Providers\PhoneValidationServiceProvider::class,
+         Tymon\JWTAuth\Providers\LaravelServiceProvider::class, 
 
     ],
 
