@@ -32,6 +32,10 @@ class TrainingTopic extends BaseModel
     {
         return $this->hasMany(TrainingSubtopic::class, 'topic_id');
     }
+    public function trainings()
+    {
+        return $this->hasMany(Training::class);
+    }
 
     /**
      * every time a model is created

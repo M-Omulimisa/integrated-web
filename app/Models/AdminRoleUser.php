@@ -22,5 +22,9 @@ class AdminRoleUser extends Model
             return $m;
         });
     }
+    public function role()
+    {
+        return $this->belongsTo(AdminRole::class);
+    }
     protected $fillable = ['role_id', 'user_id',];
 }

@@ -30,12 +30,18 @@ class TrainingController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Training());
-
+        $grid->disableBatchActions();
         // $grid->column('village_agent_id', __('Village agent id'));
         // $grid->column('extension_officer_id', __('Extension officer id'));
         // $grid->column('user_id', __('User id'));
-        $grid->column('training_topic.topic', __('Topic'));
+        $grid->column('training_topic.topic', __('Topic'))->sortable();
         $grid->column('name', __('Theme'))->sortable();
+        $grid->column('sub_topics', __('Sub Topics'))->display(function ($x) {
+            return count($this->sub_topics);
+        });
+        $grid->column('sessions', __('Sessions'))->display(function ($x) {
+            return count($this->sessions);
+        });
         $grid->column('date', __('Date'))->sortable();
         $grid->column('time', __('Time'));
         $grid->column('venue', __('Venue'));
@@ -131,12 +137,12 @@ class TrainingController extends AdminController
         $form->hidden('status', __('Status'))->default('Pending');
 
         $form->divider();
-     /*    $form->morphMany('sub_topics', 'Click on new to add a Sub-Topic', function (Form\NestedForm $form) {
+        $form->morphMany('sub_topics', 'Click on new to add a Sub-Topic', function (Form\NestedForm $form) {
             $u = Admin::user();
             $form->hidden('organisation_id')->default($u->organisation_id);
             $form->text('title', __('Sub-topic Title'))->rules('required');
             $form->quill('details', __('Sub-topic Details'))->rules('required');
-        }); */
+        });
         return $form;
     }
 }

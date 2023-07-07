@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\Farmers\FarmerGroup;
 use App\Models\Settings\Location;
 use App\Models\Training\Training;
 use App\Models\TrainingSession;
@@ -31,16 +32,17 @@ class TrainingSessionCourseController extends AdminController
         $grid = new Grid(new TrainingSession());
 
         $grid->model()->where('organisation_id', Auth::user()->organisation_id);
+        $grid->disableBatchActions();
         $grid->column('session_date', __('Session Date'))->sortable();
         $grid->column('training.name', __('Training'));
         $grid->column('location.name', __('Location'));
         $grid->column('conducted.name', __('Conducted By'));
         $grid->column('start_date', __('Start time'));
-        $grid->column('end_date', __('End time  '));
+        $grid->column('end_date', __('End time'));
         $grid->column('details', __('Details'));
         $grid->column('topics_covered', __('Topics covered'))->hide();
-        $grid->column('attendance_list_pictures', __('Attendance list pictures'));
-        $grid->column('members_pictures', __('Members pictures'));
+        //$grid->column('attendance_list_pictures', __('Attendance list pictures'));
+        //$grid->column('members_pictures', __('Members pictures'));
         $grid->column('gps_latitude', __('Gps latitude'))->hide();
         $grid->column('gps_longitude', __('Gps longitude'))->hide();
 
@@ -57,20 +59,43 @@ class TrainingSessionCourseController extends AdminController
     {
         $show = new Show(TrainingSession::findOrFail($id));
 
-        $show->field('id', __('Id'));
-        $show->field('created_at', __('Created at'));
-        $show->field('updated_at', __('Updated at'));
-        $show->field('organisation_id', __('Organisation id'));
-        $show->field('training_id', __('Training id'));
-        $show->field('location_id', __('Location id'));
-        $show->field('conducted_by', __('Conducted by'));
+        $show->field('created_at', __('Date'))->as(function ($x) {
+            return date('d-m-Y', strtotime($x));
+        })->sortable();
+        $show->field('training_id', __('Training'))->as(function ($x) {
+            if ($this->training == null) {
+                return $x;
+            }
+            return $this->training->name;
+        });
+
+        $show->field('location_id', __('Location'))->as(function ($x) {
+            if ($this->location == null) {
+                return $x;
+            }
+            return $this->location->name;
+        });
+        $show->field('conducted_by', __('Conducted by'))->as(function ($x) {
+            if ($this->conducted == null) {
+                return $x;
+            }
+            return $this->conducted->name;
+        });
         $show->field('session_date', __('Session date'));
         $show->field('start_date', __('Start date'));
         $show->field('end_date', __('End date'));
         $show->field('details', __('Details'));
-        $show->field('topics_covered', __('Topics covered'));
-        $show->field('attendance_list_pictures', __('Attendance list pictures'));
-        $show->field('members_pictures', __('Members pictures'));
+        $show->field('topics_covered', __('Topics Covered'));
+        $show->field('members', __('Members Preset'))->as(function ($x) {
+            $members = [];
+            foreach ($this->members as $member) {
+                $members[] = $member->name;
+            }
+            return implode(', ', $members);
+        })->sortable();
+        $show->field('attendance_list_pictures', __('Attendance list pictures'))->image();
+        /*         
+         */
         $show->field('gps_latitude', __('Gps latitude'));
         $show->field('gps_longitude', __('Gps longitude'));
 
@@ -120,12 +145,22 @@ class TrainingSessionCourseController extends AdminController
         $form->time('end_date', __('Session End Time'))->default(date('H:i:s'))->rules('required');
         $form->textarea('details', __('Session Details'))->rules('required');
         $form->hidden('topics_covered', __('Topics covered'));
-        $form->multipleImage('attendance_list_pictures', __('Attendance list pictures'))
-            ->rules('required');
+        $form->multipleImage('attendance_list_pictures', __('Attendance list pictures'));
         $form->multipleFile('members_pictures', __('Session Photos'));
         $form->text('gps_latitude', __('Gps latitude'));
         $form->text('gps_longitude', __('Gps longitude'));
 
+        $form->divider();
+        $form->html('<h3>Members Present</h3>');
+        $form->select('farmer_group_id', __('Select Farmer Group'))
+            ->options(FarmerGroup::where(
+                'organisation_id',
+                Auth::user()->organisation_id
+            )
+                ->orderBy('name', 'asc')
+                ->get()->pluck('name', 'id')) 
+            ->rules('required')
+            ->default(1);
 
         $form->listbox('members', 'Members Present')
             ->options(User::where(

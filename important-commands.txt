@@ -13,7 +13,7 @@ php artisan make:migration create_organisation_joining_requests_table
 
 php artisan admin:make OrganisationJoiningRequestController --model=App\Models\OrganisationJoiningRequest
 
-php artisan make:model OrganisationJoiningRequest
+php artisan make:model AdminRole
 
 php artisan make:migration add_column_to_ELearningResources --table=ELearningResources
-php artisan make:migration add_columns_to_farmers --table=farmers
+php artisan make:migration add_columns_farmer_group_id_to_training_sessions --table=training_sessions

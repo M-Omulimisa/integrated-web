@@ -1,16 +1,17 @@
 <?php
 
 namespace App\Models\Training;
-  
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use App\Models\TrainingSession;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\CountryRelationship;
-  
+
 class Training extends BaseModel
 {
     use Uuid, CountryRelationship;
-  
+
     protected $fillable = [
         'village_agent_id',
         'extension_officer_id',
@@ -27,13 +28,21 @@ class Training extends BaseModel
         'longitude'
     ];
 
-    
+
     public function training_topic()
     {
         return $this->belongsTo(TrainingTopic::class, 'training_topic_id');
     }
-    
 
+    public function sub_topics()
+    {
+        return $this->hasMany(TrainingSubtopic::class);
+    }
+
+    public function sessions()
+    {
+        return $this->hasMany(TrainingSession::class);
+    }
 
     /**
      * every time a model is created

@@ -143,11 +143,11 @@ class FarmerGroupController extends AdminController
             ])
             ->default('Active')
             ->rules('required');
-        $form->textarea('photo', __('Photo'));
+        $form->image('photo', __('Photo'));
         $form->textarea('id_photo_front', __('Id photo front'));
         $form->textarea('id_photo_back', __('Id photo back'));
-        $form->text('created_by_user_id', __('Created by user id'));
-        $form->text('created_by_agent_id', __('Created by agent id'));
+        $form->text('created_by_user_id', __('Created by user'));
+        $form->text('created_by_agent_id', __('Created by agent'));
         $form->text('agent_id', __('Agent id'));
 
         return $form;

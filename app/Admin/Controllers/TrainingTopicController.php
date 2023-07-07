@@ -39,8 +39,8 @@ class TrainingTopicController extends AdminController
         $grid->quickSearch('topic')->placeholder('Search by topic');
         $grid->column('topic', __('Topic'))->sortable();
 
-        $grid->column('sub_topics', __('Sub topics'))->display(function ($x) {
-            return count($this->subs);
+        $grid->column('trainings', __('Trainings'))->display(function ($x) {
+            return count($this->trainings);
         });
         $grid->column('user_id', __('Created By'))->display(function ($x) {
             if ($this->user == null) {

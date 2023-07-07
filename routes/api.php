@@ -34,11 +34,20 @@ Route::group([
     Route::post('register', [ApiAuthController::class, 'register']);
     Route::get('me', [ApiAuthController::class, 'me']);
     Route::get('organisation-joining-requests', [ApiAuthController::class, 'organisation_joining_requests']);
+    Route::get('my-roles', [ApiAuthController::class, 'my_roles']);
     Route::get('resources', [ApiAuthController::class, 'resources']);
     Route::post('organisation-joining-requests', [ApiAuthController::class, 'organisation_joining_request_post']);
     Route::get('organisations', [ApiAuthController::class, 'organisations']);
     Route::post('update-profile', [ApiAuthController::class, 'update_profile']);
-
+    Route::get('farmer-groups', [ApiAuthController::class, 'farmer_groups']);
+    Route::get('farmers', [ApiAuthController::class, 'farmers']);
+    Route::post('farmers', [ApiAuthController::class, 'farmers_create']);
+    Route::get('countries', [ApiAuthController::class, 'countries']);
+    Route::get('locations', [ApiAuthController::class, 'locations']);
+    Route::get('languages', [ApiAuthController::class, 'languages']);
+    Route::get('trainings', [ApiAuthController::class, 'trainings']);
+    Route::get('training-sessions', [ApiAuthController::class, 'training_sessions']);
+    Route::post('training-sessions', [ApiAuthController::class, 'training_session_post']);
 
 
     Route::middleware('client_credentials')->group(function () {
