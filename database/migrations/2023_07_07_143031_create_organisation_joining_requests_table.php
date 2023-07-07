@@ -1,12 +1,13 @@
 <?php
 
-use App\Models\TrainingSession;
+use App\Models\Organisations\Organisation;
 use App\Models\User;
+use Encore\Admin\Form\Field\BelongsTo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTrainingTrainingSessionHasMembersTable extends Migration
+class CreateOrganisationJoiningRequestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,11 +16,12 @@ class CreateTrainingTrainingSessionHasMembersTable extends Migration
      */
     public function up()
     {
-        Schema::create('training_training_session_has_members', function (Blueprint $table) {
+        Schema::create('organisation_joining_requests', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignIdFor(TrainingSession::class);
+            $table->foreignIdFor(Organisation::class);
             $table->foreignIdFor(User::class);
+            $table->string('status')->nullable();
         });
     }
 
@@ -30,6 +32,6 @@ class CreateTrainingTrainingSessionHasMembersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('training_training_session_has_members');
+        Schema::dropIfExists('organisation_joining_requests');
     }
 }

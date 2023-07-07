@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route; 
+use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\v1\Ussd\MenuController;
 use App\Http\Controllers\Api\v1\ApiAuthController;
@@ -25,7 +25,7 @@ Route::get('/user', function (Request $request) {
     return 'Testing';
 });
 
-Route::group([ 
+Route::group([
     'prefix' => '/v1'
 ], function () {
 
@@ -33,8 +33,13 @@ Route::group([
     Route::post('login', [ApiAuthController::class, 'login']);
     Route::post('register', [ApiAuthController::class, 'register']);
     Route::get('me', [ApiAuthController::class, 'me']);
+    Route::get('organisation-joining-requests', [ApiAuthController::class, 'organisation_joining_requests']);
+    Route::get('resources', [ApiAuthController::class, 'resources']);
+    Route::post('organisation-joining-requests', [ApiAuthController::class, 'organisation_joining_request_post']);
+    Route::get('organisations', [ApiAuthController::class, 'organisations']);
+    Route::post('update-profile', [ApiAuthController::class, 'update_profile']);
 
-    // Route::post('refresh-token', [AuthApiController::class, 'refresh']);
+
 
     Route::middleware('client_credentials')->group(function () {
         Route::post('logout', function () {
