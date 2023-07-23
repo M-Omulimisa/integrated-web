@@ -36,6 +36,7 @@ Route::group([
     Route::get('organisation-joining-requests', [ApiAuthController::class, 'organisation_joining_requests']);
     Route::get('my-roles', [ApiAuthController::class, 'my_roles']);
     Route::get('resources', [ApiAuthController::class, 'resources']);
+    Route::get('resources-categpries', [ApiAuthController::class, 'resources_categpries']);
     Route::post('organisation-joining-requests', [ApiAuthController::class, 'organisation_joining_request_post']);
     Route::get('organisations', [ApiAuthController::class, 'organisations']);
     Route::post('update-profile', [ApiAuthController::class, 'update_profile']);

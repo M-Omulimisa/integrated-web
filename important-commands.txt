@@ -6,14 +6,14 @@ ALTER TABLE `training_resources` ADD `photo` TEXT NULL DEFAULT NULL;
 
  
  
-php artisan make:migration create_organisation_joining_requests_table
-
+php artisan make:migration create_resource_categories_table
+    
  
 
 
-php artisan admin:make OrganisationJoiningRequestController --model=App\Models\OrganisationJoiningRequest
+php artisan admin:make ResourceCategoryController --model=App\Models\ResourceCategory
 
-php artisan make:model AdminRole
+php artisan make:model ResourceCategory
 
 php artisan make:migration add_column_to_ELearningResources --table=ELearningResources
-php artisan make:migration add_columns_farmer_group_id_to_training_sessions --table=training_sessions
+php artisan make:migration add_columns_TrainingResource --table=training_tesources

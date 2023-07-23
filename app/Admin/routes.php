@@ -25,4 +25,5 @@ Route::group([
     $router->resource('farmer-groups', FarmerGroupController::class);
     $router->resource('farmers', FarmerController::class);
     $router->resource('organisation-joining-requests', OrganisationJoiningRequestController::class);
+    $router->resource('resource-categories', ResourceCategoryController::class);
 });

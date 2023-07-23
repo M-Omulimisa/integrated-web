@@ -8,6 +8,7 @@ use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
 use App\Models\OrganisationJoiningRequest;
 use App\Models\Organisations\Organisation;
+use App\Models\ResourceCategory;
 use App\Models\Settings\Country;
 use App\Models\Settings\Language;
 use App\Models\Settings\Location;
@@ -235,6 +236,15 @@ class ApiAuthController extends Controller
     {
         $u = auth('api')->user();
         return $this->success(TrainingResource::where([])->get(), "Success");
+    }
+    public function resources_categpries()
+    {
+        $res = [];
+        foreach (ResourceCategory::where([])->get() as $key => $value) {
+            $value->count = TrainingResource::where('resource_category_id', $value->id)->count();
+            $res[] = $value;
+        }
+        return $this->success($res, "Success");
     }
 
     public function organisations()
