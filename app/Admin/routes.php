@@ -24,6 +24,7 @@ Route::group([
     $router->resource('training-sessions', TrainingSessionCourseController::class);
     $router->resource('farmer-groups', FarmerGroupController::class);
     $router->resource('farmers', FarmerController::class);
+    $router->resource('gens', GenController::class);
     $router->resource('organisation-joining-requests', OrganisationJoiningRequestController::class);
     $router->resource('resource-categories', ResourceCategoryController::class);
 });
