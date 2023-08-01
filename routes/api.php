@@ -51,7 +51,7 @@ Route::group([
     Route::post('training-sessions', [ApiAuthController::class, 'training_session_post']);
     
     
-    Route::get('districts', [ApiAuthController::class, 'locations']);
+    Route::get('districts', [ApiAuthController::class, 'districts']);
     Route::get('regions', [ApiAuthController::class, 'regions']);
     Route::get('subcounties', [ApiAuthController::class, 'subcounties']);
     Route::get('villages', [ApiAuthController::class, 'villages']);
