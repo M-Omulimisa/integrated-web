@@ -13,7 +13,7 @@ php artisan make:migration create_resource_categories_table
 
 php artisan admin:make ResourceCategoryController --model=App\Models\ResourceCategory
 
-php artisan make:model ResourceCategory
+php artisan make:model DistrictModel -m
 
 php artisan make:migration add_column_to_ELearningResources --table=ELearningResources
 php artisan make:migration add_columns_TrainingResource --table=training_tesources

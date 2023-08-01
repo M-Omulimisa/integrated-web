@@ -4,19 +4,23 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminRoleUser;
+use App\Models\DistrictModel;
 use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
 use App\Models\OrganisationJoiningRequest;
 use App\Models\Organisations\Organisation;
+use App\Models\RegionModel;
 use App\Models\ResourceCategory;
 use App\Models\Settings\Country;
 use App\Models\Settings\Language;
 use App\Models\Settings\Location;
+use App\Models\SubcountyModel;
 use App\Models\Training\Training;
 use App\Models\Training\TrainingResource;
 use App\Models\TrainingSession;
 use App\Models\User;
 use App\Models\Utils;
+use App\Models\VillageModel;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
@@ -181,10 +185,40 @@ class ApiAuthController extends Controller
     {
         return $this->success(Location::where([])->get(), "Success");
     }
+
+    public function districts()
+    {
+        return $this->success(DistrictModel::where([])->get(), "Success");
+    }
+
+    public function regions()
+    {
+        return $this->success(RegionModel::where([])->get(), "Success");
+    }
+    public function subcounties()
+    {
+        return $this->success(SubcountyModel::where([])->get(), "Success");
+    }
+
+    public function villages()
+    {
+        return $this->success(VillageModel::all('id', 'name','parish_id')
+            , "Success");
+    }
+    /* 
+            "id": 2,
+            "": "ABEIBUTI",
+            "parish_id": 441,
+            "user_id": 0,
+            "created": "0000-00-00 00:00:00",
+            "changed": 0
+    */
+
     public function languages()
     {
         return $this->success(Language::where([])->get(), "Success");
     }
+
     public function trainings()
     {
         return $this->success(Training::where([

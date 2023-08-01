@@ -49,7 +49,12 @@ Route::group([
     Route::get('trainings', [ApiAuthController::class, 'trainings']);
     Route::get('training-sessions', [ApiAuthController::class, 'training_sessions']);
     Route::post('training-sessions', [ApiAuthController::class, 'training_session_post']);
-
+    
+    
+    Route::get('districts', [ApiAuthController::class, 'locations']);
+    Route::get('regions', [ApiAuthController::class, 'regions']);
+    Route::get('subcounties', [ApiAuthController::class, 'subcounties']);
+    Route::get('villages', [ApiAuthController::class, 'villages']);
 
     Route::middleware('client_credentials')->group(function () {
         Route::post('logout', function () {
