@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminRoleUser;
+use App\Models\CountyModel;
 use App\Models\DistrictModel;
 use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
@@ -202,8 +203,18 @@ class ApiAuthController extends Controller
 
     public function villages()
     {
-        return $this->success(VillageModel::all('id', 'name','parish_id')
-            , "Success");
+        return $this->success(
+            VillageModel::all('id', 'name', 'parish_id'),
+            "Success"
+        );
+    }
+
+    public function counties()
+    {
+        return $this->success(
+            CountyModel::all('id', 'name', 'district_id'),
+            "Success"
+        );
     }
     /* 
             "id": 2,

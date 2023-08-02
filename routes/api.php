@@ -52,6 +52,7 @@ Route::group([
     
     
     Route::get('districts', [ApiAuthController::class, 'districts']);
+    Route::get('counties', [ApiAuthController::class, 'counties']);
     Route::get('regions', [ApiAuthController::class, 'regions']);
     Route::get('subcounties', [ApiAuthController::class, 'subcounties']);
     Route::get('villages', [ApiAuthController::class, 'villages']);
