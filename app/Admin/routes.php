@@ -27,4 +27,7 @@ Route::group([
     $router->resource('gens', GenController::class);
     $router->resource('organisation-joining-requests', OrganisationJoiningRequestController::class);
     $router->resource('resource-categories', ResourceCategoryController::class);
+
+    $router->resource('farmer-questions', FarmerQuestionController::class);
+    $router->resource('farmer-question-answers', FarmerQuestionAnswerController::class);
 });

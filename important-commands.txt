@@ -1,19 +1,19 @@
-ALTER TABLE `trainings` ADD `organisation_id` VARCHAR(355) NULL DEFAULT '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
+ALTER TABLE `farmer_questions` ADD `organisation_id` VARCHAR(355) NULL DEFAULT '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
 ALTER TABLE `training_resources` ADD `training_id` VARCHAR(355) NULL DEFAULT '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
-ALTER TABLE `training_resources` ADD `body` VARCHAR(355) NULL DEFAULT NULL;
+ALTER TABLE `farmer_questions` ADD `body` VARCHAR(355) NULL DEFAULT NULL;
  
 ALTER TABLE `training_resources` ADD `photo` TEXT NULL DEFAULT NULL; 
 
  
  
-php artisan make:migration create_resource_categories_table
+php artisan make:migration create_farmer_questions_table
     
  
 
 
-php artisan admin:make ResourceCategoryController --model=App\Models\ResourceCategory
+php artisan admin:make FarmerQuestionAnswerController --model=App\Models\FarmerQuestionAnswer
 
-php artisan make:model DistrictModel -m
+php artisan make:model FarmerQuestionAnswer -m
 
 php artisan make:migration add_column_to_ELearningResources --table=ELearningResources
 php artisan make:migration add_columns_TrainingResource --table=training_tesources

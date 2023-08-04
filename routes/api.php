@@ -47,10 +47,11 @@ Route::group([
     Route::get('locations', [ApiAuthController::class, 'locations']);
     Route::get('languages', [ApiAuthController::class, 'languages']);
     Route::get('trainings', [ApiAuthController::class, 'trainings']);
+    Route::get('farmer-questions', [ApiAuthController::class, 'farmer_questions']);
+    Route::get('farmer_question_answers', [ApiAuthController::class, 'farmer_question_answers']);
     Route::get('training-sessions', [ApiAuthController::class, 'training_sessions']);
     Route::post('training-sessions', [ApiAuthController::class, 'training_session_post']);
-    
-    
+
     Route::get('districts', [ApiAuthController::class, 'districts']);
     Route::get('counties', [ApiAuthController::class, 'counties']);
     Route::get('regions', [ApiAuthController::class, 'regions']);

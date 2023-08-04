@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminRoleUser;
 use App\Models\CountyModel;
 use App\Models\DistrictModel;
+use App\Models\FarmerQuestion;
+use App\Models\FarmerQuestionAnswer;
 use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
 use App\Models\OrganisationJoiningRequest;
@@ -228,6 +230,31 @@ class ApiAuthController extends Controller
     public function languages()
     {
         return $this->success(Language::where([])->get(), "Success");
+    }
+
+    public function farmer_questions()
+    {
+        $data = FarmerQuestion::where([])->get();
+        $data->append(
+            [
+                'user_text',
+                'user_photo',
+                'district_text',
+                'answers_count'
+            ]
+        );
+        return $this->success($data, "Success");
+    }
+    public function farmer_question_answers()
+    {
+        $data = FarmerQuestionAnswer::where([])->get();
+        $data->append(
+            [
+                'user_text',
+                'user_photo',
+            ]
+        );
+        return $this->success($data, "Success");
     }
 
     public function trainings()
