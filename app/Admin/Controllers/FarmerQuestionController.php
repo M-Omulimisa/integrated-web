@@ -26,7 +26,7 @@ class FarmerQuestionController extends AdminController
     {
 
 
-        $questionsAnswers = array(
+        /*         $questionsAnswers = array(
             array(
                 'question' => 'What are the best crops to grow during the dry season in Uganda?',
                 'answer' => 'Some of the best crops to grow during the dry season in Uganda include drought-resistant crops like sorghum, cowpeas, and groundnuts.'
@@ -158,6 +158,7 @@ class FarmerQuestionController extends AdminController
             }
         }
 
+ */
         $grid = new Grid(new FarmerQuestion());
         $grid->model()->orderBy('id', 'desc');
         $grid->disableBatchActions();
