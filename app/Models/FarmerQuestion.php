@@ -29,6 +29,9 @@ class FarmerQuestion extends Model
                     $m->district_model_id = $u->district_id;
                 }
             }
+            if($m->district_model_id ==  null || $m->district_model_id == ''){
+                $m->district_model_id = 0;
+            }
         });
     }
 

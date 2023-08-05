@@ -51,6 +51,7 @@ Route::group([
     Route::get('farmer_question_answers', [ApiAuthController::class, 'farmer_question_answers']);
     Route::get('training-sessions', [ApiAuthController::class, 'training_sessions']);
     Route::post('training-sessions', [ApiAuthController::class, 'training_session_post']);
+    Route::post('farmer-questions-create', [ApiAuthController::class, 'farmer_questions_create']);
 
     Route::get('districts', [ApiAuthController::class, 'districts']);
     Route::get('counties', [ApiAuthController::class, 'counties']);

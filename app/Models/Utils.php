@@ -71,6 +71,28 @@ class Utils
     }
 
 
+    public static function isImageFile($filename) {
+        // Allowed image MIME types
+        $allowedTypes = array(
+            IMAGETYPE_JPEG,
+            IMAGETYPE_PNG,
+            IMAGETYPE_GIF,
+            IMAGETYPE_BMP,
+            IMAGETYPE_WEBP,
+            // Add any other image types you want to support
+        );
+    
+        // Get the MIME type of the file
+        $imageType = exif_imagetype($filename);
+    
+        // Check if the MIME type corresponds to an image
+        return in_array($imageType, $allowedTypes);
+    }
+    
+
+     
+    
+
     public static function upload_images_2($files, $is_single_file = false)
     {
 
