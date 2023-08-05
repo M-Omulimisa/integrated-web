@@ -16,10 +16,10 @@ class FarmerQuestion extends Model
             if ($m->body == null || $m->body == '') {
                 return false;
             }
-            $q = FarmerQuestion::where('body', $m->body)->first();
+/*             $q = FarmerQuestion::where('body', $m->body)->first();
             if ($q != null) {
                 throw new \Exception('Question already asked by ' . $q->phone);
-            }
+            } */
             $u = User::find($m->user_id);
             if ($u != null) {
                 if ($m->phone == null || $m->phone == '') {
