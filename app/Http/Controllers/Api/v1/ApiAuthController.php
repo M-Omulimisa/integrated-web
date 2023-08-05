@@ -349,7 +349,7 @@ class ApiAuthController extends Controller
             }
             if (isset($images[1])) {
                 if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[1])) {
-                    $f->photo = 'images/' .$images[1];
+                    $f->photo = 'images/' . $images[1];
                 } else {
                     $f->audio = $images[1];
                 }
@@ -372,7 +372,7 @@ class ApiAuthController extends Controller
         }
         return $this->success($f, "Question submitted successfully.");
     }
-    
+
     public function farmer_answers_create(Request $r)
     {
         if ($r->body == null && empty($_FILES)) return $this->error("Question is required.");
@@ -398,7 +398,7 @@ class ApiAuthController extends Controller
             }
             if (isset($images[1])) {
                 if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[1])) {
-                    $f->photo = 'images/' .$images[1];
+                    $f->photo = 'images/' . $images[1];
                 } else {
                     $f->audio = $images[1];
                 }
@@ -414,7 +414,7 @@ class ApiAuthController extends Controller
         } catch (\Throwable $t) {
             return $this->error($t->getMessage());
         }
-        return $this->success($f, "Question submitted successfully.");
+        return $this->success($f, "Answer submitted successfully.");
     }
 
     public function update_profile(Request $r)
