@@ -349,9 +349,9 @@ class ApiAuthController extends Controller
             }
             if (isset($images[1])) {
                 if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[1])) {
-                    $f->photo = $images[1];
+                    $f->photo = 'images/' .$images[1];
                 } else {
-                    $f->audio = $images[1];
+                    $f->audio = 'images/' .$images[1];
                 }
             }
         }
