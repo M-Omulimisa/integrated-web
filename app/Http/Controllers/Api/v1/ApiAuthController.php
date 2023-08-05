@@ -347,6 +347,7 @@ class ApiAuthController extends Controller
                     $f->audio = 'images/' . $images[0];
                 }
             }
+            return $this->success($images, "Success");
             if (isset($images[1])) {
                 if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[1])) {
                     $f->photo = 'images/' .$images[1];
