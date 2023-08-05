@@ -326,7 +326,7 @@ class ApiAuthController extends Controller
 
     public function farmer_questions_create(Request $r)
     {
-        if ($r->body == null) return $this->error("Question is required.");
+        if ($r->body == null && empty($_FILES)) return $this->error("Question is required.");
         if ($r->category == null) return $this->error("Category is required.");
 
         $images = [];
