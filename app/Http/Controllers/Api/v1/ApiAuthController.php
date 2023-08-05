@@ -372,6 +372,51 @@ class ApiAuthController extends Controller
         }
         return $this->success($f, "Question submitted successfully.");
     }
+    
+    public function farmer_answers_create(Request $r)
+    {
+        if ($r->body == null && empty($_FILES)) return $this->error("Question is required.");
+        if ($r->question_id == null) return $this->error("Question is required.");
+
+        $images = [];
+        if (!empty($_FILES)) {
+            try {
+                $images = Utils::upload_images_2($_FILES, false);
+            } catch (Throwable $t) {
+                $images = [];
+            }
+        }
+
+        $f = new FarmerQuestionAnswer();
+        if (is_array($images)) {
+            if (isset($images[0])) {
+                if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[0])) {
+                    $f->photo = 'images/' . $images[0];
+                } else {
+                    $f->audio = 'images/' . $images[0];
+                }
+            }
+            if (isset($images[1])) {
+                if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[1])) {
+                    $f->photo = 'images/' .$images[1];
+                } else {
+                    $f->audio = $images[1];
+                }
+            }
+        }
+
+        $u = auth('api')->user();
+        $f->user_id = $u->id;
+        $f->body = $r->body;
+        $f->farmer_question_id = $r->question_id;
+        try {
+            $f->save();
+        } catch (\Throwable $t) {
+            return $this->error($t->getMessage());
+        }
+        return $this->success($f, "Question submitted successfully.");
+    }
+
     public function update_profile(Request $r)
     {
         $u = auth('api')->user();
