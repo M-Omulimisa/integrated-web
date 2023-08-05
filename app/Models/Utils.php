@@ -110,6 +110,7 @@ class Utils
                 isset($file['error']) &&
                 isset($file['size'])
             ) {
+                die('here');
                 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $file_name = time() . "-" . rand(100000, 1000000) . "." . $ext;
                 $destination = Utils::docs_root() . '/storage/images/' . $file_name;
