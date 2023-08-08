@@ -119,7 +119,7 @@ class Utils
                     //die("successss ".$destination);
                 } catch (\Exception $e) {
                     $res = false;
-                    //die("failed ".$e->getMessage());
+                    die("failed ".$e->getMessage());
                 }
 
                 if (!$res) {
