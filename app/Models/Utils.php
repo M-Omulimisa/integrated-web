@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Zebra_Image;
+use Berkayk\OneSignal\OneSignalClient; 
 
 class Utils
 {
@@ -27,8 +28,8 @@ class Utils
             );
             $client->addParams(
                 [
-                    'android_channel_id' => 'a79a1fa6-8991-4c23-97b9-2cf23d697b48',
-                    'large_icon' => env('APP_URL') . '/assets/logo.png',
+                    'android_channel_id' => '7ae6ea3e-3d7b-4a4c-aca4-b07634205ec3',
+                    'large_icon' => env('APP_URL') . '/assets/images/logo.png',
                     'small_icon' => 'logo',
                 ]
             )

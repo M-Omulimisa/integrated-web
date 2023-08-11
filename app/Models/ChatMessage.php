@@ -31,7 +31,7 @@ class ChatMessage extends Model
                     ]
                 );
             } catch (\Throwable $th) {
-                //throw $th;
+                throw $th;
             }
         });
     }
