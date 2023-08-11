@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\v1\Ussd\MenuController;
 use App\Http\Controllers\Api\v1\ApiAuthController;
+use App\Http\Controllers\Api\v1\ApiShopController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,19 @@ Route::group([
     'prefix' => '/v1'
 ], function () {
 
+    /* ==============START OF SHOP API================== */
+    Route::get('api/{model}', [ApiShopController::class, 'index']);
+    Route::get('products', [ApiShopController::class, 'products']);
+    Route::POST("product-create", [ApiShopController::class, "product_create"]);
+    Route::POST("post-media-upload", [ApiShopController::class, 'upload_media']);
+    Route::post('products-delete', [ApiShopController::class, 'products_delete']);
+    Route::post('chat-send', [ApiShopController::class, 'chat_send']);
+    Route::get('chat-heads', [ApiShopController::class, 'chat_heads']);
+    Route::get('chat-messages', [ApiShopController::class, 'chat_messages']);
+    Route::post('chat-mark-as-read', [ApiShopController::class, 'chat_mark_as_read']);
+    /* ==============END OF SHOP API================== */
+
+    Route::put('api/{model}', [ApiShopController::class, 'update']);
     // Authentication
     Route::post('login', [ApiAuthController::class, 'login']);
     Route::post('register', [ApiAuthController::class, 'register']);
