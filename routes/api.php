@@ -31,7 +31,6 @@ Route::group([
 ], function () {
 
     /* ==============START OF SHOP API================== */
-    Route::get('api/{model}', [ApiShopController::class, 'index']);
     Route::get('products', [ApiShopController::class, 'products']);
     Route::POST("product-create", [ApiShopController::class, "product_create"]);
     Route::POST("post-media-upload", [ApiShopController::class, 'upload_media']);
@@ -40,11 +39,11 @@ Route::group([
     Route::get('chat-heads', [ApiShopController::class, 'chat_heads']);
     Route::get('chat-messages', [ApiShopController::class, 'chat_messages']);
     Route::POST('chat-mark-as-read', [ApiShopController::class, 'chat_mark_as_read']);
-    Route::POST('chat-start', [ApiShopController::class, 'chat_start']); 
+    Route::POST('chat-start', [ApiShopController::class, 'chat_start']);
 
     /* ==============END OF SHOP API================== */
 
-    Route::put('api/{model}', [ApiShopController::class, 'update']);
+
     // Authentication
     Route::POST('login', [ApiAuthController::class, 'login']);
     Route::POST('register', [ApiAuthController::class, 'register']);
@@ -85,6 +84,9 @@ Route::group([
     Route::middleware('auth:api')->get('/user', function (Request $request) {
         return $request->user();
     });
+
+    Route::put('api/{model}', [ApiShopController::class, 'update']);
+    Route::get('api/{model}', [ApiShopController::class, 'index']);
 });
 
 Route::group([
