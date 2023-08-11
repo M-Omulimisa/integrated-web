@@ -28,10 +28,12 @@ class Utils
     {
         header('Content-Type: application/json; charset=utf-8');
         $resp['status'] = "1";
+        $resp['code'] = "1";
         $resp['message'] = "Success";
         $resp['data'] = null;
         if (isset($data['status'])) {
             $resp['status'] = $data['status'] . "";
+            $resp['code'] = $data['status'] . "";
         }
         if (isset($data['message'])) {
             $resp['message'] = $data['message'];

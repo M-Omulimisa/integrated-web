@@ -91,6 +91,7 @@ class ApiShopController extends Controller
         } else {
             return Utils::response([
                 'status' => 0,
+                'code' => 0,
                 'data' => null,
                 'message' => $msg
             ]);
