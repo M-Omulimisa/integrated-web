@@ -30,7 +30,7 @@ class ApiShopController extends Controller
     use ApiResponser;
 
     public function index(Request $r, $model)
-    { 
+    {
 
         $className = "App\Models\\" . $model;
         $obj = new $className;
@@ -62,6 +62,7 @@ class ApiShopController extends Controller
             if ($u == null) {
                 return Utils::response([
                     'status' => 0,
+                    'code' => 0,
                     'message' => "User not found.",
                 ]);
             }
@@ -83,6 +84,7 @@ class ApiShopController extends Controller
         if ($success) {
             return Utils::response([
                 'status' => 1,
+                'code' => 1,
                 'data' => $items,
                 'message' => 'Success'
             ]);
@@ -97,7 +99,7 @@ class ApiShopController extends Controller
 
 
 
-    
+
     public function chat_messages(Request $r)
     {
         $u = auth('api')->user();
@@ -123,7 +125,7 @@ class ApiShopController extends Controller
         return $this->success($messages, 'Success');
     }
 
-    
+
 
     public function chat_heads(Request $r)
     {
@@ -144,9 +146,10 @@ class ApiShopController extends Controller
         $chat_heads->append('product_owner_unread_messages_count');
         return $this->success($chat_heads, 'Success');
     }
- 
 
-    public function chat_mark_as_read(Request $r){
+
+    public function chat_mark_as_read(Request $r)
+    {
         $receiver = Administrator::find($r->receiver_id);
         if ($receiver == null) {
             return $this->error('Receiver not found.');
@@ -168,15 +171,15 @@ class ApiShopController extends Controller
     }
 
     public function chat_send(Request $r)
-    { 
-        
+    {
+
         $sender = auth('api')->user();
 
         $user_id = $r->user;
-        if($sender == null){
-            $sender = Administrator::find($user_id); 
+        if ($sender == null) {
+            $sender = Administrator::find($user_id);
         }
- 
+
         if ($sender == null) {
             $administrator_id = Utils::get_user_id($r);
             $sender = Administrator::find($administrator_id);
@@ -331,7 +334,7 @@ class ApiShopController extends Controller
         }
     }
 
- 
+
     public function upload_media(Request $request)
     {
 
@@ -340,6 +343,7 @@ class ApiShopController extends Controller
         if ($u == null) {
             return Utils::response([
                 'status' => 0,
+                'code' => 0,
                 'message' => "User not found.",
             ]);
         }
@@ -353,6 +357,7 @@ class ApiShopController extends Controller
 
             return Utils::response([
                 'status' => 0,
+                'code' => 0,
                 'message' => "Local parent ID is missing.",
             ]);
         }
@@ -365,6 +370,7 @@ class ApiShopController extends Controller
         ) {
             return Utils::response([
                 'status' => 0,
+                'code' => 0,
                 'message' => "Local parent ID endpoint is missing.",
             ]);
         }
@@ -374,6 +380,7 @@ class ApiShopController extends Controller
         ) {
             return Utils::response([
                 'status' => 0,
+                'code' => 0,
                 'message' => "Files not found.",
             ]);
         }
@@ -384,6 +391,7 @@ class ApiShopController extends Controller
         if (empty($images)) {
             return Utils::response([
                 'status' => 0,
+                'code' => 0,
                 'message' => 'Failed to upload files.',
                 'data' => null
             ]);
@@ -397,6 +405,7 @@ class ApiShopController extends Controller
                 if ($img) {
                     return Utils::response([
                         'status' => 0,
+                        'code' => 0,
                         'message' => "Original photo not found",
                     ]);
                 }
@@ -405,6 +414,7 @@ class ApiShopController extends Controller
                 $img->save();
                 return Utils::response([
                     'status' => 1,
+                    'code' => 1,
                     'data' => json_encode($img),
                     'message' => "File updated.",
                 ]);
@@ -447,6 +457,7 @@ class ApiShopController extends Controller
         //Utils::process_images_in_backround();
         return Utils::response([
             'status' => 1,
+            'code' => 1,
             'data' => json_encode($_POST),
             'message' => "File uploaded successfully.",
         ]);
