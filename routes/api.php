@@ -40,6 +40,8 @@ Route::group([
     Route::get('chat-heads', [ApiShopController::class, 'chat_heads']);
     Route::get('chat-messages', [ApiShopController::class, 'chat_messages']);
     Route::post('chat-mark-as-read', [ApiShopController::class, 'chat_mark_as_read']);
+    Route::post('chat-start', [ApiShopController::class, 'chat_start']); 
+
     /* ==============END OF SHOP API================== */
 
     Route::put('api/{model}', [ApiShopController::class, 'update']);

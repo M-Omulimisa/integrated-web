@@ -9,6 +9,49 @@ use Zebra_Image;
 class Utils
 {
 
+
+    public static function sendNotification(
+        $msg,
+        $receiver,
+        $headings = 'M-OMULIMISA',
+        $data = null,
+        $url = null,
+        $buttons = null,
+        $schedule = null,
+    ) {
+        try {
+            $client = new OneSignalClient(
+                env('ONESIGNAL_APP_ID'),
+                env('ONESIGNAL_REST_API_KEY'),
+                env('USER_AUTH_KEY')
+            );
+            $client->addParams(
+                [
+                    'android_channel_id' => 'a79a1fa6-8991-4c23-97b9-2cf23d697b48',
+                    'large_icon' => env('APP_URL') . '/assets/logo.png',
+                    'small_icon' => 'logo',
+                ]
+            )
+                ->sendNotificationToExternalUser(
+                    $msg,
+                    "$receiver",
+                    $url = $url,
+                    $data = $data,
+                    $buttons = $buttons,
+                    $schedule = $schedule,
+                    $headings = $headings
+                );
+        } catch (\Throwable $th) {
+            //throw $th;
+            throw $th;
+        }
+
+
+        return;
+    }
+
+
+
     public static function get_user_id($request = null)
     {
         if ($request == null) {
@@ -330,8 +373,4 @@ class Utils
             }
         }
     }
-
-
-
- 
 }

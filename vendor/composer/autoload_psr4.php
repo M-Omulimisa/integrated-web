@@ -128,6 +128,7 @@ return array(
     'Collective\\Html\\' => array($vendorDir . '/laravelcollective/html/src'),
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
     'Brick\\Math\\' => array($vendorDir . '/brick/math/src'),
+    'Berkayk\\OneSignal\\' => array($vendorDir . '/berkayk/onesignal-laravel/src'),
     'Barryvdh\\DomPDF\\' => array($vendorDir . '/barryvdh/laravel-dompdf/src'),
     'BaconQrCode\\' => array($vendorDir . '/bacon/bacon-qr-code/src'),
     'Asm89\\Stack\\' => array($vendorDir . '/asm89/stack-cors/src'),

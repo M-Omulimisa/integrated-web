@@ -20,20 +20,20 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '23c18046f52bef3eea034657bafda50f' => __DIR__ . '/..' . '/symfony/polyfill-php81/bootstrap.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
-        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         '265b4faa2b3a9766332744949e83bf97' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Collections/helpers.php',
         'c7a3c339e7e14b60e06a2d7fcce9476b' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Events/functions.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '4e8671d7be9056dcd04ddd9e8e15f9cc' => __DIR__ . '/..' . '/encore/laravel-admin/src/helpers.php',
         '9cdd7b9056abc3081735233ba9dd9c7f' => __DIR__ . '/..' . '/facade/flare-client-php/src/helpers.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
@@ -236,6 +236,7 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         'B' => 
         array (
             'Brick\\Math\\' => 11,
+            'Berkayk\\OneSignal\\' => 18,
             'Barryvdh\\DomPDF\\' => 16,
             'BaconQrCode\\' => 12,
         ),
@@ -740,6 +741,10 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         array (
             0 => __DIR__ . '/..' . '/brick/math/src',
         ),
+        'Berkayk\\OneSignal\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/berkayk/onesignal-laravel/src',
+        ),
         'Barryvdh\\DomPDF\\' => 
         array (
             0 => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src',
@@ -991,6 +996,8 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         'App\\Models\\Auth\\OneTimePasswordLog' => __DIR__ . '/../..' . '/app/Models/Auth/OneTimePasswordLog.php',
         'App\\Models\\Auth\\PasswordHistory' => __DIR__ . '/../..' . '/app/Models/Auth/PasswordHistory.php',
         'App\\Models\\BaseModel' => __DIR__ . '/../..' . '/app/Models/BaseModel.php',
+        'App\\Models\\ChatHead' => __DIR__ . '/../..' . '/app/Models/ChatHead.php',
+        'App\\Models\\ChatMessage' => __DIR__ . '/../..' . '/app/Models/ChatMessage.php',
         'App\\Models\\CountyModel' => __DIR__ . '/../..' . '/app/Models/CountyModel.php',
         'App\\Models\\DistrictModel' => __DIR__ . '/../..' . '/app/Models/DistrictModel.php',
         'App\\Models\\Elearning\\ELearningAnnouncement' => __DIR__ . '/../..' . '/app/Models/Elearning/ELearningAnnouncement.php',
@@ -1334,6 +1341,9 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         'Barryvdh\\DomPDF\\Facade' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/Facade.php',
         'Barryvdh\\DomPDF\\PDF' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/PDF.php',
         'Barryvdh\\DomPDF\\ServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/ServiceProvider.php',
+        'Berkayk\\OneSignal\\OneSignalClient' => __DIR__ . '/..' . '/berkayk/onesignal-laravel/src/OneSignalClient.php',
+        'Berkayk\\OneSignal\\OneSignalFacade' => __DIR__ . '/..' . '/berkayk/onesignal-laravel/src/OneSignalFacade.php',
+        'Berkayk\\OneSignal\\OneSignalServiceProvider' => __DIR__ . '/..' . '/berkayk/onesignal-laravel/src/OneSignalServiceProvider.php',
         'Brick\\Math\\BigDecimal' => __DIR__ . '/..' . '/brick/math/src/BigDecimal.php',
         'Brick\\Math\\BigInteger' => __DIR__ . '/..' . '/brick/math/src/BigInteger.php',
         'Brick\\Math\\BigNumber' => __DIR__ . '/..' . '/brick/math/src/BigNumber.php',

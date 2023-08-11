@@ -203,7 +203,8 @@ return [
         App\Providers\CountryModuleProvider::class,
 
          App\Providers\PhoneValidationServiceProvider::class,
-         Tymon\JWTAuth\Providers\LaravelServiceProvider::class, 
+         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+         Berkayk\OneSignal\OneSignalServiceProvider::class
 
     ],
 
@@ -261,6 +262,7 @@ return [
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         'Image' => Intervention\Image\Facades\Image::class,
+        'OneSignal' => Berkayk\OneSignal\OneSignalFacade::class,
 
     ],
 
