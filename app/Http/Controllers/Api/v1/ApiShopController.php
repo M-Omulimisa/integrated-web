@@ -430,7 +430,7 @@ class ApiShopController extends Controller
             if (
                 $online_parent_id > 0
             ) {
-                $animal = Animal::find($online_parent_id);
+                $animal = Product::find($online_parent_id);
                 if ($animal != null) {
                     $img->parent_endpoint =  'Animal';
                     $img->parent_id =  $animal->id;
