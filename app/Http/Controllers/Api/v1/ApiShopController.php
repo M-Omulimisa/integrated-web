@@ -130,10 +130,18 @@ class ApiShopController extends Controller
 
     public function chat_heads(Request $r)
     {
-        $u = auth('api')->user();
+        $u = null;
         if ($u == null) {
             $administrator_id = Utils::get_user_id($r);
             $u = Administrator::find($administrator_id);
+        } 
+
+        if ($u == null) {
+            $u = auth('api')->user();
+            if ($u == null) {
+                $administrator_id = Utils::get_user_id($r);
+                $u = Administrator::find($administrator_id);
+            }
         }
         if ($u == null) {
             return $this->error('User not found.');
