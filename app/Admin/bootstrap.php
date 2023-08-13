@@ -18,8 +18,22 @@
  *
  */
 
+use App\Models\CountyModel;
+use App\Models\SubcountyModel;
 use Encore\Admin\Facades\Admin;
+use PHPUnit\Framework\Constraint\Count;
 
 Encore\Admin\Form::forget(['map', 'editor']);
 Admin::css(url('/assets/css/bootstrap.css'));
 Admin::css('/assets/css/styles.css');
+
+$counties = CountyModel::all();
+foreach ($counties as $county) {
+    $affect = SubcountyModel::where([
+        'county_id' => $county->id
+    ])->update([
+        'district_id' => $county->district_id,
+    ]);
+    echo "Affected: " . $affect . " rows in " . $county->name . "<br>";
+}
+die();
