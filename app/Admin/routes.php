@@ -30,4 +30,5 @@ Route::group([
 
     $router->resource('farmer-questions', FarmerQuestionController::class);
     $router->resource('farmer-question-answers', FarmerQuestionAnswerController::class);
+    $router->resource('product-categories', ProductCategoryController::class);
 });

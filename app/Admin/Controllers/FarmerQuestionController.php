@@ -226,8 +226,22 @@ class FarmerQuestionController extends AdminController
             ->display(function () {
                 return $this->farmer_question_answers()->count();
             });
-        $grid->column('audio', __('Audio'));
-        $grid->column('photo', __('Photo'));
+        $grid->column('audio', __('Audio'))
+            ->display(function ($rec) {
+                if ($rec == null || strlen($rec) < 2) {
+                    return "No Audio";
+                }
+                $link = url('storage/files/' . $rec);
+                return '<a target="_blank" href="' . $link . '">Play Audio</a>';
+            })->sortable();
+        $grid->column('photo', __('Photo'))
+            ->display(function ($rec) {
+                if ($rec == null || strlen($rec) < 2) {
+                    return "No Picture";
+                }
+                $link = url('storage/files/' . $rec);
+                return '<a target="_blank" href="' . $link . '">View Image</a>';
+            })->sortable();
         $grid->column('video', __('Video'))->hide();
         $grid->column('document', __('Document'))->hide();
         $grid->column('views', __('Views'))->sortable();
