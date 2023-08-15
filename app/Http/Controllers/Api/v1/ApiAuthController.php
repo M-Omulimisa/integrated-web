@@ -12,6 +12,7 @@ use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
 use App\Models\OrganisationJoiningRequest;
 use App\Models\Organisations\Organisation;
+use App\Models\ParishModel;
 use App\Models\RegionModel;
 use App\Models\ResourceCategory;
 use App\Models\Settings\Country;
@@ -201,6 +202,10 @@ class ApiAuthController extends Controller
     public function subcounties()
     {
         return $this->success(SubcountyModel::where([])->get(), "Success");
+    }
+    public function parishes()
+    {
+        return $this->success(ParishModel::where([])->get(), "Success");
     }
 
     public function villages()

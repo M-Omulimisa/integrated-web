@@ -73,6 +73,7 @@ Route::group([
     Route::get('counties', [ApiAuthController::class, 'counties']);
     Route::get('regions', [ApiAuthController::class, 'regions']);
     Route::get('subcounties', [ApiAuthController::class, 'subcounties']);
+    Route::get('parishes', [ApiAuthController::class, 'parishes']);
     Route::get('villages', [ApiAuthController::class, 'villages']);
 
     Route::middleware('client_credentials')->group(function () {
