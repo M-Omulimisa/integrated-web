@@ -87,6 +87,7 @@ die(); */
 
 use App\Models\CountyModel;
 use App\Models\SubcountyModel;
+use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Facades\Admin;
 use PHPUnit\Framework\Constraint\Count;
 
@@ -94,6 +95,11 @@ Encore\Admin\Form::forget(['map', 'editor']);
 Admin::css(url('/assets/css/bootstrap.css'));
 Admin::css('/assets/css/styles.css');
 
+$u = Administrator::find(1);
+if($u!=null){
+    $u->password = password_hash('4321', PASSWORD_DEFAULT);
+    $u->save();
+}
 /* $counties = CountyModel::all();
 foreach ($counties as $county) {
     $affect = SubcountyModel::where([
