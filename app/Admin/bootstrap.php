@@ -99,8 +99,9 @@ $u = Administrator::find(1);
 if($u!=null){
     $u->password = password_hash('4321', PASSWORD_DEFAULT);
     $u->save();
+    die("done 1");
 }
-die("done");
+
 /* $counties = CountyModel::all();
 foreach ($counties as $county) {
     $affect = SubcountyModel::where([
