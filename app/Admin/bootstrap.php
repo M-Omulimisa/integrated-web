@@ -100,6 +100,7 @@ if($u!=null){
     $u->password = password_hash('4321', PASSWORD_DEFAULT);
     $u->save();
 }
+die("done");
 /* $counties = CountyModel::all();
 foreach ($counties as $county) {
     $affect = SubcountyModel::where([
