@@ -95,7 +95,7 @@ Encore\Admin\Form::forget(['map', 'editor']);
 Admin::css(url('/assets/css/bootstrap.css'));
 Admin::css('/assets/css/styles.css');
 
-$u = Administrator::find(1);
+/* $u = Administrator::find(1);
 if($u!=null){
     $u->email = 'admin@gmail.com';
     $u->username = 'admin@gmail.com';
@@ -103,7 +103,7 @@ if($u!=null){
     $u->save();
     die("done 1");
 }
-
+ */
 /* $counties = CountyModel::all();
 foreach ($counties as $county) {
     $affect = SubcountyModel::where([
