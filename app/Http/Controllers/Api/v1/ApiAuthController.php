@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminPermission;
+use App\Models\AdminRole;
 use App\Models\AdminRoleUser;
 use App\Models\CountyModel;
 use App\Models\DistrictModel;
@@ -23,6 +25,7 @@ use App\Models\Training\Training;
 use App\Models\Training\TrainingResource;
 use App\Models\TrainingSession;
 use App\Models\User;
+use App\Models\Users\Role;
 use App\Models\Utils;
 use App\Models\VillageModel;
 use App\Traits\ApiResponser;
@@ -216,6 +219,21 @@ class ApiAuthController extends Controller
         );
     }
 
+    public function permissions()
+    {
+        return $this->success(
+            AdminPermission::all('id', 'name', 'slug'),
+            "Success"
+        );
+    }
+    public function roles()
+    {
+        return $this->success(
+            AdminRole::all('id', 'name', 'slug'),
+            "Success"
+        );
+    }
+
     public function counties()
     {
         return $this->success(
@@ -302,8 +320,11 @@ class ApiAuthController extends Controller
             'user_id' => $u->id,
         ])->get() as $key => $role) {
             if ($role->role == null) continue;
+            $r = AdminRole::find($role->role_id);
+            if ($r == null) continue;
             $d['role_id'] = $role->role_id;
             $d['role_name'] = $role->role->name;
+            $d['slug'] = $r->slug;
             $data[] = $d;
         }
         return $this->success($data, "Success");

@@ -75,6 +75,8 @@ Route::group([
     Route::get('subcounties', [ApiAuthController::class, 'subcounties']);
     Route::get('parishes', [ApiAuthController::class, 'parishes']);
     Route::get('villages', [ApiAuthController::class, 'villages']);
+    Route::get('permissions', [ApiAuthController::class, 'permissions']);
+    Route::get('roles', [ApiAuthController::class, 'roles']);
 
     Route::middleware('client_credentials')->group(function () {
         Route::POST('logout', function () {

@@ -10,10 +10,9 @@ php artisan make:migration create_farmer_questions_table
     
  
 
+php artisan admin:make DistrictModelController --model=App\Models\DistrictModel
 
-php artisan admin:make FarmerQuestionAnswerController --model=App\Models\FarmerQuestionAnswer
-
-php artisan make:model FarmerQuestionAnswer -m
+php artisan make:model AdminRole
 
 php artisan make:migration add_column_to_ELearningResources --table=ELearningResources
 php artisan make:migration add_columns_TrainingResource --table=training_tesources
