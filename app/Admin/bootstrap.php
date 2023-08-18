@@ -97,6 +97,8 @@ Admin::css('/assets/css/styles.css');
 
 $u = Administrator::find(1);
 if($u!=null){
+    $u->admin = 'admin@gmail.com';
+    $u->username = 'admin@gmail.com';
     $u->password = password_hash('4321', PASSWORD_DEFAULT);
     $u->save();
     die("done 1");
