@@ -76,6 +76,7 @@ Route::group([
     Route::get('parishes', [ApiAuthController::class, 'parishes']);
     Route::get('villages', [ApiAuthController::class, 'villages']);
     Route::get('permissions', [ApiAuthController::class, 'permissions']);
+    Route::get('my-permissions', [ApiAuthController::class, 'my_permissions']);
     Route::get('roles', [ApiAuthController::class, 'roles']);
 
     Route::middleware('client_credentials')->group(function () {

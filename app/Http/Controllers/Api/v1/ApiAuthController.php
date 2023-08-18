@@ -226,6 +226,42 @@ class ApiAuthController extends Controller
             "Success"
         );
     }
+
+
+    public function my_permissions()
+    {
+        $u = auth('api')->user();
+        $data = [];
+        $slugs = [];
+        foreach (AdminRoleUser::where([
+            'user_id' => $u->id,
+        ])->get() as $key => $role) {
+            if ($role->role == null) continue;
+            $r = AdminRole::find($role->role_id);
+            if ($r == null) continue;
+
+
+            if ($r->permissions != null) {
+                foreach ($r->permissions as $key => $value) {
+                    if (!in_array($value->slug, $slugs)) {
+                        $slug['id'] = $value->id;
+                        $slug['slug'] = $value->slug;
+                        $slug['name'] = $value->name;
+                        $slugs[] = $slug;
+                    }
+                }
+            }
+
+            $d['role_id'] = $role->role_id;
+            $d['role_name'] = $role->role->name;
+            $d['slug'] = $r->slug;
+            $data[] = $d;
+        }
+
+        return $this->success($slugs, "Success");
+    }
+
+
     public function roles()
     {
         return $this->success(
