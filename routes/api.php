@@ -70,6 +70,7 @@ Route::group([
     Route::POST('farmer-answers-create', [ApiAuthController::class, 'farmer_answers_create']);
 
     Route::get('districts', [ApiAuthController::class, 'districts']);
+    Route::get('resource-categories', [ApiAuthController::class, 'resource_categories']);
     Route::get('counties', [ApiAuthController::class, 'counties']);
     Route::get('regions', [ApiAuthController::class, 'regions']);
     Route::get('subcounties', [ApiAuthController::class, 'subcounties']);

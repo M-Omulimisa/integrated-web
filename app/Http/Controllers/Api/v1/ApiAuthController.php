@@ -197,6 +197,10 @@ class ApiAuthController extends Controller
     {
         return $this->success(DistrictModel::where([])->get(), "Success");
     }
+    public function resource_categories()
+    {
+        return $this->success(ResourceCategory::where([])->get(), "Success");
+    }
 
     public function regions()
     {
