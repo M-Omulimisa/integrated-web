@@ -15,7 +15,7 @@ class ResourceCategoryController extends AdminController
      *
      * @var string
      */
-    protected $title = 'ResourceCategory';
+    protected $title = 'Resource Categories';
 
     /**
      * Make a grid builder.

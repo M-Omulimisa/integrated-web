@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Elearning\ELearningCourse;
+use App\Models\ResourceCategory;
 use App\Models\Training\Training;
 use App\Models\Training\TrainingResource;
 use App\Models\TrainingCategory;
@@ -98,7 +99,7 @@ class TrainingResourceCourseController extends AdminController
 
         $form->text('heading', __('Resource Title'));
         $form->select('resource_category_id', __('Resource Category'))
-            ->options(TrainingCategory::all()->pluck('name', 'id'))
+            ->options(ResourceCategory::all()->pluck('name', 'id'))
             ->required()
             ->default(1);
         $form->image('thumbnail', __('Resource Thumbnail'));

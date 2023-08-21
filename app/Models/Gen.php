@@ -166,10 +166,7 @@ class Gen extends Model
     $x = <<<EOT
   <pre>import 'package:sqflite/sqflite.dart';
  
-  import 'RespondModel.dart';
-  import '../utils/Utilities.dart';
- 
-   
+  import '../utils/Utils.dart';
   import 'RespondModel.dart';
  
   class $this->class_name {
