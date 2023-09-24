@@ -134,7 +134,7 @@ class ApiShopController extends Controller
         if ($u == null) {
             $administrator_id = Utils::get_user_id($r);
             $u = Administrator::find($administrator_id);
-        } 
+        }
 
         if ($u == null) {
             $u = auth('api')->user();
