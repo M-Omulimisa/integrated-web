@@ -62,3 +62,7 @@ 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
 
 git remote add origin https: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://@github.com/M-Omulimisa/integrated-web
 mysqldump -u mubarak -p omulimisa_integrated > omulimisa.sql
+
+/usr/share/nginx/html/m-integrated-test/config/admin.php
+/usr/share/nginx/html/m-integrated-test/config/admin.php
+/usr/share/nginx/html/m-integrated-test/storage/
