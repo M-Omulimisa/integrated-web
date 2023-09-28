@@ -240,10 +240,11 @@ class Utils
 
                 try {
                     $res = move_uploaded_file($file['tmp_name'], $destination);
-                    //die("successss ".$destination);
+                    die("successss ".$destination);
                 } catch (\Exception $e) {
                     $res = false;
-                    die("failed " . $e->getMessage());
+                    die("failed");
+                    throw $e;
                 }
 
                 if (!$res) {
