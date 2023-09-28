@@ -1,3 +1,5 @@
 secret.txt
 .env
 .env
+config/admin.php
+.env
