@@ -16,3 +16,49 @@ php artisan make:model AdminRole
 
 php artisan make:migration add_column_to_ELearningResources --table=ELearningResources
 php artisan make:migration add_columns_TrainingResource --table=training_tesources
+
+---
+
+Server IP : 139.162.196.61
+Port : 2299
+username:daniel
+password:GF7g1OIfObb
+         GF7g1OIfObb
+
+ssh mubarak@170.187.156.185 -p 2299
+
+admin 
+http://170.187.156.185/secure
+
+IP: 170.187.156.185
+Port: 2299
+Username: mubarak
+Password: 
+Mg[b$C[xGD\bhK*d=]u^x74QX
+cd /usr/share/nginx/html/m-integrated-test
+
+mysql  -u mubarak -p
+scp /usr/share/nginx/html/m-integrated-test/omulimisa.sql  C:\Users\mubahood\Desktop\omulimisa.sql
+scp -r -P2299 mubarak@170.187.156.185:/usr/share/nginx/html/m-integrated-test/omulimisa.sql /Desktop
+
+scp mubarak@remotehost.edu:foobar.txt /local/dir
+
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+
+git config --global user.name "mubahood"
+git config --global user.email muhindomubaraka@iut-dhaka.edu
+
+or to see the signed in user
+
+git config --list
+git config --global user.email muhindomubaraka@iut-dhaka.edu
+256Anjane
+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
+
+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
+
+git remote add origin https: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://@github.com/M-Omulimisa/integrated-web
+mysqldump -u mubarak -p omulimisa_integrated > omulimisa.sql
