@@ -5,7 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Zebra_Image;
-use Berkayk\OneSignal\OneSignalClient;
+use Berkayk\OneSignal\OneSignalClient; 
 
 class Utils
 {
@@ -226,30 +226,24 @@ class Utils
         }
         $uploaded_images = array();
         foreach ($files as $file) {
-            die(json_encode($file)); 
+
             if (
                 isset($file['name']) &&
                 isset($file['type']) &&
                 isset($file['tmp_name']) &&
                 isset($file['error']) &&
-                isset($file['size']) &&
-                strlen($file['name']) > 4 && 
-                strlen($file['tmp_name']) > 2 &&
-                strlen($file['error']) > 0 &&
-                strlen($file['size']) > 0
-            ) { 
+                isset($file['size'])
+            ) {
                 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $file_name = time() . "-" . rand(100000, 1000000) . "." . $ext;
                 $destination = Utils::docs_root() . '/storage/images/' . $file_name;
 
                 try {
-                    die(json_encode($file));
                     $res = move_uploaded_file($file['tmp_name'], $destination);
-                    die("successss " . $destination);
+                    //die("successss ".$destination);
                 } catch (\Exception $e) {
                     $res = false;
-                    die("failed");
-                    throw $e;
+                    die("failed " . $e->getMessage());
                 }
 
                 if (!$res) {

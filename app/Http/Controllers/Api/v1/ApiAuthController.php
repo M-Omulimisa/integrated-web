@@ -400,12 +400,10 @@ class ApiAuthController extends Controller
             try {
                 $images = Utils::upload_images_2($_FILES, false);
             } catch (Throwable $t) {
-                die($t->getMessage()." Failed to upload");
                 $images = [];
             }
         }
 
-        die("done");
         $f = new FarmerQuestion();
         if (is_array($images)) {
             if (isset($images[0])) {
