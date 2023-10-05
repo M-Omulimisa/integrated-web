@@ -18,7 +18,7 @@ class Farmer extends BaseModel
         parent::boot();
         self::creating(function (Farmer $model) {
             $count = Farmer::where([])->count();
-            $model->id = $count;
+            $model->id = ($count + 1);
         });
         self::updating(function (Farmer $model) {
             //$model->id = $model->generateUuid();
