@@ -9,12 +9,17 @@ ALTER TABLE `training_resources` ADD `photo` TEXT NULL DEFAULT NULL;
 php artisan make:migration create_farmer_questions_table
     
  
+=======columns======
+ALTER TABLE `farmers` CHANGE `id` `id` INT(36) NOT NULL AUTO_INCREMENT;
 
-php artisan admin:make DistrictModelController --model=App\Models\DistrictModel
+ 
 
-php artisan make:model AdminRole
+====================
+php artisan admin:make FarmerController --model=App\\Models\\Farmers\\Farmer
 
-php artisan make:migration add_column_to_ELearningResources --table=ELearningResources
+php artisan make:model Farmer -m 
+
+php artisan make:migration add_column_to_farmers --table=farmers
 php artisan make:migration add_columns_TrainingResource --table=training_tesources
 
 ---

@@ -163,6 +163,18 @@ class ApiAuthController extends Controller
         $f->insurance_cost = $r->insurance_cost;
         $f->repaid_amount = $r->repaid_amount;
         $f->photo = $r->photo;
+        $f->district_id = $r->district_id;
+        $f->subcounty_id = $r->subcounty_id;
+        $f->parish_id = $r->parish_id;
+        $f->bank_id = $r->bank_id;
+        $f->other_livestock_count = $r->other_livestock_count;
+        $f->poultry_count = $r->poultry_count;
+        $f->sheep_count = $r->sheep_count;
+        $f->goat_count = $r->goat_count;
+        $f->cattle_count = $r->cattle_count;
+        $f->bank_account_number = $r->bank_account_number;
+        $f->has_receive_loan = $r->has_receive_loan;
+
         $image = "";
         if (!empty($_FILES)) {
             try {

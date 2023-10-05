@@ -25,6 +25,65 @@ Route::POST("users/login", function () {
 Route::get('/user', function (Request $request) {
     return 'Testing';
 });
+Route::get('/select-distcists', function (Request $request) {
+    $conditions = [];
+    if ($request->has('q')) {
+        $conditions[] = ['name', 'like', '%' . $request->q . '%'];
+    }
+    $districts = \App\Models\DistrictModel::where($conditions)->get();
+    $data = [];
+    foreach ($districts as $district) {
+        $data[] = [
+            'id' => $district->id,
+            'text' => $district->name
+        ];
+    }
+    return response()->json([
+        'data' => $data
+    ]);
+});
+Route::get('/select-subcounties', function (Request $request) {
+    $conditions = [];
+    if ($request->has('q')) {
+        if ($request->has('by_id')) {
+            $conditions['district_id'] = ((int)($request->q));
+        } else {
+            $conditions[] = ['name', 'like', '%' . $request->q . '%'];
+        }
+    }
+    $districts = \App\Models\SubcountyModel::where($conditions)->get();
+    $data = [];
+    foreach ($districts as $district) {
+        $data[] = [
+            'id' => $district->id,
+            'text' => $district->name
+        ];
+    }
+    return response()->json([
+        'data' => $data
+    ]);
+});
+Route::get('/select-parishes', function (Request $request) {
+    $conditions = [];
+    if ($request->has('q')) {
+        if ($request->has('by_id')) {
+            $conditions['subcounty_id'] = ((int)($request->q));
+        } else {
+            $conditions[] = ['name', 'like', '%' . $request->q . '%'];
+        }
+    }
+    $districts = \App\Models\ParishModel::where($conditions)->get();
+    $data = [];
+    foreach ($districts as $district) {
+        $data[] = [
+            'id' => $district->id,
+            'text' => $district->name
+        ];
+    }
+    return response()->json([
+        'data' => $data
+    ]);
+});
 
 Route::group([
     'prefix' => '/v1'

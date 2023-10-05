@@ -3,19 +3,21 @@
 namespace App\Admin\Controllers;
 
 use App\Models\DistrictModel;
+use App\Models\ParishModel;
+use App\Models\SubcountyModel;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 
-class DistrictModelController extends AdminController
+class ParishModelModelController extends AdminController
 {
     /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = 'Districts';
+    protected $title = 'Parishes';
 
     /**
      * Make a grid builder.
@@ -24,13 +26,20 @@ class DistrictModelController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new DistrictModel());
+        $grid = new Grid(new ParishModel());
         $grid->disableBatchActions();
         $grid->disableExport();
         $grid->quickSearch('name')->placeholder('Search district name');
         $grid->model()->orderBy('name', 'asc');
         $grid->column('id', __('ID'))->sortable();
-        $grid->column('name', __('Name'))->sortable(); 
+        $grid->column('name', __('Name'))->sortable();
+        $grid->column('district_id', __('District'))
+            ->display(function ($district_id) {
+                if ($this->district == null) {
+                    return "-";
+                }
+                return $this->district->name;
+            })->sortable();
 
         return $grid;
     }
@@ -43,7 +52,7 @@ class DistrictModelController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(DistrictModel::findOrFail($id));
+        $show = new Show(ParishModel::findOrFail($id));
 
         $show->field('id', __('Id'));
         $show->field('name', __('Name'));
@@ -67,9 +76,17 @@ class DistrictModelController extends AdminController
      */
     protected function form()
     {
-        $form = new Form(new DistrictModel());
+        $form = new Form(new ParishModel());
 
+        $form->select('subcounty_id', __('Subcounty'))->options(function ($id) {
+            $district = SubcountyModel::find($id);
+            if ($district) {
+                return [$district->id => $district->name];
+            }
+        })->ajax(env('APP_URL') . '/api/select-subcounties')->rules('required');
         $form->text('name', __('Name'))->rules('required');
+
+
         /*  $form->number('district_status', __('District status'));
         $form->number('region_id', __('Region id'));
         $form->number('subregion_id', __('Subregion id'));

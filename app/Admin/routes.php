@@ -27,9 +27,12 @@ Route::group([
     $router->resource('gens', GenController::class);
     $router->resource('organisation-joining-requests', OrganisationJoiningRequestController::class);
     $router->resource('resource-categories', ResourceCategoryController::class);
+    $router->resource('financial-institutions', FinancialInstitutionController::class);
 
     $router->resource('farmer-questions', FarmerQuestionController::class);
     $router->resource('farmer-question-answers', FarmerQuestionAnswerController::class);
     $router->resource('product-categories', ProductCategoryController::class);
     $router->resource('districts', DistrictModelController::class);
+    $router->resource('subcounties', SubcountyModelController::class);
+    $router->resource('parishes', ParishModelModelController::class);
 });
