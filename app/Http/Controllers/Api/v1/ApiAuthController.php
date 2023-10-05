@@ -134,7 +134,7 @@ class ApiAuthController extends Controller
         $f->farm_decision_role = $r->farm_decision_role;
         $f->is_pwd = $r->is_pwd;
         $f->is_refugee = $r->is_refugee;
-        $f->date_of_birth = $r->date_of_birth;
+        $f->date_of_birth = Carbon::parse($r->date_of_birth);
         $f->age_group = $r->age_group;
         $f->language_preference = $r->language_preference;
         $f->phone_number = $r->phone_number;
