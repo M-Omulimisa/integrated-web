@@ -26,8 +26,11 @@ class ResourceCategoryController extends AdminController
     {
         $grid = new Grid(new ResourceCategory());
 
+        $grid->disableBatchActions();
+        $grid->disableExport();
+        $grid->quickSearch('name')->placeholder('Search by name...');
         $grid->model()->orderBy('name', 'asc');
-        $grid->column('name', __('Name'));
+        $grid->column('name', __('Name'))->sortable();
         //$grid->column('thumbnail', __('Thumbnail'));
         $grid->column('details', __('Details'));
 

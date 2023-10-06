@@ -19,7 +19,7 @@ php artisan admin:make FarmerController --model=App\\Models\\Farmers\\Farmer
 
 php artisan make:model Farmer -m 
 
-php artisan make:migration add_column_to_farmers --table=farmers
+php artisan make:migration change_column_to_farmers --table=training_resources
 php artisan make:migration add_columns_TrainingResource --table=training_tesources
 
 ---
