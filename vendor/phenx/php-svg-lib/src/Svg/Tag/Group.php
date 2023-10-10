@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package php-svg-lib
  * @link    http://github.com/PhenX/php-svg-lib
@@ -8,6 +9,7 @@
 
 namespace Svg\Tag;
 
+use Encore\Admin\Auth\Database\Administrator;
 use Svg\Style;
 
 class Group extends AbstractTag
@@ -26,8 +28,17 @@ class Group extends AbstractTag
         $this->applyTransform($attributes);
     }
 
+    //getter for registration_year
+    public function getRegistrationYearAttribute($value)
+    {
+        //counte memebrs in this group 
+        $members = Administrator::where('group_id', $this->id)->get();
+        return $members;
+    }
+
+
     protected function after()
     {
         $this->document->getSurface()->restore();
     }
-} 
+}

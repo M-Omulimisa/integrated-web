@@ -106,6 +106,7 @@ class ApiAuthController extends Controller
         $f->organisation_id = $u->organisation_id;
         $f->farmer_group_id = $r->farmer_group_id;
         $f->first_name = $r->first_name;
+        $f->last_name = $r->last_name;
         $f->country_id = $r->country_id;
         $f->national_id_number = $r->national_id_number;
         $f->gender = $r->gender;
