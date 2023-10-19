@@ -125,7 +125,7 @@ class TrainingController extends AdminController
             ->rules('required');
         $form->text('venue', __('Venue'))->rules('required');
 
-        $form->select('location_id', __('Select Location'))
+        $form->select('location_id', __('Select Venue'))
             ->options(Location::where([])
                 ->orderBy('name', 'asc')
                 ->get()->pluck('name', 'id'));

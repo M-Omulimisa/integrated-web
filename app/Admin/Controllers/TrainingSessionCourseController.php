@@ -124,7 +124,7 @@ class TrainingSessionCourseController extends AdminController
                 ->get()->pluck('name', 'id'))
             ->rules('required');
 
-        $form->select('location_id', __('Select Location'))
+        $form->select('location_id', __('Select Venue'))
             ->options(Location::where([])
                 ->orderBy('name', 'asc')
                 ->get()->pluck('name', 'id'))
@@ -158,7 +158,7 @@ class TrainingSessionCourseController extends AdminController
                 Auth::user()->organisation_id
             )
                 ->orderBy('name', 'asc')
-                ->get()->pluck('name', 'id')) 
+                ->get()->pluck('name', 'id'))
             ->rules('required')
             ->default(1);
 

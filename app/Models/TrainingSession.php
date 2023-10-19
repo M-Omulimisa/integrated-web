@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Farmers\Farmer;
 use App\Models\Settings\Location;
 use App\Models\Training\Training;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,7 +27,7 @@ class TrainingSession extends Model
 
     function members()
     {
-        return $this->belongsToMany(User::class, 'training_training_session_has_members');
+        return $this->belongsToMany(Farmer::class, 'training_training_session_has_members', 'training_session_id', 'user_id'); 
     }
 
     public function setAttendanceListPicturesAttribute($pictures)

@@ -35,4 +35,7 @@ Route::group([
     $router->resource('districts', DistrictModelController::class);
     $router->resource('subcounties', SubcountyModelController::class);
     $router->resource('parishes', ParishModelModelController::class);
+    $router->resource('locations', LocationController::class);
+    
+ 
 });

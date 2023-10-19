@@ -12,6 +12,7 @@ use App\Models\FarmerQuestion;
 use App\Models\FarmerQuestionAnswer;
 use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
+use App\Models\Image;
 use App\Models\OrganisationJoiningRequest;
 use App\Models\Organisations\Organisation;
 use App\Models\ParishModel;
@@ -33,6 +34,7 @@ use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -349,20 +351,85 @@ class ApiAuthController extends Controller
     public function training_session_post(Request $r)
     {
 
-        return $this->success(null, "Success");
-
         $u = auth('api')->user();
-        if ($r->name != null) {
-            $u->name = $r->name;
+        if ($r == null) {
+            return $this->error("Unauthorised.");
         }
 
-        $u_1 = User::where([
-            'email' => $r->email,
-        ])->first();
+        $id = $r->id;
+        if ($id == null) {
+            return $this->error("Invalid request.");
+        }
+        if ($r->training_id == null) {
+            return $this->error("Training is required.");
+        }
+        if ($r->members_ids == null) {
+            return $this->error("Training is required.");
+        }
+        if ($r->location_id == null) {
+            return $this->error("Location is required.");
+        }
+        $training = Training::find($r->training_id);
+        if ($training == null) {
+            return $this->error("Training not found.");
+        }
 
-        return $this->success(TrainingSession::where([
-            'organisation_id' => auth('api')->user()->organisation_id
-        ])->get(), "Success");
+
+        $session = new TrainingSession();
+        $session->organisation_id = $u->organisation_id;
+        $session->training_id = $training->id;
+        $session->location_id = $r->location_id;
+        $session->conducted_by = $u->id;
+        $session->session_date = $r->session_date;
+        $session->start_date = $r->start_date;
+        $session->end_date = $r->end_date;
+        $end_time = explode(" ", $r->end_date);
+        if (isset($end_time[1])) {
+            $session->end_date = $end_time[1];
+        }
+        $start_time = explode(" ", $r->start_date);
+        if (isset($start_time[1])) {
+            $session->start_date = $start_time[1];
+        }
+        $session->details = $r->details;
+        $session->topics_covered = $r->details;
+        $session->gps_latitude = $r->gps_latitude;
+        $session->gps_longitude = $r->gps_longitude;
+
+        $images = [];
+        foreach (Image::where([
+            'parent_id' => $id,
+        ])->get() as $key => $value) {
+            $images[] = 'images/' . $value->src;
+        }
+        $session->attendance_list_pictures = $images;
+
+        $members_ids = [];
+        try {
+            $members_ids = json_decode($r->members_ids);
+        } catch (\Throwable $t) {
+            $members_ids = [];
+        }
+        if (count($members_ids) < 1) {
+            return $this->error("No members selected.");
+        }
+        $member = Farmer::find($members_ids[0]);
+        if ($member == null) {
+            return $this->error("Member not found.");
+        }
+        $session->organisation_id = $member->organisation_id;
+        $session->farmer_group_id = $member->farmer_group_id;
+
+        try {
+            $session->save();
+            foreach ($members_ids as $key => $member_id) {
+                $sql = "INSERT INTO `training_training_session_has_members` (`training_session_id`, `user_id`) VALUES (?, ?)";
+                DB::insert($sql, [$session->id, $member_id]);
+            }
+        } catch (\Throwable $t) {
+            return $this->error($t->getMessage());
+        }
+        return $this->success(null, "Success");
     }
 
     public function my_roles()

@@ -15,8 +15,7 @@ ALTER TABLE `farmers` CHANGE `id` `id` INT(36) NOT NULL AUTO_INCREMENT;
  
 
 ====================
-php artisan admin:make FarmerController --model=App\\Models\\Farmers\\Farmer
-
+php artisan admin:make LocationController --model=App\\Models\\Settings\\Location
 php artisan make:model Farmer -m 
 body
 php artisan make:migration change_column_to_farmers_2 --table=training_resources
