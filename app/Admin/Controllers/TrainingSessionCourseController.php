@@ -147,7 +147,7 @@ class TrainingSessionCourseController extends AdminController
         $form->divider();
         $form->html('<h3>Members Present</h3>');
         $form->select('farmer_group_id', __('Select Farmer Group'))
-            ->options(FarmerGroup::where([[]])
+            ->options(FarmerGroup::where([])
                 ->orderBy('name', 'asc')
                 ->get()->pluck('name', 'id'))
             ->rules('required')
