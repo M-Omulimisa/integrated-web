@@ -31,7 +31,7 @@ class TrainingSessionCourseController extends AdminController
     {
         $grid = new Grid(new TrainingSession());
 
-        $grid->model()->where('organisation_id', Auth::user()->organisation_id);
+        $grid->model()->where([]);
         $grid->disableBatchActions();
         $grid->column('session_date', __('Session Date'))->sortable();
         $grid->column('training.name', __('Training'));
@@ -116,10 +116,7 @@ class TrainingSessionCourseController extends AdminController
             ->default($u->organisation_id);
 
         $form->select('training_id', __('Select Training'))
-            ->options(Training::where(
-                'organisation_id',
-                Auth::user()->organisation_id
-            )
+            ->options(Training::where([])
                 ->orderBy('name', 'asc')
                 ->get()->pluck('name', 'id'))
             ->rules('required');
@@ -131,10 +128,7 @@ class TrainingSessionCourseController extends AdminController
             ->rules('required');
 
         $form->select('conducted_by', __('Conducted By'))
-            ->options(User::where(
-                'organisation_id',
-                Auth::user()->organisation_id
-            )
+            ->options(User::where([])
                 ->orderBy('name', 'asc')
                 ->get()->pluck('name', 'id'))
             ->rules('required');
@@ -153,20 +147,14 @@ class TrainingSessionCourseController extends AdminController
         $form->divider();
         $form->html('<h3>Members Present</h3>');
         $form->select('farmer_group_id', __('Select Farmer Group'))
-            ->options(FarmerGroup::where(
-                'organisation_id',
-                Auth::user()->organisation_id
-            )
+            ->options(FarmerGroup::where([[]])
                 ->orderBy('name', 'asc')
                 ->get()->pluck('name', 'id'))
             ->rules('required')
             ->default(1);
 
         $form->listbox('members', 'Members Present')
-            ->options(User::where(
-                'organisation_id',
-                Auth::user()->organisation_id
-            )
+            ->options(User::where([])
                 ->orderBy('name', 'asc')
                 ->get()->pluck('name', 'id'))
             ->help("Select offences involded in this case")
