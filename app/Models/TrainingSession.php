@@ -12,6 +12,37 @@ class TrainingSession extends Model
 {
     use HasFactory;
 
+    //training_text
+    //conducted_by_text
+    protected $appends = [
+        'training_text',
+        'conducted_by_text',
+        'members_count',
+    ];
+
+    //members_count
+    public function getMembersCountAttribute()
+    {
+        return $this->members()->count();
+    }
+
+    //getter for conducted_by_text
+    public function getConductedByTextAttribute()
+    {
+        if ($this->conducted == null) {
+            return '-';
+        }
+        return $this->conducted->name;
+    }
+
+    public function getTrainingTextAttribute()
+    {
+        if ($this->training == null) {
+            return '-';
+        }
+        return $this->training->name;
+    }
+
     function training()
     {
         return $this->belongsTo(Training::class);
@@ -27,7 +58,7 @@ class TrainingSession extends Model
 
     function members()
     {
-        return $this->belongsToMany(Farmer::class, 'training_training_session_has_members', 'training_session_id', 'user_id'); 
+        return $this->belongsToMany(Farmer::class, 'training_training_session_has_members', 'training_session_id', 'user_id');
     }
 
     public function setAttendanceListPicturesAttribute($pictures)
