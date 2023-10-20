@@ -17,8 +17,18 @@ class TrainingSession extends Model
     protected $appends = [
         'training_text',
         'conducted_by_text',
+        'location_text',
         'members_count',
     ];
+
+    //location_text
+    public function getLocationTextAttribute()
+    {
+        if ($this->location == null) {
+            return '-';
+        }
+        return $this->location->name;
+    } 
 
     //members_count
     public function getMembersCountAttribute()
