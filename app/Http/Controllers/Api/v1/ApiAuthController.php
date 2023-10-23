@@ -7,11 +7,13 @@ use App\Models\AdminPermission;
 use App\Models\AdminRole;
 use App\Models\AdminRoleUser;
 use App\Models\CountyModel;
+use App\Models\Crop;
 use App\Models\DistrictModel;
 use App\Models\FarmerQuestion;
 use App\Models\FarmerQuestionAnswer;
 use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
+use App\Models\GardenModel;
 use App\Models\Image;
 use App\Models\OrganisationJoiningRequest;
 use App\Models\Organisations\Organisation;
@@ -191,6 +193,16 @@ class ApiAuthController extends Controller
         return $this->success($f, "Success");
     }
 
+    public function gardens()
+    {
+        $u = auth('api')->user();
+        $conditions = [];
+        if (!$u->isRole('admin')) {
+            $conditions = ['user_id' => $u->id];
+        }
+        return $this->success(GardenModel::where($conditions)->get(), "Success");
+    }
+
     public function farmers()
     {
         $u = auth('api')->user();
@@ -211,6 +223,10 @@ class ApiAuthController extends Controller
     public function districts()
     {
         return $this->success(DistrictModel::where([])->get(), "Success");
+    }
+    public function crops()
+    {
+        return $this->success(Crop::where([])->get(), "Success");
     }
     public function resource_categories()
     {

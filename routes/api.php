@@ -128,6 +128,8 @@ Route::group([
     Route::POST('farmer-questions-create', [ApiAuthController::class, 'farmer_questions_create']);
     Route::POST('farmer-answers-create', [ApiAuthController::class, 'farmer_answers_create']);
 
+    Route::get('crops', [ApiAuthController::class, 'crops']);
+    Route::get('gardens', [ApiAuthController::class, 'gardens']);
     Route::get('districts', [ApiAuthController::class, 'districts']);
     Route::get('resource-categories', [ApiAuthController::class, 'resource_categories']);
     Route::get('counties', [ApiAuthController::class, 'counties']);
