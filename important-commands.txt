@@ -1,0 +1,3 @@
+php artisan make:model Crop -m
+php artisan admin:make CropsController --model=App\\Models\\Crop
+php artisan make:migration add_cols_to_garden_models --table=garden_models

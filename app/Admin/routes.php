@@ -36,6 +36,5 @@ Route::group([
     $router->resource('subcounties', SubcountyModelController::class);
     $router->resource('parishes', ParishModelModelController::class);
     $router->resource('locations', LocationController::class);
-    
- 
+    $router->resource('crops', CropsController::class);
 });
