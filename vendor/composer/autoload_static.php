@@ -1061,6 +1061,7 @@ class ComposerStaticInit38c881c8cee4a47a6b71d620feb40794
         'App\\Models\\Farmers\\FarmerGroupEnterprise' => __DIR__ . '/../..' . '/app/Models/Farmers/FarmerGroupEnterprise.php',
         'App\\Models\\Farmers\\FarmerSpecification' => __DIR__ . '/../..' . '/app/Models/Farmers/FarmerSpecification.php',
         'App\\Models\\FinancialInstitution' => __DIR__ . '/../..' . '/app/Models/FinancialInstitution.php',
+        'App\\Models\\GardenCoordicate' => __DIR__ . '/../..' . '/app/Models/GardenCoordicate.php',
         'App\\Models\\GardenModel' => __DIR__ . '/../..' . '/app/Models/GardenModel.php',
         'App\\Models\\Gen' => __DIR__ . '/../..' . '/app/Models/Gen.php',
         'App\\Models\\IdValidations\\PhoneValidation' => __DIR__ . '/../..' . '/app/Models/IdValidations/PhoneValidation.php',

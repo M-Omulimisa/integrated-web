@@ -274,6 +274,7 @@ return array(
     'App\\Models\\Farmers\\FarmerGroupEnterprise' => $baseDir . '/app/Models/Farmers/FarmerGroupEnterprise.php',
     'App\\Models\\Farmers\\FarmerSpecification' => $baseDir . '/app/Models/Farmers/FarmerSpecification.php',
     'App\\Models\\FinancialInstitution' => $baseDir . '/app/Models/FinancialInstitution.php',
+    'App\\Models\\GardenCoordicate' => $baseDir . '/app/Models/GardenCoordicate.php',
     'App\\Models\\GardenModel' => $baseDir . '/app/Models/GardenModel.php',
     'App\\Models\\Gen' => $baseDir . '/app/Models/Gen.php',
     'App\\Models\\IdValidations\\PhoneValidation' => $baseDir . '/app/Models/IdValidations/PhoneValidation.php',

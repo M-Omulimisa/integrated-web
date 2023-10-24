@@ -13,6 +13,7 @@ use App\Models\FarmerQuestion;
 use App\Models\FarmerQuestionAnswer;
 use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
+use App\Models\GardenCoordicate;
 use App\Models\GardenModel;
 use App\Models\Image;
 use App\Models\OrganisationJoiningRequest;
@@ -446,6 +447,105 @@ class ApiAuthController extends Controller
             return $this->error($t->getMessage());
         }
         return $this->success(null, "Success");
+    }
+
+    public function gardens_create(Request $r)
+    {
+
+        $u = auth('api')->user();
+        if ($r == null) {
+            return $this->error("Unauthorised.");
+        }
+
+        $id = $r->id;
+        if ($id == null) {
+            return $this->error("Invalid request.");
+        }
+
+        if ($r->user_id == null) {
+            return $this->error("User is required.");
+        }
+        if ($r->coordinates == null) {
+            return $this->error("Coordinates are required.");
+        }
+        if ($r->parish_id == null) {
+            return $this->error("Parish is required.");
+        }
+        if ($r->name == null) {
+            return $this->error("Name is required.");
+        }
+        if ($r->size == null) {
+            return $this->error("Size is required.");
+        }
+        if ($r->crop_id == null) {
+            return $this->error("Crop is required.");
+        }
+        if ($r->created_at == null) {
+            return $this->error("Planting date is required.");
+        }
+
+        $garden = new GardenModel();
+        $garden->user_id = $r->user_id;
+        $garden->created_at = Carbon::parse($r->created_at);
+        $garden->district_id = $r->district_id;
+        $garden->subcounty_id = $r->subcounty_id;
+        $garden->parish_id = $r->parish_id;
+        $garden->crop_id = $r->crop_id;
+        $garden->village = $r->village;
+        $garden->name = $r->name;
+        $garden->details = $r->details;
+        $garden->size = $r->size;
+        $garden->status = $r->status;
+        $garden->soil_type = $r->soil_type;
+        $garden->soil_ph = $r->soil_ph;
+        $garden->soil_texture = $r->soil_texture;
+        $garden->soil_depth = $r->soil_depth;
+        $garden->soil_moisture = $r->soil_moisture;
+        $garden->crop_planted = $r->crop_text;
+
+        $images = [];
+        foreach (Image::where([
+            'parent_id' => $id,
+        ])->get() as $key => $value) {
+            $images[] = 'images/' . $value->src;
+        }
+        $garden->photos = $images; 
+
+        $coordinates = [];
+        if ($r->coordinates != null) {
+            try {
+                $coordinates = json_decode($r->coordinates);
+                if (!is_array($coordinates)) {
+                    $coordinates = [];
+                }
+            } catch (\Throwable $t) {
+                $coordinates = [];
+            }
+        }
+
+        try {
+            $garden->save();
+            foreach ($coordinates as $key => $coordinate) {
+                $coordicate = new GardenCoordicate();
+                $coordicate->garden_id = $garden->id;
+                $coordicate->latitude = $coordinate->attribute_1;
+                $coordicate->longitude = $coordinate->attribute_2;
+                $coordicate->save();  
+            }
+            //success
+            return $this->success(null, "Success"); 
+        } catch (\Throwable $t) {
+            return $this->error($t->getMessage());
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+ 
+    
+
+ 
+
+         
+ 
     }
 
     public function my_roles()
