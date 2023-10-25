@@ -509,7 +509,7 @@ class ApiAuthController extends Controller
         ])->get() as $key => $value) {
             $images[] = 'images/' . $value->src;
         }
-        $garden->photos = $images; 
+        $garden->photos = $images;
 
         $coordinates = [];
         if ($r->coordinates != null) {
@@ -530,22 +530,15 @@ class ApiAuthController extends Controller
                 $coordicate->garden_id = $garden->id;
                 $coordicate->latitude = $coordinate->attribute_1;
                 $coordicate->longitude = $coordinate->attribute_2;
-                $coordicate->save();  
+                $coordicate->save();
             }
             //success
-            return $this->success(null, "Success"); 
+            return $this->success(null, "Success");
         } catch (\Throwable $t) {
             return $this->error($t->getMessage());
         } catch (\Throwable $th) {
             //throw $th;
         }
- 
-    
-
- 
-
-         
- 
     }
 
     public function my_roles()
