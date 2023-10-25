@@ -15,3 +15,5 @@ omulimisa.sql
 docker-compose.yml
 .htaccess
 db
+public/storage/files
+public/storage/images
