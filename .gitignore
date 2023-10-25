@@ -1,3 +1,17 @@
 secret.txt
 config/admin.php
 .env
+/node_modules
+/vendor
+/storage/fonts
+/storage/fonts/*
+/storage/*.key
+.idea
+.docker
+ssl.crt
+ssl.key
+important-commands.txt
+omulimisa.sql
+docker-compose.yml
+.htaccess
+db

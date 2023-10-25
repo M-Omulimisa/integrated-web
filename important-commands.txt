@@ -1,3 +1,0 @@
-php artisan make:model GardenCoordicates -m
-php artisan admin:make CropsController --model=App\\Models\\Crop
-php artisan make:migration change_cols_to_garden_models --table=garden_models
