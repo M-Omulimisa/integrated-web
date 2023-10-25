@@ -198,9 +198,9 @@ class ApiAuthController extends Controller
     {
         $u = auth('api')->user();
         $conditions = [];
-        if (!$u->isRole('admin')) {
-            //$conditions = ['user_id' => $u->id];
-        }
+        /* if (!$u->isRole('admin')) {
+            //$conditions = ['user_id' => $u->id]; 
+        } */
         return $this->success(GardenModel::where($conditions)->get(), "Success");
     }
 
