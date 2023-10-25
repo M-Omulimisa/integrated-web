@@ -12,6 +12,7 @@ class Dashboard
      */
     public static function title()
     {
+        return "New Home";
         return view('admin::dashboard.title');
     }
 
