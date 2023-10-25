@@ -5,16 +5,6 @@ return [
     'reset_password_request' => "Reset password request",
     'reset_password_body'=>"You used this email to ask for reset password. If its you that made this request, click the link bellow to reset a new password or ignore if you did not make this request",
     
-    'new_ticket_email' => "Hello a new ticket has been opened ",
-    'ticket_created' => 'Ticket information successfully created! ',
-    'ticket_replied' => 'Ticket replied successfully !',
-    'ticket_status' => 'Ticket information successfully Changed !',
-    'reply_ticket' => 'Reply Ticket',
-    'ticket_deleted_successfully' => 'Ticket deleted successfully!',
-    'activity_ticket_status_changed' => 'Changed ticket status',
-    'ticket_status_changed' => 'Ticket status has been changed!',
-    'ticket_edited_successfully' => 'Ticket edited successfully',
-    
     'invitation_title'=>'You have been invited ',
     'invitation_body'=>'Hello you have been invited to ',
     'check_email_for_a_link'=>'Check your email for a reset link',

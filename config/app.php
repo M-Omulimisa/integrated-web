@@ -188,9 +188,6 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         // PDF 
         Barryvdh\DomPDF\ServiceProvider::class,
-        
-        App\Providers\Support\TicketServiceProvider::class,
-        App\Providers\Support\TicketCommentServiceProvider::class,
 
         App\Providers\UserManagement\UserInvitationServiceProvider::class,
 
