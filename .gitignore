@@ -19,3 +19,5 @@ omulimisa.sql
 ssl.crt
 ssl.key
 .DS_Store
+*.lock
+composer.lock
