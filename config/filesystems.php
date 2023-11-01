@@ -45,11 +45,10 @@ return [
 
         'admin' => [
             'driver' => 'local',
-            'root' => env('LOCAL_STORAGE'), 
+            'root' => public_path('storage'),
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
-            'url' => env('APP_URL') . '/storage', 
         ],
-
 
         'local' => [
             'driver' => 'local',
