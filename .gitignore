@@ -1,7 +1,6 @@
 /.docker
 /.idea
 secret.txt
-config/admin.php
 /db
 /node_modules
 /public/storage/files/*
