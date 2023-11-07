@@ -205,6 +205,7 @@ class MenuController extends Controller
             $action = "request";
 
             if($last_menu == "insurance_another") {
+                $this->menu_helper->savePreviousItemList($sessionId, $phoneNumber);
                 $seasonId   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_season_id');
                 $input_text = $this->menu_helper->getSeasonMenu($seasonId);
             }
@@ -307,6 +308,7 @@ class MenuController extends Controller
                 $response .= "\n1) Yes\n";
                 $response .= "2) No";
                 $current_menu   = "insurance_confirmation";
+                $field = "referee_phone";
             }
             else {
                 $response       = "Invalid!\n";
@@ -314,47 +316,6 @@ class MenuController extends Controller
                 $current_menu   = "insurance_referee_phone";
             }
         } 
-        elseif ($last_menu == "insurance_referee" || $last_menu == "insurance_referee_phone") {
-            $action    = "request";
-
-            if($last_menu == "insurance_referee_phone" && !$this->menu_helper->isLocalPhoneValid($input_text, '256')) {
-                $response       = "Invalid!\n";
-                $response       .= "Phone number of referee (07XXXX)";
-                $current_menu   = "insurance_referee_phone";
-                $phone = false;
-            }
-            else {
-                // $field = "referee_phone";
-                $input_text == "1";
-                $phone = true;
-            }
-
-            if ($input_text == "1" && $phone) {
-                $acerage     = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_acreage');
-
-                $seasonId       = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_season_id');
-                $seasonName     = $this->menu_helper->getSeason($seasonId, 'name');
-
-                $enterprise_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_enterprise_id');
-                $enterpriseName = $this->menu_helper->getEnterprise($enterprise_id, 'name');
-
-                $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_subscriber');                
-                $sum_insured    = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_sum_insured');
-                $premium        = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_premium');
-
-                $response  = "Insuring ".$acerage."A of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured)." in ".$seasonName.". Pay premium of ugx".number_format(($premium));                
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'confirmation_message', $response);
-
-                $response .= "\n1) Yes\n";
-                $response .= "2) No";
-                $current_menu   = "insurance_confirmation";
-            }
-            elseif($last_menu == "insurance_referee" && $input_text != "1") {
-                $response       = "Wrong input!\n";
-                $response       .= $referee;
-                $current_menu   = "insurance_referee";
-            }
-        }  
         elseif ($last_menu == "insurance_confirmation") {
             $action         = "end";
             

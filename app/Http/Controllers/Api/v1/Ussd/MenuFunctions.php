@@ -17,6 +17,7 @@ use App\Models\Settings\Location;
 use App\Models\Settings\Enterprise;
 use App\Models\Market\MarketPackage;
 use App\Models\Ussd\UssdSessionData;
+use App\Models\Ussd\UssdInsuranceList;
 use App\Models\Settings\CountryProvider;
 use App\Models\Market\MarketSubscription;
 use App\Models\Market\MarketPackageMessage;
@@ -606,13 +607,28 @@ class MenuFunctions
         return $enterprise->$param ?? null;
     }
 
+    public function savePreviousItemList($sessionId, $phoneNumber)
+    {
+        $saved_data = UssdSessionData::whereSessionId($sessionId)
+                                            ->wherePhoneNumber($phoneNumber)
+                                            ->first();
+
+        UssdInsuranceList::create([
+            'ussd_session_data_id' => $saved_data->id,
+            'insurance_enterprise_id' => $saved_data->insurance_enterprise_id,
+            'insurance_acreage' => $saved_data->insurance_acreage,
+            'insurance_sum_insured' => $saved_data->insurance_sum_insured,
+            'insurance_premium' => $saved_data->insurance_premium,
+        ]);
+    }
+
     public function getInsuranceConfirmation($sessionId, $phoneNumber)
     {
         $saved_data = UssdSessionData::whereSessionId($sessionId)
                                             ->wherePhoneNumber($phoneNumber)
                                             ->first();
 
-        $acerage     = $saved_data->insurance_acreage;
+        $acerage     = $saved_data->insurance_acreage.'A';
 
         $seasonId       = $saved_data->insurance_season_id;
         $seasonName     = $this->getSeason($seasonId, 'name');
@@ -624,7 +640,21 @@ class MenuFunctions
         $sum_insured    = $saved_data->insurance_sum_insured;
         $premium        = $saved_data->insurance_premium;
 
-        return "Insuring ".$acerage."A of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured)." in ".$seasonName.". Pay premium of ugx".number_format(($premium));
+        if (count($saved_data->insurance_list) > 0) {
+            foreach ($saved_data->insurance_list as $list) {
+                $acerage .= ','.$list->insurance_acreage.'A';
+
+                $enterprise_id  = $saved_data->insurance_enterprise_id;
+                $enterpriseName .= ','.$this->getEnterprise($enterprise_id, 'name');
+
+                $sum_insured  += $list->insurance_sum_insured;
+                $premium  += $list->insurance_premium;
+            }
+        }
+
+        $this->saveToField($sessionId, $phoneNumber, 'insurance_amount', $premium);
+
+        return "Insuring ".$acerage." of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured)." in ".$seasonName.". Pay premium of ugx".number_format(($premium));
     }
 
     /**
@@ -652,7 +682,7 @@ class MenuFunctions
         // Create a new MarketSubscription record using the subscription_data array and assign it to $subscription variable.
         if ($subscription = InsuranceSubscription::create($subscription_data)) {
             // Get the payment API for the subscriber's phone number.
-            $api = $this->getServiceProvider($sessionData->market_subscriber, 'payment_api');
+            $api = $this->getServiceProvider($sessionData->insurance_subscriber, 'payment_api');
 
             // Create an array containing the data for the new SubscriptionPayment record.
             $payment = [
