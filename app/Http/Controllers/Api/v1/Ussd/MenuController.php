@@ -203,7 +203,6 @@ class MenuController extends Controller
             if($last_menu == "insurance_another") {
                 $seasonId   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_season_id');
                 $input_text = $this->menu_helper->getSeasonMenu($seasonId);
-                \Log::info([$input_text]);
             }
 
             if ($this->menu_helper->checkIfSeasonIsValid($input_text)) {
