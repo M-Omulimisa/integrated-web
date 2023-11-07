@@ -42,11 +42,12 @@ class UssdSessionData extends BaseModel
             'insurance_acreage',
             'insurance_sum_insured',
             'insurance_premium',
+            'insurance_amount',
             'insurance_confirmation',
             'insurance_payment_status',
 
+            'referee_phone',
             'confirmation_message',
-            'referee_phone'
         ];
 
     /**
@@ -75,5 +76,10 @@ class UssdSessionData extends BaseModel
      * @var bool
      */
     public $incrementing = false;
+
+    public function insurance_list()
+    {
+        return $this->hasMany(UssdInsuranceList::class, 'ussd_session_data_id');
+    }
 }
 
