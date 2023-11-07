@@ -5,28 +5,32 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Zebra_Image;
-use Berkayk\OneSignal\OneSignalClient; 
+use Berkayk\OneSignal\OneSignalClient;
 
 class Utils
 {
 
-    static function isLocalhost() {
+    static function isLocalhost()
+    {
+        if (!isset($_SERVER['SERVER_NAME'])) {
+            return false;
+        }
         $serverName = $_SERVER['SERVER_NAME'];
         $httpHost = $_SERVER['HTTP_HOST'];
-    
+
         // Check if the server name or HTTP host contains "localhost"
         if (strpos($serverName, 'localhost') !== false || strpos($httpHost, 'localhost') !== false) {
             return true;
         }
-    
+
         // Check for common local IP addresses (127.0.0.1 and ::1)
         $localIPs = array('127.0.0.1', '::1');
         if (in_array($serverName, $localIPs) || in_array($httpHost, $localIPs)) {
             return true;
         }
-    
+
         return false;
-    }    
+    }
 
     public static function sendNotification(
         $msg,
