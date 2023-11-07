@@ -471,6 +471,23 @@ class MenuFunctions
         }
     }
 
+    public function getParishList($subcountyId)
+    {
+        $locations = Location::whereParentId($subcountyId)->orderBy('name', 'ASC')->get();
+
+        if (count($locations) > 0) {
+            $list = '';
+            $count = 0;
+            foreach ($locations as $parish) {
+                $list .= (++$count).") ".$parish->name."\n";
+            }
+            return $list;
+        }
+        else{
+            return null;
+        }
+    }
+
     public function getSelectedSubcounty($subcounty_menu_no, $districtId)
     {
         $menu = intval($subcounty_menu_no);
@@ -482,9 +499,26 @@ class MenuFunctions
         return $subcounty ?? null;
     }
 
+    public function getSelectedParish($parish_menu_no, $subcountyId)
+    {
+        $menu = intval($parish_menu_no);
+
+        $locations = Location::whereParentId($subcountyId)->orderBy('name', 'ASC')->get();
+
+        if($menu!=0) $parish = $locations->skip($menu-1)->take(1)->first();
+
+        return $parish ?? null;
+    }
+
     public function checkIfSubcountyIsValid($districtId, $subcounty_name)
     {
         $location = Location::whereParentId($districtId)->whereName($subcounty_name)->first();
+        return $location ? true : false;
+    }
+
+    public function checkIfParishIsValid($subcountyId, $parish_name)
+    {
+        $location = Location::whereParentId($subcountyId)->whereName($parish_name)->first();
         return $location ? true : false;
     }
 
@@ -704,5 +738,51 @@ class MenuFunctions
 
         // If an error occurred or data was missing, return false.
         return false;
+    }
+
+    public function getWeatherPeriodDetails($weather_period)
+    {
+        $details = (object) [];
+
+        $weekly_cost = 700;
+
+        if ($weather_period == "1") {
+            $details->period = "1 week";
+            $details->count = 1;
+            $details->frequency = "weekly";
+            $details->cost = 1 * $weekly_cost;
+        }
+        elseif ($weather_period == "2") {
+            $details->period = "2 weeks";
+            $details->count = 2;
+            $details->frequency = "weekly";
+            $details->cost = 2 * $weekly_cost;
+        }
+        elseif ($weather_period == "3") {
+            $details->period = "1 month";
+            $details->count = 1;
+            $details->frequency = "monthly";
+            $details->cost = 4 * $weekly_cost;
+        }
+        elseif ($weather_period == "4") {
+            $details->period = "3 months";
+            $details->count = 3;
+            $details->frequency = "monthly";
+            $details->cost = 12 * $weekly_cost;
+        }
+        elseif ($weather_period == "5") {
+            $details->period = "6 months";
+            $details->count = 6;
+            $details->frequency = "monthly";
+            $details->cost = 24 * $weekly_cost;
+        }
+        elseif ($weather_period == "6") {
+            $details->period = "1 year";
+            $details->count = 1;
+            $details->frequency = "anually";
+            $details->cost = 52 * $weekly_cost;
+        }
+
+        return $details;
     }
 }
