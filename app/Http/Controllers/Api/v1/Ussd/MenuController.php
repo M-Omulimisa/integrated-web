@@ -71,6 +71,14 @@ class MenuController extends Controller
         $acreage .= "5) 4 acre\n";
         $acreage .= "6) 5 acre\n";
 
+        $weather_period = "Subscription Period\n";
+        $weather_period .= "1) 1 week\n";
+        $weather_period .= "2) 2 weeks\n";
+        $weather_period .= "3) 1 month\n";
+        $weather_period .= "4) 3 months\n";
+        $weather_period .= "5) 6 months\n";
+        $weather_period .= "6) 1 year\n";
+
         $insure_more = "Want to insure another crop?\n";
         $insure_more .= "1) No\n";
         $insure_more .= "2) Yes";
@@ -521,16 +529,34 @@ class MenuController extends Controller
         /******************* START WEATHER *******************/
 
         elseif ($last_menu == "weather_phone_option" && $input_text == '1' || $last_menu == "weather_phone") {
-            // check if name is valid
-            // check if phone no is valid
             $action         = "request";
-            $response       = "Enter District e.g Kampala";
-            $current_menu   = "weather_district";
+
+            if ($last_menu == "weather_phone" && ! $this->menu_helper->isLocalPhoneValid($input_text, '256')) {
+                $response       = $invalid_phone."\n";
+                $response       .= $enter_phone;
+                $current_menu   = "weather_phone";
+            }
+            else{
+                $response       = "Enter District e.g Kampala";
+                $current_menu   = "weather_district";
+
+                if ($last_menu != "weather_phone") {
+                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_subscrption_for', 'self');
+                    $input_text = $phoneNumber;
+                }
+                else{
+                    $input_text = $this->menu_helper->formatPhoneNumbers($phoneNumber, '256', 'international');
+                }
+
+                if($input_text != '0') $field = 'weather_subscriber';
+            }
         }
         elseif ($last_menu == "weather_phone_option" && $input_text == '2') {
             $action         = "request";
             $response       = "Enter phone e.g 07XXXXXXXX";
             $current_menu   = "weather_phone";
+            $field          = "weather_subscrption_for";
+            $input_text     = "another";
         }
         elseif ($last_menu == "weather_phone_option") {
             $action         = "end";
@@ -538,46 +564,111 @@ class MenuController extends Controller
             $current_menu   = "invalid_input"; 
         } 
         elseif ($last_menu == "weather_district") {
-            // check if district is valid
-            // fetch attached subcounties
-            $action         = "request";
-            $response       = "Enter Subcounty e.g Kawempe";
-            $current_menu   = "weather_subcounty";
+
+            $district = $this->menu_helper->getMostSimilarDistrict($input_text, "Uganda");
+            $input_text = $district->name ?? null;
+
+            if ($this->menu_helper->checkIfDistrictIsValid($input_text) && strlen($input_text) > 3) {
+                $action         = "request";
+                $response       = $input_text."\n";
+                $response       .= "Select Subcounty:\n";
+                
+                $districtId = $this->menu_helper->getDistrict($district->id, 'id');
+                
+                $response       .= $this->menu_helper->getSubcountyList($districtId);
+                // $response       .= "0) Back\n";
+                $current_menu   = "weather_subcounty";
+
+                $field = "weather_district";
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_district_id', $districtId);
+            }
+            else{
+                $action         = "request";
+                $response       = "Wrong District!\n";
+                $response       .= "Enter District e.g Kampala";
+                $current_menu   = "weather_district";
+            }
         } 
         elseif ($last_menu == "weather_subcounty") {
-            // check if subcounty is valid
-            // fetch attached parishes
-            $action         = "request";
-            $response       = "Enter Parish e.g Kazo";
-            $current_menu   = "weather_parish";
+
+            $districtId = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_district_id');
+            $subcounty = $this->menu_helper->getSelectedSubcounty($input_text, $districtId);
+            $input_text = $subcounty->name ?? null;
+
+            if ($this->menu_helper->checkIfSubcountyIsValid($districtId, $input_text) && strlen($input_text) > 3) {
+                $action         = "request";
+                $response       = $input_text."\n";
+                $response       .= "Select Parish:\n";
+                $response       .= $this->menu_helper->getParishList($subcounty->id);
+                // $response       .= "0) Back\n";
+                $current_menu   = "weather_parish";
+
+                $field = "weather_subcounty";
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_subcounty_id', $subcounty->id);
+            }
+            else{
+                $action         = "request";
+                $response       = "Wrong input!\n";
+                $response       .= "Select Subcounty\n";
+                $response       .= $this->menu_helper->getSubcountyList($districtId);
+                // $response       .= "0) Back\n";
+                $current_menu   = "weather_subcounty";
+            }
         } 
         elseif ($last_menu == "weather_parish") {
             // check if parish is valid
             $action         = "request";
             $response       = $languages_menu;
             $current_menu   = "weather_languages_menu";
-        }  
-        elseif ($last_menu == "weather_languages_menu") {
-            // check if parish is valid
-            $action         = "request";
-            $response       = "Select frequency\n";
-            $response       .= "1) Trial\n2) Weekly\n3) Monthly\n4) Yearly";
-            $current_menu   = "weather_frequency";
-        }  
-        elseif ($last_menu == "weather_frequency" && $input_text != '1') {
-            // check if name is valid
-            // check if phone no is valid
-            $action         = "request";
-            $response       = "Enter number of [frequency]";
-            $current_menu   = "weather_period";
-        }  
-        elseif ($last_menu == "weather_period" || $last_menu == "weather_frequency" && $input_text == '1') {
-            // check if acreage value is valid
-            $action    = "request";
-            $response  = "Subscribing for weather info in [Parish, Subcounty, District] for [period] at ugx [amount].\n";
-            $response .= "1) Confirm\n";
-            $response .= "2) Cancel";
-            $current_menu   = "weather_confirmation";
+
+            $subcountyId = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subcounty_id');
+            $parish = $this->menu_helper->getSelectedParish($input_text, $subcountyId);
+            $input_text = $parish->name ?? null;
+
+            if ($this->menu_helper->checkIfParishIsValid($subcountyId, $input_text) && strlen($input_text) > 3) {
+                $action         = "request";
+                $response       = $input_text."\n";
+                $response       .= $weather_period;
+                // $response       .= "0) Back\n";
+                $current_menu   = "weather_period";
+
+                $field = "weather_parish";
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_parish_id', $parish->id);
+            }
+            else{
+                $action         = "request";
+                $response       = "Wrong input!\n";
+                $response       .= "Select Parish\n";
+                $response       .= $this->menu_helper->getParishList($subcountyId);
+                $response       .= "0) Back\n";
+                $current_menu   = "weather_parish";
+            }
+        } 
+        elseif ($last_menu == "weather_period") {
+            if ($input_text == "1" || $input_text == "2" || $input_text == "3" || $input_text == "4" || $input_text == "5" || $input_text == "6") {
+
+                $district = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_district');
+                $subcounty = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subcounty');
+                $parish = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_parish');
+
+                $details = $this->menu_helper->getWeatherPeriodDetails($input_text);
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_frequency_count', $details->count);
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_frequency', $details->frequency);
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_amount', $details->cost);
+
+                $action    = "request";
+                $response  = "Subscribing for weather info in ".$parish.", ".$subcounty.", ".$district." for ".$details->period." at ugx ".$details->cost.".\n";
+                $response .= "1) Confirm\n";
+                $response .= "2) Cancel";
+                $current_menu   = "weather_confirmation";
+            }
+            else{
+                $action         = "request";
+                $response       = "Wrong input!\n";
+                $response       .= $weather_period;
+                // $response       .= "0) Back\n";
+                $current_menu   = "weather_period";
+            }
         }  
         elseif ($last_menu == "weather_confirmation") {
             // check if crop is valid
@@ -585,8 +676,9 @@ class MenuController extends Controller
             $action         = "end";
             
             if ($input_text == '1') {
+                $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subscriber');
                 $response       = "Thank you for subscribing.\n";
-                $response       .= "Check [phone] to approve the payment\n";
+                $response       .= "Check ".$phone." to approve the payment\n";
                 $current_menu   = "weather_confirmed";
             }
             elseif($input_text == '2'){
