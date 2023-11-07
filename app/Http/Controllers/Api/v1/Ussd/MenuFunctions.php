@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1\Ussd;
 
+use DB;
 use Log;
 use Validator;
 use Carbon\Carbon;
@@ -406,44 +407,84 @@ class MenuFunctions
           return $reference_id;      
     }
 
-    public function checkIfDistrictIsValid($country_name, $district_name)
+    public function getMostSimilarDistrict($district_name, $country_name)
     {
         $country = Country::whereName($country_name)->first();
 
         if ($country) {
-            $location = Location::where('name', 'LIKE', $district_name.'%')
-                                    ->whereIn('parent_id',function($query) {
-                                        $query->select('id')->whereNull('parent_id')->from('locations');
-                                    })
-                                    ->whereIn('country_id',function($query) use ($country){
-                                        $query->select('id')->where('id', $country->id)->from('countries');
-                                    })
-                                    ->first();
+            $locations = Location::where('name', 'LIKE', substr($district_name, 0, 1).'%')
+                                ->whereIn('parent_id',function($query) use ($country) {
+                                    $query->select('id')->whereCountryId($country->id)->whereNull('parent_id')->from('locations');
+                                })
+                                ->get();
 
-            return $location ? true : false;
+            $closestMatch = null;
+            $lowestDistance = PHP_INT_MAX;
+
+            foreach ($locations as $word) {
+                $distance = levenshtein(strtolower($district_name), strtolower($word->name));
+                if ($distance < $lowestDistance) {
+                    $closestMatch = $word;
+                    $lowestDistance = $distance;
+                }
+            }
+
+            return $closestMatch;
         }
 
-        return false;
+        return null;        
     }
 
-    public function getDistrict($country_name, $district_name, $param)
+    public function checkIfDistrictIsValid($district_name)
     {
-        $country = Country::whereName($country_name)->first();
+        $location = Location::whereName($district_name)
+                                ->whereIn('parent_id',function($query) {
+                                    $query->select('id')->whereNotNull('country_id')->whereNull('parent_id')->from('locations');
+                                })->first();
+        return $location ? true : false;
+    }
 
-        if ($country) {
-            $location = Location::where('name', 'LIKE', $district_name.'%')
-                                    ->whereIn('parent_id',function($query) {
-                                        $query->select('id')->whereNull('parent_id')->from('locations');
-                                    })
-                                    ->whereIn('country_id',function($query) use ($country){
-                                        $query->select('id')->where('id', $country->id)->from('countries');
-                                    })
-                                    ->first();
+    public function getDistrict($districtId, $param)
+    {
+        $location = Location::whereId($districtId)->first();
 
-            return $location->$param ?? null;
+        return $location->$param ?? null;
+    }
+
+    public function getSubcountyList($districtId)
+    {
+        $locations = Location::whereParentId($districtId)->orderBy('name', 'ASC')->get();
+
+        if (count($locations) > 0) {
+            $list = '';
+            $count = 0;
+            foreach ($locations as $subcounty) {
+                $name = str_replace(' TOWN COUNCIL', 'TC', $subcounty->name);
+                $name = str_replace(' DIVISION', 'DIV', $subcounty->name);
+                $list .= (++$count).") ".$name."\n";
+            }
+            return $list;
         }
+        else{
+            return null;
+        }
+    }
 
-        return null;
+    public function getSelectedSubcounty($subcounty_menu_no, $districtId)
+    {
+        $menu = intval($subcounty_menu_no);
+
+        $locations = Location::whereParentId($districtId)->orderBy('name', 'ASC')->get();
+
+        if($menu!=0) $subcounty = $locations->skip($menu-1)->take(1)->first();
+
+        return $subcounty ?? null;
+    }
+
+    public function checkIfSubcountyIsValid($districtId, $subcounty_name)
+    {
+        $location = Location::whereParentId($districtId)->whereName($subcounty_name)->first();
+        return $location ? true : false;
     }
 
     public function insuranceSeasonList()
@@ -478,6 +519,25 @@ class MenuFunctions
         return in_array($season_menu, $list) ? true : false;
     }
 
+    public function getSeasonMenu($seasonId)
+    {
+        // Order the seasons by 'name' column in ascending order
+        $seasons = Season::whereStatus(TRUE)->orderBy('start_date', 'asc')->get();
+
+        // Find the position of the season with id 3
+        $position = $seasons->search(function ($season) use ($seasonId) {
+            return $season->id == $seasonId;
+        });
+
+        // $position will contain the position of the row with id 3 (0-based)
+        if ($position !== false) {
+            $position++; // Adding 1 to get the 1-based position
+            return $position;
+        } else {
+            return null;
+        }
+    }
+
     // public function checkIfSeasonIsValid($season_menu_id)
     // {
     //     $season = Season::whereStatus(TRUE)->orderBy('start_date', 'ASC')->skip($season_menu_id-1)->first();
@@ -510,6 +570,16 @@ class MenuFunctions
         else{
             return null;
         }
+    }
+
+    public function getAcerage($input_text)
+    {
+        if($input_text=="1") return 0.5;
+        if($input_text=="2") return 1;
+        if($input_text=="3") return 2;
+        if($input_text=="4") return 3;
+        if($input_text=="5") return 4;
+        if($input_text=="6") return 5;
     }
 
     public function getEnterprise($enterprise_id, $param)
