@@ -75,6 +75,10 @@ class MenuController extends Controller
         $insure_more .= "1) No\n";
         $insure_more .= "2) Yes";
 
+        $referee  = "Were you referred by an Agent?\n";
+        $referee .= "1) No\n";
+        $referee .= "2) Yes";
+
         if ($last_menu == null) {
             $response  = $main_menu;
             $action = "request";
@@ -263,7 +267,70 @@ class MenuController extends Controller
         elseif ($last_menu == "insurance_another") {
             $action    = "request";
             if ($input_text == "1") {
-                $input_text     = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_acreage');
+                $response       = $referee;
+                $current_menu   = "insurance_referee";
+            }
+            else{
+                $response       = "Wrong input!\n";
+                $response       .= $insure_more;
+                $current_menu   = "insurance_another";
+            }
+        }
+        elseif ($last_menu == "insurance_referee") {
+                $action = "request";
+
+                if ($input_text=="2") {
+                    $response       = "Phone number of referee (07XXXX)";
+                    $current_menu   = "insurance_referee_phone";            
+                }
+                elseif ($input_text=="1"){
+                    $response = $this->menu_helper->getInsuranceConfirmation($sessionId, $phoneNumber);               
+                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'confirmation_message', $response);
+
+                    $response .= "\n1) Yes\n";
+                    $response .= "2) No";
+                    $current_menu   = "insurance_confirmation";
+                }
+                else{
+                    $response       = "Wrong input!\n";
+                    $response       .= $referee;
+                    $current_menu   = "insurance_referee";
+                }
+        }
+        elseif($last_menu == "insurance_referee_phone") {
+            $action = "request";
+
+            if ($this->menu_helper->isLocalPhoneValid($input_text, '256')) {
+                $response = $this->menu_helper->getInsuranceConfirmation($sessionId, $phoneNumber);               
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'confirmation_message', $response);
+
+                $response .= "\n1) Yes\n";
+                $response .= "2) No";
+                $current_menu   = "insurance_confirmation";
+            }
+            else {
+                $response       = "Invalid!\n";
+                $response       .= "Phone number of referee (07XXXX)";
+                $current_menu   = "insurance_referee_phone";
+            }
+        } 
+        elseif ($last_menu == "insurance_referee" || $last_menu == "insurance_referee_phone") {
+            $action    = "request";
+
+            if($last_menu == "insurance_referee_phone" && !$this->menu_helper->isLocalPhoneValid($input_text, '256')) {
+                $response       = "Invalid!\n";
+                $response       .= "Phone number of referee (07XXXX)";
+                $current_menu   = "insurance_referee_phone";
+                $phone = false;
+            }
+            else {
+                // $field = "referee_phone";
+                $input_text == "1";
+                $phone = true;
+            }
+
+            if ($input_text == "1" && $phone) {
+                $acerage     = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_acreage');
 
                 $seasonId       = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_season_id');
                 $seasonName     = $this->menu_helper->getSeason($seasonId, 'name');
@@ -271,25 +338,21 @@ class MenuController extends Controller
                 $enterprise_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_enterprise_id');
                 $enterpriseName = $this->menu_helper->getEnterprise($enterprise_id, 'name');
 
-                $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_subscriber');
-                $sum_insured    = $this->menu_helper->getPremiumOptionDetails($seasonId, $enterprise_id, 'sum_insured_per_acre');
-                $premium        = $this->menu_helper->getPremiumOptionDetails($seasonId, $enterprise_id, 'premium_per_acre');
+                $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_subscriber');                
+                $sum_insured    = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_sum_insured');
+                $premium        = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_premium');
 
-                $response  = "Insuring ".$input_text."A of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured * $input_text)." in ".$seasonName.". Pay premium of ugx".number_format(($premium * $input_text));                
+                $response  = "Insuring ".$acerage."A of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured)." in ".$seasonName.". Pay premium of ugx".number_format(($premium));                
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'confirmation_message', $response);
 
                 $response .= "\n1) Yes\n";
                 $response .= "2) No";
                 $current_menu   = "insurance_confirmation";
-                $field          = "insurance_acreage";
-                
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_sum_insured', ($sum_insured * $input_text));
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', ($premium * $input_text));
             }
-            else{
+            elseif($last_menu == "insurance_referee" && $input_text != "1") {
                 $response       = "Wrong input!\n";
-                $response       .= $insure_more;
-                $current_menu   = "insurance_another";
+                $response       .= $referee;
+                $current_menu   = "insurance_referee";
             }
         }  
         elseif ($last_menu == "insurance_confirmation") {
