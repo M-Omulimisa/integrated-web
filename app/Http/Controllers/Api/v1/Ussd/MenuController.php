@@ -263,6 +263,8 @@ class MenuController extends Controller
         elseif ($last_menu == "insurance_another") {
             $action    = "request";
             if ($input_text == "1") {
+                $input_text     = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_acreage');
+
                 $seasonId       = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_season_id');
                 $seasonName     = $this->menu_helper->getSeason($seasonId, 'name');
 
