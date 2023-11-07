@@ -606,6 +606,27 @@ class MenuFunctions
         return $enterprise->$param ?? null;
     }
 
+    public function getInsuranceConfirmation($sessionId, $phoneNumber)
+    {
+        $saved_data = UssdSessionData::whereSessionId($sessionId)
+                                            ->wherePhoneNumber($phoneNumber)
+                                            ->first();
+
+        $acerage     = $saved_data->insurance_acreage;
+
+        $seasonId       = $saved_data->insurance_season_id;
+        $seasonName     = $this->getSeason($seasonId, 'name');
+
+        $enterprise_id  = $saved_data->insurance_enterprise_id;
+        $enterpriseName = $this->getEnterprise($enterprise_id, 'name');
+
+        $phone          = $saved_data->insurance_subscriber;                
+        $sum_insured    = $saved_data->insurance_sum_insured;
+        $premium        = $saved_data->insurance_premium;
+
+        return "Insuring ".$acerage."A of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured)." in ".$seasonName.". Pay premium of ugx".number_format(($premium));
+    }
+
     /**
      * This function completes a insurance subscription by creating a InsuranceSubscription and a SubscriptionPayment record
      * using the session data and provided phone number.

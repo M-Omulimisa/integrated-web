@@ -45,7 +45,8 @@ class UssdSessionData extends BaseModel
             'insurance_confirmation',
             'insurance_payment_status',
 
-            'confirmation_message'
+            'confirmation_message',
+            'referee_phone'
         ];
 
     /**
