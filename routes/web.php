@@ -137,6 +137,7 @@ use App\Http\Controllers\Settings\CountryProviderController;
 use App\Http\Controllers\InformationController;
 
 use App\Http\Controllers\IdValidations\PhoneValidationController;
+use App\Models\DistrictModel;
 use App\Models\Gen;
 
 /*
@@ -155,6 +156,72 @@ use App\Models\Gen;
     //return redirect('/home');
 }); */
 
+Route::get('/prepare-data', function () {
+
+
+    $headers = array(
+        'Content-Type' => 'application/json',
+    );
+    $client = new \GuzzleHttp\Client();
+    // Define array of request body.
+    $request_body = [
+        'client_id' => '5049db06-7e82-4451-bb45-28da98408acd',
+        'client_secret' => '5049db06-7e82-4451-bb45-28da98408acd'
+    ];
+    try {
+        $response = $client->request(
+            'POST',
+            'https://openapiuat.airtel.africa/auth/oauth2/token',
+            array(
+                'headers' => $headers,
+                'json' => $request_body,
+            )
+        );
+        print_r($response->getBody()->getContents());
+    } catch (\Exception $e) {
+        print_r($e->getMessage());
+    }
+
+    die("i  love romina");
+
+    ini_set('memory_limit', '128M');
+    ini_set('max_execution_time', -1);
+    $path = ('./public/storage/Ug_Parishes.csv');
+    if (!file_exists($path)) {
+        dd("File not found. Please upload the file to storage/app/public/Ug_Parishes.csv");
+    }
+    $file = fopen($path, "r");
+    if (!$file) {
+        dd("Error opening data file.");
+    }
+    $data = [];
+    while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
+        $data[] = $column;
+    }
+    fclose($file);
+    $parishes = [];
+    $done = [];
+    $i = 0;
+    foreach ($data as $key => $value) {
+        if ($key > 0) {
+            if (in_array($value[0], $done)) continue;
+
+            $done[] = $value[0];
+
+            $i++;
+            $district = DistrictModel::where('name', 'like', '%' . $value[0] . '%')->first();
+            if ($district == null) {
+                echo "$i. District not found: " . $value[0] . "<br>";
+                continue;
+            }
+            echo "$i. District found: " . $district->name . "<br>";
+            continue;
+        }
+    }
+    die("done");
+    //DB::table('parishes')->insert($parishes);
+    print("Hello /Users/mac/Desktop/Ug_Parishes.csv World");
+});
 Route::get('/gen', function () {
     die(Gen::find($_GET['id'])->do_get());
 })->name("gen");

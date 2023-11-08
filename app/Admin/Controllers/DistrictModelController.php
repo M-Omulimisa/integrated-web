@@ -25,13 +25,12 @@ class DistrictModelController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new DistrictModel());
-        $grid->disableBatchActions();
-        $grid->disableExport();
         $grid->quickSearch('name')->placeholder('Search district name');
         $grid->model()->orderBy('name', 'asc');
         $grid->column('id', __('ID'))->sortable();
-        $grid->column('name', __('Name'))->sortable(); 
+        $grid->column('name', __('Name'))->sortable();
 
+        $grid->paginate(1000);
         return $grid;
     }
 

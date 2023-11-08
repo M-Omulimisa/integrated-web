@@ -17,7 +17,7 @@
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
         "goldspecdigital/laravel-eloquent-uuid": "^8.0",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^7.8",
         "image-charts/image-charts": "^6.0",
         "intervention/image": "^2.7",
         "jxlwqq/quill": "^1.0",
