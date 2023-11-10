@@ -27,6 +27,37 @@
                 <div class="tab-content">
                     <div class="tab-pane active">
                         <!-- content starts here -->
+                        <table class="nin">
+                            <tr>
+                                <th>Phone Number</th>
+                                <td class="width-60">{{ $phone->phonenumber }}</td>
+                            </tr>
+                            <tr>
+                                <th>Verified by</th>
+                                <td>{{ $phone->mno_authority }}</td>
+                            </tr>
+                            <tr>
+                                <th>First Name</th>
+                                <td>{{ $phone->phone_firstname }}</td>
+                            </tr>
+                            <tr>
+                                <th>Middle Name</th>
+                                <td>{{ $phone->phone_middlename }}</td>
+                            </tr>
+                            <tr>
+                                <th>Surname</th>
+                                <td>{{ $phone->phone_surname }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{{ $phone->phone_status }}</td>
+                            </tr>
+                            <tr>
+                                <th>Timestamp</th>
+                                <td>{{ $phone->created_at }}</td>
+                            </tr>
+                        </table>
+
                         <!-- content ends here -->
                     </div>
                 </div>

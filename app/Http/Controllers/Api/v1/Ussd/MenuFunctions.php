@@ -13,7 +13,9 @@ use Illuminate\Http\Request;
 use App\Models\Settings\Season;
 use App\Models\Settings\Country;
 use App\Models\Ussd\UssdSession;
-use App\Models\Settings\Location;
+use App\Models\DistrictModel;
+use App\Models\SubcountyModel;
+use App\Models\ParishModel;
 use App\Models\Settings\Enterprise;
 use App\Models\Market\MarketPackage;
 use App\Models\Ussd\UssdSessionData;
@@ -413,11 +415,7 @@ class MenuFunctions
         $country = Country::whereName($country_name)->first();
 
         if ($country) {
-            $locations = Location::where('name', 'LIKE', substr($district_name, 0, 1).'%')
-                                ->whereIn('parent_id',function($query) use ($country) {
-                                    $query->select('id')->whereCountryId($country->id)->whereNull('parent_id')->from('locations');
-                                })
-                                ->get();
+            $locations = DistrictModel::where('name', 'LIKE', substr($district_name, 0, 1).'%')->get();
 
             $closestMatch = null;
             $lowestDistance = PHP_INT_MAX;
@@ -436,32 +434,23 @@ class MenuFunctions
         return null;        
     }
 
-    public function checkIfDistrictIsValid($district_name)
-    {
-        $location = Location::whereName($district_name)
-                                ->whereIn('parent_id',function($query) {
-                                    $query->select('id')->whereNotNull('country_id')->whereNull('parent_id')->from('locations');
-                                })->first();
-        return $location ? true : false;
-    }
-
     public function getDistrict($districtId, $param)
     {
-        $location = Location::whereId($districtId)->first();
+        $location = DistrictModel::whereId($districtId)->first();
 
         return $location->$param ?? null;
     }
 
     public function getSubcountyList($districtId)
     {
-        $locations = Location::whereParentId($districtId)->orderBy('name', 'ASC')->get();
+        $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->get();
 
         if (count($locations) > 0) {
             $list = '';
             $count = 0;
             foreach ($locations as $subcounty) {
-                $name = str_replace(' TOWN COUNCIL', 'TC', $subcounty->name);
-                $name = str_replace(' DIVISION', 'DIV', $subcounty->name);
+                $name = str_replace('TOWN COUNCIL', 'TC', $subcounty->name);
+                $name = str_replace('DIVISION', 'DIV', $subcounty->name);
                 $list .= (++$count).") ".$name."\n";
             }
             return $list;
@@ -473,7 +462,7 @@ class MenuFunctions
 
     public function getParishList($subcountyId)
     {
-        $locations = Location::whereParentId($subcountyId)->orderBy('name', 'ASC')->get();
+        $locations = ParishModel::whereSubcountyId($subcountyId)->whereNotNull('parish_latitude')->whereNotNull('parish_longitude')->orderBy('name', 'ASC')->get();
 
         if (count($locations) > 0) {
             $list = '';
@@ -492,7 +481,7 @@ class MenuFunctions
     {
         $menu = intval($subcounty_menu_no);
 
-        $locations = Location::whereParentId($districtId)->orderBy('name', 'ASC')->get();
+        $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->get();
 
         if($menu!=0) $subcounty = $locations->skip($menu-1)->take(1)->first();
 
@@ -503,22 +492,28 @@ class MenuFunctions
     {
         $menu = intval($parish_menu_no);
 
-        $locations = Location::whereParentId($subcountyId)->orderBy('name', 'ASC')->get();
+        $locations = ParishModel::whereSubcountyId($subcountyId)->orderBy('name', 'ASC')->get();
 
         if($menu!=0) $parish = $locations->skip($menu-1)->take(1)->first();
 
         return $parish ?? null;
     }
 
+    public function checkIfDistrictIsValid($district_name)
+    {
+        $location = DistrictModel::whereName($district_name)->first();
+        return $location ? true : false;
+    }
+
     public function checkIfSubcountyIsValid($districtId, $subcounty_name)
     {
-        $location = Location::whereParentId($districtId)->whereName($subcounty_name)->first();
+        $location = SubcountyModel::whereDistrictId($districtId)->whereName($subcounty_name)->first();
         return $location ? true : false;
     }
 
     public function checkIfParishIsValid($subcountyId, $parish_name)
     {
-        $location = Location::whereParentId($subcountyId)->whereName($parish_name)->first();
+        $location = ParishModel::whereSubcountyId($subcountyId)->whereName($parish_name)->first();
         return $location ? true : false;
     }
 
@@ -740,47 +735,27 @@ class MenuFunctions
         return false;
     }
 
-    public function getWeatherPeriodDetails($weather_period)
+    public function getWeatherPeriodDetails($value, $count=0)
     {
         $details = (object) [];
 
-        $weekly_cost = 700;
+        $weekly_cost = 1000;
+        $annual_cost = 40000;
 
-        if ($weather_period == "1") {
-            $details->period = "1 week";
-            $details->count = 1;
+        if ($value == "1" || $value == "weekly") {
+            $details->period    = "week";
             $details->frequency = "weekly";
-            $details->cost = 1 * $weekly_cost;
+            $details->cost = $count * $weekly_cost;
         }
-        elseif ($weather_period == "2") {
-            $details->period = "2 weeks";
-            $details->count = 2;
-            $details->frequency = "weekly";
-            $details->cost = 2 * $weekly_cost;
-        }
-        elseif ($weather_period == "3") {
-            $details->period = "1 month";
-            $details->count = 1;
+        elseif ($value == "2" || $value == "monthly") {
+            $details->period    = "month";
             $details->frequency = "monthly";
-            $details->cost = 4 * $weekly_cost;
+            $details->cost = 4 * $count * $weekly_cost;
         }
-        elseif ($weather_period == "4") {
-            $details->period = "3 months";
-            $details->count = 3;
-            $details->frequency = "monthly";
-            $details->cost = 12 * $weekly_cost;
-        }
-        elseif ($weather_period == "5") {
-            $details->period = "6 months";
-            $details->count = 6;
-            $details->frequency = "monthly";
-            $details->cost = 24 * $weekly_cost;
-        }
-        elseif ($weather_period == "6") {
-            $details->period = "1 year";
-            $details->count = 1;
-            $details->frequency = "anually";
-            $details->cost = 52 * $weekly_cost;
+        elseif ($value == "6" || $value == "annually") {
+            $details->period    = "year";
+            $details->frequency = "annually";
+            $details->cost = $count * $annual_cost;
         }
 
         return $details;
