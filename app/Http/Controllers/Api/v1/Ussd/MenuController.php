@@ -72,12 +72,9 @@ class MenuController extends Controller
         $acreage .= "6) 5 acre\n";
 
         $weather_period = "Subscription Period\n";
-        $weather_period .= "1) 1 week\n";
-        $weather_period .= "2) 2 weeks\n";
-        $weather_period .= "3) 1 month\n";
-        $weather_period .= "4) 3 months\n";
-        $weather_period .= "5) 6 months\n";
-        $weather_period .= "6) 1 year\n";
+        $weather_period .= "1) Weekly\n";
+        $weather_period .= "2) Monthly\n";
+        $weather_period .= "3) Annual\n";
 
         $insure_more = "Want to insure another crop?\n";
         $insure_more .= "1) No\n";
@@ -645,22 +642,16 @@ class MenuController extends Controller
             }
         } 
         elseif ($last_menu == "weather_period") {
-            if ($input_text == "1" || $input_text == "2" || $input_text == "3" || $input_text == "4" || $input_text == "5" || $input_text == "6") {
-
-                $district = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_district');
-                $subcounty = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subcounty');
-                $parish = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_parish');
+            if ($input_text == "1" || $input_text == "2" || $input_text == "3") {
 
                 $details = $this->menu_helper->getWeatherPeriodDetails($input_text);
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_frequency_count', $details->count);
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_frequency', $details->frequency);
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_amount', $details->cost);
 
-                $action    = "request";
-                $response  = "Subscribing for weather info in ".$parish.", ".$subcounty.", ".$district." for ".$details->period." at ugx ".$details->cost.".\n";
-                $response .= "1) Confirm\n";
-                $response .= "2) Cancel";
-                $current_menu   = "weather_confirmation";
+                $action         = "request";
+                $response       = "How many ".$details->period."s?";
+                $current_menu   = "weather_frequency";
+
+                $input_text     = $details->frequency;
+                $field          = "weather_frequency";
             }
             else{
                 $action         = "request";
@@ -668,6 +659,35 @@ class MenuController extends Controller
                 $response       .= $weather_period;
                 // $response       .= "0) Back\n";
                 $current_menu   = "weather_period";
+            }
+        }
+        elseif ($last_menu == "weather_frequency") {
+            if (is_numeric($input_text) && $input_text > 0) {
+
+                $district = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_district');
+                $subcounty = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subcounty');
+                $parish = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_parish');
+
+                $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_frequency');
+                $details = $this->menu_helper->getWeatherPeriodDetails($frequency, $input_text);
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_amount', $details->cost);
+
+                $action    = "request";
+                $response  = "Subscribing for weather info in ".$parish.", ".$subcounty.", ".$district." for ".$input_text."".$details->period."s at ugx ".$details->cost.".\n";
+                $response .= "1) Confirm\n";
+                $response .= "2) Cancel";
+                $current_menu   = "weather_confirmation";
+                $field          = "weather_frequency_count";
+            }
+            else{
+
+                $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_frequency');
+                $weather = $this->menu_helper->getWeatherPeriodDetails($frequency);
+
+                $action         = "request";
+                $response       = "Wrong input!\n";
+                $response       .= "How many ".$weather->period."s?";
+                $current_menu   = "weather_frequency";
             }
         }  
         elseif ($last_menu == "weather_confirmation") {
