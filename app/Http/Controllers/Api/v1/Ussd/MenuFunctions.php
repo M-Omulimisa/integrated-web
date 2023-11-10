@@ -462,7 +462,7 @@ class MenuFunctions
 
     public function getParishList($subcountyId)
     {
-        $locations = ParishModel::whereSubcountyId($subcountyId)->whereNotNull('parish_latitude')->whereNotNull('parish_longitude')->orderBy('name', 'ASC')->get();
+        $locations = ParishModel::whereSubcountyId($subcountyId)->whereNotNull('parish_latitude')->whereNotNull('parish_longitude')->orderBy('name', 'ASC')->limit(8)->get();
 
         if (count($locations) > 0) {
             $list = '';
