@@ -13,10 +13,22 @@ class PhoneValidationService
         $value = str_replace('+', '', $phone);
         if (strlen($value) == 12 && substr($value, 0, 3) == "256") {
             // Create a new YoUganda instance with Yo! Payments Username and Password
-            $yopay = new YoUganda(config('yopay.test.username'), config('yopay.test.password')); 
+
+            if (config('payments.services.yo_ug.phoneapi')=='test') {
+                $url = config('payments.services.yo_ug.test.url');
+                $username = config('payments.services.yo_ug.test.username');
+                $password = config('payments.services.yo_ug.test.password');
+            }
+            else{
+                $url = config('payments.services.yo_ug.url');
+                $username = config('payments.services.yo_ug.username');
+                $password = config('payments.services.yo_ug.password');
+            }
+
+            $yopay = new YoUganda($username, $password); 
 
              // Set receiving endpoint
-            $yopay->set_URL(YOPAY_TEST_URL);
+            $yopay->set_URL($url);
 
             return $yopay->ac_get_msisdn_kyc_info($phone);
         }

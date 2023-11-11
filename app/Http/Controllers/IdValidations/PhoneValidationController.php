@@ -206,7 +206,7 @@ class PhoneValidationController extends Controller
 
                   if ($data->status == PhoneValidation::SUCCESS)
                   {
-                    return '<a target="_blank" href="'.route('validations.phones.show',$id).'">DETAILS</a>';
+                    return '<a href="'.route('validations.phones.show',$id).'">DETAILS</a>';
                   }
               })
               ->rawColumns(['action', 'record', 'details', 'results', '_status'])
