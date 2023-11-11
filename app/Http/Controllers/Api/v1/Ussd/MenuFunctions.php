@@ -443,7 +443,7 @@ class MenuFunctions
 
     public function getSubcountyList($districtId)
     {
-        $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->limit(6)->get();
+        $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->limit(5)->get();
 
         if (count($locations) > 0) {
             $list = '';
@@ -451,7 +451,7 @@ class MenuFunctions
             foreach ($locations as $subcounty) {
                 $name = str_replace('TOWN COUNCIL', 'TC', $subcounty->name);
                 $name = str_replace('DIVISION', 'DIV', $subcounty->name);
-                $list .= (++$count).") ".$name."\n";
+                $list .= (++$count).") ".ucwords(strtolower($name))."\n";
             }
             return $list;
         }
@@ -462,13 +462,13 @@ class MenuFunctions
 
     public function getParishList($subcountyId)
     {
-        $locations = ParishModel::whereSubcountyId($subcountyId)->whereNotNull('parish_latitude')->whereNotNull('parish_longitude')->orderBy('name', 'ASC')->limit(6)->get();
+        $locations = ParishModel::whereSubcountyId($subcountyId)->whereNotNull('parish_latitude')->whereNotNull('parish_longitude')->orderBy('name', 'ASC')->limit(5)->get();
 
         if (count($locations) > 0) {
             $list = '';
             $count = 0;
             foreach ($locations as $parish) {
-                $list .= (++$count).") ".$parish->name."\n";
+                $list .= (++$count).") ".ucwords(strtolower($parish->name))."\n";
             }
             return $list;
         }
