@@ -726,8 +726,6 @@ class MenuController extends Controller
             $this->menu_helper->saveToField($sessionId, $phoneNumber, $field, $input_text);
         }
 
-        logger($response);
-
         header('Content-Type: text/html');  // plain
         //format URL-encoded response
         $response = urldecode("responseString=".$response)."&action=".urldecode($action);
