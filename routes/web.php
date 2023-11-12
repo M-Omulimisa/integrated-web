@@ -139,6 +139,8 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\IdValidations\PhoneValidationController;
 use App\Models\DistrictModel;
 use App\Models\Gen;
+use App\Models\ParishModel;
+use App\Models\SubcountyModel;
 
 /*
 |--------------------------------------------------------------------------
@@ -158,32 +160,7 @@ use App\Models\Gen;
 
 Route::get('/prepare-data', function () {
 
-
-    $headers = array(
-        'Content-Type' => 'application/json',
-    );
-    $client = new \GuzzleHttp\Client();
-    // Define array of request body.
-    $request_body = [
-        'client_id' => '5049db06-7e82-4451-bb45-28da98408acd',
-        'client_secret' => '5049db06-7e82-4451-bb45-28da98408acd'
-    ];
-    try {
-        $response = $client->request(
-            'POST',
-            'https://openapiuat.airtel.africa/auth/oauth2/token',
-            array(
-                'headers' => $headers,
-                'json' => $request_body,
-            )
-        );
-        print_r($response->getBody()->getContents());
-    } catch (\Exception $e) {
-        print_r($e->getMessage());
-    }
-
-    die("i  love romina");
-
+    die("done");
     ini_set('memory_limit', '128M');
     ini_set('max_execution_time', -1);
     $path = ('./public/storage/Ug_Parishes.csv');
@@ -202,19 +179,102 @@ Route::get('/prepare-data', function () {
     $parishes = [];
     $done = [];
     $i = 0;
+
+
+    //parishes
+    foreach ($data as $key => $value) {
+        $i++;
+        if ($key > 0) {
+            if (!isset($value[2])) {
+                echo "NOT SET";
+                die();
+            }
+            $par_name = $value[3];
+            $sub_name = $value[2];
+            $dis_name = $value[0];
+            $dis = DistrictModel::where('name', '=', '' . $dis_name . '')->first();
+            if ($dis == null) {
+                echo "District not found: $dis_name";
+                dd();
+            }
+            $sub = SubcountyModel::where([
+                'district_id' => $dis->id,
+                'name' => $sub_name
+            ])->first();
+            if ($sub == null) {
+                die("Subcounty not found: $sub_name");
+            }
+
+            $par = ParishModel::where([
+                'subcounty_id' => $sub->id,
+                'name' => $par_name
+            ])->first();
+
+            if ($par != null) {
+                echo $i . ". Exists $par_name <br>";
+                continue;
+            }
+            $par = new ParishModel();
+            $par->name = $par_name;
+            $par->subcounty_id = $sub->id;
+            $par->district_id = $dis->id;
+            $par->lng = $value[4];
+            $par->lat = $value[5];
+            $par->save();
+            echo $i . ". Saved $par_name <br>";
+            continue;
+        }
+    }
+
+
+
+    //subcounties
+    foreach ($data as $key => $value) {
+        $i++;
+        if ($key > 0) {
+            if (!isset($value[2])) {
+                echo "NOT SET";
+                die();
+            }
+            $sub_name = $value[2];
+            $dis_name = $value[0];
+            $dis = DistrictModel::where('name', '=', '' . $dis_name . '')->first();
+            if ($dis == null) {
+                echo "District not found: $dis_name";
+                dd();
+            }
+            $sub = SubcountyModel::where([
+                'district_id' => $dis->id,
+                'name' => $sub_name
+            ])->first();
+            if ($sub != null) {
+                echo $i . ". Exists $sub_name <br>";
+                continue;
+            }
+            $sub = new SubcountyModel();
+            $sub->name = $sub_name;
+            $sub->district_id = $dis->id;
+            $sub->save();
+            echo $i . ". Saved $sub_name <br>";
+            continue;
+        }
+    }
+
+    //districts
     foreach ($data as $key => $value) {
         if ($key > 0) {
             if (in_array($value[0], $done)) continue;
-
             $done[] = $value[0];
-
             $i++;
-            $district = DistrictModel::where('name', 'like', '%' . $value[0] . '%')->first();
-            if ($district == null) {
-                echo "$i. District not found: " . $value[0] . "<br>";
+            $district = DistrictModel::where('name', '=', '' . $value[0] . '')->first();
+            if ($district != null) {
+                echo "$i. District found: " . $value[0] . "<br>";
                 continue;
             }
-            echo "$i. District found: " . $district->name . "<br>";
+            $dis = new DistrictModel();
+            $dis->name = $value[0];
+            $dis->save();
+            echo "$i. Created: " . $value[0] . "<br>";
             continue;
         }
     }

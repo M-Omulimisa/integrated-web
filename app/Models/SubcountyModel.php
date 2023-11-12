@@ -9,6 +9,23 @@ class SubcountyModel extends Model
 {
     protected $table = "subcounty";
 
+
+    //boot avoid duplicate entry
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($subcounty) {
+            $sub = SubcountyModel::where([
+                'district_id' => $subcounty->district_id,
+                'name' => $subcounty->name
+            ])->first();
+            //check if the subcounty already exists
+            if ($sub != null) {
+                return false;
+            }
+        });
+    }
+
     public function county()
     {
         return $this->belongsTo(CountyModel::class, 'county_id');

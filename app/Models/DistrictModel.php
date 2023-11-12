@@ -10,5 +10,19 @@ class DistrictModel extends Model
     protected $table = "district";
 
     //list of this model to be displayed in the admin panel
+    //boot avoid duplicate entry
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($district) {
+            //check if the district already exists
+            if (DistrictModel::where('name', '=', $district->name)->exists()) {
+                return false;
+            }
+        });
+    }
+
+    //ignore the timestamps
+    public $timestamps = false;
     
 }
