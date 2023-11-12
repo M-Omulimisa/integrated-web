@@ -25,10 +25,13 @@ class PhoneValidationService
                 $password = config('payments.services.yo_ug.password');
             }
 
-            $yopay = new YoUganda($username, $password); 
+            // logger([$url, $username, $password]);
 
-             // Set receiving endpoint
+            $yopay = new YoUganda(); 
+
             $yopay->set_URL($url);
+            $yopay->set_username($username);
+            $yopay->set_password($password);
 
             return $yopay->ac_get_msisdn_kyc_info($phone);
         }
