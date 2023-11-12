@@ -188,12 +188,7 @@ class YoUganda {
      * @param string $username
      * @param string $password
      */
-    public function __construct()
-    {
-        $this->url = config('payments.services.yo_ug.url', "");
-        $this->username = config('payments.services.yo_ug.username', "");
-        $this->password = config('payments.services.yo_ug.password', "");
-    }
+    public function __construct() { }
 
     /**
     * Set the API Username
@@ -732,7 +727,7 @@ class YoUganda {
             $xml .= '</Request>';
         $xml .= '</AutoCreate>';
 
-        // Log::info(['xml' => $xml]);
+        // logger(['xml' => $xml]);
 
         $response = $this->get_xml_response($xml);
 
@@ -915,7 +910,7 @@ class YoUganda {
     protected function get_xml_response($xml)
     {
         $soap_do = curl_init();
-        curl_setopt($soap_do, CURLOPT_URL, $this->url);
+        curl_setopt($soap_do, CURLOPT_URL, $this->YOURL);
         curl_setopt($soap_do, CURLOPT_CONNECTTIMEOUT, 120);
         curl_setopt($soap_do, CURLOPT_TIMEOUT, 120);
         curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true);
