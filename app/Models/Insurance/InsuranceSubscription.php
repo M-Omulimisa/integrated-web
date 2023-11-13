@@ -13,6 +13,7 @@ class InsuranceSubscription extends BaseModel
   
     protected $fillable = [
         'agent_id',
+        'agent_phone',
         'farmer_id',
         // 'location_id',
         'district_id',
