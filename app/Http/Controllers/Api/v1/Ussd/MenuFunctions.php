@@ -670,7 +670,7 @@ class MenuFunctions
             foreach ($saved_data->insurance_list as $list) {
                 $acerage .= ','.$list->insurance_acreage.'A';
 
-                $enterprise_id  = $saved_data->insurance_enterprise_id;
+                $enterprise_id  = $list->insurance_enterprise_id;
                 $enterpriseName .= ','.$this->getEnterprise($enterprise_id, 'name');
 
                 $sum_insured  += $list->insurance_sum_insured;
@@ -692,31 +692,19 @@ class MenuFunctions
         // Retrieve the session data for the given session ID and phone number.
         $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
 
-        // Create an array containing the data for the new InsuranceSubscription record.
-        $subscription_data = [
-            'first_name'    => 'None',
-            'last_name'     => 'None',
-            'location_id'   => $sessionData->insurance_district_id,
-            'phone'         => $sessionData->insurance_subscriber,
-            'season_id'     => $sessionData->insurance_season_id,
-            'enterprise_id' => $sessionData->insurance_enterprise_id,
-            'acreage'       => $sessionData->insurance_acreage,
-            'sum_insured'   => $sessionData->insurance_sum_insured,
-            'premium'       => $sessionData->insurance_premium
-        ];
-
-        // Create a new MarketSubscription record using the subscription_data array and assign it to $subscription variable.
-        if ($subscription = InsuranceSubscription::create($subscription_data)) {
+        // Create a new Subscription record using the subscription_data array and assign it to $subscription variable.
+        if ($sessionData) {
             // Get the payment API for the subscriber's phone number.
             $api = $this->getServiceProvider($sessionData->insurance_subscriber, 'payment_api');
 
             // Create an array containing the data for the new SubscriptionPayment record.
             $payment = [
-                'insurance_subscription_id' => $subscription->id,
+                'tool' => 'USSD',
+                'insurance_session_id' => $sessionData->id,
                 'method'    => 'MM',
                 'provider'  => $this->getServiceProvider($sessionData->insurance_subscriber, 'name'),
                 'account'   => $sessionData->insurance_subscriber,
-                'amount'    => $sessionData->insurance_premium,
+                'amount'    => $sessionData->insurance_amount,
                 'sms_api'   => $this->getServiceProvider($sessionData->insurance_subscriber, 'sms_api'),
                 'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' Insurance subscription',
                 'reference_id' => $this->generateReference($api),
