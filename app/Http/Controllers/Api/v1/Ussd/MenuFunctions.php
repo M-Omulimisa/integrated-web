@@ -183,8 +183,11 @@ class MenuFunctions
 
     public function getServiceProvider($phoneNumber, $param)
     {
+        logger($phoneNumber);
         $dialing_code = substr($phoneNumber, 0, 5);
+        logger($dialing_code);
         $provider = CountryProvider::where('codes', 'LIKE', '%'.$dialing_code.'%')->first();
+        logger([$provider]);
         return $provider ? $provider->$param : null;
     }
 
