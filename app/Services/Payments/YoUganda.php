@@ -195,7 +195,8 @@ class YoUganda {
     * @param string $username The Yo Payments API username to use
     * @return void
     */
-    public function set_username($username){
+    public function set_username($username=null) {
+        $username = $username ?? config('payments.services.yo_ug.username');
         $this->username = $username;
     }
 
@@ -212,7 +213,8 @@ class YoUganda {
     * @param string $password The Yo Payments API Password to use
     * @return void
     */
-    public function set_password($password){
+    public function set_password($password=null){
+        $password = $password ?? config('payments.services.yo_ug.password');
         $this->password = $password;
     }
 
@@ -229,7 +231,8 @@ class YoUganda {
     * @param string $yoURL The URL to submit API requests to
     * @return void
     */
-    public function set_URL($yoURL){
+    public function set_URL($yoURL=null) {
+        $yoURL = $yoURL ?? config('payments.services.yo_ug.url');
         $this->YOURL = $yoURL;
     }
 
@@ -496,7 +499,7 @@ class YoUganda {
         $simpleXMLObject =  new SimpleXMLElement($xml_response);
         $response = $simpleXMLObject->Response;
 
-        $result = new Request;
+        $result = (object) [];
         $result->Status = (string) $response->Status;
         $result->StatusCode = (string) $response->StatusCode;
         $result->StatusMessage = (string) $response->StatusMessage;
@@ -552,7 +555,7 @@ class YoUganda {
         $simpleXMLObject =  new SimpleXMLElement($xml_response);
         $response = $simpleXMLObject->Response;
 
-        $result = new Request;
+        $result = (object) [];
         $result->Status = (string) $response->Status;
         $result->StatusCode = (string) $response->StatusCode;
         $result->StatusMessage = (string) $response->StatusMessage;

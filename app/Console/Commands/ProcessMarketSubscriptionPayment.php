@@ -59,6 +59,9 @@ class ProcessMarketSubscriptionPayment extends Command
                 $service = $PaymentFactory->getService($payment->payment_api);
 
                 if ($service) {
+                    $service->set_URL($url);
+                    $service->set_username($username);
+                    $service->set_password($password);
                     $response = $service->depositFunds($payment->account, $payment->amount, $payment->narrative, $payment->reference_id);
 
                     if($response->Status=='OK'){
