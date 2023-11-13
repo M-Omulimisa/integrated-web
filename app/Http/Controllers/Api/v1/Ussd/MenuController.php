@@ -696,10 +696,17 @@ class MenuController extends Controller
             $action         = "end";
             
             if ($input_text == '1') {
-                $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subscriber');
-                $response       = "Thank you for subscribing.\n";
-                $response       .= "Check ".$phone." to approve the payment\n";
+                if ($this->menu_helper->completeWeatherSubscription($sessionId, $phoneNumber)) {
+                    $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subscriber');
+                    $response       = "Thank you for subscribing.\n";
+                    $response       .= "Check ".$phone." to approve the payment\n";
+                }
+                else{
+                    $response = "Subscription was unsuccessful. Please try again";
+                }
+
                 $current_menu   = "weather_confirmed";
+                $field = 'weather_confirmation';
             }
             elseif($input_text == '2'){
                 $response       = "Transaction has been cancelled";

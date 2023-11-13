@@ -12,6 +12,10 @@ class SubscriptionPayment extends BaseModel
     use Uuid, SubscriptionPaymentRelationship;
   
     protected $fillable = [
+        'tool',
+        'weather_session_id',
+        'market_session_id',
+        'insurance_session_id',
         'weather_subscription_id',
         'market_subscription_id',
         'insurance_subscription_id',

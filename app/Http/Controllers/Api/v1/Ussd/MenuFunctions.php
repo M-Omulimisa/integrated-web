@@ -26,6 +26,7 @@ use App\Models\Market\MarketPackageMessage;
 use App\Models\Market\MarketPackagePricing;
 use App\Models\Payments\SubscriptionPayment;
 use App\Models\Insurance\InsuranceSubscription;
+use App\Models\Weather\WeatherSubscription;
 
 use App\Services\Payments\PaymentServiceFactory;
 use App\Models\Insurance\InsurancePremiumOption;
@@ -755,5 +756,41 @@ class MenuFunctions
         }
 
         return $details;
+    }
+
+    /**
+     * This function completes a weather subscription by creating a WeatherSubscription and a SubscriptionPayment record
+     * using the session data and provided phone number.
+     */
+    public function completeWeatherSubscription($sessionId, $phoneNumber)
+    {
+        // Retrieve the session data for the given session ID and phone number.
+        $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
+
+        if ($sessionData) {
+            // Get the payment API for the subscriber's phone number.
+            $api = $this->getServiceProvider($sessionData->weather_subscriber, 'payment_api');
+
+            // Create an array containing the data for the new SubscriptionPayment record.
+            $payment = [
+                'tool' => 'USSD',
+                'weather_session_id' => $sessionData->id,
+                'method'    => 'MM',
+                'provider'  => $this->getServiceProvider($sessionData->weather_subscriber, 'name'),
+                'account'   => $sessionData->weather_subscriber,
+                'amount'    => $sessionData->weather_amount,
+                'sms_api'   => $this->getServiceProvider($sessionData->weather_subscriber, 'sms_api'),
+                'narrative' => $sessionData->weather_frequency .' Market subscription',
+                'reference_id' => $this->generateReference($api),
+                'payment_api'  => $api,
+                'status' => 'INITIATED'
+            ];
+
+            // Create a new SubscriptionPayment record using the payment array and return true if successful.
+            if(SubscriptionPayment::create($payment)) return true;
+        }
+
+        // If an error occurred or data was missing, return false.
+        return false;
     }
 }
