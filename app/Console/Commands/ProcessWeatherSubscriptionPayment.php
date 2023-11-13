@@ -25,7 +25,7 @@ class ProcessWeatherSubscriptionPayment extends Command
      */
     protected $description = 'Command description';
 
-    protected $debug = true;
+    protected $debug = false;
 
     /**
      * Create a new command instance.
