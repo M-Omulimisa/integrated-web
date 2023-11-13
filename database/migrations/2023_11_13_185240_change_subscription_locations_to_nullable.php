@@ -33,8 +33,5 @@ class ChangeSubscriptionLocationsToNullable extends Migration
      */
     public function down()
     {
-        Schema::table('nullable', function (Blueprint $table) {
-            //
-        });
     }
 }

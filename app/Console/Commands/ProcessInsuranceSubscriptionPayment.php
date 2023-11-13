@@ -94,6 +94,7 @@ class ProcessInsuranceSubscriptionPayment extends Command
                             if ($payment->tool=="USSD") {
                                 if ($session = UssdSessionData::whereId($payment->insurance_session_id)->first()) {
                                     $data = [
+                                        'agent_phone' => $session->referee_phone ?? null,
                                         'district_id'   => $session->insurance_district_id,
                                         'subcounty_id'  => $session->insurance_subcounty_id,
 
@@ -151,6 +152,7 @@ class ProcessInsuranceSubscriptionPayment extends Command
             foreach ($subscription->insurance_list as $list) {
 
                 $data = [
+                            'agent_phone'   => $subscription->referee_phone ?? null,
                             'district_id'   => $subscription->insurance_district_id,
                             'subcounty_id'  => $subscription->insurance_subcounty_id,
 

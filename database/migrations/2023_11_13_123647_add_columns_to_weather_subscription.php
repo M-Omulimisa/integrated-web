@@ -46,8 +46,5 @@ class AddColumnsToWeatherSubscription extends Migration
      */
     public function down()
     {
-        Schema::table('weather_subscription', function (Blueprint $table) {
-            //
-        });
     }
 }

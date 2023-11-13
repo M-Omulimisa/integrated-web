@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddWeatherColumnsToUssd extends Migration
+class AddAgentPhoneToInsuranceSubscriptions extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddWeatherColumnsToUssd extends Migration
      */
     public function up()
     {
-        Schema::table('ussd_session_data', function (Blueprint $table) {
-            $table->double('weather_amount', 15,2)->nullable()->before('weather_confirmation');
+        Schema::table('insurance_subscriptions', function (Blueprint $table) {
+            $table->string('agent_phone')->nullable()->after('agent_id');
         });
     }
 
@@ -27,3 +27,5 @@ class AddWeatherColumnsToUssd extends Migration
     {
     }
 }
+
+
