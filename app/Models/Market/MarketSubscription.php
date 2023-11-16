@@ -14,7 +14,8 @@ class MarketSubscription extends BaseModel
     protected $fillable = [
         'farmer_id',
         'language_id',
-        'location_id',
+        // 'location_id',
+        'region_id',
         'first_name',
         'last_name',
         'email',

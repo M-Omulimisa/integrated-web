@@ -11,25 +11,30 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 use App\Models\Settings\Season;
+use App\Models\Settings\Language;
 use App\Models\Settings\Country;
 use App\Models\Ussd\UssdSession;
+use App\Models\RegionModel;
 use App\Models\DistrictModel;
 use App\Models\SubcountyModel;
 use App\Models\ParishModel;
 use App\Models\Settings\Enterprise;
-use App\Models\Market\MarketPackage;
 use App\Models\Ussd\UssdSessionData;
 use App\Models\Ussd\UssdInsuranceList;
 use App\Models\Settings\CountryProvider;
+
+use App\Models\Market\MarketPackage;
+use App\Models\Market\MarketPackageRegion;
 use App\Models\Market\MarketSubscription;
 use App\Models\Market\MarketPackageMessage;
 use App\Models\Market\MarketPackagePricing;
-use App\Models\Payments\SubscriptionPayment;
+
 use App\Models\Insurance\InsuranceSubscription;
+use App\Models\Insurance\InsurancePremiumOption;
+
 use App\Models\Weather\WeatherSubscription;
 
-use App\Services\Payments\PaymentServiceFactory;
-use App\Models\Insurance\InsurancePremiumOption;
+use App\Models\Payments\SubscriptionPayment;
 
 class MenuFunctions
 {
@@ -190,6 +195,64 @@ class MenuFunctions
 
     /**********************************MARKET***********************************************/
 
+    public function getRegionLanguageList($region_id)
+    {
+        $languages = Language::whereIn('id',function($query) use ($region_id) {
+                                        $query->select('language_id')
+                                                ->whereIn('package_id',function($query) use ($region_id) {
+                                                    $query->select('package_id')
+                                                            ->whereRegionId($region_id)
+                                                            ->from(with(new MarketPackageRegion)->getTable());
+                                                })
+                                                ->whereIn('package_id',function($query) {
+                                                    $query->select('id')->from(with(new MarketPackage)->getTable());
+                                                })
+                                                ->from(with(new MarketPackageMessage)->getTable());
+                                    })
+                                    ->orderBy('name', 'ASC')
+                                    ->get();
+
+        $list = '';
+        if (count($languages) > 0) {
+            $count = 0;
+            foreach ($languages as $language) {
+                $list .= (++$count).") ".ucwords(strtolower($language->name))."\n";
+            }
+        }
+
+        return $list;
+    }
+
+    public function getSelectedRegionLaguage($language_menu_no, $region_id)
+    {
+        $menu = intval($language_menu_no);
+
+        $languages = Language::whereIn('id',function($query) use ($region_id) {
+                                        $query->select('language_id')
+                                                ->whereIn('package_id',function($query) use ($region_id) {
+                                                    $query->select('package_id')
+                                                            ->whereRegionId($region_id)
+                                                            ->from(with(new MarketPackageRegion)->getTable());
+                                                })
+                                                ->whereIn('package_id',function($query) {
+                                                    $query->select('id')->from(with(new MarketPackage)->getTable());
+                                                })
+                                                ->from(with(new MarketPackageMessage)->getTable());
+                                    })
+                                    ->orderBy('name', 'ASC')
+                                    ->get();
+
+        if($menu!=0) $language = $languages->skip($menu-1)->take(1)->first();
+
+        return $language ?? null;
+    }
+
+    public function checkIfLanguageIsValid($language_name)
+    {
+        $language = Language::whereName($language_name)->first();
+        return $language ? true : false;
+    }
+
     /**
      * Get packages
      * Get enterprises of each package
@@ -197,11 +260,20 @@ class MenuFunctions
      * 
      * @return string menu list  
      */
-    public function getPackageList()
+    public function getPackageList($region_id, $language_id)
     {
         $list = '';
-        $packages = MarketPackage::whereStatus(true)->orderBy('menu', 'ASC')->get();
+        $packages = MarketPackage::whereStatus(true)
+                                    ->whereIn('id',function($query) use ($region_id) {
+                                        $query->select('package_id')->whereRegionId($region_id)->from(with(new MarketPackageRegion)->getTable());
+                                    })
+                                    ->whereIn('id',function($query) use ($language_id) {
+                                        $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
+                                    })
+                                    ->orderBy('name', 'ASC')->get();
+
         if (count($packages) > 0) {
+            $count = 0;
             foreach ($packages as $package) {
                 $items = '';
                 if (count($package->enterprises)) {
@@ -209,7 +281,8 @@ class MenuFunctions
                         $items .= $enterprise->enterprise->name.','; 
                     }
                 }
-                $list .= $package->menu.") ".rtrim($items, ',')."\n";
+                $list .= (++$count).") ".rtrim($items, ',')."\n";
+                // $list .= $package->menu.") ".rtrim($items, ',')."\n";
             }
             return $list;
         }
@@ -233,44 +306,45 @@ class MenuFunctions
      * 
      * @return  int $id
      */
-    public function isPackageMenuValid($menu)
+    public function isPackageMenuValid($menu, $region_id, $language_id)
     {
-        $packages = MarketPackage::whereMenu($menu)->whereStatus(true)->count();
-        if($packages > 1) return false;
+        $packages = MarketPackage::whereStatus(true)
+                                    ->whereIn('id',function($query) use ($region_id) {
+                                        $query->select('package_id')->whereRegionId($region_id)->from(with(new MarketPackageRegion)->getTable());
+                                    })
+                                    ->whereIn('id',function($query) use ($language_id) {
+                                        $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
+                                    })
+                                    ->orderBy('name', 'ASC')->get();
 
-        $package = MarketPackage::whereMenu($menu)->whereStatus(true)->first();
-        return $package ? true : false;
+        $list = [];
+        if (count($packages) > 0) {
+            $count = 0;
+            foreach ($packages as $package) {
+                $list[] = ++$count;
+            }
+            return in_array($menu, $list);
+        }
+
+        return false;
     } 
 
-    /**
-     * Get languages of a package 
-     * Format them as a menu list
-     * 
-     * @return string menu list  
-     */
-    public function getPackageLanguages($packageId)
+    public function getSelectedPackage($package_menu_no, $region_id, $language_id)
     {
-        $list = '';
-        $languages = MarketPackageMessage::wherePackageId($packageId)->orderBy('menu', 'ASC')->get();
-        if (count($languages) > 0) {
-            foreach ($languages as $language) {
-                $list .= $language->menu.") ".$language->language->name."\n";
-            }
-            return $list;
-        }
-        return 'No languages available for selected package!';
-    }
+        $menu = intval($package_menu_no);
 
-    /**
-     * 
-     * Check if a language for a given package menu exists
-     * 
-     * @return  boolean
-     */
-    public function isPackageLanguageValid($packageId, $languageMenu)
-    {
-        $language = MarketPackageMessage::wherePackageId($packageId)->whereMenu($languageMenu)->first();
-        return $language ? true : false;
+        $packages = MarketPackage::whereStatus(true)
+                                    ->whereIn('id',function($query) use ($region_id) {
+                                        $query->select('package_id')->whereRegionId($region_id)->from(with(new MarketPackageRegion)->getTable());
+                                    })
+                                    ->whereIn('id',function($query) use ($language_id) {
+                                        $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
+                                    })
+                                    ->orderBy('name', 'ASC')->get();
+
+        if($menu!=0) $package = $packages->skip($menu-1)->take(1)->first();
+
+        return $package ?? null;
     }
 
     /**
@@ -293,10 +367,21 @@ class MenuFunctions
     public function getPackageFrequencies($packageId)
     {
         $list = '';
-        $frequencies = MarketPackagePricing::wherePackageId($packageId)->orderBy('menu', 'ASC')->get();
+        $frequencies = MarketPackagePricing::wherePackageId($packageId)->where('frequency','!=','Trial')->orderByRaw('
+                CASE `frequency`
+                    WHEN "Trial" THEN 1
+                    WHEN "Daily" THEN 2
+                    WHEN "Weekly" THEN 3
+                    WHEN "Monthly" THEN 4
+                    WHEN "Yearly" THEN 5
+                    ELSE 6
+                END')
+                ->get();
+
         if (count($frequencies) > 0) {
+            $count = 0;
             foreach ($frequencies as $frequency) {
-                $list .= $frequency->menu.") ".$frequency->frequency."\n";
+                $list .= (++$count).") ".$frequency->frequency."\n";
             }
             return $list;
         }
@@ -309,9 +394,9 @@ class MenuFunctions
      * 
      * @return  boolean
      */
-    public function isPackageFrequencyValid($packageId, $frequencyMenu)
+    public function isPackageFrequencyValid($packageId, $frequencyId)
     {
-        $frequency = MarketPackagePricing::wherePackageId($packageId)->whereMenu($frequencyMenu)->first();
+        $frequency = MarketPackagePricing::wherePackageId($packageId)->whereId($frequencyId)->first();
         return $frequency ? true : false;
     }
 
@@ -321,10 +406,24 @@ class MenuFunctions
      * 
      * @return  int $id
      */
-    public function getPackageFrequency($packageId, $frequencyMenu)
+    public function getSelectedPackageFrequency($packageId, $frequency_menu_no)
     {
-        $frequency = MarketPackagePricing::wherePackageId($packageId)->whereMenu($frequencyMenu)->first();
-        return $frequency->frequency ?? null;
+        $menu = intval($frequency_menu_no);
+
+        $frequencies = MarketPackagePricing::wherePackageId($packageId)->where('frequency','!=','Trial')->orderByRaw('
+                CASE `frequency`
+                    WHEN "Trial" THEN 1
+                    WHEN "Daily" THEN 2
+                    WHEN "Weekly" THEN 3
+                    WHEN "Monthly" THEN 4
+                    WHEN "Yearly" THEN 5
+                    ELSE 6
+                END')
+                ->get();
+        
+        if($menu!=0) $frequency = $frequencies->skip($menu-1)->take(1)->first();
+
+        return $frequency ?? null;
     }
 
     /**
@@ -360,23 +459,15 @@ class MenuFunctions
         // Retrieve the session data for the given session ID and phone number.
         $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
 
-        // Create an array containing the data for the new MarketSubscription record.
-        $subscription_data = [
-            'language_id'   => $sessionData->market_language_id,
-            'phone'         => $sessionData->market_subscriber,
-            'package_id'    => $sessionData->market_package_id,
-            'frequency'     => $sessionData->market_frequency,
-            'period_paid'   => $sessionData->market_frequency_count,
-        ];
-
         // Create a new MarketSubscription record using the subscription_data array and assign it to $subscription variable.
-        if ($subscription = MarketSubscription::create($subscription_data)) {
+        if ($sessionData) {
             // Get the payment API for the subscriber's phone number.
             $api = $this->getServiceProvider($sessionData->market_subscriber, 'payment_api');
 
             // Create an array containing the data for the new SubscriptionPayment record.
             $payment = [
-                'market_subscription_id' => $subscription->id,
+                'tool' => 'USSD',
+                'market_session_id' => $sessionData->id,
                 'method'    => 'MM',
                 'provider'  => $this->getServiceProvider($sessionData->market_subscriber, 'name'),
                 'account'   => $sessionData->market_subscriber,
@@ -409,6 +500,21 @@ class MenuFunctions
       }
       while (!is_null(SubscriptionPayment::whereReferenceId($reference_id)->wherePaymentApi($api)->first()));
           return $reference_id;      
+    }
+
+    public function getRegionList()
+    {
+        $locations = RegionModel::orderBy('name', 'ASC')->get();
+
+        $list = '';
+        if (count($locations) > 0) {
+            $count = 0;
+            foreach ($locations as $region) {
+                $list .= (++$count).") ".ucwords(strtolower($region->name))."\n";
+            }
+        }
+
+        return $list;
     }
 
     public function getMostSimilarDistrict($district_name, $country_name)
@@ -444,7 +550,7 @@ class MenuFunctions
 
     public function getSubcountyList($districtId)
     {
-        $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->limit(6)->get();
+        $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->get();
 
         $list = '';
         if (count($locations) > 0) {
@@ -474,6 +580,17 @@ class MenuFunctions
         return $list;
     }
 
+    public function getSelectedRegion($region_menu_no)
+    {
+        $menu = intval($region_menu_no);
+
+        $locations = RegionModel::orderBy('name', 'ASC')->get();
+
+        if($menu!=0) $region = $locations->skip($menu-1)->take(1)->first();
+
+        return $region ?? null;
+    }
+
     public function getSelectedSubcounty($subcounty_menu_no, $districtId)
     {
         $menu = intval($subcounty_menu_no);
@@ -494,6 +611,12 @@ class MenuFunctions
         if($menu!=0) $parish = $locations->skip($menu-1)->take(1)->first();
 
         return $parish ?? null;
+    }
+
+    public function checkIfRegionIsValid($region_name)
+    {
+        $location = RegionModel::whereName($region_name)->first();
+        return $location ? true : false;
     }
 
     public function checkIfDistrictIsValid($district_name)
