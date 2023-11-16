@@ -7,6 +7,7 @@ use App\Models\Settings\CountryProvider;
 use App\Models\Market\MarketSubscription;
 use App\Models\Payments\SubscriptionPayment;
 use App\Services\Payments\PaymentServiceFactory;
+use App\Models\Ussd\UssdSessionData;
 
 class ProcessMarketSubscriptionPayment extends Command
 {
@@ -43,15 +44,25 @@ class ProcessMarketSubscriptionPayment extends Command
      */
     public function handle()
     {
-        $payments = SubscriptionPayment::whereStatus('INITIATED')->whereNotNull('market_subscription_id')->whereNotNull('payment_api')->whereNotNull('reference_id')->whereIn('provider',function($query) {
-            $query->select('name')->from(with(new CountryProvider)->getTable());
-        })->get();
+        $payments = SubscriptionPayment::whereStatus('INITIATED')
+                                        ->whereNotNull('market_session_id')
+                                        ->whereNotNull('payment_api')
+                                        ->whereNotNull('reference_id')
+                                        ->whereIn('provider',function($query) {
+                                            $query->select('name')->from(with(new CountryProvider)->getTable());
+                                        })
+                                        ->orWhere('status', 'PENDING')
+                                        ->whereNotNull('market_session_id')
+                                        ->whereNotNull('reference')
+                                        ->get();
 
-        if ($this->debug) logger(count($payments));
+        if ($this->debug) logger('count: '.count($payments));
 
         if (count($payments) > 0) {
 
             foreach ($payments as $payment) {
+
+                $initial_status = $payment->status;
 
                 $payment->update(['status' => 'PROCESSING']);
 
@@ -59,41 +70,70 @@ class ProcessMarketSubscriptionPayment extends Command
                 $service = $PaymentFactory->getService($payment->payment_api);
 
                 if ($service) {
-                    $service->set_URL($url);
-                    $service->set_username($username);
-                    $service->set_password($password);
-                    $response = $service->depositFunds($payment->account, $payment->amount, $payment->narrative, $payment->reference_id);
+                    $service->set_URL();
+                    $service->set_username();
+                    $service->set_password();
 
-                    if($response->Status=='OK'){
-                        // Save this transaction for future reference
-                        $update = $payment->update([
-                            'status'    => $response->TransactionStatus === "SUCCEEDED" ? 'SUCCESSFUL' : $response->TransactionStatus, 
-                            'reference' => $response->TransactionReference
-                        ]);
+                    if ($initial_status=="INITIATED") {
+                        $response = $service->depositFunds($payment->account, $payment->amount, $payment->narrative, $payment->reference_id);
+                    }
+                    elseif ($initial_status=="PENDING") {
+                        $response = $service->getTransactionStatus($payment->reference);
+                    }
+
+                    if(isset($response) && $response->Status=='OK'){
+                        $new_status = $response->TransactionStatus === "SUCCEEDED" ? 'SUCCESSFUL' : $response->TransactionStatus;
+                        $update = $payment->update(['status' => $new_status]);
+
+                        if(is_null($payment->reference)) $payment->update(['reference' => $response->TransactionReference]);
 
                         if ($response->TransactionStatus === "SUCCEEDED" || $response->TransactionStatus === "SUCCESSFUL") {
 
                             // TODO Send notification to the subscriber
 
-                            $subscription = MarketSubscription::find($payment->market_subscription_id);
+                            if ($payment->tool=="USSD") {
+                                if ($session = UssdSessionData::whereId($payment->market_session_id)->first()) {
+                                    $data = [
+                                        'region_id' => $session->market_region_id,
+                                        'language_id' => $session->market_language_id,
+                                        'package_id' => $session->market_package_id,
 
-                            $start_date = date("Y-m-d");
-                            $subscription->update([
-                                'start_date' => $start_date,
-                                'end_date' => getSubscritionEndDate($subscription->frequency, $subscription->period_paid, $start_date),
-                                'status' => true
-                            ]);
+                                        'frequency'     => ucfirst($session->market_frequency),
+                                        'period_paid'   => $session->market_frequency_count,
+                                        'start_date'    => date("Y-m-d"),
+                                        'end_date'      => getSubscritionEndDate(ucfirst($session->market_frequency), $session->market_frequency_count, date("Y-m-d")),
+                                        'status'        => TRUE,
+                                    ];
+                                }
+                            }
+
+                            if (isset($data) && $data) {
+                                MarketSubscription::create($data);
+                            }
+                            else{
+                                logger(['ProcessMarketSubscriptionPayment' => 'No session found for TxnID: '.$payment->id]);
+                            }
                         }
                         
                         if (!$update) logger(['ProcessMarketSubscriptionPayment' => 'Not updating for TxnID: '.$payment->id]);
                     }
-                    else{
+                    elseif(isset($response)) {
+                        $new_status = $response->TransactionStatus!='' ? $response->TransactionStatus : 'FAILED';
+
                         $payment->update([
-                            'status'        => $response->TransactionStatus!='' ? $response->TransactionStatus : 'FAILED', 
+                            'status'        => $new_status, 
                             'error_message' => $response->StatusMessage
                         ]);
 
                         if ($this->debug) logger($response->StatusMessage);
+
+                        if ($new_status === "FAILED") {
+                            // TODO Send notification to the subscriber
+                            logger(['UpdateMarketSubscriptionPayment' => 'Payment failed for TxnID: '.$payment->id]);
+                        }
+                    }
+                    else{
+                        logger(['UpdateMarketSubscriptionPayment' => 'NULL response for TxnID: '.$payment->id]);
                     }
                 }
             }

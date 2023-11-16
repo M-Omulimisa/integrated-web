@@ -364,9 +364,9 @@ class MenuController extends Controller
                 $current_menu   = "market_phone";
             }
             else{
-                $response       = "Select package:\n";
-                $response       .= $this->menu_helper->getPackageList();
-                $current_menu   = "market_package";
+                $response       = "Select region:\n";
+                $response       .= $this->menu_helper->getRegionList();
+                $current_menu   = "market_region";
 
                 if ($last_menu != "market_phone") {
                     $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_subscrption_for', 'self');
@@ -378,7 +378,7 @@ class MenuController extends Controller
 
                 $field          = 'market_subscriber';
             }
-        } 
+        }  
         elseif ($last_menu == "market_phone_option" && $input_text == '2') {
             $action         = "request";
             $response       = $enter_phone;
@@ -393,59 +393,95 @@ class MenuController extends Controller
             $response       .= $subscriber;
             $current_menu   = "market_phone_option"; 
         } 
+        elseif ($last_menu == "market_region") {
+
+            $region = $this->menu_helper->getSelectedRegion($input_text);
+            $input_text = $region->name ?? null;
+
+            if ($this->menu_helper->checkIfRegionIsValid($input_text)) {
+                $action         = "request";
+                $response       = $input_text."\n";
+                $response       = "Select language:\n";
+                $response       .= $this->menu_helper->getRegionLanguageList($region->id);
+                $current_menu   = "market_languages";
+
+                $field = "market_region";
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_region_id', $region->id);
+            }
+            else{
+                $action         = "request";
+                $response       = "Wrong input!\n";
+                $response       .= "Select Region\n";
+                $response       .= $this->menu_helper->getRegionList();
+                // $response       .= "0) Back\n";
+                $current_menu   = "market_region";
+            }
+        }
+        elseif ($last_menu == "market_languages") {
+
+            $region_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_region_id');
+            $language = $this->menu_helper->getSelectedRegionLaguage($input_text, $region_id);
+            $input_text = $language->name ?? null;
+
+            if ($this->menu_helper->checkIfLanguageIsValid($input_text)) {
+                $action         = "request";
+                $response       = $input_text."\n";
+                $response       = "Select package:\n";
+                $response       .= $this->menu_helper->getPackageList($region_id, $language->id);
+                $current_menu   = "market_package";
+
+                $field = "market_language";
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_language_id', $language->id);
+            }
+            else{
+                $action         = "request";
+                $response       = "Wrong input!\n";
+                $response       .= "Select Region\n";
+                $response       .= "Select language:\n";
+                $response       .= $this->menu_helper->getRegionLanguageList($region_id);
+                $current_menu   = "market_languages";
+            }
+        }
         elseif ($last_menu == "market_package") {
             $action         = "request";
-            if (! $this->menu_helper->isPackageMenuValid($input_text)) {
+
+            $region_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_region_id');
+            $language_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_language_id');
+            $package = $this->menu_helper->getSelectedPackage($input_text, $region_id, $language_id);
+
+            if ($this->menu_helper->isPackageMenuValid($input_text, $region_id, $language_id)) {
+                $response       = "Select frequency:\n";
+                $response       .= $this->menu_helper->getPackageFrequencies($package->id);
+                $current_menu   = "market_frequency"; 
+
+                $input_text = $package->name;
+                // $field          = 'market_package';
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_package_id', $package->id);
+            }
+            else{
                 $response       = "Invalid input!\n";
-                $response       .= $this->menu_helper->getPackageList();
+                $response       .= $this->menu_helper->getPackageList($region_id, $language_id);
                 $current_menu   = "market_package";
             }
-            else{
-                $package_id   = $this->menu_helper->getPackageId($input_text);
-                $response     = "Select language:\n";
-                $response     .= $this->menu_helper->getPackageLanguages($package_id);
-                $current_menu = "market_languages_menu"; 
-
-                $field          = 'market_package_id';
-                $input_text     = $package_id;
-            }
-        }        
-        elseif ($last_menu == "market_languages_menu") {
-            $action         = "request";
-            $package_id   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
-
-            // check if package is valid
-            if (! $this->menu_helper->isPackageLanguageValid($package_id, $input_text)) {
-                $response       = "Invalid input! Select language:\n";
-                $response       .= $this->menu_helper->getPackageLanguages($package_id);
-                $current_menu = "market_languages_menu"; 
-            }
-            else{
-                $response       = "Select frequency:\n";
-                $response       .= $this->menu_helper->getPackageFrequencies($package_id);
-                $current_menu   = "market_frequency"; 
-
-                $field          = 'market_language_id';
-                $input_text     = $this->menu_helper->getPackageLanguageId($package_id, $input_text);               
-            }
-        }  
+        }   
         elseif ($last_menu == "market_frequency") {
-            $action         = "request";
+            $action       = "request";
             $package_id   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
+            $frequency    = $this->menu_helper->getSelectedPackageFrequency($package_id, $input_text);
+            $input_text = $frequency->frequency ?? null;
+            $id = $frequency->id ?? null;
 
-            // check if frequency is valid -- check if input is valid
-            if (! $this->menu_helper->isPackageFrequencyValid($package_id, $input_text)) {
-                $response       = "Invalid input! Select frequency:\n";
-                $response       .= $this->menu_helper->getPackageFrequencies($package_id);
-                $current_menu   = "market_frequency"; 
-            }
-            else{
-                $input_text     = $this->menu_helper->getPackageFrequency($package_id, $input_text);
+            if ($this->menu_helper->isPackageFrequencyValid($package_id, $id)) {
 
-                $response       = "Enter number of ".str_replace('ly', 's', $input_text);
+                $response       = "How many ".str_replace('ly', 's', $input_text)."?";
                 $current_menu   = "market_period";                
                 
                 $field = 'market_frequency';
+            }
+            else{
+                $response       = "Invalid input! Select frequency:\n";
+                $response       .= $this->menu_helper->getPackageFrequencies($package_id);
+                $current_menu   = "market_frequency"; 
             }
         }  
         elseif ($last_menu == "market_period" || $last_menu == "market_confirmation" && $input_text != "1" && $input_text != "2") {
