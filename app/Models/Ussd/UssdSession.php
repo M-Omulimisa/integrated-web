@@ -14,7 +14,8 @@ class UssdSession extends BaseModel
     protected $fillable = [
             'session_id',
             'phone_number',
-            'last_menu'
+            'last_menu',
+            'data'
         ];
 
     /**
@@ -43,5 +44,9 @@ class UssdSession extends BaseModel
      * @var bool
      */
     public $incrementing = false;
+
+    protected $casts = [
+        'data' => 'array',
+    ];
 }
 

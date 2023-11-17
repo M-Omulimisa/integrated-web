@@ -28,6 +28,9 @@ use App\Models\Market\MarketPackageRegion;
 use App\Models\Market\MarketSubscription;
 use App\Models\Market\MarketPackageMessage;
 use App\Models\Market\MarketPackagePricing;
+use App\Models\Ussd\UssdAdvisoryTopic;
+use App\Models\Ussd\UssdLanguage;
+use App\Models\Ussd\UssdAdvisoryQuestion;
 
 use App\Models\Insurance\InsuranceSubscription;
 use App\Models\Insurance\InsurancePremiumOption;
@@ -867,6 +870,50 @@ class MenuFunctions
         }
 
         return $details;
+    }
+
+    public function getAdvisoryTopics($position, $menu_id, $session_id){
+
+        $language = UssdLanguage::select('id')->where('menu_id', $menu_id)->where('position', $position)->first();
+
+        $data = [
+
+            'language_id' => $language->id
+        ];
+
+        UssdSession::whereSessionId($session_id)->update(['data' => $data]);
+
+        $topics =  UssdAdvisoryTopic::select('id', 'topic', 'position')->orderBy('position', 'asc')->where('ussd_language_id', $language->id)->get();
+
+        return $topics;
+    }
+
+    public function getMenuLanaguages($menu_id){
+
+        $languages = UssdLanguage::select('language', 'position')->where('menu_id', $menu_id)->get();
+
+        return $languages;
+    }
+
+    public function getAdvisoryQuestions($position, $session_id){
+
+        $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();
+
+        info($selected_language);
+
+        $topic = UssdAdvisoryTopic::select('id')->where('position', $position)->where('ussd_language_id', $selected_language->data['language_id'])->first();
+
+        $data = [
+
+            'language_id' => $selected_language->data['language_id'],
+            'topic_id' => $topic->id
+        ];
+
+        UssdSession::whereSessionId($session_id)->update(['data' => $data]);
+
+        $question = UssdAdvisoryQuestion::with('options')->where('ussd_advisory_topic_id', $topic->id)->first(); 
+
+        return $question;
     }
 
     /**
