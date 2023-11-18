@@ -890,7 +890,7 @@ class MenuFunctions
 
     public function getMenuLanaguages($menu_id){
 
-        $languages = UssdLanguage::select('language', 'position')->where('menu_id', $menu_id)->get();
+        $languages = UssdLanguage::select('language', 'position')->where('menu_id', $menu_id)->orderBy('position', 'asc')->get();
 
         return $languages;
     }
