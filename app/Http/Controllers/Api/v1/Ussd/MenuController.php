@@ -125,7 +125,7 @@ class MenuController extends Controller
                     $response .= $language->position.") ".$language->language."\n";
                 }
                 
-                $current_menu   = "advisory_menu";
+                $current_menu   = "language_menu";
                 $module         = 'advisory';
             }
             else {
@@ -774,24 +774,38 @@ class MenuController extends Controller
                 $current_menu   = "invalid_input";                 
             }
         }
-        elseif($last_menu == "advisory_menu"){
+        elseif($last_menu == "language_menu"){
 
             $menu_id = 4;
 
-            $advisory_topics =   $this->menu_helper->getAdvisoryTopics($input_text, $menu_id, $sessionId);
+            $language_check = $this->menu_helper->checkIfUssdLanguageIsValid($input_text);
+
+            if($language_check){
+
+                $advisory_topics =   $this->menu_helper->getAdvisoryTopics($input_text, $menu_id, $sessionId);
 
 
-            $action         = "request";
-            $response       = "Which topic would you like to receive agronomic tips on?\n";
-            foreach($advisory_topics as $topics){
+                $action         = "request";
+                $response       = "Which topic would you like to receive agronomic tips on?\n";
+                foreach($advisory_topics as $topics){
+    
+                    $response .= $topics->position.") ".$topics->topic."\n";
+                }
+    
+                $current_menu   = "advisory_menu";
+                
+            }
+            else{
+                $action         = "request";
+                $response       = "Invalid input!\n";
+                $current_menu   = "language_menu";  
 
-                $response .= $topics->position.") ".$topics->topic."\n";
             }
 
-            $current_menu   = "advisory_subtopic_menu";
+           
         }
 
-        elseif ($last_menu == "advisory_subtopic_menu") {
+        elseif ($last_menu == "advisory_menu") {
 
             $advisory_questions =   $this->menu_helper->getAdvisoryQuestions($input_text, $sessionId);
 
@@ -802,11 +816,11 @@ class MenuController extends Controller
                 $response .= $option->position.") ".$option->option."\n";
             }
 
-            $current_menu   = "advisory_confirmation";
+            $current_menu   = "advisory_subtopic_menu";
            
         }
 
-        elseif ($last_menu == "advisory_confirmation") {
+        elseif ($last_menu == "advisory_subtopic_menu") {
 
             dispatch(new SendUssdAdvisoryMessage($sessionId, $input_text));
 

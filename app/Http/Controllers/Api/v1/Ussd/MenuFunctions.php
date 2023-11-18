@@ -895,6 +895,21 @@ class MenuFunctions
         return $languages;
     }
 
+    public function checkIfUssdLanguageIsValid($input_text){
+
+
+        $ussd_language = UssdLanguage::select('language', 'position')->where('position', $input_text)->first();
+
+        if($ussd_language === null){
+
+            return false;
+        }
+        else{
+            return true;
+        }
+
+    }
+
     public function getAdvisoryQuestions($position, $session_id){
 
         $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();
