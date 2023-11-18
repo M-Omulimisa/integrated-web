@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\Ussd\MenuFunctions;
+use App\Jobs\SendUssdAdvisoryMessage;
 
 class MenuController extends Controller
 {
@@ -46,7 +47,12 @@ class MenuController extends Controller
         $main_menu = "Welcome to M-Omulimisa\n";
         $main_menu .= "1) Agriculture Insurance \n";
         $main_menu .= "2) Market Information \n";
-        $main_menu .= "3) Weather Information";
+        $main_menu .= "3) Weather Information\n";
+        $main_menu .= "4) Advisory Tips";
+
+        $advisory_languages_menu  = "Select language!\n";
+        $advisory_languages_menu .= "1) English\n";
+        $advisory_languages_menu .= "2) Acholi & Lango\n";
 
         $languages_menu  = "Select language!\n";
         $languages_menu .= "1) English\n";
@@ -107,6 +113,20 @@ class MenuController extends Controller
                 $response       = $subscriber;
                 $current_menu   = "weather_phone_option";
                 $module         = 'weather';
+            }
+            elseif ($input_text == '4') {
+                // Ask language for advisory message
+                $action         = "request";
+
+                $languages = $this->menu_helper->getMenuLanaguages(4);
+
+                $response  = "Select language!\n";
+                foreach($languages as $language){
+                    $response .= $language->position.") ".$language->language."\n";
+                }
+                
+                $current_menu   = "language_menu";
+                $module         = 'advisory';
             }
             else {
                 $action         = "end";
@@ -753,7 +773,62 @@ class MenuController extends Controller
                 $response       = "Invalid input!\n";
                 $current_menu   = "invalid_input";                 
             }
-        } 
+        }
+        elseif($last_menu == "language_menu"){
+
+            $menu_id = 4;
+
+            $language_check = $this->menu_helper->checkIfUssdLanguageIsValid($input_text);
+
+            if($language_check){
+
+                $advisory_topics =   $this->menu_helper->getAdvisoryTopics($input_text, $menu_id, $sessionId);
+
+
+                $action         = "request";
+                $response       = "Which topic would you like to receive agronomic tips on?\n";
+                foreach($advisory_topics as $topics){
+    
+                    $response .= $topics->position.") ".$topics->topic."\n";
+                }
+    
+                $current_menu   = "advisory_menu";
+                
+            }
+            else{
+                $action         = "request";
+                $response       = "Invalid input!\n";
+                $current_menu   = "language_menu";  
+
+            }
+
+           
+        }
+
+        elseif ($last_menu == "advisory_menu") {
+
+            $advisory_questions =   $this->menu_helper->getAdvisoryQuestions($input_text, $sessionId);
+
+            $action         = "request";
+            $response       = $advisory_questions->question."\n";
+            foreach($advisory_questions->options as $option){
+
+                $response .= $option->position.") ".$option->option."\n";
+            }
+
+            $current_menu   = "advisory_subtopic_menu";
+           
+        }
+
+        elseif ($last_menu == "advisory_subtopic_menu") {
+
+            dispatch(new SendUssdAdvisoryMessage($sessionId, $input_text));
+
+            $action         = "end";
+            $response       = "Thank you. Advisory will be sent to you shortly";
+            $current_menu  = "Sending advisory";
+           
+        }
 
         else {
             $response  = "An Error occured. Contact M-Omulimisa team for help!";
