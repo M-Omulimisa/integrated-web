@@ -17,52 +17,52 @@ class UssdAdvisoryTopicSeeder extends Seeder
         /////////////////ENGLISH //////////////////////////////////////////
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Coffee Harvest', 'position' => 1, 'ussd_language_id' => '2df58ff9-e623-4af3-82bc-048ef73eb4ce']
+            ['topic'=>'Coffee Harvest', 'position' => 1, 'ussd_language_id' => '1d9d2157-1cef-482e-8424-933358e7efdb']
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Soil Erosion', 'position' => 2, 'ussd_language_id' => '2df58ff9-e623-4af3-82bc-048ef73eb4ce'],
+            ['topic'=>'Soil Erosion', 'position' => 2, 'ussd_language_id' => '1d9d2157-1cef-482e-8424-933358e7efdb'],
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Pests and Diseases', 'position' => 3, 'ussd_language_id' => '2df58ff9-e623-4af3-82bc-048ef73eb4ce'],
+            ['topic'=>'Pests and Diseases', 'position' => 3, 'ussd_language_id' => '1d9d2157-1cef-482e-8424-933358e7efdb'],
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Storage', 'position' => 4, 'ussd_language_id' => '2df58ff9-e623-4af3-82bc-048ef73eb4ce'],
+            ['topic'=>'Storage', 'position' => 4, 'ussd_language_id' => '1d9d2157-1cef-482e-8424-933358e7efdb'],
         );
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Climate Change Adaptation', 'position' => 5, 'ussd_language_id' => '2df58ff9-e623-4af3-82bc-048ef73eb4ce'],
+            ['topic'=>'Climate Change Adaptation', 'position' => 5, 'ussd_language_id' => '1d9d2157-1cef-482e-8424-933358e7efdb'],
         );
 
 
         ////////////////////LUMASAABA/////////////////////////////////////////////
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Khubuta imwanyi', 'position' => 1, 'ussd_language_id' => '04c724c2-a554-43c3-966e-a02ad512ef9d']
+            ['topic'=>'Khubuta imwanyi', 'position' => 1, 'ussd_language_id' => 'd6e788f7-f954-4d5b-a6d4-345b8d1b911a']
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Khutiima khwe liloba', 'position' => 2, 'ussd_language_id' => '04c724c2-a554-43c3-966e-a02ad512ef9d'],
+            ['topic'=>'Khutiima khwe liloba', 'position' => 2, 'ussd_language_id' => 'd6e788f7-f954-4d5b-a6d4-345b8d1b911a'],
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Buwukha ni tsindwale', 'position' => 3, 'ussd_language_id' => '04c724c2-a554-43c3-966e-a02ad512ef9d'],
+            ['topic'=>'Buwukha ni tsindwale', 'position' => 3, 'ussd_language_id' => 'd6e788f7-f954-4d5b-a6d4-345b8d1b911a'],
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Khubiikha', 'position' => 4, 'ussd_language_id' => '04c724c2-a554-43c3-966e-a02ad512ef9d'],
+            ['topic'=>'Khubiikha', 'position' => 4, 'ussd_language_id' => 'd6e788f7-f954-4d5b-a6d4-345b8d1b911a'],
         );
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Khurambila mu khushukha shukha khwe bubwiile', 'position' => 5, 'ussd_language_id' => '04c724c2-a554-43c3-966e-a02ad512ef9d'],
+            ['topic'=>'Khurambila mu khushukha shukha khwe bubwiile', 'position' => 5, 'ussd_language_id' => 'd6e788f7-f954-4d5b-a6d4-345b8d1b911a'],
         );
 
 
@@ -70,27 +70,27 @@ class UssdAdvisoryTopicSeeder extends Seeder
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Okusharura omwaani', 'position' => 1, 'ussd_language_id' => '21629c7a-96dc-4212-af8d-a2a6b06a1c23'],
+            ['topic'=>'Okusharura omwaani', 'position' => 1, 'ussd_language_id' => '06732262-3032-46d6-8c09-13f348cbf00a'],
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Okutwaarwa kweitaka', 'position' => 2, 'ussd_language_id' => '21629c7a-96dc-4212-af8d-a2a6b06a1c23'],
+            ['topic'=>'Okutwaarwa kweitaka', 'position' => 2, 'ussd_language_id' => '06732262-3032-46d6-8c09-13f348cbf00a'],
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>"Obukooko n'enkdwara", 'position' => 3, 'ussd_language_id' => '21629c7a-96dc-4212-af8d-a2a6b06a1c23'],
+            ['topic'=>"Obukooko n'enkdwara", 'position' => 3, 'ussd_language_id' => '06732262-3032-46d6-8c09-13f348cbf00a'],
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>'Okubyaara', 'position' => 4, 'ussd_language_id' => '21629c7a-96dc-4212-af8d-a2a6b06a1c23'],
+            ['topic'=>'Okubyaara', 'position' => 4, 'ussd_language_id' => '06732262-3032-46d6-8c09-13f348cbf00a'],
         );
 
         UssdAdvisoryTopic::create(
             
-            ['topic'=>"Okumanya empinduka y'obwiire", 'position' => 5, 'ussd_language_id' => '21629c7a-96dc-4212-af8d-a2a6b06a1c23'],
+            ['topic'=>"Okumanya empinduka y'obwiire", 'position' => 5, 'ussd_language_id' => '06732262-3032-46d6-8c09-13f348cbf00a'],
         );
 
     }
