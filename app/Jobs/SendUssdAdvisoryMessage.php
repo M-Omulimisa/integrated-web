@@ -14,6 +14,8 @@ use App\Models\Ussd\UssdQuestionOption;
 use App\Models\Ussd\UssdAdvisoryQuestion;
 use App\Models\Ussd\UssdAdvisoryMessage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
+
 
 class SendUssdAdvisoryMessage implements ShouldQueue
 {
@@ -47,10 +49,12 @@ class SendUssdAdvisoryMessage implements ShouldQueue
         $question = UssdAdvisoryQuestion::where('ussd_advisory_topic_id', $session->data['topic_id'])->first();
 
         $question_option_selected = UssdQuestionOption::where('ussd_advisory_question_id', $question->id)->where('position',$this->position)->first();
-        info($question_option_selected);
+  
+      
 
         $messages_to_send = UssdAdvisoryMessage::where('ussd_question_option_id', $question_option_selected->id)->get();
-        info($messages_to_send);
+   
+       
 
         foreach($messages_to_send as $message){
 
@@ -59,6 +63,30 @@ class SendUssdAdvisoryMessage implements ShouldQueue
                 'message' => $message->message,
                 'session_id' => $session->id
             ]);
+
+            try {
+
+                $send_sms_url = config('app.dmark_send_sms_url');
+                $response = Http::get($send_sms_url, [
+                    'spname' => config('app.dmark_username'),
+                    'sppass' => config('app.dmark_password'),
+                    'numbers' => $session->phone_number,
+                    'msg' => $message->message,
+                    'type' => 'json'
+                ]);
+
+                $update_message_outbox = UssdAdvisoryMessageOutbox::findorFail($save_message_to_outbox->id);
+                $update_message_outbox->status = "processed";
+                $update_message_outbox->save();
+                
+                
+            } catch (\Exception $e) {
+                Log::error("Failed to send sms");
+    
+  
+
+                
+            }
 
             
         }

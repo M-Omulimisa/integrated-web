@@ -122,4 +122,29 @@ class DmarkSms
 
             return null;
     }
+
+    public function sendSmsToUser($message_body, $user){
+
+        try {
+            $send_sms_url = config('app.dmark_send_sms_url');
+            $response = Http::get($send_sms_url, [
+                'spname' => config('app.dmark_username'),
+                'sppass' => config('app.dmark_password'),
+                'numbers' => $user->phone_number,
+                'msg' => $message_body,
+                'type' => 'json'
+            ]);
+            info($response->json());
+
+            return true;
+            
+        } catch (\Exception $e) {
+            Log::error("Failed to send sms");
+
+            return false;
+        }
+
+
+    }
+
 }

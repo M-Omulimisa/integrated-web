@@ -140,6 +140,17 @@ return [
     |
     */
 
+     /*
+    |--------------------------------------------------------------------------
+    | Dmark Integration
+    |--------------------------------------------------------------------------
+    |
+    */
+
+    'dmark_send_sms_url' => env('DMARK_SEND_SMS_URL'),
+    'dmark_username' => env('DMARK_USERNAME'),
+    'dmark_password' => env('DMARK_PASSWORD'),
+
     'providers' => [
 
         /*
