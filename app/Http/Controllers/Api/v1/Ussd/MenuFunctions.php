@@ -926,7 +926,9 @@ class MenuFunctions
 
         UssdSession::whereSessionId($session_id)->update(['data' => $data]);
 
-        $question = UssdAdvisoryQuestion::with('options')->where('ussd_advisory_topic_id', $topic->id)->first(); 
+        $question = UssdAdvisoryQuestion::with(['options' => function ($q) {
+            $q->orderBy('position', 'asc');
+        }])->where('ussd_advisory_topic_id', $topic->id)->first(); 
 
         return $question;
     }
