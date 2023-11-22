@@ -19,25 +19,25 @@ class UssdAdvisoryQuestionSeeder extends Seeder
         ///////////////////////////////////////////ENGLISH //////////////////////////////////////////////////////////////////////////////////////////////////////
         $question = UssdAdvisoryQuestion::create(
             
-            ['question'=>'Unyola buwanghafu shina nga ubuta imwanyi? Igana khumanya byesi indinikhukhola nga', 'position' => 1, 'ussd_advisory_topic_id' => 'd397b3f9-37d9-44b9-828b-b29c96207b5b']
+            ['question'=>"Nibuzibuki obw'okubugana omukusharura?", 'position' => 1, 'ussd_advisory_topic_id' => '420fe433-c077-4659-b6f2-ad2beb3e131b']
         );
         //////////////////////Options //////////////////////////
 
                 $option = UssdQuestionOption::create(
                     
-                    ['option'=>'Imbuta imwanyi', 'position' => 1, 'ussd_advisory_question_id' => $question->id],
+                    ['option'=>'Ninyenda kumanya oku orikusharura embirabira', 'position' => 1, 'ussd_advisory_question_id' => $question->id],
     
                 );
 
                         UssdAdvisoryMessage::create(
                     
-                            ['message'=>'Rambisa bibindu bimiliyu nga ubuta imwanyi khubona uri imwanyi sifuna lukukhu ta lwekhuba shonekesa kumutindo ni bukaali bwe imwanyi isi wamisamo. Ba ni litundubaale limiliyu oba lunyakamu asi we kusaala nga ubuta imwanyi.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Waba nosharura,torana enjumaz'omwaani ezihisizegye zoonka. omwaani oggu shoromirwegye nigurinda omuteindo murungi kandi nigugira ebeyi nuungi omukatare",  'ussd_question_option_id' => $option->id],
             
                         );
 
                         UssdAdvisoryMessage::create(
                     
-                            ['message'=>'Khurambisa bibindu bimiliyu nga ubuta shina khuyeta khukhwawula imwanyi isi unyola nga yakwile muliloba khukhwama khu imwanyi isi wama khubuta. Mumbukha iye ifula, nalundi shiyetakho balimi khubuusa imwanyi mangu.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Ebyorakozese waba nosharura bibebiri ebiyoonjo okweenda kwerinda oruhumbwe oruri kushisha  omutiindo gw'omwaani .Yara entundubare ahansi y'ekiti ky'omwani waba n'oshoroma.Okusharurira omu biintu by'ebiyonjo, nikikuyamba okutaniisa omwaani ogurageire ahansi hamwe n'oguwashoroma.Omubweire bw'enjura nikiyaamba omuhingi okurundaana omwaani omubwiira. ",  'ussd_question_option_id' => $option->id],
             
                         );
 
@@ -45,45 +45,26 @@ class UssdAdvisoryQuestionSeeder extends Seeder
 
                 $option = UssdQuestionOption::create(
             
-                    ['option'=>'Khukhalila tsisakka', 'position' => 2, 'ussd_advisory_question_id' => $question->id]
+                    ['option'=>'Ninyenda kumanya obu hamwe nokundasharire.', 'position' => 2, 'ussd_advisory_question_id' => $question->id]
 
                 );
 
                         UssdAdvisoryMessage::create(
                             
-                            ['message'=>'Khukhalila tsisaaka shili ni khukholebwa nga iseason inghulu iyekhubuta yawele. Rambisa khasumeno oba khamakansi khurusakho tsisaka ni bisina bikhakaniwa ta. Nga khukhalila khwakhukholebwa lwanyuma lwe khubuta, shirera biwukha ni tsindwale atwela ni khukhendesa bubungi bwe imwanyi isi wamisamo.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Okusharirira kushemereire kukorwa bwanyima y'okusharura  omwaani ogw'omwaka.Kozesa akashumeni ninga  makanki okushara ebitagi ebitarikweendwa.Okusharira kwaba kutakozirwe bwanyima y'okusharura nikireeta obukooko n'endwaara ekirikureta amasharura makye",  'ussd_question_option_id' => $option->id],
             
                         );
 
                         UssdAdvisoryMessage::create(
                             
-                            ['message'=>'Khukhwongela khu bungi bwe imwanyi, khalila bisina bibalayu khubona uri buwanga bwingila mu kusaala.',  'ussd_question_option_id' => $question->id],
+                            ['message'=>"Okwongera amasharura g'omwani gwawe sharirira ebiti by'omwaani ebihango okwenda ngu hatahemu ekyererezi.",  'ussd_question_option_id' => $question->id],
             
                         );
-
-                $option = UssdQuestionOption::create(
-        
-                    ['option'=>'Khusha imwanyi', 'position' => 3, 'ussd_advisory_question_id' => $question->id]
-                );
-
-                        UssdAdvisoryMessage::create(
-                                    
-                            ['message'=>'Kamatunda kesi umalile khukhwangala ni khusinga kakana khukasha mu bwangu khubona uri si kafunda ta lwekhuba khufunda khunanikha nga ubuta imwanyi. Kamatunda kafundile nabi kamisamo imwanyi ikhali indayi khunywa ta, ela shikhisa kumutindo ni beyi.',  'ussd_question_option_id' => $option->id],
-            
-                        );
-
-                        UssdAdvisoryMessage::create(
-                            
-                            ['message'=>'Singa shishuma shisha imwanyi bulayi nga ushili khunanikha khusha kamatunda; yishenga urusemo imwanyi inghale oba kamatunda kakaramamo nga usha imwanyi inghale,ino yonekesa (nga nobona imwanyi iluluwa oba iwunya bubi) ela shikhisa kumutindo.',  'ussd_question_option_id' => $option->id],
-            
-                        );
-
-        
 
 
         $question = UssdAdvisoryQuestion::create(
             
-            ['question'=>'Unyola buwanghafu shin ani khutiima khwe liloba?', 'position' => 2, 'ussd_advisory_topic_id' => 'ed381306-f0e9-48bb-b511-11ad84f7e214']
+            ['question'=>"Nibuzibuki obw'orikubugana omukutwaarwa kweitaka?", 'position' => 2, 'ussd_advisory_topic_id' => '3538e0f2-f8dc-401e-8f73-6729d96e41ca']
         );
 
 
@@ -92,75 +73,80 @@ class UssdAdvisoryQuestionSeeder extends Seeder
 
                 $option = UssdQuestionOption::create(
                 
-                    ['option'=>'Ingana khumanya lina ni ingeli iye khulima tsimbibilo', 'position' => 1, 'ussd_advisory_question_id' => $question->id]
+                    ['option'=>"Tindikubona ebyokwariza. kandi nibigura esente nyiingi", 'position' => 1, 'ussd_advisory_question_id' => $question->id]
                 );
 
                         UssdAdvisoryMessage::create(
                                             
-                            ['message'=>'Lima tsimbibilo Mukunda nga abe kumukunda kwowo kuli khulupilingikho khukhendesa khutiima khwe liloba ni khulinda bukhafu muliloba nga ukhendesa kametsi khutiima. ',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Okwarira nikikuru omukwerind okutwarwa kwitaka.kirimu okushangira eitaka ahamutwe ahagati y'ebihaingwa  hamwe nokwetorora ebiti byo omwani orikukoresa  ebisigarira by'ebihaingwa obyomire nka ebinyasi,ebikonk ebishwagarira.",  'ussd_question_option_id' => $option->id],
             
                         );
 
-                        UssdAdvisoryMessage::create(
-                                            
-                            ['message'=>'Khushingilila khutiima khwe liloba nga ifula ingali, liima tsimbibilo ela urusemo liloba mumbibilo tsinghale mu mbuka iye kumumu',  'ussd_question_option_id' => $option->id],
-            
-                        );
+                        
 
 
                 $option =UssdQuestionOption::create(
                 
-                    ['option'=>'Ingana khumanya ingeli iye khufuna khumbimba liloba bilayi', 'position' => 2, 'ussd_advisory_question_id' => $question->id]
+                    ['option'=>"Ninyenda kumanya  okunakubasa kukyendeza omwata omumusiri gw'omumwaani gwangye.", 'position' => 2, 'ussd_advisory_question_id' => $question->id]
                 );
 
 
                         UssdAdvisoryMessage::create(
                                                     
-                            ['message'=>'Ingeli indwela indayi ate nga iyebusa iye khufuna bibimbilila liloba nikhwo khurambisa bunyaasi khulwekhuba buli ni bukhafu bukali. Khuburambisa nga shekhubimbilila, nyowa obwanikhile bwome. Nga bwoma, bukhafu bukali bulimo bunakhendela, shino shinabukhola khuba nga unyala waburambisa khubimbilila ali bilime akhali khubyolesakho buwanghafu ta.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Okurinda omwaata,okutwarwa kweitaka hamwe nokwongera okubiika maizi omwitaka  kozesa ebikonko by'ebikyoori omukwarira.Byeine ebirisa bingi ebi ebimera birikwetenga okukura gye.",  'ussd_question_option_id' => $option->id],
             
                         );
 
                         UssdAdvisoryMessage::create(
                                             
-                            ['message'=>'Khukhupanisa kumusuru, khutiima khweliloba atwela ni khukhwongela bukhafu mu liloba, rambisa kamasakari khubimbilila liloba. Kalimo biliisa bye phosphorus ni potassium bili bye kumugaso nabi isi bilima ni khubiyeta khutsowa.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Okukyendeza okukura kw'omwata kozesa ebyarizo ebyomire nka ebishwagarira, ebikonko obitatane ahamutwe gweitaka",  'ussd_question_option_id' => $option->id],
+            
+                        );
+
+
+                
+                $option =UssdQuestionOption::create(
+        
+                    ['option'=>"Omusirigw'omwani gwangye gukabyarwa kare kandi tigurabyeirwe mu nyiriri nahabweekyo tikyanguhi okuteeramu ebitaba", 'position' => 3, 'ussd_advisory_question_id' => $question->id]
+                );
+
+
+                        UssdAdvisoryMessage::create(
+                                                    
+                            ['message'=>"Omumusiri gw'omwani ogwakuzire byaranmu ebihingwa ebirikushweeka eitaka nka ebinyobwa nka omuringo gw'okerinda okutwaarwa kweitaka hamwe n'okukuma amaizi omwitaka.",  'ussd_question_option_id' => $option->id],
             
                         );
 
 
 
+
         $question = UssdAdvisoryQuestion::create(
             
-            ['question'=>'Unyola buwanghafu shin ani biwukha ni tsindwale?', 'position' => 3, 'ussd_advisory_topic_id' => 'ab61666f-cec2-46c5-98ed-c6c4b249f4af']
+            ['question'=>"Nibuzibu ki obworikubugana  omu bukooko hamwe n'endwara?", 'position' => 3, 'ussd_advisory_topic_id' => '9147a131-9a26-4f7b-8c04-37bf144cc780']
         );
 
         /////////////////Options /////////////////////////////////////
 
                 $option =  UssdQuestionOption::create(
                         
-                    ['option'=>'Ingana khumanya biwukha ni tsindwale shina biwamba tsimwanyi', 'position' => 1, 'ussd_advisory_question_id' => $question->id]
+                    ['option'=>"Ninyanda kumanya eki obukooko n'endwara biri kushisha aha muti gwa'omwani.", 'position' => 1, 'ussd_advisory_question_id' => $question->id]
                 );
 
                         UssdAdvisoryMessage::create(
                                                     
-                            ['message'=>'Khutalaka khwe kamaru ke mwanyi bulwale bukhulu ela buyokesa ni butonyesa bwa yellow khumaru. Butonyesa buno buyongela khunera ela bwasaala kamabimba ka orange. Buno obwakamisa ni; khulinda bulayi kumukunda, khubyala imwanyi ikhafuna bulwale atwela ni khurambisa kamalesi ketsindwale nga nuwo ifula inanika khugeza nga nordoz 75.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Obukooko bwa'omwani oburikununyuta otwiizi omumizi ya'omwani gwaaba gukiri muto.Okubwerinda  otabyara akati akabweine.",  'ussd_question_option_id' => $option->id],
             
                         );
 
                         UssdAdvisoryMessage::create(
                                                     
-                            ['message'=>'Kamasaa buwukha buwumiyisa kusaala nga bubuula likhobola lye kusaala nga butolosa nga bulya likhobola lino asi isi kusaala kunanikhila ela busha kusaala nga buyongela khukulya mukari. Buno unyala wabwakimisa nga urambisa pamba wamura mu malesi ke biwukha lwanyuma wamwingisa mu malowo kesi bulimo.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Obukooko oburikutaha omunjuma z'omwaani nibuteramu amahuri ekirikureeta omwaani gwaremeera kubi kandi n'omutindo gwaafa. Okukyendeza okuzanzara  kwaabwe torana enjuma ezirweire omumwani ogu washoroma.",  'ussd_question_option_id' => $option->id],
             
                         );
 
                         UssdAdvisoryMessage::create(
                                                     
-                            ['message'=>'Buwukha bulya imwanyi bulima lilowo mu li tunda lye imwanyi, bwaramo kamalowo mukari isi burerera kamaki kawe, shino sherera kamatunda khu khwanguwa ela kaba nga ke kumutindo kwe asi. Rusamo kamatunda kosi ke khubuta khuwele khukhwakamisa khukesa khawukha khano.',  'ussd_question_option_id' => $option->id],
-            
-                        );
-
-                        UssdAdvisoryMessage::create(
-                                                    
-                            ['message'=>'Buwutkha bulya imwanyi bulya bunini bubwama mu milandila kye kusaala kwe imwanyi ela buwamba kusaala khukhwama nga kushili imitso. Khushingila bulwale buno, maata tsimitso tsino mushifo she khutsibyala.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Okwerinda obukooko n'endwara omumusiri gwawe gw'omwani okukozesa emibazi tikirikwetengwa waba oyokize ebyo ebirweire,kozesa ebirisa ebyobuhangwa,kandi orebe ngu amaizi tigarikutrema omumusiri, Ebihingwa obihe emyanya kandi obisharirire",  'ussd_question_option_id' => $option->id],
             
                         );
 
@@ -169,59 +155,76 @@ class UssdAdvisoryQuestionSeeder extends Seeder
 
         $question = UssdAdvisoryQuestion::create(
             
-            ['question'=>'Unyola buwanghafu shina ni khubikha imwanyi?', 'position' => 4, 'ussd_advisory_topic_id' => 'c49ffc60-7f68-478b-9425-73f7c8acd87f']
+            ['question'=>"Nibuzibuki obwo kushanga omukubyaara?", 'position' => 4, 'ussd_advisory_topic_id' => 'd4301045-571c-473b-900d-a710b8b4179c']
         );
 
         /////////////////Options /////////////////////////////////////
 
                 $option = UssdQuestionOption::create(
                                 
-                    ['option'=>'Inghana khumanya ingeli isi usabikha atwela ni khubiikha imwanyi nga wamalile khubuuta/ kimitendela kyekhubiramo lwanyuma lwe khubuta.', 'position' => 1, 'ussd_advisory_question_id' => $question->id]
+                    ['option'=>"Ninyenda kutunga okushomesibwa ahakubyara kw'omwani.", 'position' => 1, 'ussd_advisory_question_id' => $question->id]
                 );
 
                         UssdAdvisoryMessage::create(
                                                     
-                            ['message'=>'Imwanyi ili ni khubikhibwa mushirara oba mu kutiya tsinyonjo. Ukhatsibikha mu sawu tse fertilizer lwekhuba imwanyi kane ikhwese bunyifu ela ifune lukukhu khulwe bunyifu.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Wazakubyaara omwani tiimba ekiina kirikwingana futi 3 omurubaju hamwe nafuti 3 ahansi",  'ussd_question_option_id' => $option->id],
             
                         );
                         UssdAdvisoryMessage::create(
                                                     
-                            ['message'=>'Tsisawu tse imwanyi tsili ni khubikhibwa khu bisaala, nga byesutilekho khukhwama asi nga 15cm khuloba khusinya ni khukhwesa bunyifu, ela tsisawu tsilimo imwanyi tsili ni khubikhibwa afazari 30cm khukhwama khukutiyi ni khuli bati.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Omwaani gwaheza kurabya ahabw'omushana mwingi nikiragirwa okwarira okwenda kukuma maizi omwita ekirikureta amasharuramarungi.",  'ussd_question_option_id' => $option->id],
             
                         );
                         UssdAdvisoryMessage::create(
                                                     
-                            ['message'=>'Isitowa iye imwanyi ili ni khuba aleyikho ni bibindu biwunya nabi nga petroli, tsi fertilizer ni kamalesi khuloba khwonekesa imwanyi inywewa mushikombe atwela ni kumutindo kwe imwanyi ta.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Abahingi abarikuhinga orutokye omumwaani nibashabwa okutamu ebirikurta ekirisa  omumisiri yabo omurundi gumwe omumwaka okwerinda okucukuka kweita.",  'ussd_question_option_id' => $option->id],
+            
+                        );
+
+                        UssdAdvisoryMessage::create(
+                                                    
+                            ['message'=>"Emiiti y'omwani ashemereire kubyaarwa n'ebihingwa ebiine emiizi migufu ahabwokuba omwani gweine emizi miringwa.",  'ussd_question_option_id' => $option->id],
+            
+                        );
+
+                $option = UssdQuestionOption::create(
+                        
+                    ['option'=>"Ninyenda kumanya ahu nakubasa kwiha embibo nungi abeyi nkye", 'position' => 2, 'ussd_advisory_question_id' => $question->id]
+                );
+
+                        UssdAdvisoryMessage::create(
+                                                            
+                            ['message'=>"ACPCU eyine embubo aha bwa abahingi bayo kwenda kukuma omutindo gwembubo aha sente nkye munonga",  'ussd_question_option_id' => $option->id],
             
                         );
 
         $question = UssdAdvisoryQuestion::create(
             
-            ['question'=>'Unyola buwanghafu shina ni khushukha shukha khwe bubwile?', 'position' => 5, 'ussd_advisory_topic_id' => '6016b13e-5ca7-4aae-afc0-e36b58822b31']
+            ['question'=>"Nimuraba mubizibu ki omu mpinda hinduka yobwiire?", 'position' => 5, 'ussd_advisory_topic_id' => 'f05e99f6-4560-476a-ad35-c01c7e1f4c17']
         );
 
         /////////////////Options /////////////////////////////////////
 
                $option =  UssdQuestionOption::create(
                                         
-                    ['option'=>'Inyala indyena khulinda kumukunda kwase kwe imwanyi khukhwama isi buwangahfu bubwama khu ifula ikhupilisa/ khutembelela/ ifula inghali?', 'position' => 1, 'ussd_advisory_question_id' => $question->id]
+                    ['option'=>"nkarinda nta omusiri gwangye obu tateganisibwa enjura nyinji", 'position' => 1, 'ussd_advisory_question_id' => $question->id]
                 );
 
                         UssdAdvisoryMessage::create(
                                     
-                            ['message'=>'Khulwe ifula inghali ilikhukhwitsa, Bisintsa bibindi bisubila khufuna akari we 300ml ni 600ml tse ifula mulunakhu lutwela. Khubona uri ifula yino siyonekesa kumukunda kwowo, bona uri kumukunda kwowo kuli ni tsimbibilo tsindayi khushingilila khutiima khwe liloba.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Ahabwa obwire bwe njura nyinji obukwija ,emyanya emwe neyija kuba netunga enjura nyiji buri eizooba.Okwerinda akabi k'enjura nyiji aha musiri gwomwani gyezaho otere ebitaba kwenda kwerinda okutwarwa kweitaka.",  'ussd_question_option_id' => $option->id],
             
                         );
 
                         UssdAdvisoryMessage::create(
                                     
-                            ['message'=>'Ifula ikhupilila yingilila ela ikhasisa kamatunda ke imwanyi khutsowa bulayi, shino shikwisaa kumutindo kwe imwanyi ni bukali bwayo. Khukhasisa ifula yino, byala kimisaala kikindi kibimbilila kinyalise khuwa shisisa shimala isi kimisaala kye imwanyi, shiyeta khupiima bukhafu ni khukhendesa khuwamo khwe bukhafu mu liloba.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"Enjura nyingi neteganisa okweema kwa ebihingwa hamwe nokukura kwenjuma zomwaniekikureta omutindo mubi na masharura makye.Okwerinda eyo bwara emiti yebi bibunda erikumara ekirayambe okutekyeka obufuki hamwe nokwosya kandi nokukyendeza okuhwa kwamizi omwitaka.",  'ussd_question_option_id' => $option->id],
             
                         );
 
                         UssdAdvisoryMessage::create(
                                     
-                            ['message'=>'Mumbuka ye ifula, imwanyi ilumbibwa nabi tsindwale nga khutalaka khwe kamaru ela tsikwisa kumutindo kwe imwanyi ni beyi. Khukhwakamisa buwanghafu buno, khalila tsisakka oba utanye kimisaala kimilwale nga bulwale bushili khukenda ta.',  'ussd_question_option_id' => $option->id],
+                            ['message'=>"O mubwire byenjura nyingi omwani niguba guri omukabi kahango kwokwatwa endwara endwara ezebisente ekirikukyendeza omutindo .",  'ussd_question_option_id' => $option->id],
             
                         );
 
