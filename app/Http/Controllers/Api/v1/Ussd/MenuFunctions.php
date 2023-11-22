@@ -888,6 +888,13 @@ class MenuFunctions
         return $topics;
     }
 
+    public function getLanguage($input_text){
+
+        $language = UssdLanguage::select('language')->where('position', $input_text)->first();
+
+        return $language;
+    }
+
     public function getMenuLanaguages($menu_id){
 
         $languages = UssdLanguage::select('language', 'position')->where('menu_id', $menu_id)->orderBy('position', 'asc')->get();

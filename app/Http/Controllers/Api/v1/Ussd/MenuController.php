@@ -780,13 +780,40 @@ class MenuController extends Controller
 
             $language_check = $this->menu_helper->checkIfUssdLanguageIsValid($input_text);
 
+            
+
             if($language_check){
+
+                $language = $this->menu_helper->getLanguage($input_text);
+
+                info($language);
+
+                if($language->language == 'English'){
+
+                    $action         = "request";
+                    $response       = "Which topic would you like to receive agronomic tips on?\n";
+
+                }
+                else if($language->language == 'Lugisu'){
+
+                    $action         = "request";
+                    $response       = "Shisintsa shina shesi wandikanile khufunakho khulekela?\n";
+
+                }
+                else if($language->language == 'Runyankole'){
+
+                    $action         = "request";
+                    $response       = "Neishomoki eriwakubeire noyenda oshomesibweho?\n";
+                }
+                else{
+                    $action         = "request";
+                    $response       = "Which topic would you like to receive agronomic tips on?\n";
+                }
 
                 $advisory_topics =   $this->menu_helper->getAdvisoryTopics($input_text, $menu_id, $sessionId);
 
 
-                $action         = "request";
-                $response       = "Which topic would you like to receive agronomic tips on?\n";
+                
                 foreach($advisory_topics as $topics){
     
                     $response .= $topics->position.") ".$topics->topic."\n";
