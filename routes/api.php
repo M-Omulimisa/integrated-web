@@ -99,6 +99,7 @@ Route::group([
     Route::get('chat-messages', [ApiShopController::class, 'chat_messages']);
     Route::POST('chat-mark-as-read', [ApiShopController::class, 'chat_mark_as_read']);
     Route::POST('chat-start', [ApiShopController::class, 'chat_start']);
+    Route::post("orders", [ApiShopController::class, "orders_submit"]);
 
     /* ==============END OF SHOP API================== */
 

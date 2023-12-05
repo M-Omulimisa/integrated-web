@@ -156,6 +156,89 @@ class ApiShopController extends Controller
         return $this->success($chat_heads, 'Success');
     }
 
+
+    public function orders_submit(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = Administrator::find($administrator_id);
+        }
+
+        $items = [];
+        try {
+            $items = json_decode($r->items);
+        } catch (\Throwable $th) {
+            $items = [];
+        }
+        foreach ($items as $key => $value) {
+            $p = Product::find($value->product_id);
+            if ($p == null) {
+                return $this->error("Product #" . $value->product_id . " not found.");
+            }
+        }
+
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        $delivery = null;
+        try {
+            $delivery = json_decode($r->delivery);
+        } catch (\Throwable $th) {
+            $delivery = null;
+        }
+
+        if ($delivery == null) {
+            return $this->error('Delivery information is missing.');
+        }
+        if ($delivery->phone_number == null) {
+            return $this->error('Phone number is missing.');
+        }
+
+        $order = new Order();
+        $order->user = $u->id;
+        $order->order_state = 0;
+        $order->temporary_id = 0;
+        $order->amount = 0;
+        $order->order_total = 0;
+        $order->payment_confirmation = '';
+        $order->description = '';
+        $order->mail = $u->email;
+        $order->date_created = Carbon::now();
+        $order->date_updated = Carbon::now();
+        if ($delivery != null) {
+            try {
+                $order->customer_phone_number_1 = $delivery->phone_number;
+                $order->customer_phone_number_2 = $delivery->phone_number_2;
+                $order->customer_name = $delivery->first_name . " " . $delivery->last_name;
+                $order->customer_address = $delivery->current_address;
+                $order->delivery_district = $delivery->current_address;
+                $order->order_details = json_encode($delivery);
+            } catch (\Throwable $th) {
+            }
+        }
+
+        $order->save();
+
+
+        foreach ($items as $key => $item) {
+            $oi = new OrderedItem();
+            $oi->order = $order->id;
+            $oi->product = $item->product_id;
+            $oi->qty = $item->product_quantity;
+            $oi->amount = $item->product_price_1;
+            $oi->color = '';
+            $oi->size = '';
+            $oi->save();
+        }
+
+        return $this->success(null, $message = "Submitted successfully!", 200);
+    }
+
+
+
+
     public function chat_start(Request $r)
     {
         $sender = null;

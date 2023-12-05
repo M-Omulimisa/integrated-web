@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\ParishModel;
+use App\Models\Utils;
+
+Utils::syncGroups();
 
 /* 
 $parishes = ParishModel::where('lat', null)
