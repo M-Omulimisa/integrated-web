@@ -119,7 +119,7 @@ class Utils
             $new->status = 'Active';
             $new->id_photo_front = 'External';
             $new->save();
-            break;
+    
         }
     }
 
