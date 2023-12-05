@@ -4,10 +4,13 @@ namespace App\Models\Traits\Relationships;
 
 use App\Models\User;
 use App\Models\Settings\Language;
-use App\Models\Settings\Location;
+use App\Models\DistrictModel;
+use App\Models\SubcountyModel;
+use App\Models\ParishModel;
 use App\Models\Organisations\Organisation;
 use App\Models\Farmers\Farmer;
 use App\Models\Weather\WeatherSubscription;
+use App\Models\Payments\SubscriptionPayment;
 
 /**
  * Class LocationRelationship.
@@ -19,9 +22,19 @@ trait WeatherSubscriptionRelationship
         return $this->belongsTo(Language::class, 'language_id');
     }
 
-    public function location()
+    public function district()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(DistrictModel::class, 'district_id');
+    }
+
+    public function subcounty()
+    {
+        return $this->belongsTo(SubcountyModel::class, 'subcounty_id');
+    }
+
+    public function parish()
+    {
+        return $this->belongsTo(ParishModel::class, 'parish_id');
     }
 
     public function organisation()
@@ -42,5 +55,10 @@ trait WeatherSubscriptionRelationship
     public function renew()
     {
         return $this->belongsTo(WeatherSubscription::class, 'renewal_id');
+    }
+
+    public function payment()
+    {
+        return $this->belongsTo(SubscriptionPayment::class, 'payment_id');
     }
 }

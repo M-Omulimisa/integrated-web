@@ -35,7 +35,7 @@
                                         <th>Name</th>
                                         <th>Language</th>
                                         <th>Phonenumber</th>  
-                                        <th>Amount Paid</th>
+                                        <th>Amount</th>
                                         <th>Duration</th>  
                                         <th>Start Date</th>
                                         <th>End Date</th>  
@@ -99,16 +99,16 @@
                     data: function (d) { }
                 },
                 columns: [
-                    { data: 'created_at', name: 'created_at' },
+                    { data: 'created', name: 'created' },
                     { data: 'name', name: 'name' },
                     { data: 'language', name: 'language' },
-                    { data: 'paying_account', name: 'paying_account' },
+                    { data: 'phone', name: 'phone' },
                     { data: 'amount', name: 'amount' },
                     { data: 'period', name: 'period' },
                     { data: 'start_date', name: 'start_date' },
                     { data: 'end_date', name: 'end_date' },
                     { data: 'subscription_status', name: 'subscription_status' },
-                    { data: 'actions', name: 'actions' }
+                    { data: 'action', name: 'action' }
                 ],
                 "lengthMenu": {{ DT_LENGTH }},
                 "order": [[ 1, 'asc' ]],  

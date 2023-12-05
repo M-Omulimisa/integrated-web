@@ -34,10 +34,10 @@
                                         <tr>
                                             <th>Subscription Date</th>
                                             <th>Name</th>
+                                            <th>Phonenumber</th>  
                                             <th>Location</th>
                                             <th>Language</th>
-                                            <th>Phonenumber</th>  
-                                            <th>Amount Paid</th>
+                                            <th>Amount</th>
                                             <th>Duration</th>  
                                             <th>Start Date</th>
                                             <th>End Date</th>  
@@ -104,15 +104,15 @@
                 columns: [
                     { data: 'created', name: 'created' },
                     { data: 'name', name: 'name' },
+                    { data: 'phone', name: 'phone' },
                     { data: 'location', name: 'location' },
                     { data: 'language', name: 'language' },
-                    { data: 'paying_account', name: 'paying_account' },
                     { data: 'amount', name: 'amount' },
-                    { data: 'period', name: 'amount' },
+                    { data: 'period', name: 'period' },
                     { data: 'start_date', name: 'start_date' },
                     { data: 'end_date', name: 'end_date' },
                     { data: 'subscription_status', name: 'subscription_status' },
-                    { data: 'actions', name: 'actions' }
+                    { data: 'action', name: 'action' }
                 ],
                 "lengthMenu": {{ DT_LENGTH }},
                 "order": [[ 1, 'asc' ]],  
