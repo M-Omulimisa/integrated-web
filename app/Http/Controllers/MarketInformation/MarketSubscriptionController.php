@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 
 use DB;
 use App\Models\Market\MarketSubscription;
+use Carbon\Carbon;
+use App\Models\Users\Role;
     
 class MarketSubscriptionController extends Controller
 {
@@ -163,14 +165,17 @@ class MarketSubscriptionController extends Controller
                 ->addColumn('id', function($data) {
                     return $data->id;
                   })
+                ->addColumn('created', function($data) {
+                    return $data->created_at;
+                  })
                 ->addColumn('name', function ($data){
                     return $data->first_name.' '.$data->last_name;
                     }, 0)
                 ->addColumn('language', function ($data){
-                    return $data->language->name;
+                    return $data->language->name ?? null;
                     }, 0)
                 ->addColumn('amount', function ($data){
-                    return number_format($data->payment_amount);
+                    return isset($data->payment) ? number_format($data->payment->amount) : null;
                     }, 0)
                 ->addColumn('period', function ($data){
                     $frequency = str_replace('ly', '(s)', $data->frequency);
@@ -178,11 +183,17 @@ class MarketSubscriptionController extends Controller
                     return $data->period_paid.' '.$frequency;
                     }, 0)
                 ->addColumn('subscription_status', function ($data){
-                    return Carbon::now() > $data->end_date ? '<span class="text-danger"><strong>Expired</strong></span>' : '<span class="text-success"><strong>Active</strong></span>';
+                        if (Carbon::now() > $data->end_date) {
+                            $data->update(['status' => false]);
+                            return '<span class="text-danger"><strong>Expired</strong></span>';
+                        }
+                        else{
+                            return '<span class="text-success"><strong>Active</strong></span>';
+                        }
                     }, 0)
                 ->addColumn('seen_by_admin', function ($data){
                     foreach (auth()->user()->roles as $role){
-                      if (! $data->seen_by_admin && $role->name == "administrator") { 
+                      if (! $data->seen_by_admin && $role->name == Role::ROLE_ADMIN) { 
                         $data->update(['seen_by_admin' => true]);
                       }
                     }
@@ -195,10 +206,14 @@ class MarketSubscriptionController extends Controller
                     $view    = 'view_'.$this->_permission;
                     return view('partials.actions', compact('route','id','manage','view','delete'))->render();
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action','subscription_status'])
                 ->make(true);
         }
     }
+
+        // 'start_date',
+        // 'end_date',
+        // 'package_id',
     
     /**
      * Show the form for creating a new resource.

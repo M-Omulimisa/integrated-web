@@ -23,16 +23,6 @@ class MarketSubscription extends BaseModel
         'period_paid',
         'start_date',
         'end_date',
-        // 'paying_account',
-        // 'payment_amount',
-        // 'payment_confirmation',
-        // 'reference_id',
-        // 'payment_reference',
-        // 'payment_status',
-        // 'payment_provider', //AIRTEL, MTN, 
-        // 'payment_method', //Mobile Money or Bank
-        // 'payment_details',
-        // 'payment_failure_reason',
         'status',
         'user_id',
         'outbox_generation_status',
@@ -44,6 +34,8 @@ class MarketSubscription extends BaseModel
         'renewal_id',
         'organisation_id',
         'package_id',
+        'payment_id',
+        'phone'
     ];
 
     /**

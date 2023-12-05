@@ -94,6 +94,7 @@ class ProcessMarketSubscriptionPayment extends Command
                             if ($payment->tool=="USSD") {
                                 if ($session = UssdSessionData::whereId($payment->market_session_id)->first()) {
                                     $data = [
+                                        'phone' => $payment->account,
                                         'region_id' => $session->market_region_id,
                                         'language_id' => $session->market_language_id,
                                         'package_id' => $session->market_package_id,
@@ -103,12 +104,21 @@ class ProcessMarketSubscriptionPayment extends Command
                                         'start_date'    => date("Y-m-d"),
                                         'end_date'      => getSubscritionEndDate(ucfirst($session->market_frequency), $session->market_frequency_count, date("Y-m-d")),
                                         'status'        => TRUE,
+                                        'payment_id' => $payment->id
                                     ];
                                 }
                             }
 
                             if (isset($data) && $data) {
-                                MarketSubscription::create($data);
+                                // TODO Multiple subscriptions for 1 payment                                
+
+                                // Subscription already exists -- Payment has been reset
+                                if ($subscription = MarketSubscription::wherePaymentId($payment->id)->first()) {
+                                    $subscription->update($data);
+                                }
+                                else{
+                                    MarketSubscription::create($data);                                    
+                                }
                             }
                             else{
                                 logger(['ProcessMarketSubscriptionPayment' => 'No session found for TxnID: '.$payment->id]);
