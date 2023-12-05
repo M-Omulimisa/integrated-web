@@ -4,12 +4,11 @@ namespace App\Models\Farmers;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
-use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\FarmerGroupRelationship;
 
 class FarmerGroup extends BaseModel
 {
-    use Uuid, FarmerGroupRelationship;
+    use  FarmerGroupRelationship;
 
     protected $fillable = [
         'name',
@@ -37,8 +36,7 @@ class FarmerGroup extends BaseModel
     ];
 
     /**
-     * every time a model is created
-     * automatically assign a UUID to it
+     * every time a model is created 
      *
      * @var array
      */
@@ -46,7 +44,7 @@ class FarmerGroup extends BaseModel
     {
         parent::boot();
         self::creating(function (FarmerGroup $model) {
-            $model->id = $model->generateUuid();
+     
         });
     }
 
