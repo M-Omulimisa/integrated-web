@@ -94,6 +94,7 @@ class ProcessWeatherSubscriptionPayment extends Command
                             if ($payment->tool=="USSD") {
                                 if ($session = UssdSessionData::whereId($payment->weather_session_id)->first()) {
                                     $data = [
+                                        'phone' => $payment->account,
                                         'district_id'   => $session->weather_district_id,
                                         'subcounty_id'  => $session->weather_subcounty_id,
                                         'parish_id'     => $session->weather_parish_id,
@@ -102,12 +103,19 @@ class ProcessWeatherSubscriptionPayment extends Command
                                         'start_date'    => date("Y-m-d"),
                                         'end_date'      => getSubscritionEndDate(ucfirst($session->weather_frequency), $session->weather_frequency_count, date("Y-m-d")),
                                         'status'        => TRUE,
+                                        'payment_id' => $payment->id
                                     ];
                                 }
                             }
 
                             if (isset($data) && $data) {
-                                WeatherSubscription::create($data);
+                                // Subscription already exists -- Payment has been reset
+                                if ($subscription = WeatherSubscription::wherePaymentId($payment->id)->first()) {
+                                    $subscription->update($data);
+                                }
+                                else{
+                                    WeatherSubscription::create($data);                                    
+                                }
                             }
                             else{
                                 logger(['ProcessMarketSubscriptionPayment' => 'No session found for TxnID: '.$payment->id]);

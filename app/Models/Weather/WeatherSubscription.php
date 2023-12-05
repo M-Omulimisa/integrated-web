@@ -24,16 +24,6 @@ class WeatherSubscription extends BaseModel
         'period_paid',
         'start_date',
         'end_date',
-        // 'paying_account',
-        // 'payment_amount',
-        // 'payment_confirmation',
-        // 'reference_id',
-        // 'payment_reference',
-        // 'payment_status',
-        // 'payment_provider', //AIRTEL, MTN, 
-        // 'payment_method', //Mobile Money or Bank
-        // 'payment_details',
-        // 'payment_failure_reason',
         'status',
         'user_id',
         'outbox_generation_status',
@@ -45,6 +35,8 @@ class WeatherSubscription extends BaseModel
         'trial_expiry_sms_failure_reason',
         'renewal_id',
         'organisation_id',
+        'payment_id',
+        'phone'
     ];
 
     /**

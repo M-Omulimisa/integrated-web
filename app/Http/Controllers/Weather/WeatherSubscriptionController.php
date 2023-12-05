@@ -12,6 +12,8 @@ use App\Models\Settings\Location;
 use App\Models\Organisations\Organisation;
 use App\Models\Settings\Language;
 use App\Validators\PhoneValidator;
+use Carbon\Carbon;
+use App\Models\Users\Role;
     
 class WeatherSubscriptionController extends Controller
 {
@@ -131,7 +133,7 @@ class WeatherSubscriptionController extends Controller
                 'organisation_id'   => $request->organisation_id
             ];
 
-            $subscribe = WeatherInformationSubscription::create($data);
+            $subscribe = WeatherSubscription::create($data);
 
             if ($request->frequency == 'Trial') {
                 $body   = "Hello ".$subscribe->first_name." ".$subscribe->last_name.", You have subscribed for ".strtolower($subscribe->frequency)." weather information for ".$subscribe->period_paid."week from ".date('d-m-Y', strtotime($subscribe->start_date))." to ".date('d-m-Y', strtotime($subscribe->end_date));
@@ -262,10 +264,10 @@ class WeatherSubscriptionController extends Controller
                     return $data->first_name.' '.$data->last_name;
                     })
                 ->addColumn('language', function ($data){
-                    return $data->language->name;
+                    return $data->language->name ?? null;
                     })
                 ->addColumn('amount', function ($data){
-                    return number_format($data->payment_amount);
+                    return isset($data->payment) ? number_format($data->payment->amount) : null;
                     })
                 ->addColumn('period', function ($data){
                     $frequency = str_replace('ly', '(s)', $data->frequency);
@@ -273,10 +275,16 @@ class WeatherSubscriptionController extends Controller
                     return $data->period_paid.' '.$frequency;
                     })
                 ->addColumn('location', function ($data){
-                    return $data->location->name;
+                    return ($data->parish->name ?? "").", ".($data->subcounty->name ?? "").", ".($data->district->name ?? "");
                     })
                 ->addColumn('subscription_status', function ($data){
-                    return Carbon::now() > $data->end_date ? '<span class="text-danger"><strong>Expired</strong></span>' : '<span class="text-success"><strong>Active</strong></span>';
+                        if (Carbon::now() > $data->end_date) {
+                            $data->update(['status' => false]);
+                            return '<span class="text-danger"><strong>Expired</strong></span>';
+                        }
+                        else{
+                            return '<span class="text-success"><strong>Active</strong></span>';
+                        }
                     })
                 ->addColumn('seen_by_admin', function ($data){
                     foreach (auth()->user()->roles as $role){
@@ -297,7 +305,7 @@ class WeatherSubscriptionController extends Controller
 
                     return view('partials.actions', compact('route','id','manage','view','delete'))->render();
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action','subscription_status'])
                 ->make(true);
         }
     }
@@ -319,6 +327,6 @@ class WeatherSubscriptionController extends Controller
 
     public function subscriptionIsRenewed($id)
     {
-        return WeatherInformationSubscription::where('renewal_id', $id)->where('payment_status', '!=', 'FAILED')->orderBy('id','DESC')->limit(1)->first();
+        return WeatherSubscription::where('renewal_id', $id)->orderBy('id','DESC')->limit(1)->first();
     }
 }

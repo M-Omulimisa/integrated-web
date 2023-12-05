@@ -108,13 +108,14 @@ class ProcessInsuranceSubscriptionPayment extends Command
                                         'sum_insured'   => $session->insurance_sum_insured,
                                         'premium'       => $session->insurance_premium,
                                         'status'        => TRUE,
+                                        'payment_id' => $payment->id
                                     ];
                                 }
                             }
 
                             if (isset($data) && $data) {
                                 InsuranceSubscription::create($data);
-                                $this->saveOtherInsurance($session);
+                                $this->saveOtherInsurance($session, $payment);
                             }
                             else{
                                 logger(['ProcessMarketSubscriptionPayment' => 'No session found for TxnID: '.$payment->id]);
@@ -146,7 +147,7 @@ class ProcessInsuranceSubscriptionPayment extends Command
         }
     }
 
-    private function saveOtherInsurance($subscription)
+    private function saveOtherInsurance($subscription, $payment)
     {
         if (count($subscription->insurance_list) > 0) {
             foreach ($subscription->insurance_list as $list) {
@@ -166,6 +167,7 @@ class ProcessInsuranceSubscriptionPayment extends Command
                             'sum_insured'   => $list->insurance_sum_insured,
                             'premium'       => $list->insurance_premium,
                             'status'        => TRUE,
+                            'payment_id' => $payment->id
                         ];
 
                 InsuranceSubscription::create($data);
