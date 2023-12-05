@@ -24,13 +24,13 @@ class Utils
         //http grt request to url using guzzlehttp 
         $client = new \GuzzleHttp\Client();
         $response = null;
-        try{
+        try {
             $response = $client->request('GET', "https://me.agrinetug.net/api/export_groups/{$external_id}?token=*psP@3ksMMw7");
-        }catch(\Throwable $th){
+        } catch (\Throwable $th) {
             return;
         }
 
-        if($response == null){
+        if ($response == null) {
             return;
         }
 
@@ -104,22 +104,26 @@ class Utils
             if ($old != null) {
                 continue;
             }
-            $new = new FarmerGroup();
-            $new->external_id = $ext['id'];
-            $new->name = $ext['farmer_group'];
-            $new->country_id = '3578d4de-da91-43f2-b630-35b3017b67ec';
-            $new->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
-            $new->code = $ext['farmer_group_code'];
-            $new->address = $ext['email_address'];
-            $new->group_leader = $ext['group_representative_first_name'] . " " . $ext['group_representative_last_name'];
-            $new->group_leader_contact = $ext['group_representative_contact'];
-            $new->establishment_year = $ext['establishment_year'];
-            $new->registration_year = $ext['establishment_year'];
-            $new->location_id = $ext['village_id'];
-            $new->status = 'Active';
-            $new->id_photo_front = 'External';
-            $new->save();
-    
+
+            try {
+                $new = new FarmerGroup();
+                $new->external_id = $ext['id'];
+                $new->name = $ext['farmer_group'];
+                $new->country_id = '3578d4de-da91-43f2-b630-35b3017b67ec';
+                $new->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
+                $new->code = $ext['farmer_group_code'];
+                $new->address = $ext['email_address'];
+                $new->group_leader = $ext['group_representative_first_name'] . " " . $ext['group_representative_last_name'];
+                $new->group_leader_contact = $ext['group_representative_contact'];
+                $new->establishment_year = $ext['establishment_year'];
+                $new->registration_year = $ext['establishment_year'];
+                $new->location_id = $ext['village_id'];
+                $new->status = 'Active';
+                $new->id_photo_front = 'External';
+                $new->save();
+            } catch (\Throwable $th) {
+                continue;
+            }
         }
     }
 
