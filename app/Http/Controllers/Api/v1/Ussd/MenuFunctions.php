@@ -31,6 +31,8 @@ use App\Models\Market\MarketPackagePricing;
 use App\Models\Ussd\UssdAdvisoryTopic;
 use App\Models\Ussd\UssdLanguage;
 use App\Models\Ussd\UssdAdvisoryQuestion;
+use App\Models\Ussd\UssdEvaluationQuestion;
+use App\Models\Ussd\UssdEvaluationQuestionOption;
 
 use App\Models\Insurance\InsuranceSubscription;
 use App\Models\Insurance\InsurancePremiumOption;
@@ -936,6 +938,19 @@ class MenuFunctions
         $question = UssdAdvisoryQuestion::with(['options' => function ($q) {
             $q->orderBy('position', 'asc');
         }])->where('ussd_advisory_topic_id', $topic->id)->first(); 
+
+        return $question;
+    }
+
+    public function getEvaluationQuestions($position, $session_id){
+        
+        $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();
+
+        $question = UssdEvaluationQuestion::with(['options' => function ($q) {
+            $q->orderBy('position', 'asc');
+        }])->where('position', $position)->where('ussd_language_id', $selected_language->data['language_id'])->first();
+
+        info($question);
 
         return $question;
     }
