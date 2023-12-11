@@ -48,7 +48,12 @@ class MenuController extends Controller
         $main_menu .= "1) Agriculture Insurance \n";
         $main_menu .= "2) Market Information \n";
         $main_menu .= "3) Weather Information\n";
-        $main_menu .= "4) Advisory Tips";
+        $main_menu .= "4) Advisory";
+
+
+        $advisory_option_menu = "Select option\n";
+        $advisory_option_menu .= "1) Advisory Tips\n";
+        $advisory_option_menu .= "2) Advisory Tip Evaluation";
 
         $advisory_languages_menu  = "Select language!\n";
         $advisory_languages_menu .= "1) English\n";
@@ -117,15 +122,8 @@ class MenuController extends Controller
             elseif ($input_text == '4') {
                 // Ask language for advisory message
                 $action         = "request";
-
-                $languages = $this->menu_helper->getMenuLanaguages(4);
-
-                $response  = "Select language!\n";
-                foreach($languages as $language){
-                    $response .= $language->position.") ".$language->language."\n";
-                }
-                
-                $current_menu   = "language_menu";
+                $response  = $advisory_option_menu;     
+                $current_menu   = "advisory_option_menu";
                 $module         = 'advisory';
             }
             else {
@@ -774,13 +772,45 @@ class MenuController extends Controller
                 $current_menu   = "invalid_input";                 
             }
         }
+
+        elseif ($last_menu == "advisory_option_menu") {
+
+            if($input_text == 1){
+
+                $action         = "request";
+
+                $languages = $this->menu_helper->getMenuLanaguages(4);
+    
+                $response  = "Select language!\n";
+                foreach($languages as $language){
+                    $response .= $language->position.") ".$language->language."\n";
+                }
+                
+                $current_menu   = "language_menu";
+                $module         = 'advisory';
+            }
+            else if($input_text == 2){
+
+                $action         = "request";
+                $response       = "Did the content help to address specific coffee challenges you were experiencing?\n";
+                $response       .= "1) Yes\n";
+                $response       .= "2) Partially\n";
+                $response       .= "3) No\n";
+                $current_menu   = "advisory_evaluation_one";
+
+            }
+            else{
+                $action         = "request";
+                $response       = "Invalid input!\n";
+                $current_menu   = "advisory_option_menu";  
+            }
+        }
+
         elseif($last_menu == "language_menu"){
 
             $menu_id = 4;
 
             $language_check = $this->menu_helper->checkIfUssdLanguageIsValid($input_text);
-
-            
 
             if($language_check){
 
@@ -832,6 +862,8 @@ class MenuController extends Controller
            
         }
 
+        
+
         elseif ($last_menu == "advisory_menu") {
 
             $advisory_questions =   $this->menu_helper->getAdvisoryQuestions($input_text, $sessionId);
@@ -856,6 +888,84 @@ class MenuController extends Controller
             $current_menu  = "Sending advisory";
            
         }
+
+        
+        elseif ($last_menu == "advisory_evaluation_one") {
+
+            $action         = "request";
+            $response       = "Was the content  helpful to you during this coffee season?\n";
+            $response       .= "1) Yes\n";
+            $response       .= "2) Partially\n";
+            $response       .= "3) No\n";
+            $current_menu   = "advisory_evaluation_two";
+           
+        }
+
+        elseif ($last_menu == "advisory_evaluation_two") {
+
+            $action         = "request";
+            $response       = "How useful were the coffee tips to you?\n";
+            $response       .= "1) They were useful\n";
+            $response       .= "2) They were partially useful\n";
+            $response       .= "3) They were not useful\n";
+            $current_menu   = "advisory_evaluation_three";
+           
+        }
+        elseif ($last_menu == "advisory_evaluation_three") {
+
+            $action         = "request";
+            $response       = "Did you prefer or like the local language that was used?\n";
+            $response       .= "1) Yes i liked it\n";
+            $response       .= "2) I partially liked it\n";
+            $response       .= "3) No, i did not like it\n";
+            $current_menu   = "advisory_evaluation_four";
+           
+        }
+        elseif ($last_menu == "advisory_evaluation_four") {
+
+            $action         = "request";
+            $response       = "Have you implemented what you learned from the tips to your coffee farms?\n";
+            $response       .= "1) Yes\n";
+            $response       .= "2) Partially\n";
+            $response       .= "3) No\n";
+            $current_menu   = "advisory_evaluation_five";
+           
+        }
+        elseif ($last_menu == "advisory_evaluation_five") {
+
+            $action         = "request";
+            $response       = "Did you find the USSD delivery channel interactive\n";
+            $response       .= "1) Yes\n";
+            $response       .= "2) Partially\n";
+            $response       .= "3) No\n";
+            $current_menu   = "advisory_evaluation_six";
+           
+        }
+        elseif ($last_menu == "advisory_evaluation_six") {
+
+            $action         = "request";
+            $response       = "Did you find the USSD channel easy to use?\n";
+            $response       .= "1) Yes\n";
+            $response       .= "2) Partially\n";
+            $response       .= "3) No\n";
+            $current_menu   = "advisory_evaluation_end";
+           
+        }
+        elseif ($last_menu == "advisory_evaluation_end") {
+
+            $action         = "end";
+            $response       = "Thank you.";
+            $current_menu  = "advisory_evaluation_end";
+           
+        }
+
+
+        
+
+        
+
+
+        
 
         else {
             $response  = "An Error occured. Contact M-Omulimisa team for help!";
