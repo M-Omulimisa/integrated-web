@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\Ussd\MenuFunctions;
 use App\Jobs\SendUssdAdvisoryMessage;
+use App\Models\Ussd\UssdLanguage;
+use App\Models\Ussd\UssdSession;
 
 class MenuController extends Controller
 {
@@ -786,17 +788,21 @@ class MenuController extends Controller
                     $response .= $language->position.") ".$language->language."\n";
                 }
                 
-                $current_menu   = "language_menu";
+                $current_menu   = "tip_language_menu";
                 $module         = 'advisory';
             }
             else if($input_text == 2){
 
                 $action         = "request";
-                $response       = "Did the content help to address specific coffee challenges you were experiencing?\n";
-                $response       .= "1) Yes\n";
-                $response       .= "2) Partially\n";
-                $response       .= "3) No\n";
-                $current_menu   = "advisory_evaluation_one";
+
+                $languages = $this->menu_helper->getMenuLanaguages(4);
+    
+                $response  = "Select language!\n";
+                foreach($languages as $language){
+                    $response .= $language->position.") ".$language->language."\n";
+                }
+                
+                $current_menu   = "evaluation_language_menu";
 
             }
             else{
@@ -806,7 +812,7 @@ class MenuController extends Controller
             }
         }
 
-        elseif($last_menu == "language_menu"){
+        elseif($last_menu == "tip_language_menu"){
 
             $menu_id = 4;
 
@@ -889,65 +895,141 @@ class MenuController extends Controller
            
         }
 
-        
-        elseif ($last_menu == "advisory_evaluation_one") {
+        elseif($last_menu == "evaluation_language_menu"){
 
-            $action         = "request";
-            $response       = "Was the content  helpful to you during this coffee season?\n";
-            $response       .= "1) Yes\n";
-            $response       .= "2) Partially\n";
-            $response       .= "3) No\n";
-            $current_menu   = "advisory_evaluation_two";
-           
+            $menu_id = 4;
+
+            $language = UssdLanguage::select('id')->where('menu_id', $menu_id)->where('position', $input_text)->first();
+
+            if($language === null){
+
+                $action         = "request";
+                $response       = "Invalid input!\n";
+                $current_menu   = "evaluation_language_menu";  
+            }
+            else{
+
+                $data = [
+
+                    'language_id' => $language->id
+                ];
+
+                UssdSession::whereSessionId($sessionId)->update(['data' => $data]);
+
+                $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(1, $sessionId);
+
+                $action         = "request";
+                $response       = $evaluation_questions->evaluation_question."\n";
+                foreach($evaluation_questions->options as $option){
+
+                    $response .= $option->position.") ".$option->evaluation_question_option."\n";
+                }
+
+                $current_menu   = "advisory_evaluation_two";
+
+            }
+
+
         }
 
+        
         elseif ($last_menu == "advisory_evaluation_two") {
 
+            $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(2, $sessionId);
+
             $action         = "request";
-            $response       = "How useful were the coffee tips to you?\n";
-            $response       .= "1) They were useful\n";
-            $response       .= "2) They were partially useful\n";
-            $response       .= "3) They were not useful\n";
+            $response       = $evaluation_questions->evaluation_question."\n";
+            foreach($evaluation_questions->options as $option){
+
+                $response .= $option->position.") ".$option->evaluation_question_option."\n";
+            }
+
             $current_menu   = "advisory_evaluation_three";
            
         }
+
         elseif ($last_menu == "advisory_evaluation_three") {
 
-            $action         = "request";
-            $response       = "Did you prefer or like the local language that was used?\n";
-            $response       .= "1) Yes i liked it\n";
-            $response       .= "2) I partially liked it\n";
-            $response       .= "3) No, i did not like it\n";
-            $current_menu   = "advisory_evaluation_four";
+            $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(3, $sessionId);
+
+                $action         = "request";
+                $response       = $evaluation_questions->evaluation_question."\n";
+                foreach($evaluation_questions->options as $option){
+
+                    $response .= $option->position.") ".$option->evaluation_question_option."\n";
+                }
+
+                $current_menu   = "advisory_evaluation_four";
            
         }
         elseif ($last_menu == "advisory_evaluation_four") {
 
-            $action         = "request";
-            $response       = "Have you implemented what you learned from the tips to your coffee farms?\n";
-            $response       .= "1) Yes\n";
-            $response       .= "2) Partially\n";
-            $response       .= "3) No\n";
-            $current_menu   = "advisory_evaluation_five";
+            $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(4, $sessionId);
+
+                $action         = "request";
+                $response       = $evaluation_questions->evaluation_question."\n";
+                foreach($evaluation_questions->options as $option){
+
+                    $response .= $option->position.") ".$option->evaluation_question_option."\n";
+                }
+
+                $current_menu   = "advisory_evaluation_five";
            
         }
         elseif ($last_menu == "advisory_evaluation_five") {
 
-            $action         = "request";
-            $response       = "Did you find the USSD delivery channel interactive\n";
-            $response       .= "1) Yes\n";
-            $response       .= "2) Partially\n";
-            $response       .= "3) No\n";
-            $current_menu   = "advisory_evaluation_six";
+            $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(5, $sessionId);
+
+                $action         = "request";
+                $response       = $evaluation_questions->evaluation_question."\n";
+                foreach($evaluation_questions->options as $option){
+
+                    $response .= $option->position.") ".$option->evaluation_question_option."\n";
+                }
+
+                $current_menu   = "advisory_evaluation_six";
+           
+        }
+        elseif ($last_menu == "advisory_evaluation_five") {
+
+            $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(5, $sessionId);
+
+                $action         = "request";
+                $response       = $evaluation_questions->evaluation_question."\n";
+                foreach($evaluation_questions->options as $option){
+
+                    $response .= $option->position.") ".$option->evaluation_question_option."\n";
+                }
+
+                $current_menu   = "advisory_evaluation_six";
            
         }
         elseif ($last_menu == "advisory_evaluation_six") {
 
+            $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(6, $sessionId);
+
             $action         = "request";
-            $response       = "Did you find the USSD channel easy to use?\n";
-            $response       .= "1) Yes\n";
-            $response       .= "2) Partially\n";
-            $response       .= "3) No\n";
+            $response       = $evaluation_questions->evaluation_question."\n";
+            foreach($evaluation_questions->options as $option){
+
+                $response .= $option->position.") ".$option->evaluation_question_option."\n";
+            }
+
+            $current_menu   = "advisory_evaluation_seven";
+           
+        }
+
+        elseif ($last_menu == "advisory_evaluation_seven") {
+
+            $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(7, $sessionId);
+
+            $action         = "request";
+            $response       = $evaluation_questions->evaluation_question."\n";
+            foreach($evaluation_questions->options as $option){
+
+                $response .= $option->position.") ".$option->evaluation_question_option."\n";
+            }
+
             $current_menu   = "advisory_evaluation_end";
            
         }
