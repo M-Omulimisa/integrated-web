@@ -32,13 +32,13 @@ use App\Models\Ussd\UssdAdvisoryTopic;
 use App\Models\Ussd\UssdLanguage;
 use App\Models\Ussd\UssdAdvisoryQuestion;
 use App\Models\Ussd\UssdEvaluationQuestion;
+use App\Models\Ussd\UssdEvaluationSelection;
 use App\Models\Ussd\UssdEvaluationQuestionOption;
 
 use App\Models\Insurance\InsuranceSubscription;
 use App\Models\Insurance\InsurancePremiumOption;
 
 use App\Models\Weather\WeatherSubscription;
-
 use App\Models\Payments\SubscriptionPayment;
 
 class MenuFunctions
@@ -953,6 +953,21 @@ class MenuFunctions
         info($question);
 
         return $question;
+    }
+
+    public function saveEvaluationAnswer($session_id, $current_question, $input_text){
+
+        $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();
+
+        $question = UssdEvaluationQuestion::where('position', $current_question)->where('ussd_language_id', $selected_language->data['language_id'])->first();
+
+
+        $selection = new UssdEvaluationSelection();
+        $selection->session_id = $session_id;
+        $selection->user_selection = $input_text;
+        $selection->ussd_evaluation_question_id = $question->id;
+        $selection->save();
+
     }
 
     /**

@@ -935,6 +935,8 @@ class MenuController extends Controller
         
         elseif ($last_menu == "advisory_evaluation_two") {
 
+            $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 1, $input_text);
+
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(2, $sessionId);
 
             $action         = "request";
@@ -950,6 +952,8 @@ class MenuController extends Controller
 
         elseif ($last_menu == "advisory_evaluation_three") {
 
+            $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 2, $input_text);
+
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(3, $sessionId);
 
                 $action         = "request";
@@ -963,6 +967,8 @@ class MenuController extends Controller
            
         }
         elseif ($last_menu == "advisory_evaluation_four") {
+
+            $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 3, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(4, $sessionId);
 
@@ -978,6 +984,8 @@ class MenuController extends Controller
         }
         elseif ($last_menu == "advisory_evaluation_five") {
 
+            $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 4, $input_text);
+
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(5, $sessionId);
 
                 $action         = "request";
@@ -992,6 +1000,8 @@ class MenuController extends Controller
         }
         elseif ($last_menu == "advisory_evaluation_five") {
 
+            $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 4, $input_text);
+
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(5, $sessionId);
 
                 $action         = "request";
@@ -1005,6 +1015,8 @@ class MenuController extends Controller
            
         }
         elseif ($last_menu == "advisory_evaluation_six") {
+
+            $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 5, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(6, $sessionId);
 
@@ -1021,6 +1033,8 @@ class MenuController extends Controller
 
         elseif ($last_menu == "advisory_evaluation_seven") {
 
+            $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 6, $input_text);
+
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(7, $sessionId);
 
             $action         = "request";
@@ -1034,6 +1048,8 @@ class MenuController extends Controller
            
         }
         elseif ($last_menu == "advisory_evaluation_end") {
+
+            $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 7, $input_text);
 
             $action         = "end";
             $response       = "Thank you.";

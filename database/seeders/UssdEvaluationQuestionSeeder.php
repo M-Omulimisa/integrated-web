@@ -60,7 +60,7 @@ class UssdEvaluationQuestionSeeder extends Seeder
                 );
 
 
-        $qestion = UssdEvaluationQuestion::create(   
+        $question = UssdEvaluationQuestion::create(   
             ['evaluation_question'=>'Did you prefer or like the local language that was used?', 'ussd_language_id' => '2df58ff9-e623-4af3-82bc-048ef73eb4ce', 'position' => 4]
         );
 
