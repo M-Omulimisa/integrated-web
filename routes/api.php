@@ -17,10 +17,7 @@ use App\Http\Controllers\Api\v1\ApiShopController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::POST("users/login", function () {
-    return "Hello World";
-});
+ 
 
 Route::get('/user', function (Request $request) {
     return 'Testing';
@@ -90,6 +87,7 @@ Route::group([
 ], function () {
 
     /* ==============START OF SHOP API================== */
+    Route::post("become-vendor", [ApiShopController::class, 'become_vendor']);
     Route::get('products', [ApiShopController::class, 'products']);
     Route::POST("product-create", [ApiShopController::class, "product_create"]);
     Route::POST("post-media-upload", [ApiShopController::class, 'upload_media']);
@@ -105,9 +103,11 @@ Route::group([
 
 
     // Authentication
+    Route::post("request-otp-sms", [ApiAuthController::class, "request_otp_sms"]);
     Route::POST('login', [ApiAuthController::class, 'login']);
     Route::POST('register', [ApiAuthController::class, 'register']);
     Route::get('me', [ApiAuthController::class, 'me']);
+    Route::get("users/me", [ApiAuthController::class, "me"]);
     Route::get('organisation-joining-requests', [ApiAuthController::class, 'organisation_joining_requests']);
     Route::get('my-roles', [ApiAuthController::class, 'my_roles']);
     Route::get('resources', [ApiAuthController::class, 'resources']);

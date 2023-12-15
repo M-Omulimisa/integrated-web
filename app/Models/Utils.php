@@ -11,6 +11,96 @@ use Berkayk\OneSignal\OneSignalClient;
 class Utils
 {
 
+    public static function phone_number_is_valid($phone_number)
+    {
+        $phone_number = Utils::prepare_phone_number($phone_number);
+        if (substr($phone_number, 0, 4) != "+256") {
+            return false;
+        }
+
+        if (strlen($phone_number) != 13) {
+            return false;
+        }
+
+        return true;
+    }
+    public static function prepare_phone_number($phone_number)
+    {
+        $original = $phone_number;
+        //$phone_number = '+256783204665';
+        //0783204665
+        if (strlen($phone_number) > 10) {
+            $phone_number = str_replace("+", "", $phone_number);
+            $phone_number = substr($phone_number, 3, strlen($phone_number));
+        } else {
+            if (substr($phone_number, 0, 1) == "0") {
+                $phone_number = substr($phone_number, 1, strlen($phone_number));
+            }
+        }
+        if (strlen($phone_number) != 9) {
+            return $original;
+        }
+        return "+256" . $phone_number;
+    }
+
+
+    public static  function send_sms($phone, $sms)
+    {
+
+        $phone = Utils::prepare_phone_number($phone);
+        if (Utils::phone_number_is_valid($phone) == false) {
+            return 'Invalid phone number';
+        }
+        $sms = urlencode($sms);
+        $url = '';
+        $url .= "?spname=mulimisa";
+        $url .= "&sppass=mul1m1s4";
+        $url .= "&numbers=$phone";
+        $url .= "&msg=$sms";
+        $url .= "&type=json"; 
+
+        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/".$url;
+ 
+        //use guzzle to make the request 
+        $body = null;
+        try {
+            //use use curl to make the request
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $body = curl_exec($ch);
+            curl_close($ch);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+        if ($body == null) {
+            return 'Failed to send request 2';
+        }
+
+        $data = json_decode($body);
+
+        if ($data == null) {
+            return 'Failed to decode response 1';
+        }
+
+        if (!isset($data->Failed)) {
+            return 'Failed to get status ' . $body;
+        }
+        if (!isset($data->Total)) {
+            return 'Total not set ' . $body;
+        }
+
+        if (((int)$data->Failed) > 0) {
+            return 'Failed sms sent is greater than 0 4';
+        }
+        if (((int)$data->Total) < 1) {
+            return 'Total sms sent is less than 1 5';
+        }
+        return 'success';
+    }
+
+    
     static function syncGroups()
     {
         $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();

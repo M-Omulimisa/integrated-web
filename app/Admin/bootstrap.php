@@ -1,10 +1,24 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
+
+/* $table1 = Schema::getColumnListing('users');
+$table2 = ["id", "username", "password", "first_name", "last_name", "reg_date", "last_seen", "email", "approved", "profile_photo", "user_type", "sex", "reg_number", "country", "occupation", "profile_photo_large", "phone_number", "location_lat", "location_long", "facebook", "twitter", "whatsapp", "linkedin", "website", "other_link", "cv", "language", "about", "address", "created_at", "updated_at", "remember_token", "avatar", "name", "campus_id", "complete_profile", "title", "dob", "intro", "business_name", "business_license_number", "business_license_issue_authority", "business_license_issue_date", "business_license_validity", "business_address", "business_phone_number", "business_whatsapp", "business_email", "business_logo", "business_cover_photo", "business_cover_details", "nin", "status"];
+
+foreach ($table2 as $key => $val) {
+    if (!in_array($val, $table1)) {
+        echo '$table->text("'.$val.'")->nullable();'."<br>";
+    }
+} */
+
+
 use App\Models\ParishModel;
 use App\Models\Utils;
+use Dflydev\DotAccessData\Util;
 
-Utils::syncGroups();
-
+if (!Utils::isLocalhost()) {
+    Utils::syncGroups();
+}
 /* 
 $parishes = ParishModel::where('lat', null)
     ->limit(100)
