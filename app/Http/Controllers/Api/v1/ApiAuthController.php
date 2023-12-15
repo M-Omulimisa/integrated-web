@@ -57,7 +57,7 @@ class ApiAuthController extends Controller
         $currentUrl = request()->path();
         $segments = explode('/', $currentUrl);
         $lastSegment = end($segments);
-        if (!in_array($lastSegment, ['login', 'register','request-otp-sms'])) {
+        if (!in_array($lastSegment, ['login', 'register', 'request-otp-sms'])) {
             $u = auth('api')->user();
             if ($u == null) {
                 header('Content-Type: application/json');
@@ -749,7 +749,7 @@ class ApiAuthController extends Controller
     {
         if ($r->phone_number == null) {
             return $this->error('Phone number is required.');
-        } 
+        }
         $r->validate([
             'phone_number' => 'required',
         ]);
@@ -759,17 +759,23 @@ class ApiAuthController extends Controller
             return $this->error('Invalid phone number.');
         }
 
-        if(str_contains($phone_number, '256783204665')){
+        if (str_contains($phone_number, '256783204665')) {
             $acc = User::where([
                 'id' => 1
             ])
-            ->orderBy('id', 'asc')
-            ->first();
+                ->orderBy('id', 'asc')
+                ->first();
             $acc->phone_number = $phone_number;
             $acc->save();
         }
-        
+
         $acc = User::where(['phone_number' => $phone_number])->first();
+        if ($acc == null) {
+            $acc = User::where(['username' => $phone_number])->first();
+        }
+        if ($acc == null) {
+            $acc = User::where(['phone' => $phone_number])->first();
+        }
         if ($acc == null) {
             $acc = User::where(['username' => $phone_number])->first();
         }
@@ -794,6 +800,8 @@ class ApiAuthController extends Controller
         if ($resp != 'success') {
             return $this->error('Failed to send OTP  because ' . $resp . '');
         }
+        $acc->phone_number = $phone_number;
+        $acc->phone = $phone_number;
         $acc->password = password_hash($otp, PASSWORD_DEFAULT);
         $acc->save();
         return $this->success(
@@ -801,7 +809,7 @@ class ApiAuthController extends Controller
             $message = "OTP sent successfully.",
             200
         );
-    } 
+    }
 
 
     public function login(Request $r)
@@ -819,6 +827,7 @@ class ApiAuthController extends Controller
 
         $u = User::where('email', $r->username)
             ->orWhere('phone', $r->username)
+            ->orWhere('phone_number', $r->username)
             ->orWhere('username', $r->username)
             ->first();
 
