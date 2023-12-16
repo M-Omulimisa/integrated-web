@@ -14,6 +14,7 @@ use App\Models\Farm;
 use App\Models\Image;
 use App\Models\Movement;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\SlaughterHouse;
 use App\Models\SlaughterRecord;
 use App\Models\User;
@@ -35,8 +36,7 @@ class ApiShopController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-
-        die($request->first_name);
+ 
         if (
             $request->first_name == null ||
             strlen($request->first_name) < 2
@@ -121,7 +121,7 @@ class ApiShopController extends Controller
         $msg = "";
         $u->first_name = $request->first_name;
         $u->last_name = $request->last_name;
-        $u->nin = $request->campus_id;
+        $u->nin = $request->nin;
         $u->business_name = $request->business_name;
         $u->business_license_number = $request->business_license_number;
         $u->business_license_issue_authority = $request->business_license_issue_authority;
@@ -563,12 +563,12 @@ class ApiShopController extends Controller
         }
     }
 
+
     public function product_create(Request $r)
     {
 
         $user_id = $r->user;
-        $u = Administrator::find($user_id);
-
+        $u = User::find($user_id);
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -582,7 +582,17 @@ class ApiShopController extends Controller
         }
 
 
-        $pro = new Product();
+        $isEdit = false;
+        if (isset($r->is_edit) && $r->is_edit == 'Yes') {
+            $pro = Product::find($r->id);
+            if ($pro == null) {
+                return $this->error('Product not found.');
+            }
+            $isEdit = true;
+        } else {
+            $pro = new Product();
+        }
+
         $pro->name = $r->name;
         $pro->feature_photo = 'no_image.jpg';
         $pro->description = $r->description;
@@ -590,8 +600,6 @@ class ApiShopController extends Controller
         $pro->price_2 = $r->price_2;
         $pro->local_id = $r->id;
         $pro->summary = $r->data;
-        $pro->category = $r->category_id;
-        $pro->sub_category = $r->category_id;
         $pro->p_type = $r->p_type;
         $pro->keywords = $r->keywords;
         $pro->metric = 1;
@@ -602,6 +610,14 @@ class ApiShopController extends Controller
         $pro->supplier = $u->id;
         $pro->in_stock = 1;
         $pro->rates = 1;
+
+
+        $cat = ProductCategory::find($r->category);
+        if ($cat == null) {
+            return $this->error('Category not found.');
+        }
+        $pro->category = $cat->id;
+
         $pro->date_added = Carbon::now();
         $pro->date_updated = Carbon::now();
         $imgs = Image::where([
@@ -615,11 +631,15 @@ class ApiShopController extends Controller
                 $img->product_id = $pro->id;
                 $img->save();
             }
+            if ($isEdit) {
+                return $this->success(null, $message = "Updated successfully!", 200);
+            }
             return $this->success(null, $message = "Submitted successfully!", 200);
         } else {
             return $this->error('Failed to upload product.');
         }
     }
+
 
 
     public function upload_media(Request $request)

@@ -2,14 +2,15 @@
 
 use Illuminate\Support\Facades\Schema;
 
-/* $table1 = Schema::getColumnListing('users');
-$table2 = ["id", "username", "password", "first_name", "last_name", "reg_date", "last_seen", "email", "approved", "profile_photo", "user_type", "sex", "reg_number", "country", "occupation", "profile_photo_large", "phone_number", "location_lat", "location_long", "facebook", "twitter", "whatsapp", "linkedin", "website", "other_link", "cv", "language", "about", "address", "created_at", "updated_at", "remember_token", "avatar", "name", "campus_id", "complete_profile", "title", "dob", "intro", "business_name", "business_license_number", "business_license_issue_authority", "business_license_issue_date", "business_license_validity", "business_address", "business_phone_number", "business_whatsapp", "business_email", "business_logo", "business_cover_photo", "business_cover_details", "nin", "status"];
+/* $table1 = Schema::getColumnListing('products');
+$table2 = ["id","name","metric","currency","description","summary","price_1","price_2","feature_photo","rates","date_added","date_updated","user","category","sub_category","supplier","url","status","in_stock","keywords","p_type","local_id","updated_at","created_at"];
 
 foreach ($table2 as $key => $val) {
     if (!in_array($val, $table1)) {
         echo '$table->text("'.$val.'")->nullable();'."<br>";
     }
-} */
+}
+die();  */
 
 
 use App\Models\ParishModel;

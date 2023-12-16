@@ -28,6 +28,8 @@ Route::group([
     $router->resource('organisation-joining-requests', OrganisationJoiningRequestController::class);
     $router->resource('resource-categories', ResourceCategoryController::class);
     $router->resource('financial-institutions', FinancialInstitutionController::class);
+    $router->resource('requests', VendorController::class);
+    $router->resource('products', ProductController::class);
 
     $router->resource('farmer-questions', FarmerQuestionController::class);
     $router->resource('farmer-question-answers', FarmerQuestionAnswerController::class);
@@ -37,6 +39,6 @@ Route::group([
     $router->resource('parishes', ParishModelModelController::class);
     $router->resource('locations', LocationController::class);
     $router->resource('crops', CropsController::class);
-    $router->resource('seasons', SeasonController::class); 
+    $router->resource('seasons', SeasonController::class);
     $router->resource('insurance-premium-options', InsurancePremiumOptionController::class);
 });
