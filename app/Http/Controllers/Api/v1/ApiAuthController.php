@@ -870,29 +870,19 @@ class ApiAuthController extends Controller
 
     public function register(Request $r)
     {
-        if ($r->name == null) {
-            return $this->error('Name is required.');
+       
+        if ($r->first_name == null) {
+            return $this->error('First name is required.');
         }
 
-        if ($r->email == null) {
-            return $this->error('Email address is required.');
+        if ($r->last_name == null) {
+            return $this->error('Last name is required.');
         }
-
-        if ($r->password == null) {
-            return $this->error('Password is required.');
-        }
-
-        $u = User::where('email', $r->email)
-            ->orWhere('phone', $r->email)
-            ->orWhere('username', $r->email)
-            ->first();
-        if ($u != null) {
-            return $this->error('User with same email address already exists.');
-        }
-
+  
         $u = User::where('email', $r->phone)
             ->orWhere('phone', $r->phone)
             ->orWhere('username', $r->phone)
+            ->orWhere('phone_number', $r->phone)
             ->first();
         if ($u != null) {
             return $this->error('User with same phone number already exists.');
@@ -905,7 +895,7 @@ class ApiAuthController extends Controller
         $user->phone = $r->phone;
         $user->phone_number = $r->phone;
         $user->email = $r->email;
-        $user->username = $r->email;
+        $user->username = $r->phone;
         $user->photo = null;
         $user->password = password_hash(trim($r->password), PASSWORD_DEFAULT);
         try {
