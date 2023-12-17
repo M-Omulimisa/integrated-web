@@ -13,11 +13,22 @@ class Order extends Model
     {
         parent::boot();
         //created
-    
- 
+        self::created(function ($m) {
+
+        });
+        self::deleting(function ($m) {
+            try {
+                $items = OrderedItem::where('order', $m->id)->get();
+                foreach ($items as $item) {
+                    $item->delete();
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        });
     }
 
- 
+   
     public function get_items()
     {
         $items = [];

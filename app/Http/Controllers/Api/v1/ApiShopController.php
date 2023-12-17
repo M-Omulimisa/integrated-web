@@ -13,6 +13,8 @@ use App\Models\Event;
 use App\Models\Farm;
 use App\Models\Image;
 use App\Models\Movement;
+use App\Models\Order;
+use App\Models\OrderedItem;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\SlaughterHouse;
@@ -367,7 +369,6 @@ class ApiShopController extends Controller
 
         return $this->success(null, $message = "Submitted successfully!", 200);
     }
-
 
 
 
