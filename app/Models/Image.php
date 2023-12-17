@@ -48,12 +48,21 @@ class Image extends Model
         });
 
         self::created(function ($m) {
-            $m->create_thumbail();
+            try {
+                //$m->create_thumbail();
+            } catch (\Throwable $th) {
+                //throw $th;
+            } 
         });
     }
 
     public function getSrcAttribute($src)
     {
+
+        if (strpos($src, 'images/') === false) {
+            return '/images/' . $src;
+        }
+        return $src;  
 
         $source = Utils::docs_root() . "/storage/images/" . $src;
         if (!file_exists($source)) {

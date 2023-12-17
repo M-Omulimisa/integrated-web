@@ -2,6 +2,36 @@
 
 use Illuminate\Support\Facades\Schema;
 
+/* 
+curl -X GET "https://api.app.outscraper.com/maps/search-v3?query=restaurants%2C%20Manhattan%2C%20NY%2C%20USA&limit=3&async=false" -H  "X-API-KEY: YOUR-API-KEY" 
+*/
+//curl -X GET "https://api.app.outscraper.com/maps/search-v3?query=restaurants%2C%20Manhattan%2C%20NY%2C%20USA&limit=3&async=false" -H  "X-API-KEY: YOUR-API-KEY"
+//http request to get the data
+
+/* $curl = curl_init();
+$curl = curl_init();
+curl_setopt_array($curl, array(
+    CURLOPT_URL => "https://api.app.outscraper.com/maps/search-v3?query=IUIU%2C%20UG%2C%2Uganda&limit=3&async=false",
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => "",
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => false,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => "GET",
+    CURLOPT_HTTPHEADER => array(
+        "X-API-KEY: ZjM4YmY3NjU5ZmY2NGIzNDgxMGM3NDQyODg2N2EyOWJ8Yjk0ZDVjOGJkNw"
+    ),
+)); 
+$response = curl_exec($curl);
+curl_close($curl);
+$data = json_decode($response);
+dd($data);
+echo $response;
+die(); */
+
+
+
 /* $table1 = Schema::getColumnListing('products');
 $table2 = ["id","name","metric","currency","description","summary","price_1","price_2","feature_photo","rates","date_added","date_updated","user","category","sub_category","supplier","url","status","in_stock","keywords","p_type","local_id","updated_at","created_at"];
 

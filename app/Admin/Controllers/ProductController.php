@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\Product;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -139,6 +140,7 @@ class ProductController extends AdminController
         $form = new Form(new Product());
 
 
+
         if ($form->isCreating()) {
             $form->hidden('user', __('Product provider'))->default(Auth::user()->id)->readOnly()->rules('required');
         }
@@ -161,13 +163,42 @@ class ProductController extends AdminController
                 $cats->pluck('category', 'id')
             )
             ->rules('required');
+
+
+        $form->morphMany('images', __('Images'), function (Form\NestedForm $form) {
+            $form->image('src', __('Image'))
+                ->attribute(['accept' => 'image/*']);
+            $u = Admin::user();
+
+            /* $p = Product::find(request()->route()->parameter('product'));
+            if($p == null){
+                throw('Product not found');
+            }
+             */
+            $form->hidden('administrator_id')->default($u->id);
+            $form->hidden('note')->default('Web');
+            $form->hidden('type')->default('Product');
+        });
+
+        /* 	
+	
+size	
+deleted_at	
+	
+product_id	
+parent_endpoint		
+	
+
+*/
         /* $form->url('url', __('Url')); 
                 $form->decimal('rates', __('Rates'));
         */
-        $form->keyValue('summary', __('Data'));
+        /* $form->keyValue('summary', __('Data')); */
 
 
 
+        $form->disableReset();
+        $form->disableViewCheck();
         return $form;
     }
 }

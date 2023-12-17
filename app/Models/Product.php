@@ -30,6 +30,15 @@ class Product extends Model
         return json_encode($imgs);
     }
 
+    //product has many images
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'parent_id','id'); 
+    }
+
+    //setter for images 
+    
+
     protected $casts = [
         'data' => 'json',
     ];
