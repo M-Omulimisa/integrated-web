@@ -43,7 +43,6 @@ class ProductController extends AdminController
             $filter->equal('category', 'Category')->select(
                 $cats->pluck('category', 'id')
             );
-
             $filter->between('price_1', 'Select Price');
             $filter->between('created_at', 'Created at')->datetime();
         });
@@ -63,9 +62,9 @@ class ProductController extends AdminController
             ->editable();
         $grid->picture('feature_photo', __('Photo'))
             ->lightbox(['width' => 50, 'height' => 50])
-            ->sortable();
-        $grid->column('date_updated', __('Date updated'));
-        $grid->column('user', __('User'))
+            ->hide();
+
+        $grid->column('user', __('Vendor'))
             ->display(function ($user) {
                 $u =  \App\Models\User::find($user);
                 if ($u == null) {
@@ -74,6 +73,7 @@ class ProductController extends AdminController
                 return $u->name;
             })
             ->sortable();
+
         $grid->column('category', __('Category'))
             ->display(function ($category) {
                 $c =  \App\Models\ProductCategory::find($category);
@@ -156,7 +156,9 @@ class ProductController extends AdminController
             ->rules('required');
 
         $form->image('feature_photo', __('Feature photo'))
-            ->rules('required');
+            ->rules('required')
+            ->attribute(['accept' => 'image/*']); 
+
         $cats = \App\Models\ProductCategory::all();
         $form->select('category', __('Category'))
             ->options(
