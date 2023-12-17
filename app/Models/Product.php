@@ -31,19 +31,19 @@ class Product extends Model
     }
 
     //product has many images
-    public function images($src)
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'parent_id','id'); 
+    }
+
+    //getter for feature_photo 
+    public function getFeaturePhotoAttribute($src)
     {
         if (strpos($src, 'images/') === false) {
             return '/images/' . $src;
         }
         return $src;   
     }
-
-    //getter for feature_photo 
-    public function getFeaturePhotoAttribute($value)
-    {
-        return asset('storage/' . $value);
-    } 
     
 
     protected $casts = [
