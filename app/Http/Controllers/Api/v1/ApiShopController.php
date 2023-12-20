@@ -47,7 +47,7 @@ class ApiShopController extends Controller
         $orders = [];
         $conds = [];
 
-        if(!$u->isRole('admin')){
+        if(!$u->hasRole('admin')){
             $conds['user'] = $u->id;
         }
 
