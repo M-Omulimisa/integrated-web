@@ -88,6 +88,7 @@ Route::group([
 
     /* ==============START OF SHOP API================== */
     Route::get("orders", [ApiShopController::class, "orders_get"]);
+    Route::get("vendors", [ApiShopController::class, "vendors_get"]);
     Route::post("become-vendor", [ApiShopController::class, 'become_vendor']);
     Route::get('products', [ApiShopController::class, 'products']);
     Route::POST("product-create", [ApiShopController::class, "product_create"]);

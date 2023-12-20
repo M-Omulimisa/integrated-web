@@ -47,7 +47,7 @@ class ApiShopController extends Controller
         $orders = [];
         $conds = [];
 
-        if(!$u->hasRole('admin')){
+        if (!$u->hasRole('admin')) {
             $conds['user'] = $u->id;
         }
 
@@ -57,6 +57,13 @@ class ApiShopController extends Controller
             $orders[] = $order;
         }
         return $this->success($orders, $message = "Success!", 200);
+    }
+
+    public function vendors_get(Request $r)
+    {
+        return $this->success(User::where([
+            'user_type' => 'Vendor'
+        ])->get(), $message = "Success!", 200);
     }
 
     public function become_vendor(Request $request)
