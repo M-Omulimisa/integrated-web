@@ -14,7 +14,7 @@ class AddIdToOrdersTable extends Migration
     public function up()
     {
         Schema::table('ordered_items', function (Blueprint $table) {
-            $table->integer("id")->autoIncrement()->primary();
+            //$table->integer("id")->autoIncrement()->primary();
         });
     }
 
