@@ -99,6 +99,7 @@ Route::group([
     Route::POST('chat-start', [ApiShopController::class, 'chat_start']);
     Route::post("orders", [ApiShopController::class, "orders_submit"]);
     Route::post("become-vendor", [ApiShopController::class, 'become_vendor']);
+    Route::get("orders", [ApiShopController::class, "orders_get"]);
 
     /* ==============END OF SHOP API================== */
 

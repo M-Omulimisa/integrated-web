@@ -32,13 +32,40 @@ class ApiShopController extends Controller
 
     use ApiResponser;
 
+    public function orders_get(Request $r)
+    {
+
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = Administrator::find($administrator_id);
+        }
+
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $orders = [];
+        $conds = [];
+
+        if(!$u->isRole('admin')){
+            $conds['user'] = $u->id;
+        }
+
+        foreach (Order::where($conds)->get() as $order) {
+            $items = $order->get_items();
+            $order->items = json_encode($items);
+            $orders[] = $order;
+        }
+        return $this->success($orders, $message = "Success!", 200);
+    }
+
     public function become_vendor(Request $request)
-    { 
+    {
         $u = auth('api')->user();
         if ($u == null) {
             return $this->error('User not found.');
         }
- 
+
         if (
             $request->first_name == null ||
             strlen($request->first_name) < 2
