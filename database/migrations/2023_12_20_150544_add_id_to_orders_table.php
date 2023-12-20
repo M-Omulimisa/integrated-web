@@ -13,7 +13,7 @@ class AddIdToOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::table('orders', function (Blueprint $table) {
+        Schema::table('ordered_items', function (Blueprint $table) {
             $table->integer("id")->autoIncrement()->primary();
         });
     }
