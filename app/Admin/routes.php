@@ -41,4 +41,5 @@ Route::group([
     $router->resource('crops', CropsController::class);
     $router->resource('seasons', SeasonController::class);
     $router->resource('insurance-premium-options', InsurancePremiumOptionController::class);
+    $router->resource('orders', OrderController::class);
 });
