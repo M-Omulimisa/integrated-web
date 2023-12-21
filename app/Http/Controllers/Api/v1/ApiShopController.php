@@ -327,6 +327,7 @@ class ApiShopController extends Controller
 
     public function orders_submit(Request $r)
     {
+
         $u = auth('api')->user();
         if ($u == null) {
             $administrator_id = Utils::get_user_id($r);
@@ -339,11 +340,20 @@ class ApiShopController extends Controller
         } catch (\Throwable $th) {
             $items = [];
         }
+
         foreach ($items as $key => $value) {
             $p = Product::find($value->product_id);
             if ($p == null) {
                 return $this->error("Product #" . $value->product_id . " not found.");
             }
+        }
+
+        if (!is_array($items)) {
+            return $this->error("Items are missing.");
+        }
+
+        if (count($items) < 1) {
+            return $this->error("Items are missing.");
         }
 
         if ($u == null) {
@@ -372,39 +382,54 @@ class ApiShopController extends Controller
         $order->order_total = 0;
         $order->payment_confirmation = '';
         $order->description = '';
-        $order->mail = $u->email;
+        $order->mail = $delivery->email;
         $order->date_created = Carbon::now();
         $order->date_updated = Carbon::now();
-        if ($delivery != null) {
-            try {
-                $order->customer_phone_number_1 = $delivery->phone_number;
-                $order->customer_phone_number_2 = $delivery->phone_number_2;
-                $order->customer_name = $delivery->first_name . " " . $delivery->last_name;
-                $order->customer_address = $delivery->current_address;
-                $order->delivery_district = $delivery->current_address;
-                $order->order_details = json_encode($delivery);
-            } catch (\Throwable $th) {
-            }
-        }
-
         $order->save();
-
         $order_total = 0;
         foreach ($items as $key => $item) {
+            $product = Product::find($item->product_id);
+            if ($product == null) {
+                return $this->error("Product #" . $item->product_id . " not found.");
+            }
             $oi = new OrderedItem();
             $oi->order = $order->id;
             $oi->product = $item->product_id;
             $oi->qty = $item->product_quantity;
-            $oi->amount = $item->product_price_1;
+            $oi->amount = $product->price_1;
             $oi->color = '';
             $oi->size = '';
-            $order_total += ($oi->amount * $oi->qty);
+            $order_total += ($product->price_1 * $oi->qty);
             $oi->save();
         }
         $order->order_total = $order_total;
+        $order->amount = $order_total;
+        $order->customer_phone_number_1 = $delivery->phone_number;
+        $order->payment_confirmation = 'Not Paid';
+        $order->order_state = 'Pending'; // 'Pending', 'Processing', 'Completed', 'Cancelled
+        $order->description = $delivery->address;
         $order->save();
 
-        return $this->success(null, $message = "Order Submitted Successfully!", 200);
+        //send notification to customer, how order was received
+        $noti_title = "Order Received";
+        $noti_body = "Your order has been received. We will contact you soon. Thank you.";
+        Utils::sendNotification(
+            $noti_body,
+            $u->id,
+            $noti_title,
+            data: [
+                'id' => $order->id,
+                'user' => $u->id,
+                'order_state' => $order->order_state,
+                'amount' => $order->amount,
+                'order_total' => $order->order_total,
+                'payment_confirmation' => $order->payment_confirmation,
+                'description' => $order->description,
+                'customer_phone_number_1' => $order->customer_phone_number_1,
+            ]
+        ); 
+        Utils::send_sms($noti_body, $delivery->phone_number); 
+        return $this->success($order, $message = "Order Submitted Successfully.", 200);
     }
 
 
