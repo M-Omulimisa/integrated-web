@@ -413,22 +413,26 @@ class ApiShopController extends Controller
         //send notification to customer, how order was received
         $noti_title = "Order Received";
         $noti_body = "Your order has been received. We will contact you soon. Thank you.";
-        Utils::sendNotification(
-            $noti_body,
-            $u->id,
-            $noti_title,
-            data: [
-                'id' => $order->id,
-                'user' => $u->id,
-                'order_state' => $order->order_state,
-                'amount' => $order->amount,
-                'order_total' => $order->order_total,
-                'payment_confirmation' => $order->payment_confirmation,
-                'description' => $order->description,
-                'customer_phone_number_1' => $order->customer_phone_number_1,
-            ]
-        ); 
-        Utils::send_sms($noti_body, $delivery->phone_number); 
+        try {
+            Utils::sendNotification(
+                $noti_body,
+                $u->id,
+                $noti_title,
+                data: [
+                    'id' => $order->id,
+                    'user' => $u->id,
+                    'order_state' => $order->order_state,
+                    'amount' => $order->amount,
+                    'order_total' => $order->order_total,
+                    'payment_confirmation' => $order->payment_confirmation,
+                    'description' => $order->description,
+                    'customer_phone_number_1' => $order->customer_phone_number_1,
+                ]
+            );
+        } catch (\Throwable $th) {
+            //throw $th;
+        } 
+        Utils::send_sms($noti_body, $delivery->phone_number);
         return $this->success($order, $message = "Order Submitted Successfully.", 200);
     }
 
