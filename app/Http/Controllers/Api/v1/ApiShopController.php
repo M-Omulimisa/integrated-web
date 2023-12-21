@@ -389,7 +389,7 @@ class ApiShopController extends Controller
 
         $order->save();
 
-
+        $order_total = 0;
         foreach ($items as $key => $item) {
             $oi = new OrderedItem();
             $oi->order = $order->id;
@@ -398,10 +398,13 @@ class ApiShopController extends Controller
             $oi->amount = $item->product_price_1;
             $oi->color = '';
             $oi->size = '';
+            $order_total += ($oi->amount * $oi->qty);
             $oi->save();
         }
+        $order->order_total = $order_total;
+        $order->save();
 
-        return $this->success(null, $message = "Submitted successfully!", 200);
+        return $this->success(null, $message = "Order Submitted Successfully!", 200);
     }
 
 
