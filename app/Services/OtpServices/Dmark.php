@@ -135,11 +135,11 @@ class Dmark implements ServiceInterface
 
                 // Use the service
                 $response = $gateway->send($user_phone, str_replace(":password", $otp, $this->message));
-                if ($this->debug) logger($response);
+                if ($this->debug) logger([$response]);
 
                 if(!isset($response[0])) return false;
 
-                if ($this->debug) logger("Status ".$response[0]->status);
+                if ($this->debug) logger(["Status" => $response[0]->status]);
                 return $response[0]->status == "Success" || $response[0]->status == "Sent";
             }
             else{
@@ -165,6 +165,56 @@ class Dmark implements ServiceInterface
             if ($this->debug) logger($e->getMessage());
             // return false if any exception occurs
             \Log::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function sendTextMessage($phone, $message)
+    {
+        // if (config('app.env') == "local") {            
+        //     logger(config('otp.otp_default_service'));
+        //     logger($message);
+        //     return true;
+        // }
+
+        // extract the phone from the user
+        if ($this->debug) logger("entered DmarkGateway");
+
+        // if the phone isn't set, return false
+        if ($this->debug) logger("Phone $phone");
+        if (!$phone) return false;
+
+        // if the message isn't set, return false
+        if ($this->debug) logger("Message ".$message);
+        if (is_null($message)) return false;
+
+        try {
+            $gateway = new DmarkSms($this->username, $this->api_key);
+            if ($this->debug) logger("Username ".$this->username);
+            if ($this->debug) logger("Key ".$this->api_key);
+
+            // Use the service
+            $response = $gateway->send($phone, $message);
+            if ($this->debug) logger([$response]);
+
+            if(!isset($response[0])) return false;
+
+            if ($this->debug) logger(["Status" => $response[0]->status]);
+
+            $result = $response[0]->status == "Success" || $response[0]->status == "Sent";
+
+            if(!$result) \Log::error(["DmarkAPI" => 'Message not sent']);
+
+            return $result;
+
+        } catch (\Throwable $exception) {
+            if ($this->debug) \Log::error($exception->getMessage());
+            // return false if any exception occurs
+            return false;
+
+        } catch (\Exception $e) {
+            if ($this->debug) \Log::error($e->getMessage());
+            // return false if any exception occurs
             return false;
         }
     }

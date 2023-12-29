@@ -20,8 +20,8 @@
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="nav-item"><a class="nav-link active" href="{{ url()->current() }}">List of subscriptions</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route($set->_route.'.create') }}">Add new subscription</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route($set->_route.'.upload') }}">Upload subscriptions</a></li>
+                    {{-- <li class="nav-item"><a class="nav-link" href="{{ route($set->_route.'.create') }}">Add new subscription</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route($set->_route.'.upload') }}">Upload subscriptions</a></li> --}}
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">

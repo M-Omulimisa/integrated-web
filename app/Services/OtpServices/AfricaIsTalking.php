@@ -104,7 +104,7 @@ class AfricaIsTalking implements ServiceInterface
 
             // Use the service
             $response = $sms->send([ 'to' => $user_phone, 'message' => str_replace(":password", $otp, $this->message) ]);
-            if ($this->debug) logger($response);
+            if ($this->debug) logger([$response]);
 
             // check if response contains the succeeded flag
             /* Response
@@ -130,6 +130,54 @@ class AfricaIsTalking implements ServiceInterface
             ),
             ),
             ]*/
+            if ($this->debug) logger("Status ".$response['status']);
+            return $response['status'] == "success" || $response['status'] == "sent";
+
+        } catch (\Throwable $exception) {
+            if ($this->debug) logger($exception->getMessage());
+            // return false if any exception occurs
+            return false;
+
+        } catch (\Exception $e) {
+            if ($this->debug) logger($e->getMessage());
+            // return false if any exception occurs
+            return false;
+        }
+    }
+
+    public function sendTextMessage($phone, $message)
+    {
+        if (config('app.env') == "local") {
+            logger(config('otp.otp_default_service'));
+            logger($message);
+            return true;
+        }
+
+        // extract the phone from the user
+        if ($this->debug) logger("entered AfricasTalkingGateway");
+
+        // if the phone isn't set, return false
+        if ($this->debug) logger("Phone $phone");
+        if (!$phone) return false;
+
+        // if the message isn't set, return false
+        if ($this->debug) logger("Message ".$message);
+        if (is_null($message)) return false;
+
+        try {
+            $gateway = new AfricasTalking($this->username, $this->api_key);
+            if ($this->debug) logger("Username ".$this->username);
+            if ($this->debug) logger("Key ".$this->api_key);
+
+            // Get one of the services
+            $sms = $gateway->sms();
+
+            // Use the service
+            $response = $sms->send([ 'to' => $phone, 'message' => $message ]);
+            if ($this->debug) logger([$response]);
+
+            if(!isset($response['status'])) return false;
+
             if ($this->debug) logger("Status ".$response['status']);
             return $response['status'] == "success" || $response['status'] == "sent";
 
