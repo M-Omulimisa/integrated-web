@@ -25,19 +25,6 @@ class WeatherConditionSeeder extends Seeder
      */
     public function run()
     {
-
-        $pid = 'a19669d8-88e2-4ba6-9049-c8af000e6d31';
-
-        $id = WeatherSubscription::wherePaymentId($pid)->first()->id;
-
-        WeatherOutbox::whereSubscriptionId($id)->delete();
-
-        SubscriptionPayment::whereId(WeatherSubscription::whereId($id)->first()->payment_id)->update(['status' => 'PENDING']);
-
-        WeatherSubscription::whereId($id)->delete();
-
-        exit();
-
         $this->disableForeignKeys();
         $now = \Carbon\Carbon::now();
 

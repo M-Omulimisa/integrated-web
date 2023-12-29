@@ -51,6 +51,7 @@ class SendWeatherSMS extends Command
     {
         if ($this->debug) Log::info(['Command' => 'Sending weather information']);
 
+        try {
             WeatherOutbox::where('status', 'PENDING')
                 ->whereDate('created_at', Carbon::today())
                 ->orWhere('status', 'PENDING')
@@ -109,7 +110,6 @@ class SendWeatherSMS extends Command
                         ]);                        
                     }
                 });
-        try {
 
         }
         catch (\Throwable $r) {
