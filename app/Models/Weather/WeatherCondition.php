@@ -33,7 +33,7 @@ class WeatherCondition extends BaseModel
         parent::boot();
         self::creating(function (WeatherCondition $model) {
             $model->id = $model->generateUuid();
-            $model->user_id = auth()->user()->id;
+            $model->user_id = auth()->user()->id ?? null;
         });
     }
 

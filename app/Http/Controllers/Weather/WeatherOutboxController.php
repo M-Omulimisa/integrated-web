@@ -164,7 +164,7 @@ class WeatherOutboxController extends Controller
                     return $data->created_at;
                   })
                 ->addColumn('count', function($data) {
-                    return count($data->message);
+                    return strlen($data->message);
                   })
                 ->addColumn('sent_failed', function($data) {
                     return $data->sent_at ?? $data->failed_at;
