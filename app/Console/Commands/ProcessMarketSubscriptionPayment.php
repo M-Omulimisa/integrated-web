@@ -8,6 +8,7 @@ use App\Models\Market\MarketSubscription;
 use App\Models\Payments\SubscriptionPayment;
 use App\Services\Payments\PaymentServiceFactory;
 use App\Models\Ussd\UssdSessionData;
+use App\Services\OtpServices\ServiceFactory;
 
 class ProcessMarketSubscriptionPayment extends Command
 {
@@ -117,18 +118,27 @@ class ProcessMarketSubscriptionPayment extends Command
                                     $subscription->update($data);
                                 }
                                 else{
-                                    MarketSubscription::create($data);                                    
+                                    $subscription = MarketSubscription::create($data);                                    
+                                }
+
+                                if ($subscription) {
+                                    $message = "Hello, your market info subscription worth UGX ".number_format($payment->amount).", ".$subscription->frequency."(".$subscription->period_paid.") was successful. Thank you. M-Omulimisa";  
+                                    $recipient = $subscription->phone;                                  
                                 }
                             }
                             else{
                                 logger(['ProcessMarketSubscriptionPayment' => 'No session found for TxnID: '.$payment->id]);
                             }
                         }
+                        elseif ($response->TransactionStatus === "FAILED") {
+                            $message = "Hello, your market info subscription worth UGX ".number_format($payment->amount)." failed. Please try again. M-Omulimisa";
+                            $recipient = $payment->account;
+                        }
                         
                         if (!$update) logger(['ProcessMarketSubscriptionPayment' => 'Not updating for TxnID: '.$payment->id]);
                     }
                     elseif(isset($response)) {
-                        $new_status = $response->TransactionStatus!='' ? $response->TransactionStatus : 'FAILED';
+                        $new_status = isset($response->TransactionStatus) && $response->TransactionStatus!='' ? $response->TransactionStatus : 'FAILED';
 
                         $payment->update([
                             'status'        => $new_status, 
@@ -138,12 +148,22 @@ class ProcessMarketSubscriptionPayment extends Command
                         if ($this->debug) logger($response->StatusMessage);
 
                         if ($new_status === "FAILED") {
-                            // TODO Send notification to the subscriber
+                            $message = "Hello, your market info subscription worth UGX ".number_format($payment->amount)." failed. Please try again. M-Omulimisa";
+                            $recipient = $payment->account;
                             logger(['UpdateMarketSubscriptionPayment' => 'Payment failed for TxnID: '.$payment->id]);
                         }
                     }
                     else{
                         logger(['UpdateMarketSubscriptionPayment' => 'NULL response for TxnID: '.$payment->id]);
+                    }
+
+                    if (isset($message)) {
+                        $SMSFactory = new ServiceFactory();
+                        $service = $SMSFactory->getService(config("otp.otp_default_service", null));
+
+                        if ($service) {
+                            $result = $service->sendTextMessage($recipient, $message);
+                        }
                     }
                 }
             }

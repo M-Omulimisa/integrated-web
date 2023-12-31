@@ -26,4 +26,19 @@ trait SubscriptionPaymentRelationship
     {
         return $this->hasMany(InsuranceSubscription::class, 'payment_id');
     }
+
+    public function ussd_weather_session()
+    {
+        return $this->belongsTo(UssdSessionData::class, 'weather_session_id');
+    }
+
+    public function ussd_market_session()
+    {
+        return $this->belongsTo(UssdSessionData::class, 'market_session_id');
+    }
+
+    public function ussd_insurance_session()
+    {
+        return $this->belongsTo(UssdSessionData::class, 'insurance_session_id');
+    }
 }

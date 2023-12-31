@@ -75,7 +75,6 @@ class SendWeatherSMS extends Command
                         $result = false;
 
                         $SMSFactory = new ServiceFactory();
-
                         $service = $SMSFactory->getService(config("otp.otp_default_service", null));
 
                         if ($service) {

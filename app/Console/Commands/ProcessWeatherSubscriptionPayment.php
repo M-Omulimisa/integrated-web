@@ -8,6 +8,7 @@ use App\Models\Weather\WeatherSubscription;
 use App\Models\Payments\SubscriptionPayment;
 use App\Services\Payments\PaymentServiceFactory;
 use App\Models\Ussd\UssdSessionData;
+use App\Services\OtpServices\ServiceFactory;
 
 class ProcessWeatherSubscriptionPayment extends Command
 {
@@ -81,15 +82,13 @@ class ProcessWeatherSubscriptionPayment extends Command
                         $response = $service->getTransactionStatus($payment->reference);
                     }
 
-                    if(isset($response) && $response->Status=='OK'){
+                    if(isset($response) && $response->Status=='OK') {
                         $new_status = $response->TransactionStatus === "SUCCEEDED" ? 'SUCCESSFUL' : $response->TransactionStatus;
                         $update = $payment->update(['status' => $new_status]);
 
                         if(is_null($payment->reference)) $payment->update(['reference' => $response->TransactionReference]);
 
                         if ($response->TransactionStatus === "SUCCEEDED" || $response->TransactionStatus === "SUCCESSFUL") {
-
-                            // TODO Send notification to the subscriber
 
                             if ($payment->tool=="USSD") {
                                 if ($session = UssdSessionData::whereId($payment->weather_session_id)->first()) {
@@ -114,18 +113,27 @@ class ProcessWeatherSubscriptionPayment extends Command
                                     $subscription->update($data);
                                 }
                                 else{
-                                    WeatherSubscription::create($data);                                    
+                                    $subscription = WeatherSubscription::create($data);                                    
+                                }
+
+                                if ($subscription) {
+                                    $message = "Hello, your weather info subscription worth UGX ".number_format($payment->amount).", ".$subscription->frequency."(".$subscription->period_paid.") was successful. Thank you. M-Omulimisa";  
+                                    $recipient = $subscription->phone;                                  
                                 }
                             }
                             else{
                                 logger(['ProcessMarketSubscriptionPayment' => 'No session found for TxnID: '.$payment->id]);
                             }
                         }
+                        elseif ($response->TransactionStatus === "FAILED") {
+                            $message = "Hello, your weather info subscription worth UGX ".number_format($payment->amount)." failed. Please try again. M-Omulimisa";
+                            $recipient = $payment->account;
+                        }
                         
                         if (!$update) logger(['ProcessMarketSubscriptionPayment' => 'Not updating for TxnID: '.$payment->id]);
                     }
                     elseif(isset($response)) {
-                        $new_status = $response->TransactionStatus!='' ? $response->TransactionStatus : 'FAILED';
+                        $new_status = isset($response->TransactionStatus) && $response->TransactionStatus!='' ? $response->TransactionStatus : 'FAILED';
 
                         $payment->update([
                             'status'        => $new_status, 
@@ -135,12 +143,22 @@ class ProcessWeatherSubscriptionPayment extends Command
                         if ($this->debug) logger($response->StatusMessage);
 
                         if ($new_status === "FAILED") {
-                            // TODO Send notification to the subscriber
+                            $message = "Hello, your weather info subscription worth UGX ".number_format($payment->amount)." failed. Please try again. M-Omulimisa";
+                            $recipient = $payment->account;
                             logger(['UpdateWeatherSubscriptionPayment' => 'Payment failed for TxnID: '.$payment->id]);
                         }
                     }
                     else{
                         logger(['UpdateWeatherSubscriptionPayment' => 'NULL response for TxnID: '.$payment->id]);
+                    }
+
+                    if (isset($message)) {
+                        $SMSFactory = new ServiceFactory();
+                        $service = $SMSFactory->getService(config("otp.otp_default_service", null));
+
+                        if ($service) {
+                            $result = $service->sendTextMessage($recipient, $message);
+                        }
                     }
                 }
             }
