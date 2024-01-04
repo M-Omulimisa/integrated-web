@@ -119,7 +119,7 @@ class ProcessWeatherSubscriptionPayment extends Command
                                 }
 
                                 if ($subscription) {
-                                    $message = "Hello, your weather info subscription worth UGX ".number_format($payment->amount).", ".$subscription->frequency."(".$subscription->period_paid.") was successful. Thank you. M-Omulimisa";  
+                                    $message = "Hello, your weather info subscription worth UGX ".number_format($payment->amount).", ".$subscription->frequency."(".$subscription->period_paid.") was successful. Alerts will be sent between midnight and 6AM. M-Omulimisa";  
                                     $recipient = $subscription->phone;                                  
                                 }
                             }
