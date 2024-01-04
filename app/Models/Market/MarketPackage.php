@@ -69,4 +69,12 @@ class MarketPackage extends BaseModel
                                                 ->first();
         return $package_enterprise->$param ?? null;
     }
+
+    public function getPackageRegionDetail($region_id, $param)
+    {
+        $package_region = MarketPackageRegion::wherePackageId($this->id)
+                                                ->whereRegionId($region_id)
+                                                ->first();
+        return $package_region->$param ?? null;
+    }
 }

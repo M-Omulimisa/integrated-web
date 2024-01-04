@@ -337,3 +337,18 @@ function getSubscritionEndDate($frequency, $period, $start_date)
 
     return $end_date;
 }
+
+function numOfMarketMessages($frequency, $period)
+{
+    if ($frequency == "Weekly" || $frequency == "Trial") {
+        $messages = 1;
+    }
+    elseif ($frequency == "Monthly") {
+        $messages = 4;
+    }
+    elseif ($frequency == "Yearly") {
+        $messages = 48;
+    }
+
+    return $messages * $period;
+}

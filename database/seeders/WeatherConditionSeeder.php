@@ -10,9 +10,9 @@ use App\Models\Weather\WeatherCondition;
 use Database\Seeders\Traits\DisableForeignKeys;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 
-use App\Models\Weather\WeatherOutbox;
+use App\Models\Market\MarketOutbox;
 use App\Models\Payments\SubscriptionPayment;
-use App\Models\Weather\WeatherSubscription;
+use App\Models\Market\MarketSubscription;
 
 class WeatherConditionSeeder extends Seeder
 {
@@ -25,6 +25,27 @@ class WeatherConditionSeeder extends Seeder
      */
     public function run()
     {
+
+
+        $pid = '3522bee0-0b71-4e8a-ad8b-b90535ff1a5d';
+
+        if (MarketSubscription::wherePaymentId($pid)->first()) {
+
+            $id = MarketSubscription::wherePaymentId($pid)->first()->id;
+            
+            MarketOutbox::whereSubscriptionId($id)->delete();
+
+            SubscriptionPayment::whereId(MarketSubscription::whereId($id)->first()->payment_id)->update(['status' => 'PENDING']);
+
+            MarketSubscription::whereId($id)->delete();
+        }
+        else{
+            SubscriptionPayment::whereId($pid)->update(['status' => 'PENDING']);
+        }
+
+
+        exit();
+
         $this->disableForeignKeys();
         $now = \Carbon\Carbon::now();
 

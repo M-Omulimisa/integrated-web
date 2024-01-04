@@ -107,6 +107,8 @@ class ProcessWeatherSubscriptionPayment extends Command
                                 }
                             }
 
+                            // TODO for App & Web
+
                             if (isset($data) && $data) {
                                 // Subscription already exists -- Payment has been reset
                                 if ($subscription = WeatherSubscription::wherePaymentId($payment->id)->first()) {
