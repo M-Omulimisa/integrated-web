@@ -98,7 +98,7 @@
                     data: function (d) { }
                 },
                 columns: [
-                    { data: 'created_at', name: 'created_at' },
+                    { data: 'created', name: 'created' },
                     { data: 'recipient', name: 'recipient' },
                     { data: 'message', name: 'message' },
                     { data: 'message_count', name: 'message_count' },

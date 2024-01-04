@@ -177,15 +177,19 @@ class MarketSubscriptionController extends Controller
                 ->addColumn('amount', function ($data){
                     return isset($data->payment) ? number_format($data->payment->amount) : null;
                     }, 0)
-                ->addColumn('period', function ($data){
+                ->addColumn('period', function ($data) {
                     $frequency = str_replace('ly', '(s)', $data->frequency);
                     $frequency = $frequency == 'Trial' ? 'Week (Trial)' : $frequency;
                     return $data->period_paid.' '.$frequency;
                     }, 0)
                 ->addColumn('subscription_status', function ($data){
-                        if (Carbon::now() > $data->end_date) {
-                            $data->update(['status' => false]);
-                            return '<span class="text-danger"><strong>Expired</strong></span>';
+                        if (!$data->status || Carbon::now() > $data->end_date || count($data->messages) > 0) {
+
+                            if(Carbon::now() > $data->end_date) $data->update(['status' => false]);
+
+                            if(Carbon::now() > $data->end_date && count($data->messages) == 0) $notset = "*";
+
+                            return '<span class="text-danger"><strong>Expired'.($notset ?? '').'</strong></span>';
                         }
                         else{
                             return '<span class="text-success"><strong>Active</strong></span>';

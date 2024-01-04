@@ -114,6 +114,9 @@ class MarketOutboxController extends Controller
                 ->addColumn('id', function($data) {
                     return $data->id;
                   })
+                ->addColumn('created', function($data) {
+                    return $data->created_at;
+                  })
                 ->addColumn('action_date', function ($data){
                     if($data->status == 'SENT') return $data->sent_at;
                     if($data->status == 'FAILED') return $data->failed_at;
@@ -129,7 +132,7 @@ class MarketOutboxController extends Controller
                     if($data->status == 'PENDING') return '<span class="text-warning"><strong>PENDING</strong></span>';
                     if($data->status == 'PROCESSING') return '<span class="text-primary"><strong>PROCESSING</strong></span>';
                     })
-                ->addColumn('action', function($data){
+                ->addColumn('actions', function($data){
                     $route   = $this->_route;
                     $id      = $data->id;
                     $manage  = 'manage_'.$this->_permission;
@@ -137,7 +140,7 @@ class MarketOutboxController extends Controller
                     $view    = 'view_'.$this->_permission;
                     return view('partials.actions', compact('route','id','manage','view','delete'))->render();
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['actions','message_status'])
                 ->make(true);
         }
     }

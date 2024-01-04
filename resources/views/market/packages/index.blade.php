@@ -32,6 +32,7 @@
                                         <tr>
                                             <th>Name</th>
                                             <th>Enterprises</th>
+                                            <th>Regions</th>
                                             <th>Languages</th>
                                             <th>Pricing</th>   
                                             <th>Messages</th>
@@ -97,6 +98,7 @@
                 columns: [
                     {data: 'package', name: 'package'},
                     {data: 'enterprises', name: 'enterprises'},
+                    {data: 'regions', name: 'regions'},
                     {data: 'languages', name: 'languages'},
                     {data: 'pricing', name: 'pricing'},
                     {data: 'messages', name: 'messages'},

@@ -25,6 +25,7 @@ class MarketSubscription extends BaseModel
         'end_date',
         'status',
         'user_id',
+        'outbox_count',
         'outbox_generation_status',
         'outbox_reset_status',
         'outbox_last_date',

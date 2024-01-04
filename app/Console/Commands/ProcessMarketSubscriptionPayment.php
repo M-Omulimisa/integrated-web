@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Settings\CountryProvider;
 use App\Models\Market\MarketSubscription;
+use App\Models\Market\MarketPackagePricing;
 use App\Models\Payments\SubscriptionPayment;
 use App\Services\Payments\PaymentServiceFactory;
 use App\Models\Ussd\UssdSessionData;
@@ -90,10 +91,9 @@ class ProcessMarketSubscriptionPayment extends Command
 
                         if ($response->TransactionStatus === "SUCCEEDED" || $response->TransactionStatus === "SUCCESSFUL") {
 
-                            // TODO Send notification to the subscriber
-
                             if ($payment->tool=="USSD") {
                                 if ($session = UssdSessionData::whereId($payment->market_session_id)->first()) {
+
                                     $data = [
                                         'phone' => $payment->account,
                                         'region_id' => $session->market_region_id,
@@ -105,13 +105,15 @@ class ProcessMarketSubscriptionPayment extends Command
                                         'start_date'    => date("Y-m-d"),
                                         'end_date'      => getSubscritionEndDate(ucfirst($session->market_frequency), $session->market_frequency_count, date("Y-m-d")),
                                         'status'        => TRUE,
-                                        'payment_id' => $payment->id
+                                        'payment_id'    => $payment->id,
+                                        'outbox_count'  => MarketPackagePricing::wherePackageId($session->market_package_id)->whereFrequency($session->market_frequency)->first()->messages ?? numOfMarketMessages($session->market_frequency, $session->market_frequency_count)
                                     ];
                                 }
                             }
 
-                            if (isset($data) && $data) {
-                                // TODO Multiple subscriptions for 1 payment                                
+                            // TODO for App & Web
+
+                            if (isset($data) && $data) {                               
 
                                 // Subscription already exists -- Payment has been reset
                                 if ($subscription = MarketSubscription::wherePaymentId($payment->id)->first()) {
