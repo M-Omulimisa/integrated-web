@@ -407,6 +407,11 @@ return [
     |
     */
     'extensions' => [
+        'chartjs' => [
+        
+            // Set to `false` if you want to disable this extension
+            'enable' => true,
+        ],
         'quill' => [
             // If the value is set to false, this extension will be disabled
             'enable' => true,
