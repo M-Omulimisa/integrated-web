@@ -24,9 +24,9 @@ class LanguageController extends Controller
      */
     function __construct()
     {
-         $this->middleware('permission:manage_'.$this->_permission, ['only' => ['create','store', 'edit', 'update']]);
-         $this->middleware('permission:list_'.$this->_permission, ['only' => ['index','show']]);
-         $this->middleware('permission:delete_'.$this->_permission, ['only' => ['destroy']]);
+         // $this->middleware('permission:manage_'.$this->_permission, ['only' => ['create','store', 'edit', 'update']]);
+         // $this->middleware('permission:list_'.$this->_permission, ['only' => ['index','show']]);
+         // $this->middleware('permission:delete_'.$this->_permission, ['only' => ['destroy']]);
     }
 
     /**

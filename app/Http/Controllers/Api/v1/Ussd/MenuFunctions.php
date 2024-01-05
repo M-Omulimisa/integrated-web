@@ -509,13 +509,13 @@ class MenuFunctions
 
     public function getRegionList()
     {
-        $locations = RegionModel::orderBy('name', 'ASC')->get();
+        $locations = RegionModel::whereMenuStatus(TRUE)->orderBy('name', 'ASC')->get();
 
         $list = '';
         if (count($locations) > 0) {
             $count = 0;
             foreach ($locations as $region) {
-                $list .= (++$count).") ".ucwords(strtolower($region->name))."\n";
+                $list .= (++$count).") ".ucwords(strtolower($region->menu_name))."\n";
             }
         }
 
@@ -589,7 +589,7 @@ class MenuFunctions
     {
         $menu = intval($region_menu_no);
 
-        $locations = RegionModel::orderBy('name', 'ASC')->get();
+        $locations = RegionModel::whereMenuStatus(TRUE)->orderBy('name', 'ASC')->get();
 
         if($menu!=0) $region = $locations->skip($menu-1)->take(1)->first();
 
