@@ -901,7 +901,7 @@ class MenuFunctions
 
     public function getLanguages(){
 
-        $languages = Language::select('id', 'name', 'position')->orderBy('position', 'asc')->get();
+        $languages = Language::whereNotNull('position')->select('id', 'name', 'position')->orderBy('position', 'asc')->get();
 
         return $languages;
     }
