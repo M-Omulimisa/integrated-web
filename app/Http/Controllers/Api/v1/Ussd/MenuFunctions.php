@@ -267,13 +267,11 @@ class MenuFunctions
      * 
      * @return string menu list  
      */
-    public function getPackageList($region_id, $language_id)
+    public function getPackageList($language_id)
     {
         $list = '';
         $packages = MarketPackage::whereStatus(true)
-                                    ->whereIn('id',function($query) use ($region_id) {
-                                        $query->select('package_id')->whereRegionId($region_id)->from(with(new MarketPackageRegion)->getTable());
-                                    })
+                                    
                                     ->whereIn('id',function($query) use ($language_id) {
                                         $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
                                     })
@@ -313,12 +311,10 @@ class MenuFunctions
      * 
      * @return  int $id
      */
-    public function isPackageMenuValid($menu, $region_id, $language_id)
+    public function isPackageMenuValid($menu, $language_id)
     {
         $packages = MarketPackage::whereStatus(true)
-                                    ->whereIn('id',function($query) use ($region_id) {
-                                        $query->select('package_id')->whereRegionId($region_id)->from(with(new MarketPackageRegion)->getTable());
-                                    })
+                                    
                                     ->whereIn('id',function($query) use ($language_id) {
                                         $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
                                     })
@@ -336,14 +332,12 @@ class MenuFunctions
         return false;
     } 
 
-    public function getSelectedPackage($package_menu_no, $region_id, $language_id)
+    public function getSelectedPackage($package_menu_no, $language_id)
     {
         $menu = intval($package_menu_no);
 
         $packages = MarketPackage::whereStatus(true)
-                                    ->whereIn('id',function($query) use ($region_id) {
-                                        $query->select('package_id')->whereRegionId($region_id)->from(with(new MarketPackageRegion)->getTable());
-                                    })
+                                    
                                     ->whereIn('id',function($query) use ($language_id) {
                                         $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
                                     })
@@ -915,7 +909,7 @@ class MenuFunctions
 
     public function getSelectedLanguage($input_text){
 
-        $language = Language::select('name', 'position')->where('position', $input_text)->first();
+        $language = Language::select('id','name', 'position')->where('position', $input_text)->first();
 
         if($language === null){
 
