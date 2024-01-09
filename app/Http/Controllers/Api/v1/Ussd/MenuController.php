@@ -455,7 +455,7 @@ class MenuController extends Controller
                 $action         = "request";
                 $response       = $input_text."\n";
                 $response       = "Select package:\n";
-                $response       .= $this->menu_helper->getPackageList($region_id, $language->id);
+                $response       .= $this->menu_helper->getPackageList($language->id);
                 $current_menu   = "market_package";
 
                 $field = "market_language";
@@ -475,9 +475,9 @@ class MenuController extends Controller
 
             $region_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_region_id');
             $language_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_language_id');
-            $package = $this->menu_helper->getSelectedPackage($input_text, $region_id, $language_id);
+            $package = $this->menu_helper->getSelectedPackage($input_text, $language_id);
 
-            if ($this->menu_helper->isPackageMenuValid($input_text, $region_id, $language_id)) {
+            if ($this->menu_helper->isPackageMenuValid($input_text,$language_id)) {
                 $response       = "Select frequency:\n";
                 $response       .= $this->menu_helper->getPackageFrequencies($package->id);
                 $current_menu   = "market_frequency"; 
@@ -488,7 +488,7 @@ class MenuController extends Controller
             }
             else{
                 $response       = "Invalid input!\n";
-                $response       .= $this->menu_helper->getPackageList($region_id, $language_id);
+                $response       .= $this->menu_helper->getPackageList($language_id);
                 $current_menu   = "market_package";
             }
         }   
