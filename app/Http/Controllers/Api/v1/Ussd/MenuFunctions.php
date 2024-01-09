@@ -228,6 +228,8 @@ class MenuFunctions
         return $list;
     }
 
+
+
     public function getSelectedRegionLaguage($language_menu_no, $region_id)
     {
         $menu = intval($language_menu_no);
@@ -897,11 +899,32 @@ class MenuFunctions
         return $language;
     }
 
+    public function getLanguages(){
+
+        $languages = Language::select('id', 'name', 'position')->orderBy('position', 'asc')->get();
+
+        return $languages;
+    }
+
     public function getMenuLanaguages($menu_id){
 
         $languages = UssdLanguage::select('language', 'position')->where('menu_id', $menu_id)->orderBy('position', 'asc')->get();
 
         return $languages;
+    }
+
+    public function getSelectedLanguage($input_text){
+
+        $language = Language::select('name', 'position')->where('position', $input_text)->first();
+
+        if($language === null){
+
+            return false;
+        }
+        else{
+            return $language;
+        }
+
     }
 
     public function checkIfUssdLanguageIsValid($input_text){
