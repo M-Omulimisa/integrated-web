@@ -384,9 +384,17 @@ class MenuController extends Controller
                 $current_menu   = "market_phone";
             }
             else{
-                $response       = "Select region:\n";
-                $response       .= $this->menu_helper->getRegionList();
-                $current_menu   = "market_region";
+
+                $languages = $this->menu_helper->getLanguages();
+                $response       = "Select language:\n";
+
+                foreach($languages as $language){
+
+                    $response .= $language->position.") ".$language->name."\n";
+
+                }
+
+                $current_menu   = "market_languages";
 
                 if ($last_menu != "market_phone") {
                     $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_subscrption_for', 'self');
@@ -440,7 +448,7 @@ class MenuController extends Controller
         elseif ($last_menu == "market_languages") {
 
             $region_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_region_id');
-            $language = $this->menu_helper->getSelectedRegionLaguage($input_text, $region_id);
+            $language = $this->menu_helper->getSelectedLanguage($input_text);
             $input_text = $language->name ?? null;
 
             if ($this->menu_helper->checkIfLanguageIsValid($input_text)) {
