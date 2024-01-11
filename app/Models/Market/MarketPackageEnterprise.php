@@ -22,25 +22,19 @@ class MarketPackageEnterprise extends BaseModel
      *
      * @var array
      */
-    protected static function boot()
-    {
-        parent::boot();
-        self::creating(function (MarketPackageEnterprise $model) {
-            $model->id = $model->generateUuid();
-        });
-    }
+    
 
     /**
      * The "type" of the auto-incrementing ID.
      *
      * @var string
      */
-    protected $keyType = 'string';
+   
 
     /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
      */
-    public $incrementing = false;
+    
 }

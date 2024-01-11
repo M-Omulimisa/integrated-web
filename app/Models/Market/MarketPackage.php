@@ -77,4 +77,20 @@ class MarketPackage extends BaseModel
                                                 ->first();
         return $package_region->$param ?? null;
     }
+
+    public function getEnterprisesAttribute($enterprises)
+    {
+
+        return json_decode($enterprises, true);
+       
+    }
+
+    public function setEnterprisesAttribute($enterprises)
+    {
+        if(!empty($enterprises)){
+
+            $this->attributes['enterprise'] = json_encode($enterprises);
+        }
+ 
+    }
 }

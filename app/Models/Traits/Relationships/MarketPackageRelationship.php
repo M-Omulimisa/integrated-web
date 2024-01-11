@@ -8,15 +8,16 @@ use App\Models\Market\MarketPackageEnterprise;;
 use App\Models\Market\MarketPackageRegion;
 use App\Models\Market\MarketSubscription;
 use App\Models\Ussd\UssdSessionData;
+use App\Models\Settings\Enterprise;
 
 /**
  * Class MarketPackageRelationship.
  */
 trait MarketPackageRelationship
 {
-    public function enterprises()
+    public function ents()
     {
-        return $this->hasMany(MarketPackageEnterprise::class, 'package_id');
+        return $this->belongsToMany(Enterprise::class, 'market_package_enterprises', 'package_id', 'enterprise_id');
     }
 
     public function pricing()
