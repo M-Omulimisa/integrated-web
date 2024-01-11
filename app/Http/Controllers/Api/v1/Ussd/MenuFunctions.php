@@ -332,20 +332,23 @@ class MenuFunctions
         return false;
     } 
 
-    public function getSelectedPackage($package_menu_no, $language_id)
+    public function getSelectedPackage($package_menu_no)
     {
         $menu = intval($package_menu_no);
 
-        $packages = MarketPackage::whereStatus(true)
-                                    
-                                    ->whereIn('id',function($query) use ($language_id) {
-                                        $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
-                                    })
-                                    ->orderBy('name', 'ASC')->get();
-
-        if($menu!=0) $package = $packages->skip($menu-1)->take(1)->first();
+        $package = MarketPackage::whereStatus(true)->where('menu', $menu)->orderBy('name', 'ASC')->first();
 
         return $package ?? null;
+    }
+
+
+    public function getPackages(){
+
+        $packages =  MarketPackage::whereStatus(true)->select('name', 'menu')
+        ->orderBy('menu', 'ASC')->get();
+
+        return $packages;
+
     }
 
     /**
@@ -434,12 +437,14 @@ class MenuFunctions
      */
     public function getPackageEnterprises($packageId)
     {
-        $package = MarketPackage::find($packageId);
+        $package = MarketPackage::with('ents')->where('id', $packageId)->first();
+        
+        info($package->ents);
 
         $items = '';
-        if (count($package->enterprises)) {
-            foreach ($package->enterprises as $enterprise) {
-                $items .= $enterprise->enterprise->name.','; 
+        if (count($package->ents)) {
+            foreach ($package->ents as $enterprise) {
+                $items .= $enterprise->name.','; 
             }
         }
         return rtrim($items, ',');
