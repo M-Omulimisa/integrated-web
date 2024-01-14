@@ -42,5 +42,5 @@ Route::group([
     $router->resource('seasons', SeasonController::class);
     $router->resource('insurance-premium-options', InsurancePremiumOptionController::class);
     $router->resource('orders', OrderController::class);
-    $router->resource('subscriptions', InsuranceSubscriptionController::class);
+    $router->resource('market-packages', MarketPackageController::class);
 });

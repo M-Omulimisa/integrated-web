@@ -384,9 +384,17 @@ class MenuController extends Controller
                 $current_menu   = "market_phone";
             }
             else{
-                $response       = "Select region:\n";
-                $response       .= $this->menu_helper->getRegionList();
-                $current_menu   = "market_region";
+
+                $packages = $this->menu_helper->getPackages();
+                $response       = "Select package:\n";
+
+                foreach($packages as $package){
+
+                    $response .= $package->menu.") ".$package->name."\n";
+
+                }
+
+                $current_menu   = "market_package";
 
                 if ($last_menu != "market_phone") {
                     $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_subscrption_for', 'self');
@@ -440,18 +448,21 @@ class MenuController extends Controller
         elseif ($last_menu == "market_languages") {
 
             $region_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_region_id');
-            $language = $this->menu_helper->getSelectedRegionLaguage($input_text, $region_id);
+            $package_id   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
+            $language = $this->menu_helper->getSelectedLanguage($input_text);
             $input_text = $language->name ?? null;
 
             if ($this->menu_helper->checkIfLanguageIsValid($input_text)) {
                 $action         = "request";
                 $response       = $input_text."\n";
-                $response       = "Select package:\n";
-                $response       .= $this->menu_helper->getPackageList($region_id, $language->id);
-                $current_menu   = "market_package";
+                $response       = "Select frequency:\n";
+                $response       .= $this->menu_helper->getPackageFrequencies($package_id);
+                $current_menu   = "market_frequency"; 
 
                 $field = "market_language";
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_language_id', $language->id);
+
+                
             }
             else{
                 $action         = "request";
@@ -465,14 +476,20 @@ class MenuController extends Controller
         elseif ($last_menu == "market_package") {
             $action         = "request";
 
-            $region_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_region_id');
-            $language_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_language_id');
-            $package = $this->menu_helper->getSelectedPackage($input_text, $region_id, $language_id);
+            $package = $this->menu_helper->getSelectedPackage($input_text);
 
-            if ($this->menu_helper->isPackageMenuValid($input_text, $region_id, $language_id)) {
-                $response       = "Select frequency:\n";
-                $response       .= $this->menu_helper->getPackageFrequencies($package->id);
-                $current_menu   = "market_frequency"; 
+            if ($package) {
+                $response       = "Select language:\n";
+                $languages      = $this->menu_helper->getLanguages();
+                foreach($languages as $language){
+
+                    $response .= $language->position.") ".$language->name."\n";
+
+                }
+                $current_menu   = "market_languages";
+
+                
+                
 
                 $input_text = $package->name;
                 // $field          = 'market_package';
@@ -480,7 +497,14 @@ class MenuController extends Controller
             }
             else{
                 $response       = "Invalid input!\n";
-                $response       .= $this->menu_helper->getPackageList($region_id, $language_id);
+                $packages = $this->menu_helper->getPackages();
+
+                foreach($packages as $package){
+
+                    $response .= $package->menu.") ".$package->name."\n";
+
+                }
+                
                 $current_menu   = "market_package";
             }
         }   
@@ -520,6 +544,7 @@ class MenuController extends Controller
             }
             else{
                 $package_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
+                info($package_id);
                 $enterprises = $this->menu_helper->getPackageEnterprises($package_id);
                 $cost        = $this->menu_helper->getPackageCost($package_id, $frequency, $input_text);
                 $currency    = 'UGX';   

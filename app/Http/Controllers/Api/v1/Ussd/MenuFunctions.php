@@ -228,6 +228,8 @@ class MenuFunctions
         return $list;
     }
 
+
+
     public function getSelectedRegionLaguage($language_menu_no, $region_id)
     {
         $menu = intval($language_menu_no);
@@ -265,13 +267,11 @@ class MenuFunctions
      * 
      * @return string menu list  
      */
-    public function getPackageList($region_id, $language_id)
+    public function getPackageList($language_id)
     {
         $list = '';
         $packages = MarketPackage::whereStatus(true)
-                                    ->whereIn('id',function($query) use ($region_id) {
-                                        $query->select('package_id')->whereRegionId($region_id)->from(with(new MarketPackageRegion)->getTable());
-                                    })
+                                    
                                     ->whereIn('id',function($query) use ($language_id) {
                                         $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
                                     })
@@ -311,12 +311,10 @@ class MenuFunctions
      * 
      * @return  int $id
      */
-    public function isPackageMenuValid($menu, $region_id, $language_id)
+    public function isPackageMenuValid($menu, $language_id)
     {
         $packages = MarketPackage::whereStatus(true)
-                                    ->whereIn('id',function($query) use ($region_id) {
-                                        $query->select('package_id')->whereRegionId($region_id)->from(with(new MarketPackageRegion)->getTable());
-                                    })
+                                    
                                     ->whereIn('id',function($query) use ($language_id) {
                                         $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
                                     })
@@ -334,22 +332,23 @@ class MenuFunctions
         return false;
     } 
 
-    public function getSelectedPackage($package_menu_no, $region_id, $language_id)
+    public function getSelectedPackage($package_menu_no)
     {
         $menu = intval($package_menu_no);
 
-        $packages = MarketPackage::whereStatus(true)
-                                    ->whereIn('id',function($query) use ($region_id) {
-                                        $query->select('package_id')->whereRegionId($region_id)->from(with(new MarketPackageRegion)->getTable());
-                                    })
-                                    ->whereIn('id',function($query) use ($language_id) {
-                                        $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
-                                    })
-                                    ->orderBy('name', 'ASC')->get();
-
-        if($menu!=0) $package = $packages->skip($menu-1)->take(1)->first();
+        $package = MarketPackage::whereStatus(true)->where('menu', $menu)->orderBy('name', 'ASC')->first();
 
         return $package ?? null;
+    }
+
+
+    public function getPackages(){
+
+        $packages =  MarketPackage::whereStatus(true)->select('name', 'menu')
+        ->orderBy('menu', 'ASC')->get();
+
+        return $packages;
+
     }
 
     /**
@@ -438,12 +437,14 @@ class MenuFunctions
      */
     public function getPackageEnterprises($packageId)
     {
-        $package = MarketPackage::find($packageId);
+        $package = MarketPackage::with('ents')->where('id', $packageId)->first();
+        
+        info($package->ents);
 
         $items = '';
-        if (count($package->enterprises)) {
-            foreach ($package->enterprises as $enterprise) {
-                $items .= $enterprise->enterprise->name.','; 
+        if (count($package->ents)) {
+            foreach ($package->ents as $enterprise) {
+                $items .= $enterprise->name.','; 
             }
         }
         return rtrim($items, ',');
@@ -897,11 +898,32 @@ class MenuFunctions
         return $language;
     }
 
+    public function getLanguages(){
+
+        $languages = Language::whereNotNull('position')->select('id', 'name', 'position')->orderBy('position', 'asc')->get();
+
+        return $languages;
+    }
+
     public function getMenuLanaguages($menu_id){
 
         $languages = UssdLanguage::select('language', 'position')->where('menu_id', $menu_id)->orderBy('position', 'asc')->get();
 
         return $languages;
+    }
+
+    public function getSelectedLanguage($input_text){
+
+        $language = Language::select('id','name', 'position')->where('position', $input_text)->first();
+
+        if($language === null){
+
+            return false;
+        }
+        else{
+            return $language;
+        }
+
     }
 
     public function checkIfUssdLanguageIsValid($input_text){
