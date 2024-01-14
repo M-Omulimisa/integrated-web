@@ -35,21 +35,22 @@ class ApiShopController extends Controller
     public function orders_get(Request $r)
     {
 
+
         $u = auth('api')->user();
         if ($u == null) {
             $administrator_id = Utils::get_user_id($r);
             $u = Administrator::find($administrator_id);
         }
+        $u = Administrator::find($u->id);
+    
 
         if ($u == null) {
             return $this->error('User not found.');
         }
         $orders = [];
         $conds = [];
-
-        if (!$u->hasRole('admin')) {
-            $conds['user'] = $u->id;
-        }
+ 
+        $conds['user'] = $u->id;
 
         foreach (Order::where($conds)->get() as $order) {
             $items = $order->get_items();

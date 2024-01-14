@@ -85,6 +85,8 @@ Route::get('/select-parishes', function (Request $request) {
 Route::group([
     'prefix' => '/v1'
 ], function () {
+    
+    //get all jea 
 
     /* ==============START OF SHOP API================== */
     Route::get("orders", [ApiShopController::class, "orders_get"]);
