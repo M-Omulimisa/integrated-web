@@ -1,5 +1,4 @@
 <?php
-die("Home page");
 use Illuminate\Support\Facades\Schema;
 
 /* 
