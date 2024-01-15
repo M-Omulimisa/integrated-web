@@ -344,7 +344,7 @@ class MenuFunctions
 
     public function getPackages(){
 
-        $packages =  MarketPackage::whereStatus(true)->select('name', 'menu')
+        $packages =  MarketPackage::with('ents')->whereStatus(true)
         ->orderBy('menu', 'ASC')->get();
 
         return $packages;
