@@ -70,6 +70,14 @@ class MarketPackageController extends AdminController
     
         $form->multipleSelect('ents', 'Select enterprise')->options(Enterprise::all()->pluck('name', 'id'));
 
+        $form->hasMany('pricing', function (Form\NestedForm $form) {
+
+            $form->select('frequency', 'Select frequency')->options(['trial' => 'trial', 'daily' => 'daily', 'weekly' => 'weekly', 'monthly' => 'monthly', 'yearly'=>'yearly']);
+            $form->text('cost', __('Cost of package'));
+            $form->hidden('messages')->default(1);
+           
+        });
+
         return $form;
     }
 }
