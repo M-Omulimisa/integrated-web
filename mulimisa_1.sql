@@ -15087,7 +15087,7 @@ CREATE TABLE IF NOT EXISTS `ussd_sessions` (
   `session_id` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone_number` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_menu` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `data` json NULL DEFAULT NULL,
+  `data` TEXT NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
