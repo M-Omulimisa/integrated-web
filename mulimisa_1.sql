@@ -920,7 +920,7 @@ CREATE TABLE IF NOT EXISTS `county` (
   `district_id` int(11) NOT NULL,
   `municipality` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
   `changed` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2591,7 +2591,7 @@ CREATE TABLE IF NOT EXISTS `failed_jobs` (
   `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT NULL
+  `failed_at` timestamp DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -15232,7 +15232,7 @@ CREATE TABLE IF NOT EXISTS `village` (
   `name` varchar(255) NOT NULL,
   `parish_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
   `changed` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
