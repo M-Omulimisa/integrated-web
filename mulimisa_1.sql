@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `activity_log`
 --
 
-CREATE TABLE `activity_log` (
+CREATE TABLE IF NOT EXISTS `activity_log` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `log_name` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `causer_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -56,7 +56,7 @@ INSERT INTO `activity_log` (`id`, `log_name`, `causer_id`, `causer_type`, `subje
 -- Table structure for table `admin_menu`
 --
 
-CREATE TABLE `admin_menu` (
+CREATE TABLE IF NOT EXISTS `admin_menu` (
   `id` int(10) UNSIGNED NOT NULL,
   `parent_id` int(11) NOT NULL DEFAULT '0',
   `order` int(11) NOT NULL DEFAULT '0',
@@ -106,7 +106,7 @@ INSERT INTO `admin_menu` (`id`, `parent_id`, `order`, `title`, `icon`, `uri`, `p
 -- Table structure for table `admin_operation_log`
 --
 
-CREATE TABLE `admin_operation_log` (
+CREATE TABLE IF NOT EXISTS `admin_operation_log` (
   `id` int(10) UNSIGNED NOT NULL,
   `user_id` int(11) NOT NULL,
   `path` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -281,7 +281,7 @@ INSERT INTO `admin_operation_log` (`id`, `user_id`, `path`, `method`, `ip`, `inp
 -- Table structure for table `admin_permissions`
 --
 
-CREATE TABLE `admin_permissions` (
+CREATE TABLE IF NOT EXISTS `admin_permissions` (
   `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `slug` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -308,7 +308,7 @@ INSERT INTO `admin_permissions` (`id`, `name`, `slug`, `http_method`, `http_path
 -- Table structure for table `admin_roles`
 --
 
-CREATE TABLE `admin_roles` (
+CREATE TABLE IF NOT EXISTS `admin_roles` (
   `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `slug` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -330,7 +330,7 @@ INSERT INTO `admin_roles` (`id`, `name`, `slug`, `created_at`, `updated_at`) VAL
 -- Table structure for table `admin_role_menu`
 --
 
-CREATE TABLE `admin_role_menu` (
+CREATE TABLE IF NOT EXISTS `admin_role_menu` (
   `role_id` int(11) NOT NULL,
   `menu_id` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -355,7 +355,7 @@ INSERT INTO `admin_role_menu` (`role_id`, `menu_id`, `created_at`, `updated_at`)
 -- Table structure for table `admin_role_permissions`
 --
 
-CREATE TABLE `admin_role_permissions` (
+CREATE TABLE IF NOT EXISTS `admin_role_permissions` (
   `role_id` int(11) NOT NULL,
   `permission_id` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -379,7 +379,7 @@ INSERT INTO `admin_role_permissions` (`role_id`, `permission_id`, `created_at`, 
 -- Table structure for table `admin_role_users`
 --
 
-CREATE TABLE `admin_role_users` (
+CREATE TABLE IF NOT EXISTS `admin_role_users` (
   `role_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -402,7 +402,7 @@ INSERT INTO `admin_role_users` (`role_id`, `user_id`, `created_at`, `updated_at`
 -- Table structure for table `admin_users`
 --
 
-CREATE TABLE `admin_users` (
+CREATE TABLE IF NOT EXISTS `admin_users` (
   `id` int(10) UNSIGNED NOT NULL,
   `username` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -426,7 +426,7 @@ INSERT INTO `admin_users` (`id`, `username`, `password`, `name`, `avatar`, `reme
 -- Table structure for table `admin_user_permissions`
 --
 
-CREATE TABLE `admin_user_permissions` (
+CREATE TABLE IF NOT EXISTS `admin_user_permissions` (
   `user_id` int(11) NOT NULL,
   `permission_id` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -446,7 +446,7 @@ INSERT INTO `admin_user_permissions` (`user_id`, `permission_id`, `created_at`, 
 -- Table structure for table `agents`
 --
 
-CREATE TABLE `agents` (
+CREATE TABLE IF NOT EXISTS `agents` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `organisation_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `agent_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -480,7 +480,7 @@ CREATE TABLE `agents` (
 -- Table structure for table `agent_commission_rankings`
 --
 
-CREATE TABLE `agent_commission_rankings` (
+CREATE TABLE IF NOT EXISTS `agent_commission_rankings` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -505,7 +505,7 @@ INSERT INTO `agent_commission_rankings` (`id`, `country_id`, `name`, `order`, `c
 -- Table structure for table `agro_products`
 --
 
-CREATE TABLE `agro_products` (
+CREATE TABLE IF NOT EXISTS `agro_products` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `category` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -531,7 +531,7 @@ INSERT INTO `agro_products` (`id`, `name`, `category`, `unit_id`, `price`, `crea
 -- Table structure for table `alerts`
 --
 
-CREATE TABLE `alerts` (
+CREATE TABLE IF NOT EXISTS `alerts` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `message` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -554,7 +554,7 @@ CREATE TABLE `alerts` (
 -- Table structure for table `alert_enterprises`
 --
 
-CREATE TABLE `alert_enterprises` (
+CREATE TABLE IF NOT EXISTS `alert_enterprises` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alert_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -569,7 +569,7 @@ CREATE TABLE `alert_enterprises` (
 -- Table structure for table `alert_languages`
 --
 
-CREATE TABLE `alert_languages` (
+CREATE TABLE IF NOT EXISTS `alert_languages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alert_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `language_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -584,7 +584,7 @@ CREATE TABLE `alert_languages` (
 -- Table structure for table `alert_locations`
 --
 
-CREATE TABLE `alert_locations` (
+CREATE TABLE IF NOT EXISTS `alert_locations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alert_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `location_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -599,7 +599,7 @@ CREATE TABLE `alert_locations` (
 -- Table structure for table `alert_recipients`
 --
 
-CREATE TABLE `alert_recipients` (
+CREATE TABLE IF NOT EXISTS `alert_recipients` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alert_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -618,7 +618,7 @@ CREATE TABLE `alert_recipients` (
 -- Table structure for table `alert_user_groups`
 --
 
-CREATE TABLE `alert_user_groups` (
+CREATE TABLE IF NOT EXISTS `alert_user_groups` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alert_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_group` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -633,7 +633,7 @@ CREATE TABLE `alert_user_groups` (
 -- Table structure for table `buyers`
 --
 
-CREATE TABLE `buyers` (
+CREATE TABLE IF NOT EXISTS `buyers` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `logo` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `buyer_name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -651,7 +651,7 @@ CREATE TABLE `buyers` (
 -- Table structure for table `buyer_enterprises`
 --
 
-CREATE TABLE `buyer_enterprises` (
+CREATE TABLE IF NOT EXISTS `buyer_enterprises` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `buyer_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -665,7 +665,7 @@ CREATE TABLE `buyer_enterprises` (
 -- Table structure for table `buyer_output_prices`
 --
 
-CREATE TABLE `buyer_output_prices` (
+CREATE TABLE IF NOT EXISTS `buyer_output_prices` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `project_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `season_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -688,7 +688,7 @@ CREATE TABLE `buyer_output_prices` (
 -- Table structure for table `chat_heads`
 --
 
-CREATE TABLE `chat_heads` (
+CREATE TABLE IF NOT EXISTS `chat_heads` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -723,7 +723,7 @@ INSERT INTO `chat_heads` (`id`, `created_at`, `updated_at`, `product_id`, `produ
 -- Table structure for table `chat_messages`
 --
 
-CREATE TABLE `chat_messages` (
+CREATE TABLE IF NOT EXISTS `chat_messages` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -768,7 +768,7 @@ INSERT INTO `chat_messages` (`id`, `created_at`, `updated_at`, `chat_head_id`, `
 -- Table structure for table `countries`
 --
 
-CREATE TABLE `countries` (
+CREATE TABLE IF NOT EXISTS `countries` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `iso_code` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -796,7 +796,7 @@ INSERT INTO `countries` (`id`, `name`, `iso_code`, `dialing_code`, `nationality`
 -- Table structure for table `country_admin_units`
 --
 
-CREATE TABLE `country_admin_units` (
+CREATE TABLE IF NOT EXISTS `country_admin_units` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -821,7 +821,7 @@ INSERT INTO `country_admin_units` (`id`, `country_id`, `name`, `order`, `created
 -- Table structure for table `country_currencies`
 --
 
-CREATE TABLE `country_currencies` (
+CREATE TABLE IF NOT EXISTS `country_currencies` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `currency_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -842,7 +842,7 @@ INSERT INTO `country_currencies` (`id`, `country_id`, `currency_id`, `created_at
 -- Table structure for table `country_modules`
 --
 
-CREATE TABLE `country_modules` (
+CREATE TABLE IF NOT EXISTS `country_modules` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `module_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -875,7 +875,7 @@ INSERT INTO `country_modules` (`id`, `country_id`, `module_id`, `created_at`, `u
 -- Table structure for table `country_organisation`
 --
 
-CREATE TABLE `country_organisation` (
+CREATE TABLE IF NOT EXISTS `country_organisation` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `organisation_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -889,7 +889,7 @@ CREATE TABLE `country_organisation` (
 -- Table structure for table `country_providers`
 --
 
-CREATE TABLE `country_providers` (
+CREATE TABLE IF NOT EXISTS `country_providers` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -914,7 +914,7 @@ INSERT INTO `country_providers` (`id`, `country_id`, `name`, `codes`, `created_a
 -- Table structure for table `county`
 --
 
-CREATE TABLE `county` (
+CREATE TABLE IF NOT EXISTS `county` (
   `id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
   `district_id` int(11) NOT NULL,
@@ -1303,7 +1303,7 @@ INSERT INTO `county` (`id`, `name`, `district_id`, `municipality`, `user_id`, `c
 -- Table structure for table `crops`
 --
 
-CREATE TABLE `crops` (
+CREATE TABLE IF NOT EXISTS `crops` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -1325,7 +1325,7 @@ INSERT INTO `crops` (`id`, `created_at`, `updated_at`, `name`, `photo`, `details
 -- Table structure for table `currencies`
 --
 
-CREATE TABLE `currencies` (
+CREATE TABLE IF NOT EXISTS `currencies` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `code` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1346,7 +1346,7 @@ INSERT INTO `currencies` (`id`, `name`, `code`, `created_at`, `updated_at`) VALU
 -- Table structure for table `distributors`
 --
 
-CREATE TABLE `distributors` (
+CREATE TABLE IF NOT EXISTS `distributors` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `logo` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `distributor_name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1368,7 +1368,7 @@ CREATE TABLE `distributors` (
 -- Table structure for table `distributor_agro_products`
 --
 
-CREATE TABLE `distributor_agro_products` (
+CREATE TABLE IF NOT EXISTS `distributor_agro_products` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `distributor_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `agro_product_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1382,7 +1382,7 @@ CREATE TABLE `distributor_agro_products` (
 -- Table structure for table `distributor_enterprises`
 --
 
-CREATE TABLE `distributor_enterprises` (
+CREATE TABLE IF NOT EXISTS `distributor_enterprises` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `distributor_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1396,7 +1396,7 @@ CREATE TABLE `distributor_enterprises` (
 -- Table structure for table `distributor_enterprise_types`
 --
 
-CREATE TABLE `distributor_enterprise_types` (
+CREATE TABLE IF NOT EXISTS `distributor_enterprise_types` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `distributor_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_type_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1410,7 +1410,7 @@ CREATE TABLE `distributor_enterprise_types` (
 -- Table structure for table `distributor_enterprise_varieties`
 --
 
-CREATE TABLE `distributor_enterprise_varieties` (
+CREATE TABLE IF NOT EXISTS `distributor_enterprise_varieties` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `distributor_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_variety_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1424,7 +1424,7 @@ CREATE TABLE `distributor_enterprise_varieties` (
 -- Table structure for table `distributor_input_prices`
 --
 
-CREATE TABLE `distributor_input_prices` (
+CREATE TABLE IF NOT EXISTS `distributor_input_prices` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `project_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `season_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1447,7 +1447,7 @@ CREATE TABLE `distributor_input_prices` (
 -- Table structure for table `district`
 --
 
-CREATE TABLE `district` (
+CREATE TABLE IF NOT EXISTS `district` (
   `id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
   `district_status` int(11) DEFAULT NULL COMMENT 'District=1, City=0',
@@ -1590,7 +1590,7 @@ INSERT INTO `district` (`id`, `name`, `district_status`, `region_id`, `subregion
 -- Table structure for table `enterprises`
 --
 
-CREATE TABLE `enterprises` (
+CREATE TABLE IF NOT EXISTS `enterprises` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `unit_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1618,7 +1618,7 @@ INSERT INTO `enterprises` (`id`, `name`, `unit_id`, `category`, `description`, `
 -- Table structure for table `enterprise_types`
 --
 
-CREATE TABLE `enterprise_types` (
+CREATE TABLE IF NOT EXISTS `enterprise_types` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_variety_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1642,7 +1642,7 @@ INSERT INTO `enterprise_types` (`id`, `enterprise_variety_id`, `name`, `descript
 -- Table structure for table `enterprise_varieties`
 --
 
-CREATE TABLE `enterprise_varieties` (
+CREATE TABLE IF NOT EXISTS `enterprise_varieties` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1669,7 +1669,7 @@ INSERT INTO `enterprise_varieties` (`id`, `enterprise_id`, `name`, `description`
 -- Table structure for table `extension_officers`
 --
 
-CREATE TABLE `extension_officers` (
+CREATE TABLE IF NOT EXISTS `extension_officers` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `organisation_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `extension_officer_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1698,7 +1698,7 @@ CREATE TABLE `extension_officers` (
 -- Table structure for table `extension_officer_languages`
 --
 
-CREATE TABLE `extension_officer_languages` (
+CREATE TABLE IF NOT EXISTS `extension_officer_languages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `extension_officer_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `language_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1712,7 +1712,7 @@ CREATE TABLE `extension_officer_languages` (
 -- Table structure for table `extension_officer_positions`
 --
 
-CREATE TABLE `extension_officer_positions` (
+CREATE TABLE IF NOT EXISTS `extension_officer_positions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `organisation_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1728,7 +1728,7 @@ CREATE TABLE `extension_officer_positions` (
 -- Table structure for table `extension_officer_position_locations`
 --
 
-CREATE TABLE `extension_officer_position_locations` (
+CREATE TABLE IF NOT EXISTS `extension_officer_position_locations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `position_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `location_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1742,7 +1742,7 @@ CREATE TABLE `extension_officer_position_locations` (
 -- Table structure for table `e_learning_announcements`
 --
 
-CREATE TABLE `e_learning_announcements` (
+CREATE TABLE IF NOT EXISTS `e_learning_announcements` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1765,7 +1765,7 @@ CREATE TABLE `e_learning_announcements` (
 -- Table structure for table `e_learning_announcement_subscriptions`
 --
 
-CREATE TABLE `e_learning_announcement_subscriptions` (
+CREATE TABLE IF NOT EXISTS `e_learning_announcement_subscriptions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1780,7 +1780,7 @@ CREATE TABLE `e_learning_announcement_subscriptions` (
 -- Table structure for table `e_learning_announcement_views`
 --
 
-CREATE TABLE `e_learning_announcement_views` (
+CREATE TABLE IF NOT EXISTS `e_learning_announcement_views` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `announcement_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1794,7 +1794,7 @@ CREATE TABLE `e_learning_announcement_views` (
 -- Table structure for table `e_learning_assignments`
 --
 
-CREATE TABLE `e_learning_assignments` (
+CREATE TABLE IF NOT EXISTS `e_learning_assignments` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `chapter_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1817,7 +1817,7 @@ CREATE TABLE `e_learning_assignments` (
 -- Table structure for table `e_learning_assignment_responses`
 --
 
-CREATE TABLE `e_learning_assignment_responses` (
+CREATE TABLE IF NOT EXISTS `e_learning_assignment_responses` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `chapter_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1834,7 +1834,7 @@ CREATE TABLE `e_learning_assignment_responses` (
 -- Table structure for table `e_learning_chapters`
 --
 
-CREATE TABLE `e_learning_chapters` (
+CREATE TABLE IF NOT EXISTS `e_learning_chapters` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1862,7 +1862,7 @@ INSERT INTO `e_learning_chapters` (`id`, `course_id`, `title`, `summary`, `user_
 -- Table structure for table `e_learning_courses`
 --
 
-CREATE TABLE `e_learning_courses` (
+CREATE TABLE IF NOT EXISTS `e_learning_courses` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `summary` text COLLATE utf8mb4_unicode_ci,
@@ -1911,7 +1911,7 @@ INSERT INTO `e_learning_courses` (`id`, `title`, `summary`, `description`, `cont
 -- Table structure for table `e_learning_course_instructions`
 --
 
-CREATE TABLE `e_learning_course_instructions` (
+CREATE TABLE IF NOT EXISTS `e_learning_course_instructions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `instruction_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1926,7 +1926,7 @@ CREATE TABLE `e_learning_course_instructions` (
 -- Table structure for table `e_learning_course_messages`
 --
 
-CREATE TABLE `e_learning_course_messages` (
+CREATE TABLE IF NOT EXISTS `e_learning_course_messages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `message_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1941,7 +1941,7 @@ CREATE TABLE `e_learning_course_messages` (
 -- Table structure for table `e_learning_course_registrations`
 --
 
-CREATE TABLE `e_learning_course_registrations` (
+CREATE TABLE IF NOT EXISTS `e_learning_course_registrations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1957,7 +1957,7 @@ CREATE TABLE `e_learning_course_registrations` (
 -- Table structure for table `e_learning_forum_topics`
 --
 
-CREATE TABLE `e_learning_forum_topics` (
+CREATE TABLE IF NOT EXISTS `e_learning_forum_topics` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `subject` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1977,7 +1977,7 @@ CREATE TABLE `e_learning_forum_topics` (
 -- Table structure for table `e_learning_forum_topic_likes`
 --
 
-CREATE TABLE `e_learning_forum_topic_likes` (
+CREATE TABLE IF NOT EXISTS `e_learning_forum_topic_likes` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `forum_topic_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1992,7 +1992,7 @@ CREATE TABLE `e_learning_forum_topic_likes` (
 -- Table structure for table `e_learning_forum_topic_responses`
 --
 
-CREATE TABLE `e_learning_forum_topic_responses` (
+CREATE TABLE IF NOT EXISTS `e_learning_forum_topic_responses` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `forum_topic_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `comment` text COLLATE utf8mb4_unicode_ci,
@@ -2010,7 +2010,7 @@ CREATE TABLE `e_learning_forum_topic_responses` (
 -- Table structure for table `e_learning_forum_topic_response_likes`
 --
 
-CREATE TABLE `e_learning_forum_topic_response_likes` (
+CREATE TABLE IF NOT EXISTS `e_learning_forum_topic_response_likes` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `forum_topic_response_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2025,7 +2025,7 @@ CREATE TABLE `e_learning_forum_topic_response_likes` (
 -- Table structure for table `e_learning_forum_topic_subscriptions`
 --
 
-CREATE TABLE `e_learning_forum_topic_subscriptions` (
+CREATE TABLE IF NOT EXISTS `e_learning_forum_topic_subscriptions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `forum_topic_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2040,7 +2040,7 @@ CREATE TABLE `e_learning_forum_topic_subscriptions` (
 -- Table structure for table `e_learning_general_assignments`
 --
 
-CREATE TABLE `e_learning_general_assignments` (
+CREATE TABLE IF NOT EXISTS `e_learning_general_assignments` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `title` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2062,7 +2062,7 @@ CREATE TABLE `e_learning_general_assignments` (
 -- Table structure for table `e_learning_general_assignment_responses`
 --
 
-CREATE TABLE `e_learning_general_assignment_responses` (
+CREATE TABLE IF NOT EXISTS `e_learning_general_assignment_responses` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `assignment_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2078,7 +2078,7 @@ CREATE TABLE `e_learning_general_assignment_responses` (
 -- Table structure for table `e_learning_inactive_students_call_settings`
 --
 
-CREATE TABLE `e_learning_inactive_students_call_settings` (
+CREATE TABLE IF NOT EXISTS `e_learning_inactive_students_call_settings` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `calling_time` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '12 am',
   `retry_after_in_minutes` int(11) NOT NULL DEFAULT '5',
@@ -2102,7 +2102,7 @@ INSERT INTO `e_learning_inactive_students_call_settings` (`id`, `calling_time`, 
 -- Table structure for table `e_learning_inactive_students_outgoing_calls`
 --
 
-CREATE TABLE `e_learning_inactive_students_outgoing_calls` (
+CREATE TABLE IF NOT EXISTS `e_learning_inactive_students_outgoing_calls` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `callSessionState` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `callerNumber` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2124,7 +2124,7 @@ CREATE TABLE `e_learning_inactive_students_outgoing_calls` (
 -- Table structure for table `e_learning_incoming_calls`
 --
 
-CREATE TABLE `e_learning_incoming_calls` (
+CREATE TABLE IF NOT EXISTS `e_learning_incoming_calls` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `callSessionState` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `direction` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2155,7 +2155,7 @@ CREATE TABLE `e_learning_incoming_calls` (
 -- Table structure for table `e_learning_instructions`
 --
 
-CREATE TABLE `e_learning_instructions` (
+CREATE TABLE IF NOT EXISTS `e_learning_instructions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `instruction` text COLLATE utf8mb4_unicode_ci,
   `numbering` int(11) NOT NULL,
@@ -2171,7 +2171,7 @@ CREATE TABLE `e_learning_instructions` (
 -- Table structure for table `e_learning_instructors`
 --
 
-CREATE TABLE `e_learning_instructors` (
+CREATE TABLE IF NOT EXISTS `e_learning_instructors` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `full_name` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `picture` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2198,7 +2198,7 @@ CREATE TABLE `e_learning_instructors` (
 -- Table structure for table `e_learning_instructor_invitations`
 --
 
-CREATE TABLE `e_learning_instructor_invitations` (
+CREATE TABLE IF NOT EXISTS `e_learning_instructor_invitations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `full_name` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2219,7 +2219,7 @@ CREATE TABLE `e_learning_instructor_invitations` (
 -- Table structure for table `e_learning_lectures`
 --
 
-CREATE TABLE `e_learning_lectures` (
+CREATE TABLE IF NOT EXISTS `e_learning_lectures` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `chapter_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2239,7 +2239,7 @@ CREATE TABLE `e_learning_lectures` (
 -- Table structure for table `e_learning_lecture_attendances`
 --
 
-CREATE TABLE `e_learning_lecture_attendances` (
+CREATE TABLE IF NOT EXISTS `e_learning_lecture_attendances` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `student_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lecture_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2254,7 +2254,7 @@ CREATE TABLE `e_learning_lecture_attendances` (
 -- Table structure for table `e_learning_lecture_topics`
 --
 
-CREATE TABLE `e_learning_lecture_topics` (
+CREATE TABLE IF NOT EXISTS `e_learning_lecture_topics` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lecture_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `subject` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2276,7 +2276,7 @@ CREATE TABLE `e_learning_lecture_topics` (
 -- Table structure for table `e_learning_lecture_topic_likes`
 --
 
-CREATE TABLE `e_learning_lecture_topic_likes` (
+CREATE TABLE IF NOT EXISTS `e_learning_lecture_topic_likes` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lecture_topic_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `student_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2292,7 +2292,7 @@ CREATE TABLE `e_learning_lecture_topic_likes` (
 -- Table structure for table `e_learning_lecture_topic_responses`
 --
 
-CREATE TABLE `e_learning_lecture_topic_responses` (
+CREATE TABLE IF NOT EXISTS `e_learning_lecture_topic_responses` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lecture_topic_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `comment` text COLLATE utf8mb4_unicode_ci,
@@ -2312,7 +2312,7 @@ CREATE TABLE `e_learning_lecture_topic_responses` (
 -- Table structure for table `e_learning_lecture_topic_response_likes`
 --
 
-CREATE TABLE `e_learning_lecture_topic_response_likes` (
+CREATE TABLE IF NOT EXISTS `e_learning_lecture_topic_response_likes` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lecture_topic_response_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `student_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2328,7 +2328,7 @@ CREATE TABLE `e_learning_lecture_topic_response_likes` (
 -- Table structure for table `e_learning_lecture_topic_subscriptions`
 --
 
-CREATE TABLE `e_learning_lecture_topic_subscriptions` (
+CREATE TABLE IF NOT EXISTS `e_learning_lecture_topic_subscriptions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lecture_topic_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2344,7 +2344,7 @@ CREATE TABLE `e_learning_lecture_topic_subscriptions` (
 -- Table structure for table `e_learning_lecture_visits`
 --
 
-CREATE TABLE `e_learning_lecture_visits` (
+CREATE TABLE IF NOT EXISTS `e_learning_lecture_visits` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lecture_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `student_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2359,7 +2359,7 @@ CREATE TABLE `e_learning_lecture_visits` (
 -- Table structure for table `e_learning_messages`
 --
 
-CREATE TABLE `e_learning_messages` (
+CREATE TABLE IF NOT EXISTS `e_learning_messages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `default_message` text COLLATE utf8mb4_unicode_ci,
   `numbering` int(11) NOT NULL,
@@ -2374,7 +2374,7 @@ CREATE TABLE `e_learning_messages` (
 -- Table structure for table `e_learning_outgoing_calls`
 --
 
-CREATE TABLE `e_learning_outgoing_calls` (
+CREATE TABLE IF NOT EXISTS `e_learning_outgoing_calls` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `callSessionState` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `direction` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2404,7 +2404,7 @@ CREATE TABLE `e_learning_outgoing_calls` (
 -- Table structure for table `e_learning_resources`
 --
 
-CREATE TABLE `e_learning_resources` (
+CREATE TABLE IF NOT EXISTS `e_learning_resources` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2440,7 +2440,7 @@ INSERT INTO `e_learning_resources` (`id`, `course_id`, `title`, `body`, `user_id
 -- Table structure for table `e_learning_resource_attachments`
 --
 
-CREATE TABLE `e_learning_resource_attachments` (
+CREATE TABLE IF NOT EXISTS `e_learning_resource_attachments` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2457,7 +2457,7 @@ CREATE TABLE `e_learning_resource_attachments` (
 -- Table structure for table `e_learning_resource_subscriptions`
 --
 
-CREATE TABLE `e_learning_resource_subscriptions` (
+CREATE TABLE IF NOT EXISTS `e_learning_resource_subscriptions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2472,7 +2472,7 @@ CREATE TABLE `e_learning_resource_subscriptions` (
 -- Table structure for table `e_learning_resource_views`
 --
 
-CREATE TABLE `e_learning_resource_views` (
+CREATE TABLE IF NOT EXISTS `e_learning_resource_views` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `resource_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2486,7 +2486,7 @@ CREATE TABLE `e_learning_resource_views` (
 -- Table structure for table `e_learning_students`
 --
 
-CREATE TABLE `e_learning_students` (
+CREATE TABLE IF NOT EXISTS `e_learning_students` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `full_name` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `picture` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2515,7 +2515,7 @@ CREATE TABLE `e_learning_students` (
 -- Table structure for table `e_learning_student_enrollments`
 --
 
-CREATE TABLE `e_learning_student_enrollments` (
+CREATE TABLE IF NOT EXISTS `e_learning_student_enrollments` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `course_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `student_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2532,7 +2532,7 @@ CREATE TABLE `e_learning_student_enrollments` (
 -- Table structure for table `e_learning_voice_menus`
 --
 
-CREATE TABLE `e_learning_voice_menus` (
+CREATE TABLE IF NOT EXISTS `e_learning_voice_menus` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `session_id` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone_number` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2569,7 +2569,7 @@ CREATE TABLE `e_learning_voice_menus` (
 -- Table structure for table `e_learning_voice_sessions`
 --
 
-CREATE TABLE `e_learning_voice_sessions` (
+CREATE TABLE IF NOT EXISTS `e_learning_voice_sessions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `session_id` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone_number` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2584,7 +2584,7 @@ CREATE TABLE `e_learning_voice_sessions` (
 -- Table structure for table `failed_jobs`
 --
 
-CREATE TABLE `failed_jobs` (
+CREATE TABLE IF NOT EXISTS `failed_jobs` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `uuid` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2600,7 +2600,7 @@ CREATE TABLE `failed_jobs` (
 -- Table structure for table `farmers`
 --
 
-CREATE TABLE `farmers` (
+CREATE TABLE IF NOT EXISTS `farmers` (
   `id` int(36) NOT NULL,
   `organisation_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `farmer_group_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2699,7 +2699,7 @@ INSERT INTO `farmers` (`id`, `organisation_id`, `farmer_group_id`, `first_name`,
 -- Table structure for table `farmer_enterprises`
 --
 
-CREATE TABLE `farmer_enterprises` (
+CREATE TABLE IF NOT EXISTS `farmer_enterprises` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2713,7 +2713,7 @@ CREATE TABLE `farmer_enterprises` (
 -- Table structure for table `farmer_groups`
 --
 
-CREATE TABLE `farmer_groups` (
+CREATE TABLE IF NOT EXISTS `farmer_groups` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2759,7 +2759,7 @@ INSERT INTO `farmer_groups` (`id`, `name`, `country_id`, `organisation_id`, `cod
 -- Table structure for table `farmer_group_enterprises`
 --
 
-CREATE TABLE `farmer_group_enterprises` (
+CREATE TABLE IF NOT EXISTS `farmer_group_enterprises` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_group_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2773,7 +2773,7 @@ CREATE TABLE `farmer_group_enterprises` (
 -- Table structure for table `farmer_questions`
 --
 
-CREATE TABLE `farmer_questions` (
+CREATE TABLE IF NOT EXISTS `farmer_questions` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2831,7 +2831,7 @@ INSERT INTO `farmer_questions` (`id`, `created_at`, `updated_at`, `user_id`, `di
 -- Table structure for table `farmer_question_answers`
 --
 
-CREATE TABLE `farmer_question_answers` (
+CREATE TABLE IF NOT EXISTS `farmer_question_answers` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2882,7 +2882,7 @@ INSERT INTO `farmer_question_answers` (`id`, `created_at`, `updated_at`, `user_i
 -- Table structure for table `farmer_specifications`
 --
 
-CREATE TABLE `farmer_specifications` (
+CREATE TABLE IF NOT EXISTS `farmer_specifications` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_specification` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2900,7 +2900,7 @@ CREATE TABLE `farmer_specifications` (
 -- Table structure for table `financial_institutions`
 --
 
-CREATE TABLE `financial_institutions` (
+CREATE TABLE IF NOT EXISTS `financial_institutions` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2922,7 +2922,7 @@ INSERT INTO `financial_institutions` (`id`, `created_at`, `updated_at`, `name`, 
 -- Table structure for table `garden_coordicates`
 --
 
-CREATE TABLE `garden_coordicates` (
+CREATE TABLE IF NOT EXISTS `garden_coordicates` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2967,7 +2967,7 @@ INSERT INTO `garden_coordicates` (`id`, `created_at`, `updated_at`, `garden_id`,
 -- Table structure for table `garden_models`
 --
 
-CREATE TABLE `garden_models` (
+CREATE TABLE IF NOT EXISTS `garden_models` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -3008,7 +3008,7 @@ INSERT INTO `garden_models` (`id`, `created_at`, `updated_at`, `user_id`, `distr
 -- Table structure for table `gens`
 --
 
-CREATE TABLE `gens` (
+CREATE TABLE IF NOT EXISTS `gens` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -3043,7 +3043,7 @@ INSERT INTO `gens` (`id`, `created_at`, `updated_at`, `class_name`, `use_db_tabl
 -- Table structure for table `images`
 --
 
-CREATE TABLE `images` (
+CREATE TABLE IF NOT EXISTS `images` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -3079,7 +3079,7 @@ INSERT INTO `images` (`id`, `created_at`, `updated_at`, `administrator_id`, `src
 -- Table structure for table `insurance_calculator_values`
 --
 
-CREATE TABLE `insurance_calculator_values` (
+CREATE TABLE IF NOT EXISTS `insurance_calculator_values` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `season_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3103,7 +3103,7 @@ CREATE TABLE `insurance_calculator_values` (
 -- Table structure for table `insurance_commissions`
 --
 
-CREATE TABLE `insurance_commissions` (
+CREATE TABLE IF NOT EXISTS `insurance_commissions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `calculator_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `commission_ranking_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -3119,7 +3119,7 @@ CREATE TABLE `insurance_commissions` (
 -- Table structure for table `insurance_full_cover_rates`
 --
 
-CREATE TABLE `insurance_full_cover_rates` (
+CREATE TABLE IF NOT EXISTS `insurance_full_cover_rates` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `season_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3135,7 +3135,7 @@ CREATE TABLE `insurance_full_cover_rates` (
 -- Table structure for table `insurance_loss_values`
 --
 
-CREATE TABLE `insurance_loss_values` (
+CREATE TABLE IF NOT EXISTS `insurance_loss_values` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `season_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3152,7 +3152,7 @@ CREATE TABLE `insurance_loss_values` (
 -- Table structure for table `insurance_premium_options`
 --
 
-CREATE TABLE `insurance_premium_options` (
+CREATE TABLE IF NOT EXISTS `insurance_premium_options` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `season_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3179,7 +3179,7 @@ INSERT INTO `insurance_premium_options` (`id`, `country_id`, `season_id`, `enter
 -- Table structure for table `insurance_subscriptions`
 --
 
-CREATE TABLE `insurance_subscriptions` (
+CREATE TABLE IF NOT EXISTS `insurance_subscriptions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `agent_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `agent_phone` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -3220,7 +3220,7 @@ INSERT INTO `insurance_subscriptions` (`id`, `agent_id`, `agent_phone`, `farmer_
 -- Table structure for table `insurance_windows`
 --
 
-CREATE TABLE `insurance_windows` (
+CREATE TABLE IF NOT EXISTS `insurance_windows` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `season_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `opening_date` date NOT NULL,
@@ -3235,7 +3235,7 @@ CREATE TABLE `insurance_windows` (
 -- Table structure for table `insured_enterprises`
 --
 
-CREATE TABLE `insured_enterprises` (
+CREATE TABLE IF NOT EXISTS `insured_enterprises` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `calculator_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -3249,7 +3249,7 @@ CREATE TABLE `insured_enterprises` (
 -- Table structure for table `insured_locations`
 --
 
-CREATE TABLE `insured_locations` (
+CREATE TABLE IF NOT EXISTS `insured_locations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `calculator_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `location_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -3263,7 +3263,7 @@ CREATE TABLE `insured_locations` (
 -- Table structure for table `jobs`
 --
 
-CREATE TABLE `jobs` (
+CREATE TABLE IF NOT EXISTS `jobs` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `queue` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3279,7 +3279,7 @@ CREATE TABLE `jobs` (
 -- Table structure for table `keywords`
 --
 
-CREATE TABLE `keywords` (
+CREATE TABLE IF NOT EXISTS `keywords` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `category` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3305,7 +3305,7 @@ INSERT INTO `keywords` (`id`, `name`, `category`, `language_id`, `organisation_i
 -- Table structure for table `keyword_failure_responses`
 --
 
-CREATE TABLE `keyword_failure_responses` (
+CREATE TABLE IF NOT EXISTS `keyword_failure_responses` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `keyword_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `reason` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3320,7 +3320,7 @@ CREATE TABLE `keyword_failure_responses` (
 -- Table structure for table `keyword_success_responses`
 --
 
-CREATE TABLE `keyword_success_responses` (
+CREATE TABLE IF NOT EXISTS `keyword_success_responses` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `keyword_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `response` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3334,7 +3334,7 @@ CREATE TABLE `keyword_success_responses` (
 -- Table structure for table `languages`
 --
 
-CREATE TABLE `languages` (
+CREATE TABLE IF NOT EXISTS `languages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3357,7 +3357,7 @@ INSERT INTO `languages` (`id`, `name`, `country_id`, `created_at`, `updated_at`)
 -- Table structure for table `loan_input_commissions`
 --
 
-CREATE TABLE `loan_input_commissions` (
+CREATE TABLE IF NOT EXISTS `loan_input_commissions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3380,7 +3380,7 @@ INSERT INTO `loan_input_commissions` (`id`, `country_id`, `enterprise_id`, `ente
 -- Table structure for table `loan_input_commission_rates`
 --
 
-CREATE TABLE `loan_input_commission_rates` (
+CREATE TABLE IF NOT EXISTS `loan_input_commission_rates` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `loan_input_commission_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `commission_ranking_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3406,7 +3406,7 @@ INSERT INTO `loan_input_commission_rates` (`id`, `loan_input_commission_id`, `co
 -- Table structure for table `loan_limits`
 --
 
-CREATE TABLE `loan_limits` (
+CREATE TABLE IF NOT EXISTS `loan_limits` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `project_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `min_group_members` double(15,2) DEFAULT NULL,
@@ -3425,7 +3425,7 @@ CREATE TABLE `loan_limits` (
 -- Table structure for table `loan_projects`
 --
 
-CREATE TABLE `loan_projects` (
+CREATE TABLE IF NOT EXISTS `loan_projects` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `organisation_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3442,7 +3442,7 @@ CREATE TABLE `loan_projects` (
 -- Table structure for table `loan_project_farmer_groups`
 --
 
-CREATE TABLE `loan_project_farmer_groups` (
+CREATE TABLE IF NOT EXISTS `loan_project_farmer_groups` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `project_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_group_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3456,7 +3456,7 @@ CREATE TABLE `loan_project_farmer_groups` (
 -- Table structure for table `loan_project_microfinances`
 --
 
-CREATE TABLE `loan_project_microfinances` (
+CREATE TABLE IF NOT EXISTS `loan_project_microfinances` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `project_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `microfinance_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3470,7 +3470,7 @@ CREATE TABLE `loan_project_microfinances` (
 -- Table structure for table `loan_requests`
 --
 
-CREATE TABLE `loan_requests` (
+CREATE TABLE IF NOT EXISTS `loan_requests` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `project_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_group_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3492,7 +3492,7 @@ CREATE TABLE `loan_requests` (
 -- Table structure for table `loan_request_farmers`
 --
 
-CREATE TABLE `loan_request_farmers` (
+CREATE TABLE IF NOT EXISTS `loan_request_farmers` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `loan_request_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3518,7 +3518,7 @@ CREATE TABLE `loan_request_farmers` (
 -- Table structure for table `locations`
 --
 
-CREATE TABLE `locations` (
+CREATE TABLE IF NOT EXISTS `locations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3547,7 +3547,7 @@ INSERT INTO `locations` (`id`, `country_id`, `name`, `parent_id`, `longitude`, `
 -- Table structure for table `lpo_settings`
 --
 
-CREATE TABLE `lpo_settings` (
+CREATE TABLE IF NOT EXISTS `lpo_settings` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3564,7 +3564,7 @@ CREATE TABLE `lpo_settings` (
 -- Table structure for table `markets`
 --
 
-CREATE TABLE `markets` (
+CREATE TABLE IF NOT EXISTS `markets` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `location_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3580,7 +3580,7 @@ CREATE TABLE `markets` (
 -- Table structure for table `market_commodity_prices`
 --
 
-CREATE TABLE `market_commodity_prices` (
+CREATE TABLE IF NOT EXISTS `market_commodity_prices` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `market_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` enum('Wholesale','Retail') COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3598,7 +3598,7 @@ CREATE TABLE `market_commodity_prices` (
 -- Table structure for table `market_keyword_initiated_prices`
 --
 
-CREATE TABLE `market_keyword_initiated_prices` (
+CREATE TABLE IF NOT EXISTS `market_keyword_initiated_prices` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `keyword_id` bigint(20) UNSIGNED NOT NULL,
   `sms` varchar(160) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3614,7 +3614,7 @@ CREATE TABLE `market_keyword_initiated_prices` (
 -- Table structure for table `market_keyword_prices`
 --
 
-CREATE TABLE `market_keyword_prices` (
+CREATE TABLE IF NOT EXISTS `market_keyword_prices` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `keyword_id` bigint(20) UNSIGNED NOT NULL,
   `sms` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3631,7 +3631,7 @@ CREATE TABLE `market_keyword_prices` (
 -- Table structure for table `market_outbox`
 --
 
-CREATE TABLE `market_outbox` (
+CREATE TABLE IF NOT EXISTS `market_outbox` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `subscription_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -3654,7 +3654,7 @@ CREATE TABLE `market_outbox` (
 -- Table structure for table `market_output_products`
 --
 
-CREATE TABLE `market_output_products` (
+CREATE TABLE IF NOT EXISTS `market_output_products` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmgain_id` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -3670,7 +3670,7 @@ CREATE TABLE `market_output_products` (
 -- Table structure for table `market_packages`
 --
 
-CREATE TABLE `market_packages` (
+CREATE TABLE IF NOT EXISTS `market_packages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3698,7 +3698,7 @@ INSERT INTO `market_packages` (`id`, `country_id`, `name`, `created_at`, `update
 -- Table structure for table `market_package_enterprises`
 --
 
-CREATE TABLE `market_package_enterprises` (
+CREATE TABLE IF NOT EXISTS `market_package_enterprises` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `package_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3734,7 +3734,7 @@ INSERT INTO `market_package_enterprises` (`id`, `package_id`, `enterprise_id`, `
 -- Table structure for table `market_package_messages`
 --
 
-CREATE TABLE `market_package_messages` (
+CREATE TABLE IF NOT EXISTS `market_package_messages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `package_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `language_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3764,7 +3764,7 @@ INSERT INTO `market_package_messages` (`id`, `package_id`, `language_id`, `menu`
 -- Table structure for table `market_package_pricings`
 --
 
-CREATE TABLE `market_package_pricings` (
+CREATE TABLE IF NOT EXISTS `market_package_pricings` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `package_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `frequency` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3794,7 +3794,7 @@ INSERT INTO `market_package_pricings` (`id`, `package_id`, `frequency`, `message
 -- Table structure for table `market_package_regions`
 --
 
-CREATE TABLE `market_package_regions` (
+CREATE TABLE IF NOT EXISTS `market_package_regions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `package_id` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `region_id` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL
@@ -3806,7 +3806,7 @@ CREATE TABLE `market_package_regions` (
 -- Table structure for table `market_subscriptions`
 --
 
-CREATE TABLE `market_subscriptions` (
+CREATE TABLE IF NOT EXISTS `market_subscriptions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `language_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -3858,7 +3858,7 @@ INSERT INTO `market_subscriptions` (`id`, `farmer_id`, `language_id`, `location_
 -- Table structure for table `measure_units`
 --
 
-CREATE TABLE `measure_units` (
+CREATE TABLE IF NOT EXISTS `measure_units` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `slug` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3885,7 +3885,7 @@ INSERT INTO `measure_units` (`id`, `name`, `slug`, `created_at`, `updated_at`) V
 -- Table structure for table `microfinances`
 --
 
-CREATE TABLE `microfinances` (
+CREATE TABLE IF NOT EXISTS `microfinances` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `logo` longtext COLLATE utf8mb4_unicode_ci,
@@ -3901,7 +3901,7 @@ CREATE TABLE `microfinances` (
 -- Table structure for table `microfinance_loan_charges`
 --
 
-CREATE TABLE `microfinance_loan_charges` (
+CREATE TABLE IF NOT EXISTS `microfinance_loan_charges` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `microfinance_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3918,7 +3918,7 @@ CREATE TABLE `microfinance_loan_charges` (
 -- Table structure for table `migrations`
 --
 
-CREATE TABLE `migrations` (
+CREATE TABLE IF NOT EXISTS `migrations` (
   `id` int(10) UNSIGNED NOT NULL,
   `migration` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int(11) NOT NULL
@@ -4026,7 +4026,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 -- Table structure for table `model_has_permissions`
 --
 
-CREATE TABLE `model_has_permissions` (
+CREATE TABLE IF NOT EXISTS `model_has_permissions` (
   `permission_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `model_type` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `model_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL
@@ -4038,7 +4038,7 @@ CREATE TABLE `model_has_permissions` (
 -- Table structure for table `model_has_roles`
 --
 
-CREATE TABLE `model_has_roles` (
+CREATE TABLE IF NOT EXISTS `model_has_roles` (
   `role_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `model_type` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `model_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL
@@ -4060,7 +4060,7 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 -- Table structure for table `oauth_access_tokens`
 --
 
-CREATE TABLE `oauth_access_tokens` (
+CREATE TABLE IF NOT EXISTS `oauth_access_tokens` (
   `id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `client_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4078,7 +4078,7 @@ CREATE TABLE `oauth_access_tokens` (
 -- Table structure for table `oauth_auth_codes`
 --
 
-CREATE TABLE `oauth_auth_codes` (
+CREATE TABLE IF NOT EXISTS `oauth_auth_codes` (
   `id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `client_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4093,7 +4093,7 @@ CREATE TABLE `oauth_auth_codes` (
 -- Table structure for table `oauth_clients`
 --
 
-CREATE TABLE `oauth_clients` (
+CREATE TABLE IF NOT EXISTS `oauth_clients` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4113,7 +4113,7 @@ CREATE TABLE `oauth_clients` (
 -- Table structure for table `oauth_personal_access_clients`
 --
 
-CREATE TABLE `oauth_personal_access_clients` (
+CREATE TABLE IF NOT EXISTS `oauth_personal_access_clients` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `client_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -4126,7 +4126,7 @@ CREATE TABLE `oauth_personal_access_clients` (
 -- Table structure for table `oauth_refresh_tokens`
 --
 
-CREATE TABLE `oauth_refresh_tokens` (
+CREATE TABLE IF NOT EXISTS `oauth_refresh_tokens` (
   `id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `access_token_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `revoked` tinyint(1) NOT NULL,
@@ -4139,7 +4139,7 @@ CREATE TABLE `oauth_refresh_tokens` (
 -- Table structure for table `one_time_passwords`
 --
 
-CREATE TABLE `one_time_passwords` (
+CREATE TABLE IF NOT EXISTS `one_time_passwords` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4172,7 +4172,7 @@ INSERT INTO `one_time_passwords` (`id`, `user_id`, `status`, `created_at`, `upda
 -- Table structure for table `one_time_password_activities`
 --
 
-CREATE TABLE `one_time_password_activities` (
+CREATE TABLE IF NOT EXISTS `one_time_password_activities` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `otp_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4231,7 +4231,7 @@ INSERT INTO `one_time_password_activities` (`id`, `user_id`, `otp_id`, `phone`, 
 -- Table structure for table `one_time_password_logs`
 --
 
-CREATE TABLE `one_time_password_logs` (
+CREATE TABLE IF NOT EXISTS `one_time_password_logs` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` text COLLATE utf8mb4_unicode_ci,
   `otp_code` text COLLATE utf8mb4_unicode_ci,
@@ -4255,7 +4255,7 @@ INSERT INTO `one_time_password_logs` (`id`, `user_id`, `otp_code`, `refer_number
 -- Table structure for table `ordered_items`
 --
 
-CREATE TABLE `ordered_items` (
+CREATE TABLE IF NOT EXISTS `ordered_items` (
   `order` text COLLATE utf8mb4_unicode_ci,
   `product` text COLLATE utf8mb4_unicode_ci,
   `qty` text COLLATE utf8mb4_unicode_ci,
@@ -4306,7 +4306,7 @@ INSERT INTO `ordered_items` (`order`, `product`, `qty`, `amount`, `color`, `size
 -- Table structure for table `orders`
 --
 
-CREATE TABLE `orders` (
+CREATE TABLE IF NOT EXISTS `orders` (
   `user` text COLLATE utf8mb4_unicode_ci,
   `order_state` text COLLATE utf8mb4_unicode_ci,
   `amount` text COLLATE utf8mb4_unicode_ci,
@@ -4355,7 +4355,7 @@ INSERT INTO `orders` (`user`, `order_state`, `amount`, `date_created`, `payment_
 -- Table structure for table `organisations`
 --
 
-CREATE TABLE `organisations` (
+CREATE TABLE IF NOT EXISTS `organisations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `logo` longtext COLLATE utf8mb4_unicode_ci,
@@ -4381,7 +4381,7 @@ INSERT INTO `organisations` (`id`, `name`, `logo`, `address`, `services`, `creat
 -- Table structure for table `organisation_joining_requests`
 --
 
-CREATE TABLE `organisation_joining_requests` (
+CREATE TABLE IF NOT EXISTS `organisation_joining_requests` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -4403,7 +4403,7 @@ INSERT INTO `organisation_joining_requests` (`id`, `created_at`, `updated_at`, `
 -- Table structure for table `organisation_permissions`
 --
 
-CREATE TABLE `organisation_permissions` (
+CREATE TABLE IF NOT EXISTS `organisation_permissions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -4432,7 +4432,7 @@ INSERT INTO `organisation_permissions` (`id`, `name`, `created_at`, `updated_at`
 -- Table structure for table `organisation_positions`
 --
 
-CREATE TABLE `organisation_positions` (
+CREATE TABLE IF NOT EXISTS `organisation_positions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `organisation_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4453,7 +4453,7 @@ INSERT INTO `organisation_positions` (`id`, `organisation_id`, `name`, `created_
 -- Table structure for table `organisation_position_permissions`
 --
 
-CREATE TABLE `organisation_position_permissions` (
+CREATE TABLE IF NOT EXISTS `organisation_position_permissions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `position_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `permission_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4483,7 +4483,7 @@ INSERT INTO `organisation_position_permissions` (`id`, `position_id`, `permissio
 -- Table structure for table `organisation_user_positions`
 --
 
-CREATE TABLE `organisation_user_positions` (
+CREATE TABLE IF NOT EXISTS `organisation_user_positions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `position_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4504,7 +4504,7 @@ INSERT INTO `organisation_user_positions` (`id`, `user_id`, `position_id`, `crea
 -- Table structure for table `parish`
 --
 
-CREATE TABLE `parish` (
+CREATE TABLE IF NOT EXISTS `parish` (
   `id` int(11) NOT NULL,
   `name` varchar(45) DEFAULT NULL,
   `subcounty_id` int(11) NOT NULL,
@@ -12042,7 +12042,7 @@ INSERT INTO `parish` (`id`, `name`, `subcounty_id`, `lat`, `lng`, `district_id`)
 -- Table structure for table `password_histories`
 --
 
-CREATE TABLE `password_histories` (
+CREATE TABLE IF NOT EXISTS `password_histories` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -12056,7 +12056,7 @@ CREATE TABLE `password_histories` (
 -- Table structure for table `password_resets`
 --
 
-CREATE TABLE `password_resets` (
+CREATE TABLE IF NOT EXISTS `password_resets` (
   `email` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `token` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
@@ -12068,7 +12068,7 @@ CREATE TABLE `password_resets` (
 -- Table structure for table `permissions`
 --
 
-CREATE TABLE `permissions` (
+CREATE TABLE IF NOT EXISTS `permissions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `guard_name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -12258,7 +12258,7 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `type_id`, `group_name`, 
 -- Table structure for table `phone_validations`
 --
 
-CREATE TABLE `phone_validations` (
+CREATE TABLE IF NOT EXISTS `phone_validations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `reference` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -12288,7 +12288,7 @@ CREATE TABLE `phone_validations` (
 -- Table structure for table `products`
 --
 
-CREATE TABLE `products` (
+CREATE TABLE IF NOT EXISTS `products` (
   `id` int(11) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
   `metric` text,
@@ -12354,7 +12354,7 @@ INSERT INTO `products` (`id`, `name`, `metric`, `currency`, `description`, `summ
 -- Table structure for table `product_categories`
 --
 
-CREATE TABLE `product_categories` (
+CREATE TABLE IF NOT EXISTS `product_categories` (
   `id` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -12388,7 +12388,7 @@ INSERT INTO `product_categories` (`id`, `created_at`, `updated_at`, `category`, 
 -- Table structure for table `questions`
 --
 
-CREATE TABLE `questions` (
+CREATE TABLE IF NOT EXISTS `questions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `keyword_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -12416,7 +12416,7 @@ INSERT INTO `questions` (`id`, `keyword_id`, `farmer_id`, `phone`, `body`, `sent
 -- Table structure for table `question_images`
 --
 
-CREATE TABLE `question_images` (
+CREATE TABLE IF NOT EXISTS `question_images` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `question_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `image` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -12432,7 +12432,7 @@ CREATE TABLE `question_images` (
 -- Table structure for table `question_responses`
 --
 
-CREATE TABLE `question_responses` (
+CREATE TABLE IF NOT EXISTS `question_responses` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `question_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -12457,7 +12457,7 @@ INSERT INTO `question_responses` (`id`, `question_id`, `user_id`, `extension_off
 -- Table structure for table `region`
 --
 
-CREATE TABLE `region` (
+CREATE TABLE IF NOT EXISTS `region` (
   `id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
   `capital` varchar(25) NOT NULL,
@@ -12483,7 +12483,7 @@ INSERT INTO `region` (`id`, `name`, `capital`, `area_km`, `area_mil`, `elevation
 -- Table structure for table `resource_categories`
 --
 
-CREATE TABLE `resource_categories` (
+CREATE TABLE IF NOT EXISTS `resource_categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -12505,7 +12505,7 @@ INSERT INTO `resource_categories` (`id`, `created_at`, `updated_at`, `name`, `th
 -- Table structure for table `roles`
 --
 
-CREATE TABLE `roles` (
+CREATE TABLE IF NOT EXISTS `roles` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(160) COLLATE utf8mb4_unicode_ci NOT NULL,
   `guard_name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -12544,7 +12544,7 @@ INSERT INTO `roles` (`id`, `name`, `guard_name`, `is_admin`, `is_default`, `type
 -- Table structure for table `role_has_permissions`
 --
 
-CREATE TABLE `role_has_permissions` (
+CREATE TABLE IF NOT EXISTS `role_has_permissions` (
   `permission_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `role_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -12728,7 +12728,7 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 -- Table structure for table `seasons`
 --
 
-CREATE TABLE `seasons` (
+CREATE TABLE IF NOT EXISTS `seasons` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -12753,7 +12753,7 @@ INSERT INTO `seasons` (`id`, `country_id`, `name`, `start_date`, `end_date`, `st
 -- Table structure for table `settings`
 --
 
-CREATE TABLE `settings` (
+CREATE TABLE IF NOT EXISTS `settings` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `value` longtext COLLATE utf8mb4_unicode_ci,
@@ -12772,7 +12772,7 @@ CREATE TABLE `settings` (
 -- Table structure for table `subcounty`
 --
 
-CREATE TABLE `subcounty` (
+CREATE TABLE IF NOT EXISTS `subcounty` (
   `id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
   `county_id` int(11) DEFAULT NULL,
@@ -14239,7 +14239,7 @@ INSERT INTO `subcounty` (`id`, `name`, `county_id`, `user_id`, `created`, `chang
 -- Table structure for table `subscription_payments`
 --
 
-CREATE TABLE `subscription_payments` (
+CREATE TABLE IF NOT EXISTS `subscription_payments` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `weather_subscription_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `market_subscription_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -14283,7 +14283,7 @@ INSERT INTO `subscription_payments` (`id`, `weather_subscription_id`, `market_su
 -- Table structure for table `sub_region`
 --
 
-CREATE TABLE `sub_region` (
+CREATE TABLE IF NOT EXISTS `sub_region` (
   `id` int(11) NOT NULL,
   `name` varchar(20) NOT NULL,
   `region_id` int(11) NOT NULL
@@ -14316,7 +14316,7 @@ INSERT INTO `sub_region` (`id`, `name`, `region_id`) VALUES
 -- Table structure for table `system_modules`
 --
 
-CREATE TABLE `system_modules` (
+CREATE TABLE IF NOT EXISTS `system_modules` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
@@ -14349,7 +14349,7 @@ INSERT INTO `system_modules` (`id`, `name`, `description`, `created_at`, `update
 -- Table structure for table `trainings`
 --
 
-CREATE TABLE `trainings` (
+CREATE TABLE IF NOT EXISTS `trainings` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `village_agent_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `extension_officer_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -14391,7 +14391,7 @@ INSERT INTO `trainings` (`id`, `village_agent_id`, `extension_officer_id`, `user
 -- Table structure for table `training_attachments`
 --
 
-CREATE TABLE `training_attachments` (
+CREATE TABLE IF NOT EXISTS `training_attachments` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `training_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `attachments` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14405,7 +14405,7 @@ CREATE TABLE `training_attachments` (
 -- Table structure for table `training_categories`
 --
 
-CREATE TABLE `training_categories` (
+CREATE TABLE IF NOT EXISTS `training_categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -14420,7 +14420,7 @@ CREATE TABLE `training_categories` (
 -- Table structure for table `training_farmers`
 --
 
-CREATE TABLE `training_farmers` (
+CREATE TABLE IF NOT EXISTS `training_farmers` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `training_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14434,7 +14434,7 @@ CREATE TABLE `training_farmers` (
 -- Table structure for table `training_farmer_groups`
 --
 
-CREATE TABLE `training_farmer_groups` (
+CREATE TABLE IF NOT EXISTS `training_farmer_groups` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `training_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_group_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14448,7 +14448,7 @@ CREATE TABLE `training_farmer_groups` (
 -- Table structure for table `training_resources`
 --
 
-CREATE TABLE `training_resources` (
+CREATE TABLE IF NOT EXISTS `training_resources` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `heading` text COLLATE utf8mb4_unicode_ci,
   `thumbnail` text COLLATE utf8mb4_unicode_ci,
@@ -14483,7 +14483,7 @@ INSERT INTO `training_resources` (`id`, `heading`, `thumbnail`, `order`, `status
 -- Table structure for table `training_resource_enterprises`
 --
 
-CREATE TABLE `training_resource_enterprises` (
+CREATE TABLE IF NOT EXISTS `training_resource_enterprises` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `resource_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14497,7 +14497,7 @@ CREATE TABLE `training_resource_enterprises` (
 -- Table structure for table `training_resource_languages`
 --
 
-CREATE TABLE `training_resource_languages` (
+CREATE TABLE IF NOT EXISTS `training_resource_languages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `resource_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `language_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14511,7 +14511,7 @@ CREATE TABLE `training_resource_languages` (
 -- Table structure for table `training_resource_sections`
 --
 
-CREATE TABLE `training_resource_sections` (
+CREATE TABLE IF NOT EXISTS `training_resource_sections` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `resource_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `subheading` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -14528,7 +14528,7 @@ CREATE TABLE `training_resource_sections` (
 -- Table structure for table `training_sessions`
 --
 
-CREATE TABLE `training_sessions` (
+CREATE TABLE IF NOT EXISTS `training_sessions` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -14569,7 +14569,7 @@ INSERT INTO `training_sessions` (`id`, `created_at`, `updated_at`, `organisation
 -- Table structure for table `training_subtopics`
 --
 
-CREATE TABLE `training_subtopics` (
+CREATE TABLE IF NOT EXISTS `training_subtopics` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `topic_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `title` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -14602,7 +14602,7 @@ INSERT INTO `training_subtopics` (`id`, `topic_id`, `title`, `type`, `details`, 
 -- Table structure for table `training_topics`
 --
 
-CREATE TABLE `training_topics` (
+CREATE TABLE IF NOT EXISTS `training_topics` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `country_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `organisation_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -14633,7 +14633,7 @@ INSERT INTO `training_topics` (`id`, `country_id`, `organisation_id`, `topic`, `
 -- Table structure for table `training_training_session_has_members`
 --
 
-CREATE TABLE `training_training_session_has_members` (
+CREATE TABLE IF NOT EXISTS `training_training_session_has_members` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -14674,7 +14674,7 @@ INSERT INTO `training_training_session_has_members` (`id`, `created_at`, `update
 -- Table structure for table `types`
 --
 
-CREATE TABLE `types` (
+CREATE TABLE IF NOT EXISTS `types` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `alias` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14696,7 +14696,7 @@ INSERT INTO `types` (`id`, `name`, `alias`, `created_at`, `updated_at`) VALUES
 -- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint(20) NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -14798,7 +14798,7 @@ INSERT INTO `users` (`id`, `name`, `phone`, `email`, `photo`, `password`, `passw
 -- Table structure for table `user_block_unblock_actions`
 --
 
-CREATE TABLE `user_block_unblock_actions` (
+CREATE TABLE IF NOT EXISTS `user_block_unblock_actions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `action` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14814,7 +14814,7 @@ CREATE TABLE `user_block_unblock_actions` (
 -- Table structure for table `user_invitations`
 --
 
-CREATE TABLE `user_invitations` (
+CREATE TABLE IF NOT EXISTS `user_invitations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14836,7 +14836,7 @@ CREATE TABLE `user_invitations` (
 -- Table structure for table `user_sessions`
 --
 
-CREATE TABLE `user_sessions` (
+CREATE TABLE IF NOT EXISTS `user_sessions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -14899,7 +14899,7 @@ INSERT INTO `user_sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `paylo
 -- Table structure for table `user_statuses`
 --
 
-CREATE TABLE `user_statuses` (
+CREATE TABLE IF NOT EXISTS `user_statuses` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `activated_at` timestamp NULL DEFAULT NULL,
@@ -14921,7 +14921,7 @@ CREATE TABLE `user_statuses` (
 -- Table structure for table `ussd_advisory_messages`
 --
 
-CREATE TABLE `ussd_advisory_messages` (
+CREATE TABLE IF NOT EXISTS `ussd_advisory_messages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `ussd_question_option_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14936,7 +14936,7 @@ CREATE TABLE `ussd_advisory_messages` (
 -- Table structure for table `ussd_advisory_message_outboxes`
 --
 
-CREATE TABLE `ussd_advisory_message_outboxes` (
+CREATE TABLE IF NOT EXISTS `ussd_advisory_message_outboxes` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `session_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `message` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14952,7 +14952,7 @@ CREATE TABLE `ussd_advisory_message_outboxes` (
 -- Table structure for table `ussd_advisory_questions`
 --
 
-CREATE TABLE `ussd_advisory_questions` (
+CREATE TABLE IF NOT EXISTS `ussd_advisory_questions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `question` tinytext COLLATE utf8mb4_unicode_ci NOT NULL,
   `ussd_advisory_topic_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14968,7 +14968,7 @@ CREATE TABLE `ussd_advisory_questions` (
 -- Table structure for table `ussd_advisory_topics`
 --
 
-CREATE TABLE `ussd_advisory_topics` (
+CREATE TABLE IF NOT EXISTS `ussd_advisory_topics` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `topic` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` mediumtext COLLATE utf8mb4_unicode_ci,
@@ -14985,7 +14985,7 @@ CREATE TABLE `ussd_advisory_topics` (
 -- Table structure for table `ussd_evaluation_questions`
 --
 
-CREATE TABLE `ussd_evaluation_questions` (
+CREATE TABLE IF NOT EXISTS `ussd_evaluation_questions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `evaluation_question` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `ussd_language_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -15001,7 +15001,7 @@ CREATE TABLE `ussd_evaluation_questions` (
 -- Table structure for table `ussd_evaluation_question_options`
 --
 
-CREATE TABLE `ussd_evaluation_question_options` (
+CREATE TABLE IF NOT EXISTS `ussd_evaluation_question_options` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `evaluation_question_option` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `ussd_evaluation_question_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -15017,7 +15017,7 @@ CREATE TABLE `ussd_evaluation_question_options` (
 -- Table structure for table `ussd_evaluation_selections`
 --
 
-CREATE TABLE `ussd_evaluation_selections` (
+CREATE TABLE IF NOT EXISTS `ussd_evaluation_selections` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ussd_evaluation_question_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_selection` int(11) NOT NULL,
@@ -15033,7 +15033,7 @@ CREATE TABLE `ussd_evaluation_selections` (
 -- Table structure for table `ussd_insurance_lists`
 --
 
-CREATE TABLE `ussd_insurance_lists` (
+CREATE TABLE IF NOT EXISTS `ussd_insurance_lists` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ussd_session_data_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `insurance_enterprise_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -15050,7 +15050,7 @@ CREATE TABLE `ussd_insurance_lists` (
 -- Table structure for table `ussd_languages`
 --
 
-CREATE TABLE `ussd_languages` (
+CREATE TABLE IF NOT EXISTS `ussd_languages` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `language` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `position` int(11) NOT NULL,
@@ -15066,7 +15066,7 @@ CREATE TABLE `ussd_languages` (
 -- Table structure for table `ussd_question_options`
 --
 
-CREATE TABLE `ussd_question_options` (
+CREATE TABLE IF NOT EXISTS `ussd_question_options` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `option` tinytext COLLATE utf8mb4_unicode_ci NOT NULL,
   `ussd_advisory_question_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -15082,7 +15082,7 @@ CREATE TABLE `ussd_question_options` (
 -- Table structure for table `ussd_sessions`
 --
 
-CREATE TABLE `ussd_sessions` (
+CREATE TABLE IF NOT EXISTS `ussd_sessions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `session_id` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone_number` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -15145,7 +15145,7 @@ INSERT INTO `ussd_sessions` (`id`, `session_id`, `phone_number`, `last_menu`, `d
 -- Table structure for table `ussd_session_data`
 --
 
-CREATE TABLE `ussd_session_data` (
+CREATE TABLE IF NOT EXISTS `ussd_session_data` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `session_id` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone_number` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -15227,7 +15227,7 @@ INSERT INTO `ussd_session_data` (`id`, `session_id`, `phone_number`, `module`, `
 -- Table structure for table `village`
 --
 
-CREATE TABLE `village` (
+CREATE TABLE IF NOT EXISTS `village` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `parish_id` int(11) NOT NULL,
@@ -15242,7 +15242,7 @@ CREATE TABLE `village` (
 -- Table structure for table `weather_conditions`
 --
 
-CREATE TABLE `weather_conditions` (
+CREATE TABLE IF NOT EXISTS `weather_conditions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `digit` int(11) NOT NULL,
   `category` varchar(125) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -15261,7 +15261,7 @@ CREATE TABLE `weather_conditions` (
 -- Table structure for table `weather_outbox`
 --
 
-CREATE TABLE `weather_outbox` (
+CREATE TABLE IF NOT EXISTS `weather_outbox` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `subscription_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -15284,7 +15284,7 @@ CREATE TABLE `weather_outbox` (
 -- Table structure for table `weather_subscriptions`
 --
 
-CREATE TABLE `weather_subscriptions` (
+CREATE TABLE IF NOT EXISTS `weather_subscriptions` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farmer_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `language_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -15322,7 +15322,7 @@ CREATE TABLE `weather_subscriptions` (
 -- Table structure for table `yield_estimations`
 --
 
-CREATE TABLE `yield_estimations` (
+CREATE TABLE IF NOT EXISTS `yield_estimations` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `enterprise_variety_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `farm_size` double(15,2) NOT NULL DEFAULT '0.00',
