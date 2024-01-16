@@ -920,7 +920,7 @@ CREATE TABLE `county` (
   `district_id` int(11) NOT NULL,
   `municipality` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created` datetime NOT NULL DEFAULT NULL,
   `changed` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1457,7 +1457,7 @@ CREATE TABLE `district` (
   `zone_id` int(11) DEFAULT NULL,
   `land_type_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created` datetime DEFAULT NULL,
   `changed` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2591,7 +2591,7 @@ CREATE TABLE `failed_jobs` (
   `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `failed_at` timestamp NOT NULL DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -12356,8 +12356,8 @@ INSERT INTO `products` (`id`, `name`, `metric`, `currency`, `description`, `summ
 
 CREATE TABLE `product_categories` (
   `id` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
   `category` varchar(100) NOT NULL,
   `image` char(100) NOT NULL DEFAULT 'blank.png',
   `banner_image` text,
@@ -12777,7 +12777,7 @@ CREATE TABLE `subcounty` (
   `name` varchar(45) NOT NULL,
   `county_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created` datetime DEFAULT NULL,
   `changed` int(11) DEFAULT NULL,
   `district_id` int(11) NOT NULL DEFAULT '0',
   `updated_at` datetime DEFAULT NULL,
@@ -15232,7 +15232,7 @@ CREATE TABLE `village` (
   `name` varchar(255) NOT NULL,
   `parish_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created` datetime NOT NULL DEFAULT NULL,
   `changed` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
