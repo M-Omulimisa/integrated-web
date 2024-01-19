@@ -78,6 +78,11 @@ class MarketPackageController extends AdminController
            
         });
 
+        $form->deleted(function () {
+
+            info("gg");
+        });
+
         return $form;
     }
 }

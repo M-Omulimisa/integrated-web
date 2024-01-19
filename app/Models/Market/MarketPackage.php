@@ -27,9 +27,32 @@ class MarketPackage extends BaseModel
     protected static function boot()
     {
         parent::boot();
+
         self::creating(function (MarketPackage $model) {
             $model->id = $model->generateUuid();
         });
+
+        static::deleted(function () {
+
+
+            $market_packages =  MarketPackage::orderBy('created_at', 'asc')->get();
+
+            $counter = 1;
+            foreach($market_packages as $package){
+
+                $package->update(['menu' => $counter]);
+
+                $counter++;
+
+            }
+
+
+
+        });
+
+
+
+
     }
 
     /**
