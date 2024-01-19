@@ -25,8 +25,8 @@ class VendorController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new User());
-        $grid->model([
-            'status' => 'Pending',
+        $grid->model()->where([
+            'user_type' => 'Vendor',
         ])->orderBy('id', 'desc');
         $grid->quickSearch('first_name', 'last_name')->placeholder('Search by name');
         $grid->disableBatchActions();
