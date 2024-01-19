@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Product;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
@@ -83,7 +84,7 @@ class ProductController extends AdminController
 
         $grid->column('created_at', __('Created'))
             ->display(function ($created_at) {
-                return date('Y-m-d H:i:s', strtotime($created_at));
+                return Utils::my_date($created_at);
             })->sortable();
         return $grid;
     }

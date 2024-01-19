@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Order;
+use App\Models\User;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -15,7 +16,7 @@ class OrderController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Order';
+    protected $title = 'Orders';
 
     /**
      * Make a grid builder.
@@ -25,29 +26,48 @@ class OrderController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Order());
-
-        $grid->column('user', __('User'));
-        $grid->column('order_state', __('Order state'));
-        $grid->column('amount', __('Amount'));
-        $grid->column('date_created', __('Date created'));
-        $grid->column('payment_confirmation', __('Payment confirmation'));
-        $grid->column('date_updated', __('Date updated'));
-        $grid->column('mail', __('Mail'));
-        $grid->column('delivery_district', __('Delivery district'));
-        $grid->column('temporary_id', __('Temporary id'));
-        $grid->column('description', __('Description'));
+        $grid->model()->orderBy('id', 'desc');
+        $grid->column('user', __('Customer'))->display(function ($user) {
+            $u = User::find($user);
+            if ($u != null) {
+                return $u->name;
+            }
+            return 'Deleted';
+        })->sortable();
+        $grid->column('order_state', __('Order Status'))->label([
+            'Pending' => 'warning',
+            'Processing' => 'info',
+            'Completed' => 'success',
+            'Cancelled' => 'danger',
+        ])->sortable();
+        $grid->column('amount', __('Total Amount (UGX)'))
+            ->display(function ($amount) {
+                if ($amount == null || $amount == 0 || $amount == '') {
+                    return '-';
+                }
+                $amount = (int) $amount;
+                return number_format($amount);
+            })
+            ->sortable();
+        $grid->column('created_at', __('Date Created'))
+            ->display(function ($date_created) {
+                if ($date_created == null || $date_created == 0 || $date_created == '') {
+                    return '-';
+                }
+                return date('d M Y', strtotime($date_created));
+            })->sortable();
+        $grid->column('payment_confirmation', __('Payment'))
+            ->label([
+                'Pending' => 'warning',
+                'Confirmed' => 'success',
+                'Failed' => 'danger',
+            ])->sortable();
+        $grid->column('description', __('Description'))->hide();
         $grid->column('customer_name', __('Customer name'));
-        $grid->column('customer_phone_number_1', __('Customer phone number 1'));
-        $grid->column('customer_phone_number_2', __('Customer phone number 2'));
-        $grid->column('customer_address', __('Customer address'));
-        $grid->column('order_total', __('Order total'));
-        $grid->column('order_details', __('Order details'));
-        $grid->column('stripe_id', __('Stripe id'));
-        $grid->column('stripe_url', __('Stripe url'));
-        $grid->column('stripe_paid', __('Stripe paid'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-
+        $grid->column('customer_phone_number_1', __('Customer Contact'))->hide();
+        $grid->column('customer_address', __('Customer Address'));
+        $grid->column('order_total', __('Order total'))->sortable();
+        $grid->column('order_details', __('Order details'))->hide();
         return $grid;
     }
 
