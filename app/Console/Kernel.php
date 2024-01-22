@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('unified:process-market-subscription-payment')->everyMinute();
+        $schedule->command('unified:process-weather-subscription-payment')->everyMinute();
     }
 
     /**
