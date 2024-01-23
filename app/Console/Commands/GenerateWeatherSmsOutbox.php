@@ -36,7 +36,7 @@ class GenerateWeatherSmsOutbox extends Command
      *
      * @var boolean
      */
-    private $debug = false;
+    private $debug = true;
 
     /**
      * Create a new command instance.
