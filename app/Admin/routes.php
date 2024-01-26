@@ -45,4 +45,6 @@ Route::group([
     $router->resource('market-packages', MarketPackageController::class);
     $router->resource('market-package-messages', MartketPackageMessageController::class);
     $router->resource('enterprises', EnterpriseController::class);
+    $router->resource('market-subscriptions', MarketSubscriptionController::class);
+    $router->resource('market-outboxes', MarketOutboxController::class);
 });

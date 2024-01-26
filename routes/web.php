@@ -141,6 +141,8 @@ use App\Models\DistrictModel;
 use App\Models\Gen;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
+use App\Models\Utils;
+use Dflydev\DotAccessData\Util;
 
 /*
 |--------------------------------------------------------------------------
@@ -158,6 +160,12 @@ use App\Models\SubcountyModel;
     //return redirect('/home');
 }); */
 
+Route::get('/payment-test', function () {
+    Utils::payment_status_test();
+    die("<br>done.");
+    Utils::payment_test();
+    die("<br>done.");
+});
 Route::get('/prepare-data', function () {
 
     die("done");

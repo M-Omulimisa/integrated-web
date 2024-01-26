@@ -12,6 +12,7 @@ use App\Models\DrugStockBatch;
 use App\Models\Event;
 use App\Models\Farm;
 use App\Models\Image;
+use App\Models\Market\MarketPackagePricing;
 use App\Models\Movement;
 use App\Models\Order;
 use App\Models\OrderedItem;
@@ -32,6 +33,144 @@ class ApiShopController extends Controller
 
     use ApiResponser;
 
+    public function market_packages()
+    {
+        $packages = [];
+        foreach (\App\Models\Market\MarketPackage::where([])->get() as $package) {
+            $pricings = MarketPackagePricing::where([
+                'package_id' => $package->id
+            ])->get();
+            $package->pricings = json_decode($pricings);
+            $package->other = '';
+            $packages[] = $package;
+        }
+        return $this->success($packages, 'Success');
+    }
+
+    public function order_payment_status(Request $r)
+    {
+
+        if (!isset($r->id) || $r->id == null) {
+            return $this->error('Item ID is missing.');
+        }
+
+        $order = Order::find($r->id);
+        if ($order == null) {
+            return $this->error('Order not found.');
+        }
+        if (strtoupper($order->payment_confirmation) == 'PAID') {
+            return $this->error('This order #' . $order->id . ' is already paid.');
+        }
+
+        try {
+            $order->check_payment_status();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+
+        $order = Order::find($r->id);
+
+        return $this->success($order, $message = "Success", 200);
+    }
+
+    public function initiate_payment(Request $r)
+    {
+
+        if (!isset($r->amount) || $r->amount == null) {
+            return $this->error('Amount is missing.');
+        }
+        if (!isset($r->phone_number) || $r->phone_number == null) {
+            return $this->error('Phone number is missing.');
+        }
+        if (!isset($r->item_id) || $r->item_id == null) {
+            return $this->error('Item ID is missing.');
+        }
+        if (!isset($r->type) || $r->type == null) {
+            return $this->error('Type is missing.');
+        }
+
+        if (
+            $r->type != 'ORDER'
+        ) {
+            return $this->error('Invalid type.');
+        }
+
+        $tyep = $r->type;
+        $payment_reference_id = time() . rand(1000, 9999);
+        if ($r->type == 'ORDER') {
+            $order = Order::find($r->item_id);
+            if ($order == null) {
+                return $this->error('Order not found.');
+            }
+            if (strtoupper($order->payment_confirmation) == 'PAID') {
+                return $this->error('This order #' . $order->id . ' is already paid.');
+            }
+        }
+
+        $amount = (int)(($r->amount));
+        if ($amount < 500) {
+            return $this->error('Amount should be greater or equal to UGX 500.');
+        }
+        $phone_number = Utils::prepare_phone_number($r->phone_number);
+        if (!Utils::phone_number_is_valid($r->phone_number)) {
+            return $this->error('Invalid phone number ' . $r->phone_number . ".");
+        }
+
+        $phone_number = $r->phone_number;
+        $phone_number = str_replace('+', '', $phone_number);
+
+        $payment_resp = null;
+        try {
+            $payment_resp = Utils::init_payment($phone_number, $amount, $payment_reference_id);
+        } catch (\Throwable $th) {
+            $payment_resp = null;
+            return $this->error($th->getMessage());
+        }
+
+        if ($payment_resp == null) {
+            return $this->error('Failed to initiate payment.');
+        }
+
+
+        if (!isset($payment_resp->Status)) {
+            return $this->error('Failed to initiate payment.');
+        }
+
+        if ($payment_resp->Status != 'OK') {
+            //StatusMessage
+            if (isset($payment_resp->StatusMessage)) {
+                return $this->error($payment_resp->StatusMessage);
+            }
+            return $this->error('Failed to initiate payment.');
+        }
+
+        //TransactionStatus
+        if (!isset($payment_resp->TransactionStatus)) {
+            return $this->error('Failed to initiate payment because TransactionStatus is missing.');
+        }
+
+        //TransactionReference
+        if (!isset($payment_resp->TransactionReference)) {
+            return $this->error('Failed to initiate payment because TransactionReference is missing.');
+        }
+
+        if ($r->type == 'ORDER') {
+            $order->TransactionStatus = $payment_resp->TransactionStatus;
+            $order->TransactionReference = $payment_resp->TransactionReference;
+            $order->payment_reference_id = $payment_reference_id;
+            try {
+                $order->save();
+                try {
+                    $order->check_payment_status();
+                } catch (\Throwable $th) {
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+        return $this->success($payment_resp, $message = "GOOD TO GO WITH $phone_number", 200);
+    }
+
     public function orders_get(Request $r)
     {
 
@@ -42,14 +181,14 @@ class ApiShopController extends Controller
             $u = Administrator::find($administrator_id);
         }
         $u = Administrator::find($u->id);
-    
+
 
         if ($u == null) {
             return $this->error('User not found.');
         }
         $orders = [];
         $conds = [];
- 
+
         $conds['user'] = $u->id;
 
         foreach (Order::where($conds)->get() as $order) {
@@ -432,7 +571,7 @@ class ApiShopController extends Controller
             );
         } catch (\Throwable $th) {
             //throw $th;
-        } 
+        }
         Utils::send_sms($noti_body, $delivery->phone_number);
         return $this->success($order, $message = "Order Submitted Successfully.", 200);
     }

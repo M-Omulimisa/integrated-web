@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Farmers\FarmerGroup;
+use App\Services\Payments\PaymentServiceFactory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Zebra_Image;
@@ -10,6 +11,141 @@ use Berkayk\OneSignal\OneSignalClient;
 
 class Utils
 {
+
+    public static function payment_status_test()
+    {
+        $PaymentFactory = new PaymentServiceFactory();
+        $service = $PaymentFactory->getService('yo_ug');
+        if (!$service) {
+            throw new \Exception("Failed to get payment service");
+        }
+        $service->set_URL();
+        $service->set_username();
+        $service->set_password();
+
+        //$faild_reference_id = "PaoHpb4vpfkZ9hzdxR04PdtJR4H6ot0ZGurv6qdOOVdHEcjhxuCz4XMZhSOF2fdh61074cec31f11636c82e2b5783ffcb4f";
+        $faild_reference_id = "Ef8BFyJ3NhULq2vBNTVu47GgnP1XV1vP0CxsGlixN0cMOLYahQBkGsi57KjqUJaf0ba161438d0d8c4d877f1f03541379a1";
+        $faild_reference_id = "Oh145te1z62t2pZ7tbLic2NNKBuIxuadAC7B8YYNMBGQmlcKdBJuE7QXAknvVD4h47fffd5e9d22f8e0d1602012c943dcd7";
+        $my_reference_id = "464988113";
+        $response = $service->getTransactionStatus(
+            $faild_reference_id,
+            $my_reference_id,
+        );
+        dd($response);
+
+        die("success");
+    }
+
+    public static function payment_test()
+    {
+        $PaymentFactory = new PaymentServiceFactory();
+        $service = $PaymentFactory->getService('yo_ug');
+        if (!$service) {
+            throw new \Exception("Failed to get payment service");
+        }
+        $service->set_URL();
+        $service->set_username();
+        $service->set_password();
+
+        $phone = "256783204665";
+        $phone = "256706638494";
+        $amount = 500;
+        $narrative = "Test payment";
+        $reference_id = "464988113";
+        $response = $service->depositFunds(
+            $phone,
+            $amount,
+            $narrative,
+            $reference_id
+        );
+        dd($response);
+
+        die("success");
+    }
+
+
+    public static function init_payment($phone_number, $amount,$reference_id)
+    {
+        $phone_number = Utils::prepare_phone_number($phone_number);
+        if (Utils::phone_number_is_valid($phone_number) == false) {
+            throw new \Exception("Invalid phone numbe $phone_number");
+        }
+        $phone_number = str_replace("+", "", $phone_number);
+        $amount = (int)($amount);
+        if ($amount < 500) {
+            throw new \Exception("Amount must be greater than UGX 499");
+        }
+
+        /* $test_resp = new \stdClass();
+        $test_resp->Status = "OK";
+        $test_resp->StatusCode = "1";
+        $test_resp->StatusMessage = "";
+        $test_resp->TransactionStatus = "PENDING";
+        $test_resp->TransactionReference = "PaoHpb4vpfkZ9hzdxR04PdtJR4H6ot0ZGurv6qdOOVdHEcjhxuCz4XMZhSOF2fdh61074cec31f11636c82e2b5783ffcb4f";
+        return $test_resp; */
+
+
+        $PaymentFactory = new PaymentServiceFactory();
+        $service = null;
+
+        try {
+            $service = $PaymentFactory->getService('yo_ug');
+        } catch (\Throwable $th) {
+            throw new \Exception("Failed to get payment service because " . $th->getMessage());
+        }
+
+        if ($service == null) {
+            throw new \Exception("Failed to get payment service");
+        }
+        $service->set_URL();
+        $service->set_username();
+        $service->set_password();
+
+        $narrative = "Omulimisa payment."; 
+        $amount = 500;
+        $response = null;
+        try {
+            $response = $service->depositFunds(
+                $phone_number,
+                $amount,
+                $narrative,
+                $reference_id
+            );
+        } catch (\Throwable $th) {
+            throw new \Exception("Failed to initiate payment because " . $th->getMessage());
+        }
+        if ($response == null) {
+            throw new \Exception("Failed to initiate payment");
+        }
+        return $response;
+    }
+
+
+    public static function payment_status_check($token,$payment_reference_id)
+    {
+        $PaymentFactory = new PaymentServiceFactory();
+        $service = $PaymentFactory->getService('yo_ug');
+        if (!$service) {
+            throw new \Exception("Failed to get payment service");
+        }
+        $service->set_URL();
+        $service->set_username();
+        $service->set_password();
+
+        //$faild_reference_id = "PaoHpb4vpfkZ9hzdxR04PdtJR4H6ot0ZGurv6qdOOVdHEcjhxuCz4XMZhSOF2fdh61074cec31f11636c82e2b5783ffcb4f";
+        // $faild_reference_id = "Ef8BFyJ3NhULq2vBNTVu47GgnP1XV1vP0CxsGlixN0cMOLYahQBkGsi57KjqUJaf0ba161438d0d8c4d877f1f03541379a1";
+        // $faild_reference_id = "Oh145te1z62t2pZ7tbLic2NNKBuIxuadAC7B8YYNMBGQmlcKdBJuE7QXAknvVD4h47fffd5e9d22f8e0d1602012c943dcd7";
+        // $my_reference_id = "464988113";
+        try {
+            $response = $service->getTransactionStatus($token,$payment_reference_id);
+        } catch (\Throwable $th) {
+            throw new \Exception("Failed to check payment status because " . $th->getMessage());
+        }
+        if ($response == null) {
+            throw new \Exception("Failed to check payment status");
+        }
+        return $response;
+    }
 
     public static function phone_number_is_valid($phone_number)
     {
@@ -57,10 +193,10 @@ class Utils
         $url .= "&sppass=mul1m1s4";
         $url .= "&numbers=$phone";
         $url .= "&msg=$sms";
-        $url .= "&type=json"; 
+        $url .= "&type=json";
 
-        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/".$url;
- 
+        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/" . $url;
+
         //use guzzle to make the request 
         $body = null;
         try {
@@ -100,7 +236,7 @@ class Utils
         return 'success';
     }
 
-    
+
     static function syncGroups()
     {
         $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();

@@ -14,8 +14,21 @@ class Order extends Model
         parent::boot();
         //created
         self::created(function ($m) {
-
         });
+
+        //updating
+        self::updating(function ($m) {
+            $m->payment_confirmation = 'NOT PAID';
+            if (
+                $m->TransactionStatus == 'SUCCEEDED' ||
+                $m->TransactionStatus == 'SUCCESSFUL'
+            ) {
+                if ($m->MNOTransactionReferenceId != null && strlen($m->MNOTransactionReferenceId) > 3) {
+                    $m->payment_confirmation = 'PAID';
+                }
+            }
+        });
+
         self::deleting(function ($m) {
             try {
                 $items = OrderedItem::where('order', $m->id)->get();
@@ -28,7 +41,16 @@ class Order extends Model
         });
     }
 
-   
+    //getter for payment_confirmation
+    public function get_payment_confirmation($payment_confirmation)
+    {
+        if (strlen($payment_confirmation) < 1) {
+            return 'NOT PAID';
+        }
+
+        return strtoupper($payment_confirmation);
+    }
+
     public function get_items()
     {
         $items = [];
@@ -50,5 +72,69 @@ class Order extends Model
             $items[] = $_item;
         }
         return $items;
+    }
+
+
+    //check payment status
+    public function check_payment_status()
+    {
+        if ($this->TransactionReference == null) {
+            return 'NOT PAID';
+        }
+        if (strlen($this->TransactionReference) < 3) {
+            return 'NOT PAID';
+        }
+        $resp = null;
+        try {
+            $resp = Utils::payment_status_check($this->TransactionReference, $this->payment_reference_id);
+        } catch (\Throwable $th) {
+            return 'NOT PAID';
+        }
+        if ($resp == null) {
+            return 'NOT PAID';
+        }
+        if ($resp->Status == 'OK') {
+            if ($resp->TransactionStatus == 'PENDING') {
+                $this->TransactionStatus = 'PENDING';
+                if (isset($resp->Amount) && $resp->Amount != null) {
+                    $this->TransactionAmount = $resp->Amount;
+                }
+                if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
+                    $this->TransactionCurrencyCode = $resp->CurrencyCode;
+                }
+                if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
+                    $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
+                }
+                if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
+                    $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
+                }
+                $this->save();
+            } else if (
+                $resp->TransactionStatus == 'SUCCEEDED' ||
+                $resp->TransactionStatus == 'SUCCESSFUL'
+            ) {
+                $this->TransactionStatus = 'SUCCEEDED';
+                if (isset($resp->Amount) && $resp->Amount != null) {
+                    $this->TransactionAmount = $resp->Amount;
+                }
+                if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
+                    $this->TransactionCurrencyCode = $resp->CurrencyCode;
+                }
+                if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
+                    $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
+                }
+                if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
+                    $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
+                }
+                //MNOTransactionReferenceId
+                if (isset($resp->MNOTransactionReferenceId) && $resp->MNOTransactionReferenceId != null) {
+                    $this->MNOTransactionReferenceId = $resp->MNOTransactionReferenceId;
+                }
+                $this->payment_confirmation = 'PAID';
+                $this->save();
+            }
+        }
+
+        return 'NOT PAID';
     }
 }
