@@ -13,6 +13,7 @@ use App\Models\Event;
 use App\Models\Farm;
 use App\Models\Image;
 use App\Models\Market\MarketPackagePricing;
+use App\Models\Market\MarketSubscription;
 use App\Models\Movement;
 use App\Models\Order;
 use App\Models\OrderedItem;
@@ -24,6 +25,7 @@ use App\Models\User;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
+use Dflydev\DotAccessData\Util;
 use Encore\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
@@ -33,6 +35,154 @@ class ApiShopController extends Controller
 
     use ApiResponser;
 
+    public function languages()
+    {
+        $items = \App\Models\Settings\Language::where([])->get();
+        return $this->success($items, 'Success');
+    }
+
+    public function market_packages_subscribe(Request $r)
+    {
+        /* 
+             'subscriber_id': mainController.loggedInUser.id.toString(),
+          'package_id': widget.package.id,
+          'pricing_id': '27ab2deb-2a6b-445c-bb40-53873aa5bee5',
+          'language_id': '0332b59f-9699-4a32-99c4-1dae3666fc93',
+        */
+        if (!isset($r->subscriber_id) || $r->subscriber_id == null) {
+            return $this->error('Subscriber ID is missing.');
+        }
+        if (!isset($r->package_id) || $r->package_id == null) {
+            return $this->error('Package ID is missing.');
+        }
+        if (!isset($r->pricing_id) || $r->pricing_id == null) {
+            return $this->error('Pricing ID is missing.');
+        }
+        if (!isset($r->language_id) || $r->language_id == null) {
+            return $this->error('Language ID is missing.');
+        }
+
+        if (!isset($r->total_price) || $r->total_price == null) {
+            return $this->error('Total price is missing.');
+        }
+
+        //period
+        if (!isset($r->period) || $r->period == null) {
+            return $this->error('Period is missing.');
+        }
+
+        $u = User::find($r->subscriber_id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        $package = \App\Models\Market\MarketPackage::find($r->package_id);
+        if ($package == null) {
+            return $this->error('Package not found.');
+        }
+
+        $pricing = \App\Models\Market\MarketPackagePricing::find($r->pricing_id);
+        if ($pricing == null) {
+            return $this->error('Pricing not found.');
+        }
+
+
+        $existing_subs = \App\Models\Market\MarketSubscription::where([
+            'farmer_id' => $r->subscriber_id,
+            'package_id' => $r->package_id,
+            'language_id' => $r->language_id,
+        ])->get();
+
+
+        $sub = null;
+        foreach ($existing_subs as $key => $val) {
+            if ($val->start_date == null || $val->end_date == null) {
+                if ($val->status != 1) {
+                    $sub = $val;
+                    break;
+                }
+            }
+
+            if (strlen($val->start_date) < 2 || strlen($val->end_date) < 2) {
+                if ($val->status != 1) {
+                    $sub = $val;
+                    break;
+                }
+            }
+            $start_date = Carbon::parse($val->start_date);
+            $end_date = Carbon::parse($val->end_date);
+            $now = Carbon::now();
+            if ($now->between($start_date, $end_date)) {
+                if ($val->status != 1) {
+                    $sub = $val;
+                    break;
+                } else {
+                    if ($val->is_paid == 'PAID') {
+                        return $this->error('You are already subscribed to this package.');
+                    }
+                    return $this->success($val, 'You are already subscribed to this package.');
+                }
+            }
+        }
+
+        if ($sub != null) {
+            $sub->status = 1;
+            $sub->save();
+            return $this->success($sub, 'Success.');
+        }
+        $language = \App\Models\Settings\Language::find($r->language_id);
+        if ($language == null) {
+            return $this->error('Language not found.');
+        }
+
+        $subscription = new \App\Models\Market\MarketSubscription();
+        $subscription->farmer_id = $r->subscriber_id;
+        $subscription->package_id = $r->package_id;
+        $subscription->language_id = $language->id;
+        $subscription->location_id = 1;
+        $subscription->region_id = 1;
+        $subscription->district_id = 1;
+        $subscription->subcounty_id = 1;
+        $subscription->parish_id = 1;
+        $subscription->first_name = $u->first_name;
+        $subscription->last_name = $u->last_name;
+        $subscription->email = $u->email;
+        $subscription->frequency = $pricing->frequency;
+        $subscription->period_paid = $r->period;
+        $subscription->total_price = $r->total_price;
+        $subscription->start_date = Carbon::now();
+        $subscription->end_date = Carbon::now()->addMonths($r->period);
+        $subscription->status = 0;
+        $subscription->user_id = $u->id;
+        $subscription->seen_by_admin = 0;
+        $subscription->trial_expiry_sms_sent_at = Carbon::now()->addDays(7);
+        $subscription->organisation_id = $u->organisation_id;
+        $subscription->package_id = $package->id;
+        $subscription->phone = $u->phone;
+        $phone = $u->phone;
+        $phone = Utils::prepare_phone_number($phone);
+        if (!Utils::phone_number_is_valid($phone)) {
+            $phone = $u->phone_number;
+            $phone = Utils::prepare_phone_number($phone);
+            if (!Utils::phone_number_is_valid($phone)) {
+                return $this->error('Invalid phone number. Update your account phone number and try again.');
+            }
+        }
+        $subscription->phone = Utils::prepare_phone_number($phone);
+        $subscription->region_id = 1;
+        $subscription->payment_id = 1;
+        try {
+            $subscription->save();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+        $sub = \App\Models\Market\MarketSubscription::find($subscription->id);
+        if ($sub == null) {
+            return $this->error('Failed to save subscription.');
+        }
+        return $this->success($sub, 'Success');
+    }
+
     public function market_packages()
     {
         $packages = [];
@@ -40,11 +190,51 @@ class ApiShopController extends Controller
             $pricings = MarketPackagePricing::where([
                 'package_id' => $package->id
             ])->get();
-            $package->pricings = json_decode($pricings);
-            $package->other = '';
+            $package->pricings = json_encode($pricings);
+            $package->other = json_encode($package->ents);
             $packages[] = $package;
         }
         return $this->success($packages, 'Success');
+    }
+    public function market_subscriptions(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = User::find($administrator_id);
+        }
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $subs = \App\Models\Market\MarketSubscription::where([
+            'farmer_id' => $u->id
+        ])->get();
+        return $this->success($subs, 'Success');
+    }
+
+    public function market_subscriptions_status(Request $r)
+    {
+
+        if (!isset($r->id) || $r->id == null) {
+            return $this->error('Item ID is missing.');
+        }
+
+        $item = \App\Models\Market\MarketSubscription::find($r->id);
+        if ($item == null) {
+            return $this->error('Item not found.');
+        }
+        if (strtoupper($item->is_paid) == 'PAID') {
+            return $this->success($item, 'Already paid!');
+        }
+
+        try {
+            $item->check_payment_status();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        } 
+
+        $order = MarketSubscription::find($r->id);
+        return $this->success($order, $message = "Success", 200);
     }
 
     public function order_payment_status(Request $r)
@@ -92,10 +282,13 @@ class ApiShopController extends Controller
         if (
             $r->type != 'ORDER'
         ) {
-            return $this->error('Invalid type.');
+            if ($r->type != 'MarketSubscription') {
+                return $this->error('Invalid type.');
+            }
         }
 
         $tyep = $r->type;
+        $MarketSubscription = null;
         $payment_reference_id = time() . rand(1000, 9999);
         if ($r->type == 'ORDER') {
             $order = Order::find($r->item_id);
@@ -104,6 +297,14 @@ class ApiShopController extends Controller
             }
             if (strtoupper($order->payment_confirmation) == 'PAID') {
                 return $this->error('This order #' . $order->id . ' is already paid.');
+            }
+        } else if ($r->type == 'MarketSubscription') {
+            $MarketSubscription = \App\Models\Market\MarketSubscription::find($r->item_id);
+            if ($MarketSubscription == null) {
+                return $this->error('Market subscription not found.');
+            }
+            if (strtoupper($MarketSubscription->is_paid) == 'PAID') {
+                return $this->error('This market subscription #' . $MarketSubscription->id . ' is already paid.');
             }
         }
 
@@ -162,6 +363,19 @@ class ApiShopController extends Controller
                 $order->save();
                 try {
                     $order->check_payment_status();
+                } catch (\Throwable $th) {
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        } else if ($r->type == 'MarketSubscription') {
+            $MarketSubscription->TransactionStatus = $payment_resp->TransactionStatus;
+            $MarketSubscription->TransactionReference = $payment_resp->TransactionReference;
+            $MarketSubscription->payment_reference_id = $payment_reference_id;
+            try {
+                $MarketSubscription->save();
+                try {
+                    $MarketSubscription->check_payment_status();
                 } catch (\Throwable $th) {
                 }
             } catch (\Throwable $th) {

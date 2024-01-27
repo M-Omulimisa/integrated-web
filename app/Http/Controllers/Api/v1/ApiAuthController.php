@@ -57,7 +57,7 @@ class ApiAuthController extends Controller
         $currentUrl = request()->path();
         $segments = explode('/', $currentUrl);
         $lastSegment = end($segments);
-        if (!in_array($lastSegment, ['login', 'register', 'request-otp-sms'])) {
+        /* if (!in_array($lastSegment, ['login', 'register', 'request-otp-sms'])) {
             $u = auth('api')->user();
             if ($u == null) {
                 header('Content-Type: application/json');
@@ -67,7 +67,7 @@ class ApiAuthController extends Controller
                     'data' => null
                 ]));
             }
-        }
+        } */
         //$this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 

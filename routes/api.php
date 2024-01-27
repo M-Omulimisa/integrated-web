@@ -105,12 +105,16 @@ Route::group([
         Route::POST('chat-start', [ApiShopController::class, 'chat_start']);
         Route::post("orders", [ApiShopController::class, "orders_submit"]);
         Route::post("become-vendor", [ApiShopController::class, 'become_vendor']);
-        Route::post("initiate-payment", [ApiShopController::class, 'initiate_payment']);
+        Route::post("initiate-payment", [ApiShopController::class, 'initiate_payment']); 
         Route::post("order-payment-status", [ApiShopController::class, 'order_payment_status']);
+        Route::post("market-subscriptions-status", [ApiShopController::class, 'market_subscriptions_status']);
         /* ==============END OF SHOP API================== */
 
         /*==============START OF Market Information Endpoints==============*/
         Route::get("market-packages", [ApiShopController::class, "market_packages"]);
+        Route::get("market-subscriptions", [ApiShopController::class, "market_subscriptions"]);
+        Route::post("market-packages-subscribe", [ApiShopController::class, "market_packages_subscribe"]);
+        Route::get("languages", [ApiShopController::class, "languages"]);
         /*==============END OF Market Information Endpoints==============*/
 
         // Authentication
