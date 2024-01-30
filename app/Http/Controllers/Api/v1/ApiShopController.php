@@ -231,7 +231,7 @@ class ApiShopController extends Controller
             $item->check_payment_status();
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
-        } 
+        }
 
         $order = MarketSubscription::find($r->id);
         return $this->success($order, $message = "Success", 200);
@@ -679,6 +679,22 @@ class ApiShopController extends Controller
     }
 
 
+    public function orders_delete(Request $r)
+    {
+        if (!isset($r->order_id) || $r->order_id == null) {
+            return $this->error('Item ID is missing.');
+        }
+        $order = Order::find($r->order_id);
+        if($order->payment_confirmation == 'PAID'){
+            return $this->error('You cannot delete a paid order.');
+        } 
+        if ($order == null) {
+            return $this->error('Order not found.'); 
+        }
+        $order->delete();
+        return $this->success(null, $message = "Order Deleted Successfully.", 200);
+    }
+
     public function orders_submit(Request $r)
     {
 
@@ -786,7 +802,15 @@ class ApiShopController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
         }
-        Utils::send_sms($noti_body, $delivery->phone_number);
+        if ($order == null) {
+            return $this->error('Failed to save order.');
+        }
+        //Utils::send_sms($noti_body, $delivery->phone_number);
+        $order = Order::find($order->id);
+
+        $_items = $order->get_items();
+        $order->items = json_encode($_items);
+
         return $this->success($order, $message = "Order Submitted Successfully.", 200);
     }
 

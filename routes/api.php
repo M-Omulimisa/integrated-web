@@ -104,6 +104,7 @@ Route::group([
         Route::POST('chat-mark-as-read', [ApiShopController::class, 'chat_mark_as_read']);
         Route::POST('chat-start', [ApiShopController::class, 'chat_start']);
         Route::post("orders", [ApiShopController::class, "orders_submit"]);
+        Route::POST("orders-delete", [ApiShopController::class, "orders_delete"]);
         Route::post("become-vendor", [ApiShopController::class, 'become_vendor']);
         Route::post("initiate-payment", [ApiShopController::class, 'initiate_payment']); 
         Route::post("order-payment-status", [ApiShopController::class, 'order_payment_status']);

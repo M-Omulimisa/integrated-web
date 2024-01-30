@@ -26,6 +26,9 @@ class OrderController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Order());
+        $grid->disableBatchActions();
+        $grid->disableCreateButton();
+        $grid->disableExport();
         $grid->model()->orderBy('id', 'desc');
         $grid->column('user', __('Customer'))->display(function ($user) {
             $u = User::find($user);
@@ -115,26 +118,51 @@ class OrderController extends AdminController
     {
         $form = new Form(new Order());
 
-        $form->textarea('user', __('User'));
-        $form->textarea('order_state', __('Order state'));
-        $form->textarea('amount', __('Amount'));
-        $form->textarea('date_created', __('Date created'));
-        $form->textarea('payment_confirmation', __('Payment confirmation'));
-        $form->textarea('date_updated', __('Date updated'));
-        $form->textarea('mail', __('Mail'));
-        $form->textarea('delivery_district', __('Delivery district'));
-        $form->textarea('temporary_id', __('Temporary id'));
-        $form->textarea('description', __('Description'));
-        $form->textarea('customer_name', __('Customer name'));
-        $form->textarea('customer_phone_number_1', __('Customer phone number 1'));
-        $form->textarea('customer_phone_number_2', __('Customer phone number 2'));
-        $form->textarea('customer_address', __('Customer address'));
-        $form->textarea('order_total', __('Order total'));
-        $form->textarea('order_details', __('Order details'));
-        $form->textarea('stripe_id', __('Stripe id'));
-        $form->textarea('stripe_url', __('Stripe url'));
-        $form->textarea('stripe_paid', __('Stripe paid'));
 
+        $form->display('user', __('Customer'))
+            ->with(function ($user) {
+                $u = User::find($user);
+                if ($u != null) {
+                    return $u->name;
+                }
+                return 'Deleted';
+            })->readonly();
+
+
+        $form->display('amount', __('Total Amount'));
+        $form->date('date_created', __('Date Created'))->default(date('Y-m-d'))
+            ->readonly();
+
+        $form->select('payment_confirmation', __('Payment Confirmation'))
+            ->options([
+                'PAID' => 'PAID',
+                'NOT PAID' => 'NOT PAID',
+            ])->readonly();
+        $form->text('mail', __('Customer Email Address'))
+            ->readonly();
+
+        $form->text('customer_phone_number_1', __('Customer phone number 1'))->readonly();
+        $form->text('customer_phone_number_2', __('Customer phone number 2'))->readonly();
+        $form->text('customer_address', __('Customer address'));
+
+        $form->divider();
+        $form->radioCard('order_state', __('Order Status'))
+            ->options([
+                'Pending' => 'Pending',
+                'Processing' => 'Processing',
+                'Completed' => 'Completed',
+                'Cancelled' => 'Cancelled',
+            ])->default('Pending');
+
+        $form->disableCreatingCheck();
+        $form->disableEditingCheck();   
+        $form->disableReset(); 
+        $form->disableViewCheck();
+        /* 
+        $form->text('description', __('Order Notes'));
+        $form->text('customer_name', __('Customer Name'));
+
+ */
         return $form;
     }
 }
