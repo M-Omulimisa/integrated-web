@@ -47,4 +47,6 @@ Route::group([
     $router->resource('enterprises', EnterpriseController::class);
     $router->resource('market-subscriptions', MarketSubscriptionController::class);
     $router->resource('market-outboxes', MarketOutboxController::class);
+    $router->resource('ussd-advisory-topics', UssdAdvisoryTopicController::class);
+    $router->resource('ussd-advisory-questions', UssdAdvisoryQuestionController::class);
 });
