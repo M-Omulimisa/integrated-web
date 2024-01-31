@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\v1\Ussd\MenuFunctions;
 use App\Jobs\SendUssdAdvisoryMessage;
 use App\Models\Ussd\UssdLanguage;
 use App\Models\Ussd\UssdSession;
+use App\Models\Market\MarketSubscription;
 
 class MenuController extends Controller
 {
@@ -517,8 +518,20 @@ class MenuController extends Controller
 
             if ($this->menu_helper->isPackageFrequencyValid($package_id, $id)) {
 
-                $response       = "How many ".str_replace('ly', 's', $input_text)."?";
-                $current_menu   = "market_period";                
+                if (strcasecmp($input_text, "trial") == 0 ) {
+
+                    $response = "You are subscribing for the trial pacakge lasting 14 days\n";
+                    $response .= "1) Yes\n";
+                    $response .= "2) Cancel\n";
+                    $current_menu   = "market_period"; 
+                    
+                }
+                else{
+                   
+                    $response       = "How many ".str_replace('ly', 's', $input_text)."?";
+                    $current_menu   = "market_period";    
+                
+                }
                 
                 $field = 'market_frequency';
             }
@@ -536,22 +549,21 @@ class MenuController extends Controller
             // Back to this step -- Retrieve previous input
             if($last_menu == "market_confirmation") $input_text = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_frequency_count');
 
-            // check if acreage value is valid
-            if (!is_numeric($input_text) && $input_text >= 0) {
-                $response       = "Invalid input!\n";
-                $response       .= "Enter number of ".$_frequency;
-                $current_menu   = "market_period";  
-            }
-            else{
-                $package_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
-                info($package_id);
-                $enterprises = $this->menu_helper->getPackageEnterprises($package_id);
-                $cost        = $this->menu_helper->getPackageCost($package_id, $frequency, $input_text);
-                $currency    = 'UGX';   
 
-                if (!is_null($cost)) {
-                    // code...
-                    $response  = "Subscribing for ".$enterprises." market info for ".$input_text.$_frequency." at ".$currency.''.number_format($cost * $input_text);              
+            if (strcasecmp($_frequency, "trial") == 0 ) {
+
+                $check_for_previous_subscription = MarketSubscription::where('phone', $phoneNumber)->where('frequency', 'Trial')->first();
+
+                if($check_for_previous_subscription === null){
+
+                    $trial_package_frequency = 14;
+
+                    $package_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
+                    $enterprises = $this->menu_helper->getPackageEnterprises($package_id);
+                    $cost        = 0;
+                    $currency    = 'UGX';   
+
+                    $response  = "Subscribing for ".$enterprises." market info for ".$_frequency." at ".$currency.' '.number_format($cost * $input_text);              
                     $this->menu_helper->saveToField($sessionId, $phoneNumber, 'confirmation_message', $response);
 
                     $response .= "\n1) Confirm\n";
@@ -560,14 +572,53 @@ class MenuController extends Controller
                     
                     $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_cost', ($cost * $input_text));  
 
-                    $field = 'market_frequency_count';             
+                    $field = 'market_frequency_count';
+                    
+
                 }
                 else{
-                    $action         = "end";
-                    $response       = "Selected package has no pricing";
-                    $current_menu   = "market_cost_error"; 
+                    $response       = "You already used the your trial package period. Thank you";
+                    $current_menu   = "market_cancelled";
+                  
+                }
+
+            }
+            else{
+                
+                if (!is_numeric($input_text) && $input_text >= 0) {
+                    $response       = "Invalid input!\n";
+                    $response       .= "Enter number of ".$_frequency;
+                    $current_menu   = "market_period";  
+                }
+
+                else{
+                    $package_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
+                    info($package_id);
+                    $enterprises = $this->menu_helper->getPackageEnterprises($package_id);
+                    $cost        = $this->menu_helper->getPackageCost($package_id, $frequency, $input_text);
+                    $currency    = 'UGX';   
+    
+                    if (!is_null($cost)) {
+                        // code...
+                        $response  = "Subscribing for ".$enterprises." market info for ".$input_text.$_frequency." at ".$currency.''.number_format($cost * $input_text);              
+                        $this->menu_helper->saveToField($sessionId, $phoneNumber, 'confirmation_message', $response);
+    
+                        $response .= "\n1) Confirm\n";
+                        $response .= "2) Cancel";
+                        $current_menu   = "market_confirmation"; 
+                        
+                        $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_cost', ($cost * $input_text));  
+    
+                        $field = 'market_frequency_count';             
+                    }
+                    else{
+                        $action         = "end";
+                        $response       = "Selected package has no pricing";
+                        $current_menu   = "market_cost_error"; 
+                    }
                 }
             }
+            
         }  
         elseif ($last_menu == "market_confirmation") {
             // check if crop is valid
@@ -576,15 +627,40 @@ class MenuController extends Controller
             
             if ($input_text == '1') {
 
-                // create the subscription and payment 
-                if ($this->menu_helper->completeMarketSubscription($sessionId, $phoneNumber)) {
-                    $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_subscriber');
-                    $response       = "Thank you for subscribing.\n";
-                    $response       .= "Check ".$phone." to approve the payment\n";
+                $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_frequency');
+
+                if (strcasecmp($frequency, "trial") == 0 ) {
+
+
+                    if ($this->menu_helper->completeTrialMarketSubscription($sessionId, $phoneNumber)) {
+
+                        $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_subscriber');
+                        $response       = "Thank you for subscribing.\n";
+                    }
+                    else{
+
+                        $response = "Subscription was unsuccessful. Please try again";
+                        
+                    }
+
                 }
                 else{
-                    $response = "Subscription was unsuccessful. Please try again";
+                 
+                    if ($this->menu_helper->completeMarketSubscription($sessionId, $phoneNumber)) {
+
+                        $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_subscriber');
+                        $response       = "Thank you for subscribing.\n";
+                        $response       .= "Check ".$phone." to approve the payment\n";
+
+                    }
+                    else{
+
+                        $response = "Subscription was unsuccessful. Please try again";
+
+                    }
                 }
+
+                
 
                 $current_menu   = "market_confirmed";
                 $field = 'market_confirmation';

@@ -57,4 +57,10 @@ Route::group([
     $router->resource('online-course-students', OnlineCourseStudentController::class);
     $router->resource('online-course-lessons', OnlineCourseLessonController::class); 
     /*===============e-learning ends=============*/
+    $router->resource('ussd-advisory-topics', UssdAdvisoryTopicController::class);
+    $router->resource('ussd-advisory-questions', UssdAdvisoryQuestionController::class);
+    $router->resource('ussd-languages', UssdLanguageController::class);
+    $router->resource('ussd-question-options', UssdQuestionOptionController::class);
+    $router->resource('ussd-advisory-messages', UssdAdvisoryMessageController::class);
 });
+

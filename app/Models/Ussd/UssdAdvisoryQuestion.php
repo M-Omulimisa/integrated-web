@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Ussd\UssdQuestionOption;
+use App\Models\Ussd\UssdAdvisoryTopic;
 
 class UssdAdvisoryQuestion extends Model
 {
@@ -27,6 +28,12 @@ class UssdAdvisoryQuestion extends Model
     public function options()
     {
         return $this->hasMany(UssdQuestionOption::class, 'ussd_advisory_question_id', 'id');
+    }
+
+    public function topic(){
+
+        return $this->belongsTo(UssdAdvisoryTopic::class, 'ussd_advisory_topic_id');
+
     }
 }
 

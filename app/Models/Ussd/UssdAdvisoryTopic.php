@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Ussd\UssdLanguage;
 
 class UssdAdvisoryTopic extends Model
 {
@@ -20,4 +21,11 @@ class UssdAdvisoryTopic extends Model
     protected $fillable = [
             'topic', 'description', 'position'
         ];
+
+
+    public function language(){
+
+        return $this->belongsTo(UssdLanguage::class, 'ussd_language_id');
+
+    }
 }

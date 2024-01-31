@@ -371,7 +371,7 @@ class MenuFunctions
     public function getPackageFrequencies($packageId)
     {
         $list = '';
-        $frequencies = MarketPackagePricing::wherePackageId($packageId)->where('frequency','!=','Trial')->orderByRaw('
+        $frequencies = MarketPackagePricing::wherePackageId($packageId)->orderByRaw('
                 CASE `frequency`
                     WHEN "Trial" THEN 1
                     WHEN "Daily" THEN 2
@@ -414,7 +414,7 @@ class MenuFunctions
     {
         $menu = intval($frequency_menu_no);
 
-        $frequencies = MarketPackagePricing::wherePackageId($packageId)->where('frequency','!=','Trial')->orderByRaw('
+        $frequencies = MarketPackagePricing::wherePackageId($packageId)->orderByRaw('
                 CASE `frequency`
                     WHEN "Trial" THEN 1
                     WHEN "Daily" THEN 2
@@ -491,6 +491,18 @@ class MenuFunctions
 
         // If an error occurred or data was missing, return false.
         return false;
+    }
+
+    public function completeTrialMarketSubscription($sessionId, $phoneNumber){
+
+        $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
+
+        if ($sessionData) {
+
+            return true;
+            
+        }
+
     }
 
     /**
