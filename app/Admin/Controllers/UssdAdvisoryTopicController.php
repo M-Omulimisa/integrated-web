@@ -7,6 +7,7 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use App\Models\Ussd\UssdLanguage;
 
 class UssdAdvisoryTopicController extends AdminController
 {
@@ -28,7 +29,7 @@ class UssdAdvisoryTopicController extends AdminController
 
         $grid->column('topic', __('Topic'));
         $grid->column('position', __('Position'));
-        $grid->column('ussd_language_id', __('Ussd language id'))->display(function ($lang) {
+        $grid->column('ussd_language_id', __('Language'))->display(function ($lang) {
             if ($this->language == 'null') {
                 return $lang;
             }
@@ -72,9 +73,9 @@ class UssdAdvisoryTopicController extends AdminController
         $form = new Form(new UssdAdvisoryTopic());
 
         $form->text('topic', __('Topic'));
-        $form->textarea('description', __('Description'));
         $form->number('position', __('Position'));
-        $form->text('ussd_language_id', __('Ussd language id'));
+        $form->text('ussd_language_id', __('Language'));
+        $form->select('ussd_language_id', 'Select language')->options(UssdLanguage::all()->pluck('language', 'id'));
 
         return $form;
     }
