@@ -50,4 +50,7 @@ Route::group([
     $router->resource('ussd-advisory-topics', UssdAdvisoryTopicController::class);
     $router->resource('ussd-advisory-questions', UssdAdvisoryQuestionController::class);
     $router->resource('ussd-languages', UssdLanguageController::class);
+    $router->resource('ussd-question-options', UssdQuestionOptionController::class);
+    $router->resource('ussd-advisory-messages', UssdAdvisoryMessageController::class);
 });
+
