@@ -10,7 +10,6 @@ secret.txt
 /storage/*.key
 /storage/images/*
 /vendor
-config/admin.php
 .htaccess
 .env
 docker-compose.yml

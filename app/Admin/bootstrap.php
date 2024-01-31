@@ -1,5 +1,33 @@
 <?php
+
 use Illuminate\Support\Facades\Schema;
+
+/* 
+curl -X POST \
+    https://voice.sandbox.africastalking.com/call \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/x-www-form-urlencoded' \
+    -H 'apiKey: MyAppAPIKey' \
+    -d 'username=myAppUserName&to=%5B%2B24572301837%2C%20%2B2546371910283%5D&from=%2B2549284789292'
+*/
+
+// post request to make a call use guzzle
+/* $client = new \GuzzleHttp\Client();
+$response = $client->request('POST', 'https://voice.africastalking.com/call', [
+    'headers' => [
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/x-www-form-urlencoded',
+        'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
+    ],
+    'form_params' => [
+        'username' => 'dninsiima',
+        'to' => '+256783204665',
+        'from' => '+256323200710', 
+        'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
+    ]
+]);
+echo $response->getBody();
+die(); */
 
 /* 
 curl -X GET "https://api.app.outscraper.com/maps/search-v3?query=restaurants%2C%20Manhattan%2C%20NY%2C%20USA&limit=3&async=false" -H  "X-API-KEY: YOUR-API-KEY" 
@@ -45,6 +73,23 @@ die();  */
 use App\Models\ParishModel;
 use App\Models\Utils;
 use Dflydev\DotAccessData\Util;
+use Encore\Admin\Grid;
+
+//default grid settings
+Grid::init(function (Grid $grid) {
+    $grid->disableRowSelector();
+    $grid->disableExport();
+    $grid->actions(function (Grid\Displayers\Actions $actions) {
+        $actions->disableDelete();
+    });
+
+});
+
+//default form settings
+Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
+    $form->disableViewCheck();
+    $form->disableReset();
+});
 
 if (!Utils::isLocalhost()) {
     Utils::syncGroups();

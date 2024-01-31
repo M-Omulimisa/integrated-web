@@ -40,6 +40,24 @@ Route::get('/select-distcists', function (Request $request) {
         'data' => $data
     ]);
 });
+
+Route::get('/ajax-users', function (Request $request) {
+    $conditions = [];
+    if ($request->has('q')) {
+        $conditions[] = ['name', 'like', '%' . $request->q . '%'];
+    }
+    $districts = \App\Models\User::where($conditions)->get();
+    $data = [];
+    foreach ($districts as $district) {
+        $data[] = [
+            'id' => $district->id,
+            'text' => $district->name." - #".$district->id
+        ];
+    }
+    return response()->json([
+        'data' => $data
+    ]);
+});
 Route::get('/select-subcounties', function (Request $request) {
     $conditions = [];
     if ($request->has('q')) {

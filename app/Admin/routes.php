@@ -19,7 +19,7 @@ Route::group([
     $router->resource('e-learning-resources', ELearningResourceController::class);
     $router->resource('training-subtopics', TrainingSubtopicController::class);
     $router->resource('countries', CountryController::class);
-    $router->resource('e-learning-courses', ELearningCourseController::class);
+    //$router->resource('e-learning-courses', ELearningCourseController::class);
     $router->resource('training-resources', TrainingResourceCourseController::class);
     $router->resource('training-sessions', TrainingSessionCourseController::class);
     $router->resource('farmer-groups', FarmerGroupController::class);
@@ -47,4 +47,14 @@ Route::group([
     $router->resource('enterprises', EnterpriseController::class);
     $router->resource('market-subscriptions', MarketSubscriptionController::class);
     $router->resource('market-outboxes', MarketOutboxController::class);
+
+    /*===============e-learning start=============*/
+    $router->resource('e-learning-courses', OnlineCourseController::class);
+    $router->resource('courses', OnlineCourseController::class);
+    $router->resource('online-course-categories', OnlineCourseCategoryController::class);
+    $router->resource('online-course-chapters', OnlineCourseChapterController::class); 
+    $router->resource('online-course-topics', OnlineCourseTopicController::class);
+    $router->resource('online-course-students', OnlineCourseStudentController::class);
+    $router->resource('online-course-lessons', OnlineCourseLessonController::class); 
+    /*===============e-learning ends=============*/
 });
