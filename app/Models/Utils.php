@@ -64,7 +64,7 @@ class Utils
     }
 
 
-    public static function init_payment($phone_number, $amount,$reference_id)
+    public static function init_payment($phone_number, $amount, $reference_id)
     {
         $phone_number = Utils::prepare_phone_number($phone_number);
         if (Utils::phone_number_is_valid($phone_number) == false) {
@@ -101,7 +101,7 @@ class Utils
         $service->set_username();
         $service->set_password();
 
-        $narrative = "Omulimisa payment."; 
+        $narrative = "Omulimisa payment.";
         $amount = 500;
         $response = null;
         try {
@@ -121,7 +121,7 @@ class Utils
     }
 
 
-    public static function payment_status_check($token,$payment_reference_id)
+    public static function payment_status_check($token, $payment_reference_id)
     {
         $PaymentFactory = new PaymentServiceFactory();
         $service = $PaymentFactory->getService('yo_ug');
@@ -137,7 +137,7 @@ class Utils
         // $faild_reference_id = "Oh145te1z62t2pZ7tbLic2NNKBuIxuadAC7B8YYNMBGQmlcKdBJuE7QXAknvVD4h47fffd5e9d22f8e0d1602012c943dcd7";
         // $my_reference_id = "464988113";
         try {
-            $response = $service->getTransactionStatus($token,$payment_reference_id);
+            $response = $service->getTransactionStatus($token, $payment_reference_id);
         } catch (\Throwable $th) {
             throw new \Exception("Failed to check payment status because " . $th->getMessage());
         }
@@ -738,5 +738,15 @@ class Utils
                 }
             }
         }
+    }
+
+    public static function my_resp($type, $data)
+    {
+        header('Content-type: text/plain');
+        echo
+        '<Response>
+            <Say voice="en-US-Standard-C" playBeep="false" >' . $data . '</Say>
+        </Response>';
+        return;
     }
 }

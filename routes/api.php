@@ -11,6 +11,7 @@ use App\Http\Middleware\JwtMiddleware;
 use App\Models\OnlineCourseAfricaTalkingCall;
 use App\Models\User;
 use App\Models\Utils;
+use Dflydev\DotAccessData\Util;
 
 /*
 |--------------------------------------------------------------------------
@@ -223,13 +224,6 @@ id	created_at	updated_at	sessionId	type	phoneNumber	status	postData	cost
 */
 Route::post('/online-course-api', function (Request $r) {
 
-    //change response to xml
-    header('Content-type: text/plain');
-
-    echo '<Response>
-              <Play url="https://www2.cs.uic.edu/~i101/SoundFiles/gettysburg10.wav"/>
-      </Response>';
-    die();
 
     if (!isset($r->sessionId)) {
         $s = new OnlineCourseAfricaTalkingCall();
@@ -237,6 +231,7 @@ Route::post('/online-course-api', function (Request $r) {
         $s->has_error = 'Yes';
         $s->error_message = 'No session id';
         $s->save();
+        Utils::my_resp('text', 'No session id');
         return;
     }
     if (strlen($r->sessionId) < 3) {
@@ -244,6 +239,7 @@ Route::post('/online-course-api', function (Request $r) {
         $s->postData = json_encode($r->all());
         $s->has_error = 'Yes';
         $s->error_message = 'Session id too short';
+        Utils::my_resp('text', 'Session id too short');
         return;
     }
     if (!isset($r->callSessionState)) {
@@ -251,6 +247,7 @@ Route::post('/online-course-api', function (Request $r) {
         $s->postData = json_encode($r->all());
         $s->has_error = 'Yes';
         $s->error_message = 'No callSessionState';
+        Utils::my_resp('text', 'No callSessionState');
         return;
     }
 
@@ -311,18 +308,20 @@ Route::post('/online-course-api', function (Request $r) {
             $session->error_message = $e->getMessage();
             $session->save();
         } catch (\Exception $e) {
+            Utils::my_resp('text', $e->getMessage());
         }
     }
 
     if ($session->callSessionState == 'Completed') {
         $session->isActive = 'No';
         $session->save();
+        Utils::my_resp('text', 'Call completed');
         return;
     }
 
-    if ($session->Answered != 'Answered') {
+/*     if ($session->Answered != 'Answered') {
         return;
-    }
+    } */
 
     //change response to xml
     header('Content-type: text/plain');
@@ -331,6 +330,7 @@ Route::post('/online-course-api', function (Request $r) {
         $s->postData = json_encode($r->all());
         $s->has_error = 'Yes';
         $s->error_message = 'No callerNumber';
+        Utils::my_resp('text', 'No callerNumber');
         return;
     }
     $phone = Utils::prepare_phone_number($session->callerNumber);
