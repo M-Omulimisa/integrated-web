@@ -319,7 +319,7 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-/*     if ($session->Answered != 'Answered') {
+    /*     if ($session->Answered != 'Answered') {
         return;
     } */
 
@@ -361,30 +361,35 @@ Route::post('/online-course-api', function (Request $r) {
     }
 
     $sub = null;
+    $overed = false;
     foreach ($students as $student) {
         //get session where attended_at is today
         $lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
             ->where('attended_at', '>=', date('Y-m-d 00:00:00'))
             ->where('attended_at', '<=', date('Y-m-d 23:59:59'))
             ->where('online_course_id', $student->online_course_id)
-            ->where('status', '<=', date('Attended'))
+            ->where('status', date('Attended'))
             ->first();
         if ($lesson != null) {
+            $overed = true;
             continue;
         }
         $sub = $student;
         break;
     }
 
+
     if ($sub == null) {
+
         $session->postData = json_encode($r->all());
         $session->has_error = 'Yes';
         $session->error_message = 'No active course found for ' . $phone . ' found (' . $session->callerNumber . ')';
         $session->save();
-        echo
-        '<Response>
-            <Say voice="en-US-Standard-C" playBeep="false" >You do not have active course on. Please contact to be registred.</Say>
-        </Response>';
+        if ($overed) {
+            Utils::my_resp('text', 'You have already attended your lesson for today. Please call tomorrow to listen to your next lesson');
+        }else{
+            Utils::my_resp('text', 'You do not have active course on. Please contact to be registred.'); 
+        }
         return;
     }
     $lesson = \App\Models\OnlineCourseLesson::where('student_id', $sub->user_id)
