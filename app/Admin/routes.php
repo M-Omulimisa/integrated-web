@@ -63,6 +63,6 @@ Route::group([
     $router->resource('ussd-question-options', UssdQuestionOptionController::class);
     $router->resource('ussd-advisory-messages', UssdAdvisoryMessageController::class);
     $router->resource('ussd-advisory-message-outboxes', UssdAdvisoryMessageOutboxController::class);
-    $router->resource('online-course-africa-talking-calls', OnlineCourseAfricaTalkingCallController::class);
+    $router->resource('calls', OnlineCourseAfricaTalkingCallController::class);
 });
 
