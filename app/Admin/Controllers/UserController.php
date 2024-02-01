@@ -16,7 +16,7 @@ class UserController extends AdminController
      *
      * @var string
      */
-    protected $title = 'User';
+    protected $title = 'System Users';
 
     /**
      * Make a grid builder.
@@ -27,6 +27,8 @@ class UserController extends AdminController
     {
         $grid = new Grid(new User());
 
+        //photo
+        $grid->column('photo', __('Photo'))->lightbox(['width' => 50, 'height' => 50]);
         $grid->column('id', __('ID'))->sortable();
         $grid->column('name', __('Name'))->sortable();
         $grid->column('organisation_id', __('Organisation'))
@@ -36,18 +38,10 @@ class UserController extends AdminController
                 }
                 return $this->organisation->name;
             });
-        $grid->column('phone', __('Phone'));
-        $grid->column('email', __('Email'));
-        $grid->column('photo', __('Photo'));
-        $grid->column('country_id', __('Country id'));
+        $grid->column('phone', __('Phone'))->sortable();
+        $grid->column('email', __('Email'))->sortable();
         $grid->column('roles', trans('admin.roles'))->pluck('name')->label();
-        $grid->column('distributor_id', __('Distributor id'));
-        $grid->column('user_hash', __('User hash'));
-        $grid->column('remember_token', __('Remember token'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('deleted_at', __('Deleted at'));
-        $grid->column('username', __('Username'));
+        $grid->column('created_at', __('Created at'))->hide();
 
         return $grid;
     }
@@ -101,9 +95,9 @@ class UserController extends AdminController
         $roleModel = config('admin.database.roles_model');
 
         $form->text('name', __('Name'));
-        $form->mobile('phone', __('Phone'));
+        $form->text('phone', __('Phone'));
         $form->email('email', __('Email'));
-        $form->multipleSelect('roles', trans('admin.roles'))->options($roleModel::all()->pluck('name', 'id')); 
+        $form->multipleSelect('roles', trans('admin.roles'))->options($roleModel::all()->pluck('name', 'id'));
         $form->textarea('photo', __('Photo'));
         $form->password('password', __('Password'));
         $form->datetime('password_last_updated_at', __('Password last updated at'))->default(date('Y-m-d H:i:s'));

@@ -1,5 +1,6 @@
 <?php
 
+use AfricasTalking\SDK\AfricasTalking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -7,6 +8,9 @@ use App\Http\Controllers\Api\v1\Ussd\MenuController;
 use App\Http\Controllers\Api\v1\ApiAuthController;
 use App\Http\Controllers\Api\v1\ApiShopController;
 use App\Http\Middleware\JwtMiddleware;
+use App\Models\OnlineCourseAfricaTalkingCall;
+use App\Models\User;
+use App\Models\Utils;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +55,7 @@ Route::get('/ajax-users', function (Request $request) {
     foreach ($districts as $district) {
         $data[] = [
             'id' => $district->id,
-            'text' => $district->name." - #".$district->id
+            'text' => $district->name . " - #" . $district->id
         ];
     }
     return response()->json([
@@ -124,7 +128,7 @@ Route::group([
         Route::post("orders", [ApiShopController::class, "orders_submit"]);
         Route::POST("orders-delete", [ApiShopController::class, "orders_delete"]);
         Route::post("become-vendor", [ApiShopController::class, 'become_vendor']);
-        Route::post("initiate-payment", [ApiShopController::class, 'initiate_payment']); 
+        Route::post("initiate-payment", [ApiShopController::class, 'initiate_payment']);
         Route::post("order-payment-status", [ApiShopController::class, 'order_payment_status']);
         Route::post("market-subscriptions-status", [ApiShopController::class, 'market_subscriptions_status']);
         /* ==============END OF SHOP API================== */
@@ -212,4 +216,207 @@ Route::group([
         // Route::POST('request', [ApiController::class, 'method']);
 
     });
+});
+/* 
+id	created_at	updated_at	sessionId	type	phoneNumber	status	postData	cost	
+
+*/
+Route::post('/online-course-api', function (Request $r) {
+
+    if (!isset($r->sessionId)) {
+        $s = new OnlineCourseAfricaTalkingCall();
+        $s->postData = json_encode($r->all());
+        $s->has_error = 'Yes';
+        $s->error_message = 'No session id';
+        $s->save();
+        return;
+    }
+    if (strlen($r->sessionId) < 3) {
+        $s = new OnlineCourseAfricaTalkingCall();
+        $s->postData = json_encode($r->all());
+        $s->has_error = 'Yes';
+        $s->error_message = 'Session id too short';
+        return;
+    }
+    if (!isset($r->callSessionState)) {
+        $s = new OnlineCourseAfricaTalkingCall();
+        $s->postData = json_encode($r->all());
+        $s->has_error = 'Yes';
+        $s->error_message = 'No callSessionState';
+        return;
+    }
+
+    $session = OnlineCourseAfricaTalkingCall::where('sessionId', $r->sessionId)->first();
+    if ($session == null) {
+        $session = new OnlineCourseAfricaTalkingCall();
+    }
+    $session->sessionId = $r->sessionId;
+    $session->postData = json_encode($r->all());
+    $session->type = 'OnlineCourse';
+    if (isset($r->callSessionState)) {
+        $session->callSessionState = $r->callSessionState;
+    }
+    if (isset($r->direction)) {
+        $session->direction = $r->direction;
+    }
+    if (isset($r->callerCountryCode)) {
+        $session->callerCountryCode = $r->callerCountryCode;
+    }
+    if (isset($r->durationInSeconds)) {
+        $session->durationInSeconds = $r->durationInSeconds;
+    }
+    if (isset($r->amount)) {
+        $session->amount = $r->amount;
+        $session->cost = $r->amount;
+    }
+    if (isset($r->callerNumber)) {
+        $session->callerNumber = $r->callerNumber;
+        $session->phoneNumber = $r->callerNumber;
+    }
+    if (isset($r->destinationCountryCode)) {
+        $session->destinationCountryCode = $r->destinationCountryCode;
+    }
+    if (isset($r->destinationNumber)) {
+        $session->destinationNumber = $r->destinationNumber;
+    }
+    if (isset($r->callerCarrierName)) {
+        $session->callerCarrierName = $r->callerCarrierName;
+    }
+    if (isset($r->callStartTime)) {
+        $session->callStartTime = $r->callStartTime;
+    }
+    if (isset($r->destinationNumber)) {
+        $session->destinationNumber = $r->destinationNumber;
+    }
+    if (isset($r->isActive)) {
+        $session->isActive = $r->isActive;
+    }
+    if (isset($r->currencyCode)) {
+        $session->currencyCode = $r->currencyCode;
+    }
+
+    try {
+        $session->save();
+    } catch (\Exception $e) {
+        try {
+            $session->has_error = 'Yes';
+            $session->error_message = $e->getMessage();
+            $session->save();
+        } catch (\Exception $e) {
+        }
+    }
+
+    if ($session->callSessionState == 'Completed') {
+        $session->isActive = 'No';
+        $session->save();
+        return;
+    }
+
+    if ($session->Answered != 'Answered') {
+        return;
+    }
+
+    //change response to xml
+    header('Content-type: text/plain');
+    if (!isset($session->callerNumber)) {
+        $s = new OnlineCourseAfricaTalkingCall();
+        $s->postData = json_encode($r->all());
+        $s->has_error = 'Yes';
+        $s->error_message = 'No callerNumber';
+        return;
+    }
+    $phone = Utils::prepare_phone_number($session->callerNumber);
+    $user = User::where(['phone' => $phone])->first();
+    if ($user == null) {
+        $session->postData = json_encode($r->all());
+        $session->has_error = 'Yes';
+        $session->error_message = 'No user with phone number ' . $phone . ' found (' . $session->callerNumber . ')';
+        $session->save();
+        echo
+        '<Response>
+            <Say voice="en-US-Standard-C" playBeep="false" >Your phone number ' . $phone . ' does not exist on our system.</Say>
+        </Response>';
+        return;
+    }
+
+    $students = \App\Models\OnlineCourseStudent::where('user_id', $user->id)->get();
+    if ($students == null || count($students) < 1) {
+        $session->postData = json_encode($r->all());
+        $session->has_error = 'Yes';
+        $session->error_message = 'No student with phone number ' . $phone . ' found (' . $session->callerNumber . ')';
+        $session->save();
+        echo
+        '<Response>
+            <Say voice="en-US-Standard-C" playBeep="false" >You do not have active course on. Please contact to be registred.</Say>
+        </Response>';
+        return;
+    }
+
+    $sub = null;
+    foreach ($students as $student) {
+        //get session where attended_at is today
+        $lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
+            ->where('attended_at', '>=', date('Y-m-d 00:00:00'))
+            ->where('attended_at', '<=', date('Y-m-d 23:59:59'))
+            ->where('online_course_id', $student->online_course_id)
+            ->where('status', '<=', date('Attended'))
+            ->first();
+        if ($lesson != null) {
+            continue;
+        }
+        $sub = $student;
+        break;
+    }
+
+    if ($sub == null) {
+        $session->postData = json_encode($r->all());
+        $session->has_error = 'Yes';
+        $session->error_message = 'No active course found for ' . $phone . ' found (' . $session->callerNumber . ')';
+        $session->save();
+        echo
+        '<Response>
+            <Say voice="en-US-Standard-C" playBeep="false" >You do not have active course on. Please contact to be registred.</Say>
+        </Response>';
+        return;
+    }
+    $lesson = \App\Models\OnlineCourseLesson::where('student_id', $sub->user_id)
+        ->where('online_course_id', $sub->online_course_id)
+        ->where('status', 'Pending')
+        ->orderBy('position', 'asc')
+        ->first();
+    if ($lesson == null) {
+        $session->postData = json_encode($r->all());
+        $session->has_error = 'Yes';
+        $session->error_message = 'No pending lesson found for ' . $phone . ' found (' . $session->callerNumber . ')';
+        $session->save();
+        echo
+        '<Response>
+            <Say voice="en-US-Standard-C" playBeep="false" >You do not have active any pending lesson today. Please call tomorrow to listen to your next lesson</Say>
+        </Response>';
+        die();
+        return;
+    }
+    $topic = \App\Models\OnlineCourseTopic::find($lesson->online_course_topic_id);
+    if ($topic == null) {
+        $session->postData = json_encode($r->all());
+        $session->has_error = 'Yes';
+        $session->error_message = 'No topic found for ' . $phone . ' found (' . $session->callerNumber . ')';
+        $session->save();
+        echo
+        '<Response>
+            <Say voice="en-US-Standard-C" playBeep="false" >You do not have active any pending lesson today. Please call tomorrow to listen to your next lesson</Say>
+        </Response>';
+        die();
+        return;
+    }
+
+    $url = asset('storage/' . $topic->audio_url);
+    $lesson->attended_at = date('Y-m-d H:i:s');
+    $lesson->status = 'Attended';
+    $lesson->save();
+    echo
+    '<Response>
+        <Play url="' . $url . '" />
+    </Response>';
+    die();
 });
