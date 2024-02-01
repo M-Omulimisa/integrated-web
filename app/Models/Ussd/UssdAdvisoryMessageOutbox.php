@@ -33,7 +33,6 @@ class UssdAdvisoryMessageOutbox extends Model
 
     public $incrementing = false;
 
-
     public function session(){
 
         return $this->belongsTo(UssdSessionData::class, 'session_id');

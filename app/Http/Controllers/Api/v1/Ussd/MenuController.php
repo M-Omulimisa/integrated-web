@@ -931,7 +931,7 @@ class MenuController extends Controller
                     $response       = "Which topic would you like to receive agronomic tips on?\n";
 
                 }
-                else if($language->language == 'Lugisu'){
+                else if($language->language == 'Lumasaba'){
 
                     $action         = "request";
                     $response       = "Shisintsa shina shesi wandikanile khufunakho khulekela?\n";
