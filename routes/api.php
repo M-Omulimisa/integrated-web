@@ -223,6 +223,14 @@ id	created_at	updated_at	sessionId	type	phoneNumber	status	postData	cost
 */
 Route::post('/online-course-api', function (Request $r) {
 
+    //change response to xml
+    header('Content-type: text/plain');
+
+    echo '<Response>
+              <Play url="https://www2.cs.uic.edu/~i101/SoundFiles/gettysburg10.wav"/>
+      </Response>';
+    die();
+
     if (!isset($r->sessionId)) {
         $s = new OnlineCourseAfricaTalkingCall();
         $s->postData = json_encode($r->all());
