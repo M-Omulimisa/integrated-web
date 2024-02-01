@@ -30,10 +30,10 @@ class OnlineCourseTopicController extends AdminController
             $filter->equal('online_course_chapter_id', 'Course Chapter')->select(\App\Models\OnlineCourseChapter::getDropDownList());
         });
         $grid->quickSearch('title')->placeholder('Search by title');
-        $grid->column('image', __('Image'))
+      /*   $grid->column('image', __('Image'))
             ->lightbox(['width' => 50, 'height' => 50,])
             ->sortable()
-            ->width(50);
+            ->width(50); */
         $grid->column('title', __('Title'))->sortable();
         $grid->column('summary', __('Summary'))->hide();
         $grid->column('details', __('Details'))->hide();

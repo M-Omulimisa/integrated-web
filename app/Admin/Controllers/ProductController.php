@@ -58,9 +58,9 @@ class ProductController extends AdminController
         $grid->column('price_1', __('Selling Price'))
             ->sortable()
             ->editable();
-        $grid->picture('feature_photo', __('Photo'))
+        /* $grid->picture('feature_photo', __('Photo'))
             ->lightbox(['width' => 50, 'height' => 50])
-            ->hide();
+            ->hide(); */
 
         $grid->column('user', __('Vendor'))
             ->display(function ($user) {

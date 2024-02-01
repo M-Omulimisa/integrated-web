@@ -34,10 +34,10 @@ class OnlineCourseController extends AdminController
         });
 
 
-        $grid->column('photo', __('Photo'))
+      /*   $grid->column('photo', __('Photo'))
             ->lightbox(['width' => 50, 'height' => 50,])
             ->sortable()
-            ->width(50);
+            ->width(50); */
         $grid->column('title', __('Title'))->sortable();
 
         $grid->column('instructor_id', __('Instructor'))

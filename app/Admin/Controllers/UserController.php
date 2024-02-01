@@ -28,7 +28,7 @@ class UserController extends AdminController
         $grid = new Grid(new User());
 
         //photo
-        $grid->column('photo', __('Photo'))->lightbox(['width' => 50, 'height' => 50]);
+    /*     $grid->column('photo', __('Photo'))->lightbox(['width' => 50, 'height' => 50]); */
         $grid->column('id', __('ID'))->sortable();
         $grid->column('name', __('Name'))->sortable();
         $grid->column('organisation_id', __('Organisation'))

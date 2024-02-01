@@ -27,10 +27,10 @@ class OnlineCourseChapterController extends AdminController
         $grid = new Grid(new OnlineCourseChapter());
 
         $grid->column('id', __('ID'))->sortable()->hide();
-        $grid->column('image', __('Image'))
+     /*    $grid->column('image', __('Image'))
             ->lightbox(['width' => 50, 'height' => 50,])
             ->sortable()
-            ->width(50);
+            ->width(50); */
 
         $grid->column('title', __('Title'))->sortable();
         $grid->column('summary', __('Summary'))->hide();

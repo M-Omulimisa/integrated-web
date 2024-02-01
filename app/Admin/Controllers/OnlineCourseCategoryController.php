@@ -28,10 +28,10 @@ class OnlineCourseCategoryController extends AdminController
         $grid->disableFilter();
         $grid->quickSearch('name', 'description')->placeholder('Search by name or description');
 
-        $grid->column('photo', __('Photo'))
+        /* $grid->column('photo', __('Photo'))
             ->lightbox(['width' => 50, 'height' => 50,])
             ->sortable()
-            ->width(50);
+            ->width(50); */
         $grid->column('name', __('Name'))->sortable();
 
         //coulimn for number of courses
