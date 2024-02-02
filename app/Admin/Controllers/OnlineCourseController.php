@@ -34,7 +34,7 @@ class OnlineCourseController extends AdminController
         });
 
 
-      /*   $grid->column('photo', __('Photo'))
+        /*   $grid->column('photo', __('Photo'))
             ->lightbox(['width' => 50, 'height' => 50,])
             ->sortable()
             ->width(50); */
@@ -62,17 +62,17 @@ class OnlineCourseController extends AdminController
         $grid->column('audio_url', __('Audio url'))
             ->display(function ($audio_url) {
 
-                if(!$audio_url){
+                if (!$audio_url) {
                     return "-";
                 }
-                if(strlen($audio_url) < 3){
+                if (strlen($audio_url) < 3) {
                     return "-";
-                } 
-                $link = url('storage/'.$audio_url);
-               
+                }
+                $link = url('storage/' . $audio_url);
+
 
                 return "<audio controls><source src='" . $link . "' type='audio/mpeg'></audio>";
-            })->sortable(); 
+            })->sortable();
 
 
         return $grid;
@@ -115,8 +115,11 @@ class OnlineCourseController extends AdminController
         $form = new Form(new OnlineCourse());
 
         $form->text('title', __('Course Title'))
-
-            ->placeholder('Enter Course Title Here');
+            ->placeholder('Enter Course Title Here')
+            ->rules('required');
+        $form->select('photo', __('Language'))
+            ->options(\App\Models\Settings\Language::all()->pluck('name', 'id'))
+            ->rules('required');
 
         /*    $link = ('/api/ajax-users');
         $form->select('instructor_id', __('Instructor'))
@@ -140,15 +143,19 @@ class OnlineCourseController extends AdminController
             ->options($data)
             ->rules('required');
 
-        $form->image('photo', __('Course Photo'));
-        $form->textarea('summary', __('Course Summary'))
+        $form->file('audio_url', __('Introductory Audio'))
+            ->placeholder('Introductory Audio')
+            ->attribute(['accept' => 'audio/*'])
+            ->rules('required')
+            ->uniqueName();
+
+
+        /*         $form->textarea('summary', __('Course Summary'))
             ->placeholder('Enter Course Summary Here');
 
         $form->file('video_url', __('Intro Video'))
             ->attribute(['accept' => 'video/*']);
-        $form->file('audio_url', __('Audio url'))
-            ->placeholder('Enter Audio url Here')
-            ->attribute(['accept' => 'audio/*']);
+      
 
         $form->quill('details', __('Course Details'))
             ->placeholder('Enter Course Details Here');
@@ -156,7 +163,7 @@ class OnlineCourseController extends AdminController
 
 
         $form->hidden('organisation_id', __('Organisation id'))->default(1);
-        $form->hidden('online_course_category_id', __('Online course category id'))->default(1);
+        $form->hidden('online_course_category_id', __('Online course category id'))->default(1); */
         return $form;
     }
 }

@@ -743,10 +743,50 @@ class Utils
     public static function my_resp($type, $data)
     {
         header('Content-type: text/plain');
+        if ($type == 'audio') {
+            $menu = OnlineCourseMenu::where([
+                'name' => $data
+            ])->first();
+            if ($menu != null) {
+                $url = asset('storage/' . $menu->english_audio);
+                echo
+                '<Response>
+                    <Play url="' . $url . '" />
+                </Response>';
+                die();
+            }
+        }
         echo
         '<Response>
             <Say voice="en-US-Standard-C" playBeep="false" >' . $data . '</Say>
         </Response>';
-        return;
+        die();
+    }
+    public static function my_resp_digits($type, $data)
+    {
+        header('Content-type: text/plain');
+        if ($type == 'audio') {
+            $menu = OnlineCourseMenu::where([
+                'name' => $data
+            ])->first();
+            if ($menu != null) {
+                $url = asset('storage/' . $menu->english_audio);
+                echo
+                '<Response>
+                <GetDigits timeout="40" >
+                    <Play url="' . $url . '" />
+                </GetDigits>
+                <Say>We did not get your input number. Good bye</Say>
+            </Response>';
+                die();
+            }
+        }
+        echo     '<Response>
+        <GetDigits timeout="40" >
+            <Say voice="en-US-Standard-C" playBeep="false" >' . $data . '</Say>
+            </GetDigits>
+            <Say>We did not get your input number. Good bye</Say>
+        </Response>';
+        die();
     }
 }

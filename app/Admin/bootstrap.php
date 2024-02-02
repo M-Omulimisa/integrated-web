@@ -82,7 +82,6 @@ Grid::init(function (Grid $grid) {
     $grid->actions(function (Grid\Displayers\Actions $actions) {
         $actions->disableDelete();
     });
-
 });
 
 //default form settings

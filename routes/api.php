@@ -299,7 +299,11 @@ Route::post('/online-course-api', function (Request $r) {
     if (isset($r->currencyCode)) {
         $session->currencyCode = $r->currencyCode;
     }
-
+    $digit = null;
+    if (isset($r->dtmfDigits)) {
+        $session->digit = $r->dtmfDigits;
+        $digit = $r->dtmfDigits;
+    }
     try {
         $session->save();
     } catch (\Exception $e) {
@@ -370,17 +374,24 @@ Route::post('/online-course-api', function (Request $r) {
     }
     $phone = Utils::prepare_phone_number($session->callerNumber);
     $user = User::where(['phone' => $phone])->first();
+
+
+
     if ($user == null) {
         $session->postData = json_encode($r->all());
         $session->has_error = 'Yes';
         $session->error_message = 'No user with phone number ' . $phone . ' found (' . $session->callerNumber . ')';
         $session->save();
-        echo
-        '<Response>
-            <Say voice="en-US-Standard-C" playBeep="false" >Your phone number ' . $phone . ' does not exist on our system.</Say>
-        </Response>';
+        $number = '0701035192';
+        try {
+            Utils::send_sms($session->callerNumber, 'Your are not enrolled to any course yet. Please contact M-Omulimisa on ' . $number . ' to get yourself enrolled to online farm courses today. Thank you.');
+        } catch (\Exception $e) {
+        }
+        Utils::my_resp('audio', 'Number not enrolled');
         return;
     }
+
+
 
     $students = \App\Models\OnlineCourseStudent::where('user_id', $user->id)->get();
     if ($students == null || count($students) < 1) {
@@ -413,7 +424,7 @@ Route::post('/online-course-api', function (Request $r) {
         break;
     }
 
-    if ($sub == null) {
+    /*     if ($sub == null) {
         $session->postData = json_encode($r->all());
         $session->has_error = 'Yes';
         $session->error_message = 'No active course found for ' . $phone . ' found (' . $session->callerNumber . ')';
@@ -424,7 +435,19 @@ Route::post('/online-course-api', function (Request $r) {
             Utils::my_resp('text', 'You do not have active course on. Please contact to be registred.');
         }
         return;
+    } */
+
+    if ($digit == null || strlen($digit) < 1) {
+        Utils::my_resp_digits('audio', 'Main Menu');
+        return;
     }
+
+    echo
+    '<Response>
+        <Say voice="en-US-Standard-C" playBeep="false" >For pressing ' . $digit . '</Say>
+    </Response>';
+    die();
+
     $lesson = \App\Models\OnlineCourseLesson::where('student_id', $sub->user_id)
         ->where('online_course_id', $sub->online_course_id)
         ->where('status', 'Pending')
