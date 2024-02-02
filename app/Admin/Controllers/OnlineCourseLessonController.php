@@ -25,7 +25,7 @@ class OnlineCourseLessonController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new OnlineCourseLesson());
-        $grid->disableActions();
+        //$grid->disableActions();
         $grid->disableCreateButton();
         $grid->model()->orderBy('id', 'desc');
         $grid->filter(function ($filter) {
@@ -158,7 +158,13 @@ class OnlineCourseLessonController extends AdminController
     protected function form()
     {
         $form = new Form(new OnlineCourseLesson());
-
+        $form->radio('status', __('Status'))
+            ->options([
+                'Pending' => 'Pending',
+                'Attended' => 'Attended',
+                'Cancelled' => 'Cancelled'
+            ])->default('Pending');
+        return $form;
         $form->number('online_course_topic_id', __('Online course topic id'));
         $form->number('online_course_id', __('Online course id'));
         $form->text('student_id', __('Student id'));

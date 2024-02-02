@@ -378,9 +378,7 @@ Route::post('/online-course-api', function (Request $r) {
         break;
     }
 
-
     if ($sub == null) {
-
         $session->postData = json_encode($r->all());
         $session->has_error = 'Yes';
         $session->error_message = 'No active course found for ' . $phone . ' found (' . $session->callerNumber . ')';

@@ -139,6 +139,7 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\IdValidations\PhoneValidationController;
 use App\Models\DistrictModel;
 use App\Models\Gen;
+use App\Models\OnlineCourse;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
 use App\Models\Utils;
@@ -159,6 +160,13 @@ use Dflydev\DotAccessData\Util;
     // return view('welcome');
     //return redirect('/home');
 }); */
+
+Route::get('/prepare-lessons', function () {
+    foreach (OnlineCourse::all() as $key => $course) {
+        $course->prepare_lessons();
+    }
+});
+
 
 Route::get('/payment-test', function () {
     Utils::payment_status_test();
