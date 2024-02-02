@@ -27,7 +27,7 @@ class UssdAdvisoryMessageOutboxController extends AdminController
         $grid = new Grid(new UssdAdvisoryMessageOutbox());
 
     
-        $grid->column('session_id', __('Session id'))->display(function ($session_data) {
+        $grid->column('session_id', __('Phone Number'))->display(function ($session_data) {
             if ($this->session == 'null') {
 
                 return $session_data;

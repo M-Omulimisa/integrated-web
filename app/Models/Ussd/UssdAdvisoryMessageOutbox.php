@@ -17,7 +17,7 @@ class UssdAdvisoryMessageOutbox extends Model
     
     protected $fillable = [
 
-        'session_id', 'status', 'message'
+        'session_id', 'status', 'message', 'batch_number', 'message_schedule_number'
 
     ];
 
