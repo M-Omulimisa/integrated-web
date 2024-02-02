@@ -39,7 +39,7 @@ class UssdAdvisoryMessageOutboxController extends AdminController
         $grid->column('message', __('Message'));
         $grid->column('status', __('Status'));
 
-        $grid->column('created_at', __('Created at'));
+        $grid->column('created_at', __('Created at'))->sortable();
  
 
         return $grid;
