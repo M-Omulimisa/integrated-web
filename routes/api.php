@@ -312,6 +312,41 @@ Route::post('/online-course-api', function (Request $r) {
         }
     }
 
+    //direction
+    if ($session->direction == 'Inbound') {
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('POST', 'https://voice.africastalking.com/call', [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+                'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
+            ],
+            'form_params' => [
+                'username' => 'dninsiima',
+                'to' => $session->callerNumber,
+                'from' => '+256323200710',
+                'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
+            ]
+        ]);
+        try {
+            $session->postData = json_encode($response->getBody());
+            $session->save();
+        } catch (\Exception $e) {
+            try {
+                $session->has_error = 'Yes';
+                $session->error_message = $e->getMessage();
+                $session->save();
+            } catch (\Exception $e) {
+            }
+        }
+        header('Content-type: text/plain');
+        echo '<Response> 
+                <Reject/>
+            </Response>';
+        die();
+        return;
+    }
+
     if ($session->callSessionState == 'Completed') {
         $session->isActive = 'No';
         $session->save();
@@ -385,8 +420,8 @@ Route::post('/online-course-api', function (Request $r) {
         $session->save();
         if ($overed) {
             Utils::my_resp('text', 'You have already attended your lesson for today. Please call tomorrow to listen to your next lesson');
-        }else{
-            Utils::my_resp('text', 'You do not have active course on. Please contact to be registred.'); 
+        } else {
+            Utils::my_resp('text', 'You do not have active course on. Please contact to be registred.');
         }
         return;
     }
