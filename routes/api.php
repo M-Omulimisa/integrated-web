@@ -406,86 +406,71 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    $sub = null;
-    $overed = false;
+    $lesson = null;
+
     foreach ($students as $student) {
         //get session where attended_at is today
-        $lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
+        $_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
             ->where('attended_at', '>=', date('Y-m-d 00:00:00'))
             ->where('attended_at', '<=', date('Y-m-d 23:59:59'))
             ->where('online_course_id', $student->online_course_id)
             ->where('status', date('Attended'))
             ->first();
-        if ($lesson != null) {
-            $overed = true;
-            continue;
+        if ($_lesson != null) {
+            $lesson = $_lesson;
+            break;
         }
-        $sub = $student;
-        break;
+        //get any latest pending lesson
+        $_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
+            ->where('online_course_id', $student->online_course_id)
+            ->where('status', 'Pending')
+            ->orderBy('position', 'asc')
+            ->first();
+        if ($_lesson != null) {
+            $lesson = $_lesson;
+            break;
+        } else {
+            $lesson = $_lesson;
+        }
     }
 
-    /*     if ($sub == null) {
+    if ($lesson == null) {
         $session->postData = json_encode($r->all());
         $session->has_error = 'Yes';
-        $session->error_message = 'No active course found for ' . $phone . ' found (' . $session->callerNumber . ')';
+        $session->error_message = 'No pending lesson found for ' . $phone . ' found (' . $session->callerNumber . ')';
         $session->save();
-        if ($overed) {
-            Utils::my_resp('text', 'You have already attended your lesson for today. Please call tomorrow to listen to your next lesson');
-        } else {
-            Utils::my_resp('text', 'You do not have active course on. Please contact to be registred.');
-        }
+        Utils::my_resp('text', 'You have no pending lesson for today. Please call tomorrow to listen to your next lesson');
         return;
-    } */
+    }
+
 
     if ($digit == null || strlen($digit) < 1) {
         Utils::my_resp_digits('audio', 'Main Menu');
         return;
     }
 
-    echo
-    '<Response>
-        <Say voice="en-US-Standard-C" playBeep="false" >Thank you so much for pressing ' . $digit . '</Say>
-    </Response>';
-    die();
 
-    $lesson = \App\Models\OnlineCourseLesson::where('student_id', $sub->user_id)
-        ->where('online_course_id', $sub->online_course_id)
-        ->where('status', 'Pending')
-        ->orderBy('position', 'asc')
-        ->first();
-    if ($lesson == null) {
-        $session->postData = json_encode($r->all());
-        $session->has_error = 'Yes';
-        $session->error_message = 'No pending lesson found for ' . $phone . ' found (' . $session->callerNumber . ')';
-        $session->save();
-        echo
-        '<Response>
-            <Say voice="en-US-Standard-C" playBeep="false" >You do not have active any pending lesson today. Please call tomorrow to listen to your next lesson</Say>
-        </Response>';
-        die();
-        return;
-    }
     $topic = \App\Models\OnlineCourseTopic::find($lesson->online_course_topic_id);
+
+
     if ($topic == null) {
-        $session->postData = json_encode($r->all());
-        $session->has_error = 'Yes';
-        $session->error_message = 'No topic found for ' . $phone . ' found (' . $session->callerNumber . ')';
-        $session->save();
-        echo
-        '<Response>
-            <Say voice="en-US-Standard-C" playBeep="false" >You do not have active any pending lesson today. Please call tomorrow to listen to your next lesson</Say>
-        </Response>';
-        die();
-        return;
+        Utils::my_resp('text', 'Topic not found');
     }
 
-    $url = asset('storage/' . $topic->audio_url);
-    $lesson->attended_at = date('Y-m-d H:i:s');
-    $lesson->status = 'Attended';
-    $lesson->save();
-    echo
-    '<Response>
-        <Play url="' . $url . '" />
-    </Response>';
+    if ($digit == 1) {
+        try {
+            $lesson->attended_at = date('Y-m-d H:i:s');
+            $lesson->status = 'Attended';
+            $lesson->save();
+        } catch (\Exception $e) {
+        }
+        $url = asset('storage/' . $topic->audio_url);
+        Utils::my_resp_digits('audio', 'Lesson menu');
+        '<Response>
+            <Play url="' . $url . '" />
+        </Response>';
+    }
+
+    Utils::my_resp('text', 'Invalid option. Please try again.');
     die();
 });
