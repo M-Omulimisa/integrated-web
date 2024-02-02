@@ -444,7 +444,7 @@ Route::post('/online-course-api', function (Request $r) {
 
     echo
     '<Response>
-        <Say voice="en-US-Standard-C" playBeep="false" >For pressing ' . $digit . '</Say>
+        <Say voice="en-US-Standard-C" playBeep="false" >Thank you so much for pressing ' . $digit . '</Say>
     </Response>';
     die();
 
