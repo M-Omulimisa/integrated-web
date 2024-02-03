@@ -251,7 +251,6 @@ Route::post('/online-course-api', function (Request $r) {
         $previous_digit = 1;
     }
     $session->sessionId = $r->sessionId;
-    $session->postData = json_encode($r->all());
     $session->type = 'OnlineCourse';
     if (isset($r->callSessionState)) {
         $session->callSessionState = $r->callSessionState;
@@ -321,11 +320,6 @@ Route::post('/online-course-api', function (Request $r) {
                 'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
             ]
         ]);
-        try {
-            $session->postData = json_encode($response->getBody());
-            $session->save();
-        } catch (\Exception $e) {
-        }
         header('Content-type: text/plain');
         echo '<Response> 
                 <Reject/>
@@ -340,16 +334,7 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     } */
 
-    //change response to xml
-    header('Content-type: text/plain');
-    if (!isset($session->callerNumber)) {
-        $s = new OnlineCourseAfricaTalkingCall();
-        $s->postData = json_encode($r->all());
-        $s->has_error = 'Yes';
-        $s->error_message = 'No callerNumber';
-        Utils::my_resp('text', 'No callerNumber');
-        return;
-    }
+   
     $phone = Utils::prepare_phone_number($session->callerNumber);
     $user = User::where(['phone' => $phone])->first();
 
@@ -504,6 +489,11 @@ Route::post('/online-course-api', function (Request $r) {
         $session->save();
         Utils::my_resp('text', 'Call completed.');
         return;
+    }else{
+        $session->postData = json_encode($r->all());
+        $session->has_error = 'Yes';
+        $session->error_message = 'No digit found';
+        $session->save();
     }
 
     Utils::my_resp('text', 'Invalid option. Please try again.');
