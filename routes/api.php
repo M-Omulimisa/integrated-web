@@ -293,11 +293,9 @@ Route::post('/online-course-api', function (Request $r) {
     if (isset($r->currencyCode)) {
         $session->currencyCode = $r->currencyCode;
     }
-    if (isset($r->recordingUrl)) {
-        if(!$r->recordingUrl!=null && $r->recordingUrl!=''){
-            $session->recordingUrl = $r->recordingUrl;
-            $session->save();
-        }
+    if (isset($_POST['recordingUrl'])) {
+        $session->recordingUrl = $_POST['recordingUrl'];
+        $session->save();
     }
     $digit = null;
     if (isset($r->dtmfDigits)) {
