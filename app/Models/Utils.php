@@ -789,7 +789,7 @@ class Utils
             $url = asset('storage/' . $menu->english_audio);
             echo
             '<Response>
-                <Record finishOnKey="#" maxLength="120" trimSilence="true" playBeep="true">
+                <Record finishOnKey="*" maxLength="120" trimSilence="true" playBeep="true">
                     <Play url="' . $url . '" />
                 </Record>
             </Response>';

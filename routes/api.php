@@ -250,6 +250,19 @@ Route::post('/online-course-api', function (Request $r) {
     if ($previous_digit == null) {
         $previous_digit = 1;
     }
+
+    if (isset($_POST['recordingUrl'])) {
+        $session->recordingUrl = $_POST['recordingUrl'];
+        $session->save();
+    }
+
+    if ($session->recordingUrl == null || strlen($session->recordingUrl) < 3) {
+        if (isset($r->recordingUrl)) {
+            $session->recordingUrl = $session->recordingUrl;
+            $session->save();
+        }
+    }
+
     $session->sessionId = $r->sessionId;
     $session->type = 'OnlineCourse';
     if (isset($r->callSessionState)) {
@@ -293,10 +306,7 @@ Route::post('/online-course-api', function (Request $r) {
     if (isset($r->currencyCode)) {
         $session->currencyCode = $r->currencyCode;
     }
-    if (isset($_POST['recordingUrl'])) {
-        $session->recordingUrl = $_POST['recordingUrl'];
-        $session->save();
-    }
+
     $digit = null;
     if (isset($r->dtmfDigits)) {
         $session->digit = $r->dtmfDigits;
@@ -307,7 +317,7 @@ Route::post('/online-course-api', function (Request $r) {
         $session->postData = json_encode($_POST);
         $session->save();
     }
-    
+
     try {
         $session->save();
     } catch (\Exception $e) {
@@ -481,7 +491,7 @@ Route::post('/online-course-api', function (Request $r) {
 
 
 
-    if ($digit == 1) {
+    if ($digit == 1 || $digit == 4) {
         try {
             if ($lesson->attended_at == null || $lesson->attended_at == '') {
                 $lesson->attended_at = date('Y-m-d H:i:s');
