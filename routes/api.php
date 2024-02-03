@@ -299,9 +299,6 @@ Route::post('/online-course-api', function (Request $r) {
         $digit = $r->dtmfDigits;
     }
 
-    if ($r->callSessionState != 'Completed') {
-        $session->postData = json_encode($_POST); 
-    }
 
     try {
         $session->save();
@@ -426,6 +423,14 @@ Route::post('/online-course-api', function (Request $r) {
     $topic = \App\Models\OnlineCourseTopic::find($lesson->online_course_topic_id);
     if ($topic == null) {
         Utils::my_resp('text', 'Topic not found.');
+    }
+
+
+    if ($r->callSessionState != 'Completed') {
+        $session->postData = json_encode($_POST); 
+        if(isset($_POST['recordingUrl'])){
+            $session->postData = json_encode($_POST['recordingUrl']);
+        }
     }
 
     if (
