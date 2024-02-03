@@ -769,8 +769,8 @@ class Utils
         $lesson_url = asset('storage/' . $topic->video_url);
         echo
         '<Response>
+            <Play url="' . $lesson_url . '" />
             <GetDigits timeout="40" numDigits="1" >
-                <Play url="' . $lesson_url . '" />
             </GetDigits>
             <Say>We did not get your answer. Good bye</Say>
         </Response>';
@@ -793,7 +793,7 @@ class Utils
                 echo
                 '<Response>
                 <Play url="' . $lesson_url . '" />
-                <GetDigits timeout="10" numDigits="1" >
+                <GetDigits timeout="40" numDigits="1" >
                     <Play url="' . $url . '" />
                 </GetDigits>
                 <Say>We did not get your input number. Good bye</Say>
@@ -822,7 +822,7 @@ class Utils
                 $url = asset('storage/' . $menu->english_audio);
                 echo
                 '<Response>
-                <GetDigits timeout="10" numDigits="1" >
+                <GetDigits timeout="40" numDigits="1" >
                     <Play url="' . $url . '" />
                 </GetDigits>
                 <Say>We did not get your input number. Good bye</Say>

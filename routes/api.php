@@ -447,7 +447,7 @@ Route::post('/online-course-api', function (Request $r) {
     if (
         ($previous_digit == 1 && ($digit == 2))
     ) {
-        $session->digit = 5;//anwering quiz
+        $session->digit = 5;//answering quiz
         $session->save();
         Utils::quizz_menu($topic);
     }
