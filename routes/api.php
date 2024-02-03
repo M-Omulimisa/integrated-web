@@ -408,7 +408,16 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    if ($digit == 0 && (!$isNewSession)) { 
+    if ($session->recordingUrl != null && strlen($session->recordingUrl) > 3) {
+        $lesson->student_audio_question = $session->recordingUrl;
+        $lesson->save();
+        $session->digit = 1; //back to main menu
+        $session->save();
+        Utils::my_resp('text', 'Thank you for asking a question. We will get back to you soon.');
+        return;
+    }
+
+    if ($digit == 0 && (!$isNewSession)) {
         Utils::my_resp('text', 'Call completed.');
         return;
     }
