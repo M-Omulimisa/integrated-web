@@ -443,15 +443,6 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp('text', 'Topic not found.');
     }
 
-
-    if (
-        ($previous_digit == 1 && ($digit == 3))
-    ) {
-        $session->digit = 6; //Recording a question
-        $session->save();
-        Utils::question_menu($topic);
-    }
-
     if ($previous_digit == 6) {
         if (isset($r->recordingUrl) && strlen($r->recordingUrl) > 4) {
             $lesson->student_audio_question = $r->recordingUrl;
@@ -466,6 +457,16 @@ Route::post('/online-course-api', function (Request $r) {
         }
     }
 
+
+    if (
+        ($previous_digit == 1 && ($digit == 3))
+    ) {
+        $session->digit = 6; //Recording a question
+        $session->save();
+        Utils::question_menu($topic);
+    }
+
+ 
     if (
         ($previous_digit == 1 && ($digit == 2))
     ) {
