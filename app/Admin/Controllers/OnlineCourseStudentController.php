@@ -27,8 +27,6 @@ class OnlineCourseStudentController extends AdminController
         $grid = new Grid(new OnlineCourseStudent());
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
-            $filter->like('user.name', 'Student');
-            $filter->like('onlineCourse.title', 'Course');
             $filter->equal('status', 'Status')->select([
                 'active' => 'Active',
                 'inactive' => 'Inactive'
@@ -37,18 +35,22 @@ class OnlineCourseStudentController extends AdminController
                 'completed' => 'Completed',
                 'incomplete' => 'Incomplete'
             ]);
-
-            $filter->between('created_at', 'Date enrolled')->date();
         });
 
         $grid->column('created_at', __('Date enrolled'))
             ->display(function ($created_at) {
                 return date('d M Y', strtotime($created_at));
             })
-            ->sortable();
+            ->sortable()
+            ->hide();
         $grid->column('user_id', __('Student'))
             ->display(function ($user_id) {
-                return \App\Models\User::find($user_id)->name;
+                $u = $this->user;
+                if ($u != null) {
+                    return $u->name;
+                }
+                $this->delete();
+                return 'Deleted';
             })
             ->sortable();
         $grid->column('online_course_id', __('Course'))

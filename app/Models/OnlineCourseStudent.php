@@ -19,7 +19,7 @@ class OnlineCourseStudent extends Model
     //belongs to student
     public function user()
     {
-        return $this;
+        return $this->belongsTo(OnlineCourseStudent::class, 'id'); 
     }
 
     //boot
