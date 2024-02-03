@@ -762,6 +762,39 @@ class Utils
         </Response>';
         die();
     }
+
+    public static function lesson_menu($type, $data, $topic)
+    {
+        header('Content-type: text/plain');
+
+        $lesson_url = asset('storage/' . $topic->audio_url);
+
+        if ($type == 'audio') {
+            $menu = OnlineCourseMenu::where([
+                'name' => $data
+            ])->first();
+            if ($menu != null) {
+                $url = asset('storage/' . $menu->english_audio);
+                echo
+                '<Response>
+                <GetDigits timeout="10" numDigits="1" >
+                    <Play url="' . $lesson_url . '" />
+                    <Play url="' . $url . '" />
+                </GetDigits>
+                <Say>We did not get your input number. Good bye</Say>
+            </Response>';
+                die();
+            }
+        }
+        echo     '<Response>
+        <GetDigits timeout="40" >
+            <Say voice="en-US-Standard-C" playBeep="false" >' . $data . '</Say>
+            </GetDigits>
+            <Say>We did not get your input number. Good bye</Say>
+        </Response>';
+        die();
+    }
+
     public static function my_resp_digits($type, $data)
     {
         header('Content-type: text/plain');

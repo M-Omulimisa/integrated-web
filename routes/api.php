@@ -464,11 +464,7 @@ Route::post('/online-course-api', function (Request $r) {
             $lesson->save();
         } catch (\Exception $e) {
         }
-        $url = asset('storage/' . $topic->audio_url);
-        Utils::my_resp_digits('audio', 'Lesson menu');
-        '<Response>
-            <Play url="' . $url . '" />
-        </Response>';
+        Utils::lesson_menu('audio', 'Lesson menu',$topic);
     }
 
     Utils::my_resp('text', 'Invalid option. Please try again.');
