@@ -445,16 +445,38 @@ Route::post('/online-course-api', function (Request $r) {
 
 
     if (
+        ($previous_digit == 1 && ($digit == 3))
+    ) {
+        $session->digit = 6; //Recording a question
+        $session->save();
+        Utils::question_menu($topic);
+    }
+
+    if ($previous_digit == 6) {
+        if (isset($r->recordingUrl) && strlen($r->recordingUrl) > 4) {
+            $lesson->student_audio_question = $r->recordingUrl;
+            $session->digit = 1; //back to main menu
+            $session->save();
+            $lesson->save();
+            Utils::my_resp('text', 'Thank you for asking a question. We will get back to you soon.');
+        } else {
+            $session->digit = 1; //back to main menu
+            $session->save();
+            Utils::my_resp('text', 'Question Not Answered. Please try again.');
+        }
+    }
+
+    if (
         ($previous_digit == 1 && ($digit == 2))
     ) {
-        $session->digit = 5;//answering quiz
+        $session->digit = 5; //answering quiz
         $session->save();
         Utils::quizz_menu($topic);
     }
 
     if ($previous_digit == 5 && ($digit == 1 || $digit == 2)) {
         $lesson->student_quiz_answer = $digit;
-        $session->digit = 1;//back to main menu
+        $session->digit = 1; //back to main menu
         $session->save();
         $lesson->save();
         Utils::my_resp_digits('audio', 'Quiz Answered');

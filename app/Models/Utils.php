@@ -778,6 +778,33 @@ class Utils
         die();
     }
 
+    public static function question_menu($topic)
+    {
+        header('Content-type: text/plain');
+
+        $menu = OnlineCourseMenu::where([
+            'name' => 'Record Question'
+        ])->first();
+        if ($menu != null) {
+            $url = asset('storage/' . $menu->english_audio);
+            echo
+            '<Response>
+                <Record finishOnKey="*" maxLength="120" trimSilence="true" playBeep="true">
+                    <Play url="' . $url . '" />
+                </Record>
+            </Response>';
+            die();
+        }
+
+        echo    
+        '<Response>
+            <Record finishOnKey="*" maxLength="120" trimSilence="true" playBeep="true">
+                <Say voice="en-US-Standard-C" playBeep="false" >Please record your question.</Say>
+            </Record>';
+        die();
+    }
+
+
 
     public static function lesson_menu($type, $data, $topic)
     {
