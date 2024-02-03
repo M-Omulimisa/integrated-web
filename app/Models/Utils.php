@@ -777,8 +777,8 @@ class Utils
                 $url = asset('storage/' . $menu->english_audio);
                 echo
                 '<Response>
+                <Play url="' . $lesson_url . '" />
                 <GetDigits timeout="10" numDigits="1" >
-                    <Play url="' . $lesson_url . '" />
                     <Play url="' . $url . '" />
                 </GetDigits>
                 <Say>We did not get your input number. Good bye</Say>
