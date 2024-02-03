@@ -226,39 +226,27 @@ Route::post('/online-course-api', function (Request $r) {
 
 
     if (!isset($r->sessionId)) {
-        $s = new OnlineCourseAfricaTalkingCall();
-        $s->postData = json_encode($r->all());
-        $s->has_error = 'Yes';
-        $s->error_message = 'No session id';
-        $s->save();
         Utils::my_resp('text', 'No session id');
         return;
     }
     if (strlen($r->sessionId) < 3) {
-        $s = new OnlineCourseAfricaTalkingCall();
-        $s->postData = json_encode($r->all());
-        $s->has_error = 'Yes';
-        $s->error_message = 'Session id too short';
         Utils::my_resp('text', 'Session id too short');
         return;
     }
     if (!isset($r->callSessionState)) {
-        $s = new OnlineCourseAfricaTalkingCall();
-        $s->postData = json_encode($r->all());
-        $s->has_error = 'Yes';
-        $s->error_message = 'No callSessionState';
         Utils::my_resp('text', 'No callSessionState');
         return;
     }
 
     $previous_digit = 1;
-
+    $isNewSession = false;
     $session = OnlineCourseAfricaTalkingCall::where('sessionId', $r->sessionId)->first();
     if ($session == null) {
         $session = new OnlineCourseAfricaTalkingCall();
+        $isNewSession = true;
     }
     $previous_digit = $session->digit;
-    if($previous_digit == null){
+    if ($previous_digit == null) {
         $previous_digit = 1;
     }
     $session->sessionId = $r->sessionId;
@@ -313,13 +301,7 @@ Route::post('/online-course-api', function (Request $r) {
     try {
         $session->save();
     } catch (\Exception $e) {
-        try {
-            $session->has_error = 'Yes';
-            $session->error_message = $e->getMessage();
-            $session->save();
-        } catch (\Exception $e) {
-            Utils::my_resp('text', $e->getMessage());
-        }
+        Utils::my_resp('text', 'Failed to save session.');
     }
 
     //direction
@@ -342,12 +324,6 @@ Route::post('/online-course-api', function (Request $r) {
             $session->postData = json_encode($response->getBody());
             $session->save();
         } catch (\Exception $e) {
-            try {
-                $session->has_error = 'Yes';
-                $session->error_message = $e->getMessage();
-                $session->save();
-            } catch (\Exception $e) {
-            }
         }
         header('Content-type: text/plain');
         echo '<Response> 
@@ -360,7 +336,7 @@ Route::post('/online-course-api', function (Request $r) {
     if ($session->callSessionState == 'Completed') {
         $session->isActive = 'No';
         $session->save();
-        Utils::my_resp('text', 'Call completed');
+        Utils::my_resp('text', 'Call completed.');
         return;
     }
 
@@ -449,13 +425,13 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    if ($digit === 0 && $previous_digit > 0) {
+    if ($digit == 0 && (!$isNewSession)) {
         Utils::my_resp('audio', 'Call Ended');
         return;
     }
 
 
-    if ($digit == null || strlen($digit) < 1) {
+    if ($digit == null || strlen($digit) < 1 || $digit == 0) {
         Utils::my_resp_digits('audio', 'Main Menu');
         return;
     }
@@ -463,14 +439,17 @@ Route::post('/online-course-api', function (Request $r) {
 
     $topic = \App\Models\OnlineCourseTopic::find($lesson->online_course_topic_id);
     if ($topic == null) {
-        Utils::my_resp('text', 'Topic not found');
+        Utils::my_resp('text', 'Topic not found.');
     }
 
 
-    if ($previous_digit  == 1 && $digit == 2) {
+    if ((!$isNewSession) && $digit == 2) {
+        $lesson->digit = 2;
+        $lesson->save();
         Utils::quizz_menu($topic);
     }
-    if ($previous_digit == 2) {
+
+    if ($previous_digit == 2 && ($digit == 1 || $digit == 2)) {
         $lesson->student_quiz_answer = $digit;
         $lesson->digit = 1;
         $lesson->save();
