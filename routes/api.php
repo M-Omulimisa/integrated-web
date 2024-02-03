@@ -493,7 +493,7 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::lesson_menu('audio', 'Lesson menu', $topic);
     }
 
-    if ($session->callSessionState == 'Completed') {
+    if ($r->callSessionState == 'Completed') {
         $session->isActive = 'No';
         $session->save();
         Utils::my_resp('text', 'Call completed.');
