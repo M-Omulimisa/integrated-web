@@ -334,7 +334,7 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     } */
 
-   
+
     $phone = Utils::prepare_phone_number($session->callerNumber);
     $user = User::where(['phone' => $phone])->first();
 
@@ -438,8 +438,8 @@ Route::post('/online-course-api', function (Request $r) {
         </GetDigits>
         <Say>We did not get your input number. Good bye</Say>
       </Response>';
-        Utils::my_resp('text', 'Thank you for asking a question. We will get back to you soon.'); 
-    } 
+        Utils::my_resp('text', 'Thank you for asking a question. We will get back to you soon.');
+    }
 
 
     if (
@@ -450,7 +450,7 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::question_menu($topic);
     }
 
- 
+
     if (
         ($previous_digit == 1 && ($digit == 2))
     ) {
@@ -489,8 +489,8 @@ Route::post('/online-course-api', function (Request $r) {
         $session->save();
         Utils::my_resp('text', 'Call completed.');
         return;
-    }else{
-        $session->postData = json_encode($r->all());
+    } else {
+        $session->postData = json_encode($_POST);
         $session->has_error = 'Yes';
         $session->error_message = 'No digit found';
         $session->save();
