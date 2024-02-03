@@ -293,24 +293,27 @@ Route::post('/online-course-api', function (Request $r) {
     if (isset($r->currencyCode)) {
         $session->currencyCode = $r->currencyCode;
     }
+    if (isset($r->recordingUrl)) {
+        if(!$r->recordingUrl!=null && $r->recordingUrl!=''){
+            $session->recordingUrl = $r->recordingUrl;
+            $session->save();
+        }
+    }
     $digit = null;
     if (isset($r->dtmfDigits)) {
         $session->digit = $r->dtmfDigits;
         $digit = $r->dtmfDigits;
     }
 
-
+    if ($r->callSessionState != 'Completed') {
+        $session->postData = json_encode($_POST);
+        $session->save();
+    }
+    
     try {
         $session->save();
     } catch (\Exception $e) {
         Utils::my_resp('text', 'Failed to save session.');
-    }
-
-    if ($r->callSessionState != 'Completed') {
-        $session->postData = json_encode($_POST); 
-        if(isset($_POST['recordingUrl'])){
-            $session->postData = json_encode($_POST['recordingUrl']);
-        }
     }
 
     //direction
@@ -337,7 +340,6 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
- 
 
 
     /*     if ($session->Answered != 'Answered') {
@@ -364,7 +366,6 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-  
 
 
     $students = \App\Models\OnlineCourseStudent::where('user_id', $user->id)->get();
@@ -433,8 +434,6 @@ Route::post('/online-course-api', function (Request $r) {
     if ($topic == null) {
         Utils::my_resp('text', 'Topic not found.');
     }
-
-    
 
     if (
         isset(

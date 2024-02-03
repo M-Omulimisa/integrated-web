@@ -25,22 +25,26 @@ class OnlineCourseAfricaTalkingCallController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new OnlineCourseAfricaTalkingCall());
+        $grid->model()->orderBy('id', 'desc');
+
 
         $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
+        $grid->column('recordingUrl', __('recordingUrl'))
+            ->sortable();
+        $grid->column('created_at', __('Created at'))->hide();
+        $grid->column('updated_at', __('Updated at'))->hide();
         $grid->column('sessionId', __('SessionId'));
-        $grid->column('type', __('Type'));
-        $grid->column('phoneNumber', __('PhoneNumber'));
+        $grid->column('type', __('Type'))->hide();
+        $grid->column('phoneNumber', __('PhoneNumber'))->hide();
         $grid->column('status', __('Status'));
-        $grid->column('postData', __('PostData'));
+        $grid->column('postData', __('PostData'))->hide();
         $grid->column('cost', __('Cost'));
         $grid->column('callSessionState', __('CallSessionState'));
         $grid->column('direction', __('Direction'));
-        $grid->column('callerCountryCode', __('CallerCountryCode'));
-        $grid->column('destinationCountryCode', __('DestinationCountryCode'));
+        $grid->column('callerCountryCode', __('CallerCountryCode'))->hide();
+        $grid->column('destinationCountryCode', __('DestinationCountryCode'))->hide();
         $grid->column('amount', __('Amount'));
-        $grid->column('durationInSeconds', __('DurationInSeconds'));
+        $grid->column('durationInSeconds', __('DurationInSeconds'))->hide();
         $grid->column('callerNumber', __('CallerNumber'));
         $grid->column('destinationNumber', __('DestinationNumber'));
         $grid->column('callerCarrierName', __('CallerCarrierName'));
