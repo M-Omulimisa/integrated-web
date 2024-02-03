@@ -447,6 +447,12 @@ Route::post('/online-course-api', function (Request $r) {
         $session->digit = 1; //back to main menu
         $session->save();
         $lesson->save();
+        echo '<Response>
+        <GetDigits timeout="40" numDigits="1" >
+          <Play url="https://unified.m-omulimisa.com/storage/files/ttsMP3.com_VoiceText_2024-2-2_22-49-44.mp3" />
+        </GetDigits>
+        <Say>We did not get your input number. Good bye</Say>
+      </Response>';
         Utils::my_resp('text', 'Thank you for asking a question. We will get back to you soon.'); 
     } 
 
