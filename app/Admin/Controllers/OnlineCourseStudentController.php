@@ -27,6 +27,9 @@ class OnlineCourseStudentController extends AdminController
         $grid = new Grid(new OnlineCourseStudent());
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
+
+            $filter->equal('online_course_id', 'Course')->select(\App\Models\OnlineCourse::getDropDownList());
+            
             $filter->equal('status', 'Status')->select([
                 'active' => 'Active',
                 'inactive' => 'Inactive'

@@ -27,7 +27,7 @@ class OnlineCourseTopicController extends AdminController
         $grid = new Grid(new OnlineCourseTopic());
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
-            $filter->equal('online_course_chapter_id', 'Course Chapter')->select(\App\Models\OnlineCourseChapter::getDropDownList());
+            $filter->equal('online_course_id', 'Course')->select(\App\Models\OnlineCourse::getDropDownList());
         });
         $grid->quickSearch('title')->placeholder('Search by title');
         /*   $grid->column('image', __('Image'))

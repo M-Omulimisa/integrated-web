@@ -42,7 +42,7 @@ class OnlineCourseCategoryController extends AdminController
         $grid->column('description', __('Description'))->hide();
         $grid->column('created_at', __('Created'))->display(function ($created_at) {
             return date('d-m-Y', strtotime($created_at));
-        })->sortable();
+        })->sortable()->hide();
 
         return $grid;
     }
@@ -75,8 +75,8 @@ class OnlineCourseCategoryController extends AdminController
     protected function form()
     {
         $form = new Form(new OnlineCourseCategory());
-
-        $form->text('name', __('Name'))->required();
+        $form->text('name', __('Course Category Name'))->required();
+        return $form;
         $form->image('photo', __('Photo'));
         $form->quill('description', __('Description'));
 
