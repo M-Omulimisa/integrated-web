@@ -449,7 +449,7 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    if ($digit == 0 && $previous_digit > 0) {
+    if ($digit === 0 && $previous_digit > 0) {
         Utils::my_resp('audio', 'Call Ended');
         return;
     }
