@@ -464,7 +464,7 @@ Route::post('/online-course-api', function (Request $r) {
     }
 
 
-    if ($previous_digit  == 1 && $digit == 2) {
+    if ($digit == 2) {
         Utils::quizz_menu($topic);
     }
     if ($previous_digit == 2 && ($digit == 1 || $digit == 2)) {
