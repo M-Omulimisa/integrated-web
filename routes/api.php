@@ -411,7 +411,7 @@ Route::post('/online-course-api', function (Request $r) {
     foreach ($students as $student) {
         //get session where attended_at is today
         $done_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
-            ->where('status', date('Attended'))
+            ->where('status', 'Attended')
             ->first();
         if ($done_lesson != null) {
             //check if attended_at is today
