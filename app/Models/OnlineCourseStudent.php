@@ -19,7 +19,7 @@ class OnlineCourseStudent extends Model
     //belongs to student
     public function user()
     {
-        return $this->belongsTo(OnlineCourseStudent::class, 'id'); 
+        return $this->belongsTo(OnlineCourseStudent::class, 'id');
     }
 
     //boot
@@ -39,7 +39,7 @@ class OnlineCourseStudent extends Model
             return $onlineCourseStudent;
         });
         static::deleting(function ($onlineCourseStudent) {
-            throw new \Exception('You cannot delete this resource directly. It is being used by other resources.');
+            //delete lessons
             $onlineCourseStudent->onlineCourseStudentLessons()->delete();
         });
 
@@ -59,6 +59,12 @@ class OnlineCourseStudent extends Model
                 $course->update_lessons();
             }
         });
+    }
+
+    //has many onlineCourseStudentLessons
+    public function onlineCourseStudentLessons()
+    {
+        return $this->hasMany(OnlineCourseLesson::class, 'student_id');
     }
 
 

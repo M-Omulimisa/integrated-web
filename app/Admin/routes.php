@@ -56,6 +56,8 @@ Route::group([
     $router->resource('online-course-topics', OnlineCourseTopicController::class);
     $router->resource('online-course-students', OnlineCourseStudentController::class);
     $router->resource('online-course-lessons', OnlineCourseLessonController::class); 
+    $router->resource('student-batch-importers', OnlineCourseStudentBatchImporterController::class);
+
     /*===============e-learning ends=============*/
     $router->resource('ussd-advisory-topics', UssdAdvisoryTopicController::class);
     $router->resource('ussd-advisory-questions', UssdAdvisoryQuestionController::class);

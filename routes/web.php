@@ -140,6 +140,8 @@ use App\Http\Controllers\IdValidations\PhoneValidationController;
 use App\Models\DistrictModel;
 use App\Models\Gen;
 use App\Models\OnlineCourse;
+use App\Models\OnlineCourseStudent;
+use App\Models\OnlineCourseStudentBatchImporter;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
 use App\Models\Utils;
@@ -161,6 +163,94 @@ use Dflydev\DotAccessData\Util;
     //return redirect('/home');
 }); */
 
+Route::get('/course-student-batch-importer', function () {
+    if (!isset($_GET['id'])) {
+        die("ID not set");
+    }
+    $importer = OnlineCourseStudentBatchImporter::find($_GET['id']);
+    if ($importer == null) {
+        die("Importer not found");
+    }
+    $course = OnlineCourse::find($importer->online_course_id);
+    if ($course == null) {
+        die("Course not found");
+    }
+    $file = "storage/" . $importer->file_path;
+    //check if file exists  
+    if (!file_exists($file)) {
+        die("File not found");
+    }
+    $data = [];
+    $file = fopen($file, "r");
+    if (!$file) {
+        die("Error opening data file.");
+    }
+    while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
+        $data[] = $column;
+    }
+    fclose($file);
+    $i = 0;
+    $success = 0;
+    $failed = 0;
+    $error_message = "";
+    foreach ($data as $key => $value) {
+        $i++;
+        if ($key > 0) {
+            if (!isset($value[0])) {
+                $error_message .= "Row $i: NAME NOT SET\n";
+                $failed++;
+                continue;
+            }
+            if (!isset($value[1])) {
+                $error_message .= "Row $i: PHONE NOT SET\n";
+                $failed++;
+                continue;
+            }
+            $name = $value[0];
+            $phone = Utils::prepare_phone_number($value[1]);
+            if (!Utils::phone_number_is_valid($phone)) {
+                $error_message .= "Row $i: $name, has INVALID PHONE NUMBER: $phone\n";
+                $failed++;
+                continue;
+            }
+
+            $already_enrolled = OnlineCourseStudent::where([
+                'online_course_id' => $course->id,
+                'phone' => $phone
+            ])->first();
+
+            if ($already_enrolled != null) {
+                $error_message .= "Row $i: $name, $phone, is already enrolled to this course.\n";
+                $failed++;
+                $success++;
+                continue;
+            }
+            $farmer = new OnlineCourseStudent();
+            $farmer->online_course_id = $course->id;
+            $farmer->name = $name;
+            $farmer->phone = $phone;
+            $farmer->status = "Active";
+            try {
+                $farmer->save();
+            } catch (\Exception $e) {
+                $error_message .= "Row $i: $name, $phone, " . $e->getMessage() . "\n";
+                $failed++;
+                continue;
+            }
+
+            //$farmer->courses()->attach($course->id);
+            $success++;
+            continue;
+        }
+    }
+    $importer->total = $i;
+    $importer->success = $success;
+    $importer->failed = $failed;
+    $importer->error_message = $error_message;
+    $importer->status = "Imported";
+    $importer->save();
+    die("done");
+});
 Route::get('/prepare-lessons', function () {
     foreach (OnlineCourse::all() as $key => $course) {
         $course->prepare_lessons();
