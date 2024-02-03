@@ -334,12 +334,7 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    if ($session->callSessionState == 'Completed') {
-        $session->isActive = 'No';
-        $session->save();
-        Utils::my_resp('text', 'Call completed.');
-        return;
-    }
+
 
     /*     if ($session->Answered != 'Answered') {
         return;
@@ -484,7 +479,12 @@ Route::post('/online-course-api', function (Request $r) {
     }
 
 
-
+    if ($session->callSessionState == 'Completed') {
+        $session->isActive = 'No';
+        $session->save();
+        Utils::my_resp('text', 'Call completed.');
+        return;
+    }
 
     if ($digit == 1) {
         try {
