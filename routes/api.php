@@ -251,13 +251,16 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    $previous_digit = null;
+    $previous_digit = 1;
 
     $session = OnlineCourseAfricaTalkingCall::where('sessionId', $r->sessionId)->first();
     if ($session == null) {
         $session = new OnlineCourseAfricaTalkingCall();
     }
     $previous_digit = $session->digit;
+    if($previous_digit == null){
+        $previous_digit = 1;
+    }
     $session->sessionId = $r->sessionId;
     $session->postData = json_encode($r->all());
     $session->type = 'OnlineCourse';
