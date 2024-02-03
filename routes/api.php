@@ -438,12 +438,16 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp('text', 'Topic not found.');
     }
 
-    if (isset($r->recordingUrl) && strlen($r->recordingUrl) > 4) {
-        $lesson->student_audio_question = $r->recordingUrl;
+    if (
+        isset(
+            $_POST['recordingUrl'],
+        )
+    ) {
+        $lesson->student_audio_question = $_POST['recordingUrl'];
         $session->digit = 1; //back to main menu
         $session->save();
         $lesson->save();
-        Utils::my_resp('text', 'Thank you for asking a question. We will get back to you soon.');
+        Utils::my_resp('text', 'Thank you for asking a question. We will get back to you soon.'); 
     } 
 
 
