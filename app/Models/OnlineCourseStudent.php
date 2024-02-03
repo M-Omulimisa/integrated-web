@@ -45,6 +45,14 @@ class OnlineCourseStudent extends Model
 
         //created
         static::created(function ($onlineCourseStudent) {
+
+            try {
+                $message = "Hello {$onlineCourseStudent->name},\nYou have been enrolled to {$onlineCourseStudent->onlineCourse->title} online course. Please call 0783204665 to start learning today. Thank you.";
+                Utils::send_sms($onlineCourseStudent->phone, $message);
+            } catch (Exception $e) {
+                //throw $th;
+            }
+
             $course = OnlineCourse::find($onlineCourseStudent->online_course_id);
             if ($course != null) {
                 $course->update_lessons();
