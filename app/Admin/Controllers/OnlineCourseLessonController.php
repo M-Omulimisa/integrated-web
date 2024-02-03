@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\OnlineCourseLesson;
+use App\Models\OnlineCourseStudent;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -35,7 +36,7 @@ class OnlineCourseLessonController extends AdminController
         $grid->column('position', __('Position'))->sortable();
         $grid->column('student_id', __('Student'))
             ->display(function ($student_id) {
-                $item = \App\Models\User::find($student_id);
+                $item = OnlineCourseStudent::find($student_id);
                 if ($item != null) {
                     return $item->name;
                 }
@@ -129,11 +130,11 @@ class OnlineCourseLessonController extends AdminController
                     //check if not null and not empty
                     if ($student_audio_question == null || $student_audio_question == '') {
                         return 'N/A';
-                    } 
+                    }
                     return '<audio controls>
                     <source src="' . $student_audio_question . '" type="audio/mpeg">
                     Your browser does not support the audio element.
-                    </audio>'."<br><a href='$student_audio_question' target='_blank'>Download</a>";
+                    </audio>' . "<br><a href='$student_audio_question' target='_blank'>Download</a>";
                 }
                 return 'No Question';
             });
