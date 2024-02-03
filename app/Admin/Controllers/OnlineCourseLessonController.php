@@ -87,10 +87,7 @@ class OnlineCourseLessonController extends AdminController
             })
             ->sortable();
         $grid->column('status', __('Status'))
-            ->label([
-                'Pending' => 'warning',
-                'Attended' => 'success',
-            ])
+            
             ->sortable()
             ->filter([
                 'Pending' => 'Pending',
@@ -103,7 +100,7 @@ class OnlineCourseLessonController extends AdminController
                     'Attended' => 'Attended',
                 ]
             );
-            
+
         $grid->column('has_error', __('Has error'))
             ->label([
                 'No' => 'success',
