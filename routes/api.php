@@ -448,12 +448,12 @@ Route::post('/online-course-api', function (Request $r) {
         ($previous_digit == 1 && ($digit == 2)) ||
         ($previous_digit == 2 && ($digit == 2))  
     ) {
-        $session->digit = 2;
+        $session->digit = 5;//anwering quiz
         $session->save();
         Utils::quizz_menu($topic);
     }
 
-    if ($previous_digit == 2 && ($digit == 1 || $digit == 2)) {
+    if ($previous_digit == 5 && ($digit == 1 || $digit == 2)) {
         $lesson->student_quiz_answer = $digit;
         $session->digit = 1;
         $session->save();
