@@ -408,7 +408,7 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    if ($digit == 0 && (!$isNewSession)) {
+    if ($digit == 0 && (!$isNewSession)) { 
         Utils::my_resp('text', 'Call completed.');
         return;
     }

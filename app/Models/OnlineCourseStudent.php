@@ -47,7 +47,7 @@ class OnlineCourseStudent extends Model
         static::created(function ($onlineCourseStudent) {
 
             try {
-                $message = "Hello {$onlineCourseStudent->name},\nYou have been enrolled to {$onlineCourseStudent->onlineCourse->title} online course. Please call 0783204665 to start learning today. Thank you.";
+                $message = "Hello {$onlineCourseStudent->name},\nYou have been enrolled to {$onlineCourseStudent->onlineCourse->title} online course. Please call 0323200710 to start learning today. Thank you.";
                 Utils::send_sms($onlineCourseStudent->phone, $message);
             } catch (Exception $e) {
                 //throw $th;
