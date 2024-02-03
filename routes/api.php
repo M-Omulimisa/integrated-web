@@ -464,10 +464,10 @@ Route::post('/online-course-api', function (Request $r) {
     }
 
 
-    if ($digit == 2) {
+    if ($previous_digit  == 1 && $digit == 2) {
         Utils::quizz_menu($topic);
     }
-    if ($previous_digit == 2 && ($digit == 1 || $digit == 2)) {
+    if ($previous_digit == 2) {
         $lesson->student_quiz_answer = $digit;
         $lesson->digit = 1;
         $lesson->save();
