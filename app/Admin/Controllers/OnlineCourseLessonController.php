@@ -129,10 +129,9 @@ class OnlineCourseLessonController extends AdminController
                     //check if not null and not empty
                     if ($student_audio_question == null || $student_audio_question == '') {
                         return 'N/A';
-                    }
-                    $url = asset('storage/' . $student_audio_question);
+                    } 
                     return '<audio controls>
-                    <source src="' . $url . '" type="audio/mpeg">
+                    <source src="' . $student_audio_question . '" type="audio/mpeg">
                     Your browser does not support the audio element.
                     </audio>';
                 }
