@@ -444,14 +444,15 @@ Route::post('/online-course-api', function (Request $r) {
 
 
     if ((!$isNewSession) && $digit == 2) {
-        $lesson->digit = 2;
-        $lesson->save();
+        $session->digit = 2;
+        $session->save();
         Utils::quizz_menu($topic);
     }
 
     if ($previous_digit == 2 && ($digit == 1 || $digit == 2)) {
         $lesson->student_quiz_answer = $digit;
-        $lesson->digit = 1;
+        $session->digit = 2;
+        $session->save();
         $lesson->save();
         Utils::my_resp_digits('audio', 'Quiz Answered');
     }
