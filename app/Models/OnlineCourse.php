@@ -19,7 +19,7 @@ class OnlineCourse extends Model
             $items[$model->id] = $model->title;
         }
         return $items;
-    } 
+    }
 
     //has many students
     public function onlineCourseStudents()
@@ -35,7 +35,7 @@ class OnlineCourse extends Model
         foreach ($students as $student) {
             foreach ($topics as $topic) {
                 $lesson = OnlineCourseLesson::where('online_course_id', $this->id)
-                    ->where('student_id', $student->user_id)
+                    ->where('student_id', $student->id)
                     ->where('online_course_topic_id', $topic->id)
                     ->first();
                 if ($lesson == null) {
@@ -48,7 +48,7 @@ class OnlineCourse extends Model
                     $lesson->status = 'Pending';
                 }
                 $lesson->online_course_id = $this->id;
-                $lesson->student_id = $student->user_id;
+                $lesson->student_id = $student->id;
                 $lesson->online_course_topic_id = $topic->id;
                 $lesson->instructor_id = $this->instructor_id;
                 $lesson->position = $topic->position;

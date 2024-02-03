@@ -19,7 +19,7 @@ class OnlineCourseStudent extends Model
     //belongs to student
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this;
     }
 
     //boot
@@ -30,10 +30,12 @@ class OnlineCourseStudent extends Model
         //creating
         static::creating(function ($onlineCourseStudent) {
             $onlineCourseStudent = self::prepare($onlineCourseStudent);
+            $onlineCourseStudent->user_id = 1;
             return $onlineCourseStudent;
         });
         static::updating(function ($onlineCourseStudent) {
             $onlineCourseStudent = self::prepare($onlineCourseStudent);
+            $onlineCourseStudent->user_id = $this->id;
             return $onlineCourseStudent;
         });
         static::deleting(function ($onlineCourseStudent) {
@@ -49,6 +51,7 @@ class OnlineCourseStudent extends Model
             }
         });
 
+
         //updated
         static::updated(function ($onlineCourseStudent) {
             $course = OnlineCourse::find($onlineCourseStudent->online_course_id);
@@ -63,18 +66,26 @@ class OnlineCourseStudent extends Model
     public static function prepare($data)
     {
         //check if student is already enrolled
-        $onlineCourseStudent = OnlineCourseStudent::where('online_course_id', $data->online_course_id)
-            ->where('user_id', $data->user_id)->first();
-        if ($onlineCourseStudent != null) {
-            if ($onlineCourseStudent->user_id != $data->user_id) {
-                throw new Exception("User already subscribed to this course.", 1);
-            }
-        }
         $course = OnlineCourse::find($data->online_course_id);
         if ($course == null) {
             throw new Exception("Course not found.", 1);
         }
+
+        $phone = Utils::prepare_phone_number($data->phone);
+
+        if (!Utils::phone_number_is_valid($phone)) {
+            throw new Exception("Invalid phone number. $phone", 1);
+        }
+        $data->phone = $phone;
+        $data->instructor_id = $course->instructor_id;
         $data->online_course_category_id = $course->online_course_category_id;
         return $data;
+    }
+
+    //getter for user_id
+    public function getUserIdAttribute($value)
+    {
+        $this->user_id = $this->id;
+        return $this->id;
     }
 }

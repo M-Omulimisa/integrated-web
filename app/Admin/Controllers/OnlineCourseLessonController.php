@@ -39,6 +39,7 @@ class OnlineCourseLessonController extends AdminController
                 if ($item != null) {
                     return $item->name;
                 }
+                $this->delete();
                 return 'Deleted';
             })
             ->sortable();
@@ -49,6 +50,7 @@ class OnlineCourseLessonController extends AdminController
                 if ($item != null) {
                     return $item->title;
                 }
+                $item->delete();
                 return 'Deleted';
             })
             ->sortable();
@@ -61,9 +63,6 @@ class OnlineCourseLessonController extends AdminController
                 return 'Deleted';
             })
             ->sortable();
-
-
-
 
         $grid->column('instructor_id', __('Instructor'))
             ->display(function ($instructor_id) {

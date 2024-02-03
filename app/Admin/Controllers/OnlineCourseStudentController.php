@@ -116,13 +116,16 @@ class OnlineCourseStudentController extends AdminController
         $form = new Form(new OnlineCourseStudent());
 
 
+        $form->text('name', __('Student Name'))
+            ->rules('required');
 
-        $form->select('online_course_id', __('Online Course'))
+        $form->text('phone', __('Student Phone Number'))
+            ->rules('required');
+
+        $form->select('online_course_id', __('Select Course'))
             ->options(\App\Models\OnlineCourse::all()->pluck('title', 'id'))
             ->rules('required');
-        $form->select('user_id', __('Student'))
-            ->options(\App\Models\User::all()->pluck('name', 'id'))
-            ->rules('required');
+
         $form->radioCard('status', __('Status'))
             ->options(['active' => 'Active', 'inactive' => 'Inactive'])
             ->default('active');

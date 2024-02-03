@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\v1\ApiAuthController;
 use App\Http\Controllers\Api\v1\ApiShopController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Models\OnlineCourseAfricaTalkingCall;
+use App\Models\OnlineCourseStudent;
 use App\Models\User;
 use App\Models\Utils;
 use Dflydev\DotAccessData\Util;
@@ -356,9 +357,8 @@ Route::post('/online-course-api', function (Request $r) {
 
 
     $phone = Utils::prepare_phone_number($session->callerNumber);
-    $user = User::where(['phone' => $phone])->first();
-
-
+    $user = OnlineCourseStudent::where(['phone' => $phone])->first();
+    $student = $user;
 
     if ($user == null) {
         $session->postData = json_encode($r->all());
@@ -375,59 +375,41 @@ Route::post('/online-course-api', function (Request $r) {
     }
 
 
-
-    $students = \App\Models\OnlineCourseStudent::where('user_id', $user->id)->get();
-    if ($students == null || count($students) < 1) {
-        $session->postData = json_encode($r->all());
-        $session->has_error = 'Yes';
-        $session->error_message = 'No student with phone number ' . $phone . ' found (' . $session->callerNumber . ')';
-        $session->save();
-        echo
-        '<Response>
-            <Say voice="en-US-Standard-C" playBeep="false" >You do not have active course on. Please contact to be registred.</Say>
-        </Response>';
-        return;
-    }
-
     $lesson = null;
 
-    foreach ($students as $student) {
-        //get session where attended_at is today
-        $done_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
-            ->where('status', 'Attended')
-            ->first();
-        if ($done_lesson != null) {
-            //check if attended_at is today
-            if (date('Y-m-d', strtotime($done_lesson->attended_at)) == date('Y-m-d')) {
-                $lesson = $done_lesson;
-                break;
-            }
-        }
-
-        //get any latest pending lesson
-        $_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
-            ->where('status', 'Pending')
-            ->orderBy('position', 'asc')
-            ->first();
-        if ($_lesson != null) {
-            $lesson = $_lesson;
-            break;
+    $done_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->id)
+        ->where('status', 'Attended')
+        ->first();
+    if ($done_lesson != null) {
+        //check if attended_at is today
+        if (date('Y-m-d', strtotime($done_lesson->attended_at)) == date('Y-m-d')) {
+            $lesson = $done_lesson;
         } else {
             $lesson = null;
         }
     }
 
     if ($lesson == null) {
-        $session->postData = json_encode($r->all());
-        $session->has_error = 'Yes';
-        $session->error_message = 'No pending lesson found for ' . $phone . ' found (' . $session->callerNumber . ')';
-        $session->save();
+        //get any latest pending lesson
+        $_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->id)
+            ->where('status', 'Pending')
+            ->orderBy('position', 'asc')
+            ->first();
+        if ($_lesson != null) {
+            $lesson = $_lesson;
+        } else {
+            $lesson = null;
+        }
+    }
+
+
+    if ($lesson == null) {
         Utils::my_resp('text', 'You have no pending lesson for today. Please call tomorrow to listen to your next lesson');
         return;
     }
 
     if ($digit == 0 && (!$isNewSession)) {
-        Utils::my_resp('audio', 'Call Ended');
+        Utils::my_resp('text', 'Call completed.');
         return;
     }
 

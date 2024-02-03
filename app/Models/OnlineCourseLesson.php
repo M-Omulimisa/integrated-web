@@ -22,7 +22,7 @@ class OnlineCourseLesson extends Model
     //belongs to student_id
     public function student()
     {
-        return $this->belongsTo(User::class, 'student_id');
+        return $this->belongsTo(OnlineCourseStudent::class, 'student_id');
     }
 
     //belongs to onlineCourse

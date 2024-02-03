@@ -796,7 +796,7 @@ class Utils
             die();
         }
 
-        echo    
+        echo
         '<Response>
             <Record finishOnKey="*" maxLength="120" trimSilence="true" playBeep="true">
                 <Say voice="en-US-Standard-C" playBeep="false" >Please record your question.</Say>
@@ -821,7 +821,7 @@ class Utils
                 echo
                 '<Response>
                 <Play url="' . $lesson_url . '" />
-                <GetDigits timeout="40" numDigits="1" >
+                <GetDigits timeout="20" numDigits="1" >
                     <Play url="' . $url . '" />
                 </GetDigits>
                 <Say>We did not get your input number. Good bye</Say>
