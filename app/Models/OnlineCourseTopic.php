@@ -45,28 +45,24 @@ class OnlineCourseTopic extends Model
     public static function prepareData($data)
     {
 
-        $chapter = OnlineCourseChapter::find($data->online_course_chapter_id);
-        if ($chapter == null) {
-            throw new \Exception("Chapter not found.");
-        }
-        $course = OnlineCourse::find($chapter->online_course_id);
+        $course = OnlineCourse::find($data->online_course_id);
         if ($course == null) {
             throw new \Exception("Course not found.");
         }
-        $data->online_course_id = $chapter->online_course_id;
-        $data->online_course_category_id = $chapter->online_course_category_id;
+
+        $data->online_course_category_id = $course->online_course_category_id;
+        $data->online_course_chapter_id = 1;
 
         //check if position is unique for this topic in this course
         $position = $data->position;
         $topic = OnlineCourseTopic::where('online_course_id', $data->online_course_id)
             ->where('position', $position)
             ->first();
-            
+
         if ($topic != null) {
-            if($topic->id != $data->id){
+            if ($topic->id != $data->id) {
                 throw new \Exception("Position must be unique for this topic in this course.");
             }
-
         }
 
         return $data;

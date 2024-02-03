@@ -15,7 +15,7 @@ class OnlineCourseTopicController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Course Topics';
+    protected $title = 'Course Lessons';
 
     /**
      * Make a grid builder.
@@ -30,15 +30,32 @@ class OnlineCourseTopicController extends AdminController
             $filter->equal('online_course_chapter_id', 'Course Chapter')->select(\App\Models\OnlineCourseChapter::getDropDownList());
         });
         $grid->quickSearch('title')->placeholder('Search by title');
-      /*   $grid->column('image', __('Image'))
+        /*   $grid->column('image', __('Image'))
             ->lightbox(['width' => 50, 'height' => 50,])
             ->sortable()
             ->width(50); */
+        $grid->column('position', __('Position'))
+            ->sortable()
+            ->editable()
+            ->help('Position');
         $grid->column('title', __('Title'))->sortable();
-        $grid->column('summary', __('Summary'))->hide();
+
         $grid->column('details', __('Details'))->hide();
-        $grid->column('video_url', __('Video'))->hide();
-        $grid->column('audio_url', __('Audio'))
+        $grid->column('audio_url', __('Content Audio'))
+            ->display(function ($audio_url) {
+                if ($audio_url) {
+                    //check if not null and not empty
+                    if ($audio_url == null || $audio_url == '') {
+                        return 'N/A';
+                    }
+                    $url = asset('storage/' . $audio_url);
+                    return '<audio controls>
+                    <source src="' . $url . '" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                    </audio>';
+                }
+            })->sortable();
+        $grid->column('video_url', __('Quiz Question Audio'))
             ->display(function ($audio_url) {
                 if ($audio_url) {
                     //check if not null and not empty
@@ -60,12 +77,14 @@ class OnlineCourseTopicController extends AdminController
                 }
             })
             ->sortable();
-        $grid->column('online_course_category_id', __('Online course category id'))->hide();
-        $grid->column('online_course_chapter_id', __('Online course chapter id'))->hide();
-        $grid->column('position', __('Position'))
-            ->sortable()
-            ->editable()
-            ->help('Position');
+
+        $grid->column('summary', __('Quiz Correct Answer'))
+            ->editable('select', [
+                '1' => 'Press 1',
+                '2' => 'Press 2',
+            ])
+            ->sortable();
+
 
         return $grid;
     }
@@ -108,24 +127,34 @@ class OnlineCourseTopicController extends AdminController
 
 
         $form->text('title', __('Title'))->rules('required');
-        $form->select('online_course_chapter_id', __('Course chapter'))
-            ->options(\App\Models\OnlineCourseChapter::getDropDownList())
+        $form->select('online_course_id', __('Course'))
+            ->options(\App\Models\OnlineCourse::getDropDownList())
             ->rules('required');
+        $form->hidden('online_course_chapter_id')->default(1);
 
         $form->decimal('position', __('Position'))
             ->help('Position of this topic in the course.')
             ->rules('required');
 
-        $form->file('audio_url', __('Audio'))
+        $form->file('audio_url', __('Content Audio'))
+            ->rules('required')
+            ->uniqueName()
+            ->attribute(['accept' => 'audio/*']);
+        $form->file('video_url', __('Quiz Question Audio'))
             ->rules('required')
             ->uniqueName()
             ->attribute(['accept' => 'audio/*']);
 
-        $form->textarea('summary', __('Summary'));
-        $form->quill('details', __('Details'));
-        $form->image('image', __('Image'));
-        $form->file('video_url', __('Video url'));
+        $form->radio('summary', __('Quiz Correct Answer'))
+            ->options([
+                '1' => 'Press 1',
+                '2' => 'Press 2',
+            ])->default('A')
+            ->rules('required');
 
+        /*         $form->quill('details', __('Details'));
+        $form->image('image', __('Image'));
+ */
 
 
         return $form;

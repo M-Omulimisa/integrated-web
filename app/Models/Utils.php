@@ -763,6 +763,21 @@ class Utils
         die();
     }
 
+    public static function quizz_menu($topic)
+    {
+        header('Content-type: text/plain');
+        $lesson_url = asset('storage/' . $topic->video_url);
+        echo
+        '<Response>
+            <GetDigits timeout="10" numDigits="1" >
+                <Play url="' . $lesson_url . '" />
+            </GetDigits>
+            <Say>We did not get your answer. Good bye</Say>
+        </Response>';
+        die();
+    }
+
+
     public static function lesson_menu($type, $data, $topic)
     {
         header('Content-type: text/plain');
@@ -794,6 +809,7 @@ class Utils
         </Response>';
         die();
     }
+
 
     public static function my_resp_digits($type, $data)
     {

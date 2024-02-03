@@ -15,7 +15,7 @@ class OnlineCourseLessonController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Lessons';
+    protected $title = 'Students\' Learning Sessions';
 
     /**
      * Make a grid builder.
@@ -32,6 +32,7 @@ class OnlineCourseLessonController extends AdminController
             $filter->disableIdFilter();
         });
 
+        $grid->column('position', __('Position'))->sortable();
         $grid->column('student_id', __('Student'))
             ->display(function ($student_id) {
                 $item = \App\Models\User::find($student_id);
@@ -87,7 +88,7 @@ class OnlineCourseLessonController extends AdminController
             })
             ->sortable();
         $grid->column('status', __('Status'))
-            
+
             ->sortable()
             ->filter([
                 'Pending' => 'Pending',
@@ -121,7 +122,38 @@ class OnlineCourseLessonController extends AdminController
             ->sortable()
             ->hide();
         $grid->column('details', __('Details'))->hide();
-        $grid->column('position', __('Position'))->sortable();
+        $grid->column('student_quiz_answer', __('Quize Answer'))->sortable();
+        $grid->column('student_audio_question', __('Audio Question'))->sortable()
+            ->display(function ($student_audio_question) {
+
+                if ($student_audio_question) {
+                    //check if not null and not empty
+                    if ($student_audio_question == null || $student_audio_question == '') {
+                        return 'N/A';
+                    }
+                    $url = asset('storage/' . $student_audio_question);
+                    return '<audio controls>
+                    <source src="' . $url . '" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                    </audio>';
+                }
+                return 'No Question';
+            });
+        $grid->column('instructor_audio_question', __('Audio Answer'))->sortable()
+            ->display(function ($instructor_audio_question) {
+                if ($instructor_audio_question) {
+                    //check if not null and not empty
+                    if ($instructor_audio_question == null || $instructor_audio_question == '') {
+                        return 'N/A';
+                    }
+                    $url = asset('storage/' . $instructor_audio_question);
+                    return '<audio controls>
+                    <source src="' . $url . '" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                    </audio>';
+                }
+                return 'No Answer';
+            });
 
         return $grid;
     }

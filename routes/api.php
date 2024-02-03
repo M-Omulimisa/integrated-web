@@ -251,10 +251,13 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
+    $previous_digit = null;
+
     $session = OnlineCourseAfricaTalkingCall::where('sessionId', $r->sessionId)->first();
     if ($session == null) {
         $session = new OnlineCourseAfricaTalkingCall();
     }
+    $previous_digit = $session->digit;
     $session->sessionId = $r->sessionId;
     $session->postData = json_encode($r->all());
     $session->type = 'OnlineCourse';
@@ -443,6 +446,11 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
+    if ($digit == 0) {
+        Utils::my_resp('audio', 'Call Ended');
+        return;
+    }
+
 
     if ($digit == null || strlen($digit) < 1) {
         Utils::my_resp_digits('audio', 'Main Menu');
@@ -451,10 +459,19 @@ Route::post('/online-course-api', function (Request $r) {
 
 
     $topic = \App\Models\OnlineCourseTopic::find($lesson->online_course_topic_id);
-
-
     if ($topic == null) {
         Utils::my_resp('text', 'Topic not found');
+    }
+
+
+    if ($previous_digit  == 1 && $digit == 2) {
+        Utils::quizz_menu($topic);
+    }
+    if ($previous_digit == 2 && ($digit == 1 || $digit == 2)) {
+        $lesson->student_quiz_answer = $digit;
+        $lesson->digit = 1;
+        $lesson->save();
+        Utils::my_resp_digits('audio', 'Quiz Answered');
     }
 
     if ($digit == 1) {

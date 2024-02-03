@@ -10,6 +10,17 @@ class OnlineCourse extends Model
 {
     use HasFactory;
 
+    //getDropDownList
+    public static function getDropDownList()
+    {
+        $models = OnlineCourse::orderBy('id')->get();
+        $items = [];
+        foreach ($models as $model) {
+            $items[$model->id] = $model->title;
+        }
+        return $items;
+    } 
+
     //has many students
     public function onlineCourseStudents()
     {
