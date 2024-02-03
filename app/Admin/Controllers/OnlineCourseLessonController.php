@@ -133,7 +133,7 @@ class OnlineCourseLessonController extends AdminController
                     return '<audio controls>
                     <source src="' . $student_audio_question . '" type="audio/mpeg">
                     Your browser does not support the audio element.
-                    </audio>';
+                    </audio>'."<br><a href='$student_audio_question' target='_blank'>Download</a>";
                 }
                 return 'No Question';
             });
