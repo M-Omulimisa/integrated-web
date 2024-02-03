@@ -243,6 +243,7 @@ Route::post('/online-course-api', function (Request $r) {
     $session = OnlineCourseAfricaTalkingCall::where('sessionId', $r->sessionId)->first();
     if ($session == null) {
         $session = new OnlineCourseAfricaTalkingCall();
+        $session->digit = 1;
         $isNewSession = true;
     }
     $previous_digit = $session->digit;
@@ -444,7 +445,6 @@ Route::post('/online-course-api', function (Request $r) {
 
 
     if (
-        ((!$isNewSession) && $digit == 2) ||
         ($previous_digit == 1 && ($digit == 2))
     ) {
         $session->digit = 5;//anwering quiz
