@@ -306,6 +306,13 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp('text', 'Failed to save session.');
     }
 
+    if ($r->callSessionState != 'Completed') {
+        $session->postData = json_encode($_POST); 
+        if(isset($_POST['recordingUrl'])){
+            $session->postData = json_encode($_POST['recordingUrl']);
+        }
+    }
+
     //direction
     if ($session->direction == 'Inbound') {
         $client = new \GuzzleHttp\Client();
@@ -330,12 +337,7 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    if ($r->callSessionState != 'Completed') {
-        $session->postData = json_encode($_POST); 
-        if(isset($_POST['recordingUrl'])){
-            $session->postData = json_encode($_POST['recordingUrl']);
-        }
-    } 
+ 
 
 
     /*     if ($session->Answered != 'Answered') {
