@@ -459,12 +459,14 @@ Route::post('/online-course-api', function (Request $r) {
 
     if ($digit == 1) {
         try {
-            $lesson->attended_at = date('Y-m-d H:i:s');
+            if ($lesson->attended_at == null || $lesson->attended_at == '') {
+                $lesson->attended_at = date('Y-m-d H:i:s');
+            }
             $lesson->status = 'Attended';
             $lesson->save();
         } catch (\Exception $e) {
         }
-        Utils::lesson_menu('audio', 'Lesson menu',$topic);
+        Utils::lesson_menu('audio', 'Lesson menu', $topic);
     }
 
     Utils::my_resp('text', 'Invalid option. Please try again.');
