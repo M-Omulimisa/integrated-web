@@ -298,6 +298,11 @@ Route::post('/online-course-api', function (Request $r) {
         $session->digit = $r->dtmfDigits;
         $digit = $r->dtmfDigits;
     }
+
+    if ($r->callSessionState != 'Completed') {
+        $session->postData = json_encode($_POST); 
+    }
+
     try {
         $session->save();
     } catch (\Exception $e) {
@@ -470,6 +475,7 @@ Route::post('/online-course-api', function (Request $r) {
 
 
 
+
     if ($digit == 1) {
         try {
             if ($lesson->attended_at == null || $lesson->attended_at == '') {
@@ -488,11 +494,10 @@ Route::post('/online-course-api', function (Request $r) {
         $session->isActive = 'No';
         $session->save();
         Utils::my_resp('text', 'Call completed.');
+        $session->error_message = json_encode($_POST);
         return;
     } else {
-        $session->postData = json_encode($_POST);
-        $session->has_error = 'Yes';
-        $session->error_message = 'No digit found';
+
         $session->save();
     }
 
