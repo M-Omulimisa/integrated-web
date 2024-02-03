@@ -356,6 +356,12 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
+    if ($r->callSessionState != 'Completed') {
+        $session->postData = json_encode($_POST); 
+        if(isset($_POST['recordingUrl'])){
+            $session->postData = json_encode($_POST['recordingUrl']);
+        }
+    }
 
 
     $students = \App\Models\OnlineCourseStudent::where('user_id', $user->id)->get();
@@ -425,13 +431,7 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp('text', 'Topic not found.');
     }
 
-
-    if ($r->callSessionState != 'Completed') {
-        $session->postData = json_encode($_POST); 
-        if(isset($_POST['recordingUrl'])){
-            $session->postData = json_encode($_POST['recordingUrl']);
-        }
-    }
+    
 
     if (
         isset(
