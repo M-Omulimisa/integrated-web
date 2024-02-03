@@ -792,6 +792,7 @@ class Utils
                 <Record finishOnKey="*" maxLength="120" trimSilence="true" playBeep="true">
                     <Play url="' . $url . '" />
                 </Record>
+                <Say voice="en-US-Standard-C" playBeep="false" >Thank you for recording your question.</Say>
             </Response>';
             die();
         }
