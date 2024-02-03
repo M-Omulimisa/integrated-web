@@ -443,7 +443,10 @@ Route::post('/online-course-api', function (Request $r) {
     }
 
 
-    if ((!$isNewSession) && $digit == 2) {
+    if (
+        ((!$isNewSession) && $digit == 2) ||
+        ($previous_digit == 2 && ($digit == 2))
+    ) {
         $session->digit = 2;
         $session->save();
         Utils::quizz_menu($topic);
@@ -456,6 +459,9 @@ Route::post('/online-course-api', function (Request $r) {
         $lesson->save();
         Utils::my_resp_digits('audio', 'Quiz Answered');
     }
+
+
+    
 
     if ($digit == 1) {
         try {
