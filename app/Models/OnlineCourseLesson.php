@@ -9,6 +9,16 @@ class OnlineCourseLesson extends Model
 {
     use HasFactory;
 
+    //boot
+    protected static function boot()
+    {
+        parent::boot();
+        static::updating(function ($model) {
+            if ($model->status != 'Attended')
+                $model->attended_at = null;
+        });
+    }
+
     //belongs to student_id
     public function student()
     {
@@ -26,10 +36,10 @@ class OnlineCourseLesson extends Model
     {
         return $this->belongsTo(User::class, 'instructor_id');
     }
-    
+
     //belongs to online_course_topic_id
     public function onlineCourseTopic()
     {
         return $this->belongsTo(OnlineCourseTopic::class);
-    } 
+    }
 }

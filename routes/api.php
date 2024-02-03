@@ -410,19 +410,19 @@ Route::post('/online-course-api', function (Request $r) {
 
     foreach ($students as $student) {
         //get session where attended_at is today
-        $_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
-            ->where('attended_at', '>=', date('Y-m-d 00:00:00'))
-            ->where('attended_at', '<=', date('Y-m-d 23:59:59'))
-            ->where('online_course_id', $student->online_course_id)
+        $done_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
             ->where('status', date('Attended'))
             ->first();
-        if ($_lesson != null) {
-            $lesson = $_lesson;
-            break;
+        if ($done_lesson != null) {
+            //check if attended_at is today
+            if (date('Y-m-d', strtotime($done_lesson->attended_at)) == date('Y-m-d')) {
+                $lesson = $done_lesson;
+                break;
+            }
         }
+
         //get any latest pending lesson
         $_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->user_id)
-            ->where('online_course_id', $student->online_course_id)
             ->where('status', 'Pending')
             ->orderBy('position', 'asc')
             ->first();
@@ -430,7 +430,7 @@ Route::post('/online-course-api', function (Request $r) {
             $lesson = $_lesson;
             break;
         } else {
-            $lesson = $_lesson;
+            $lesson = null;
         }
     }
 

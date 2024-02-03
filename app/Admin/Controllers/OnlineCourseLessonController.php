@@ -90,14 +90,20 @@ class OnlineCourseLessonController extends AdminController
             ->label([
                 'Pending' => 'warning',
                 'Attended' => 'success',
-                'Cancelled' => 'danger'
             ])
             ->sortable()
             ->filter([
                 'Pending' => 'Pending',
                 'Attended' => 'Attended',
-                'Cancelled' => 'Cancelled'
-            ]);
+            ])
+            ->editable(
+                'select',
+                [
+                    'Pending' => 'Pending',
+                    'Attended' => 'Attended',
+                ]
+            );
+            
         $grid->column('has_error', __('Has error'))
             ->label([
                 'No' => 'success',
@@ -162,7 +168,6 @@ class OnlineCourseLessonController extends AdminController
             ->options([
                 'Pending' => 'Pending',
                 'Attended' => 'Attended',
-                'Cancelled' => 'Cancelled'
             ])->default('Pending');
         return $form;
         $form->number('online_course_topic_id', __('Online course topic id'));
