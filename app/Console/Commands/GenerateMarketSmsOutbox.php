@@ -112,6 +112,7 @@ class GenerateMarketSmsOutbox extends Command
                                 // date('Y-m-d').' Market: '.
                                 // .' M-Omulimisa'
                                 $sms = $pkgMessage->message;
+                                info($sms);
                                         
                                 if($this->debug) logger($sms);
                                 if($this->debug) logger(strlen($sms));
