@@ -93,7 +93,7 @@ class GenerateMarketSmsOutbox extends Command
 
                         $subscription->update(['outbox_generation_status' => 3]);
 
-                        $pkgMessage = MarketPackageMessage::whereLanguageId($subscription->language_id)->where('package_id', $subscription->package_id)->first();
+                        $pkgMessage = MarketPackageMessage::where('package_id', $subscription->package_id)->where('language_id', $subscription->language_id)->first();
 
                         info($pkgMessage);
                         
