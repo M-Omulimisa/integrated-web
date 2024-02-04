@@ -89,16 +89,16 @@ class GenerateMarketSmsOutbox extends Command
 
                     MarketSubscription::whereIn('id', $subscriptions->pluck('id')->toArray())->update(['outbox_generation_status' => 2]);
 
-                    info($subscriptions);
+                    Log::info($subscriptions);
                     foreach ($subscriptions as $subscription) {
 
-                        info($subscription);
+                        Log::info($subscription);
 
                         $subscription->update(['outbox_generation_status' => 3]);
 
                         $pkgMessage = MarketPackageMessage::where('package_id', $subscription->package_id)->where('language_id', $subscription->language_id)->first();
 
-                        info($pkgMessage);
+                        Log::info($pkgMessage);
                         
                         $sms = null;
 
@@ -117,7 +117,7 @@ class GenerateMarketSmsOutbox extends Command
                                 // date('Y-m-d').' Market: '.
                                 // .' M-Omulimisa'
                                 $sms = $pkgMessage->message;
-                                info($sms);
+                                Log::info($sms);
                                         
                                 if($this->debug) logger($sms);
                                 if($this->debug) logger(strlen($sms));
