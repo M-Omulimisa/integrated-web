@@ -89,7 +89,10 @@ class GenerateMarketSmsOutbox extends Command
 
                     MarketSubscription::whereIn('id', $subscriptions->pluck('id')->toArray())->update(['outbox_generation_status' => 2]);
 
+                    info($subscriptions);
                     foreach ($subscriptions as $subscription) {
+
+                        info($subscription);
 
                         $subscription->update(['outbox_generation_status' => 3]);
 
