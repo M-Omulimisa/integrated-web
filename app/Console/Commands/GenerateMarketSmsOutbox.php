@@ -74,10 +74,7 @@ class GenerateMarketSmsOutbox extends Command
                     $query->select('language_id')
                         ->from(with(new MarketPackageMessage)->getTable());
                 })
-                ->whereIn('region_id', function ($query) {
-                    $query->select('region_id')
-                        ->from(with(new MarketPackageRegion)->getTable());
-                })
+                
                 ->whereNotIn('id', function ($query) use ($week) {
                     $query->select('subscription_id')
                         ->where('sent_at', '>=', $week['start_date'])
