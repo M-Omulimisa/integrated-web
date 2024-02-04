@@ -95,6 +95,8 @@ class GenerateMarketSmsOutbox extends Command
 
                         $pkgMessage = MarketPackageMessage::whereLanguageId($subscription->language_id)->where('package_id', $subscription->package_id)->first();
 
+                        info($pkgMessage);
+                        
                         $sms = null;
 
                         if ($pkgMessage) {
