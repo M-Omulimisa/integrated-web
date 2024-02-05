@@ -74,10 +74,7 @@ class GenerateMarketSmsOutbox extends Command
                     $query->select('language_id')
                         ->from(with(new MarketPackageMessage)->getTable());
                 })
-                ->whereIn('region_id', function ($query) {
-                    $query->select('region_id')
-                        ->from(with(new MarketPackageRegion)->getTable());
-                })
+                
                 ->whereNotIn('id', function ($query) use ($week) {
                     $query->select('subscription_id')
                         ->where('sent_at', '>=', $week['start_date'])
@@ -92,19 +89,17 @@ class GenerateMarketSmsOutbox extends Command
 
                     MarketSubscription::whereIn('id', $subscriptions->pluck('id')->toArray())->update(['outbox_generation_status' => 2]);
 
+                    Log::info($subscriptions);
                     foreach ($subscriptions as $subscription) {
+
+                        Log::info($subscription);
 
                         $subscription->update(['outbox_generation_status' => 3]);
 
-                        $region_id = $subscription->region_id;
-                        $pkgMessage = MarketPackageMessage::whereLanguageId($subscription->language_id)
-                                                        ->whereIn('package_id', function ($query) use ($region_id) {
-                                                            $query->select('package_id')
-                                                                ->whereRegionId($region_id)
-                                                                ->from(with(new MarketPackageRegion)->getTable());
-                                                        })
-                                                        ->first();
+                        $pkgMessage = MarketPackageMessage::where('package_id', $subscription->package_id)->where('language_id', $subscription->language_id)->first();
 
+                        Log::info($pkgMessage);
+                        
                         $sms = null;
 
                         if ($pkgMessage) {
@@ -114,7 +109,7 @@ class GenerateMarketSmsOutbox extends Command
                             // if last sent is greater than last update date of the msg
                             // dont send, msg not yet updates
                             if (!is_null($subscription->outbox_last_date) && $subscription->outbox_last_date > $pkgMessage->updated_at) {
-                                Log::error(['GenerateMarketSmsOutbox' => 'Language: '.$subscription->language->name.' & Region: '.$subscription->region->name.' has no new message to generate']);
+                                Log::error(['GenerateMarketSmsOutbox' => 'Language: '.$subscription->language->name.' has no new message to generate']);
                                 $subscription->update(['outbox_generation_status' => false]);
                             }
                             else{
@@ -122,6 +117,7 @@ class GenerateMarketSmsOutbox extends Command
                                 // date('Y-m-d').' Market: '.
                                 // .' M-Omulimisa'
                                 $sms = $pkgMessage->message;
+                                Log::info($sms);
                                         
                                 if($this->debug) logger($sms);
                                 if($this->debug) logger(strlen($sms));
@@ -152,7 +148,7 @@ class GenerateMarketSmsOutbox extends Command
 
                         }
                         else{
-                            Log::error(['GenerateMarketSmsOutbox' => 'Language: '.$subscription->language->name.' & Region: '.$subscription->region->name.' has no package']);
+                            Log::error(['GenerateMarketSmsOutbox' => 'Language: '.$subscription->language->name.' has no package']);
                         }
                     }
                 });
