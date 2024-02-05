@@ -69,8 +69,6 @@ class OnlineCourseController extends AdminController
                     return "-";
                 }
                 $link = url('storage/' . $audio_url);
-
-
                 return "<audio controls><source src='" . $link . "' type='audio/mpeg'></audio>";
             })->sortable();
 

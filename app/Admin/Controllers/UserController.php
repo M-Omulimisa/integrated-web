@@ -9,6 +9,7 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends AdminController
 {
@@ -90,40 +91,47 @@ class UserController extends AdminController
      *
      * @return Form
      */
-    protected function form()
+    public function form()
     {
-        $form = new Form(new User());
+        $userModel = config('admin.database.users_model');
+        $permissionModel = config('admin.database.permissions_model');
         $roleModel = config('admin.database.roles_model');
-        $u = Admin::user();
 
-        $form->hidden('created_by', __('Created by'))
-            ->default($u->id);
-       
-        $form->text('name', __('Name'))->rules('required');
-        $form->text('phone', __('Phone'))->rules('required');
-        $form->email('email', __('Email'))->rules('required');
+        $form = new Form(new $userModel());
+
+        $userTable = config('admin.database.users_table');
+        $connection = config('admin.database.connection');
+
+        $form->display('id', 'ID');
+        $form->text('email', trans('Email Address'))
+            ->creationRules(['required', "unique:{$connection}.{$userTable}"])
+            ->updateRules(['required', "unique:{$connection}.{$userTable},username,{{id}}"]);
+
+        $form->display('username', 'Username');
+
+        $form->text('first_name', 'First name')->rules('required');
+        $form->text('last_name', 'Last name')->rules('required');
+
+        $form->image('avatar', trans('admin.avatar'));
+        $form->password('password', trans('admin.password'))->rules('required|confirmed');
+        $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
+            ->default(function ($form) {
+                return $form->model()->password;
+            });
+
+        $form->ignore(['password_confirmation']);
+
         $form->multipleSelect('roles', trans('admin.roles'))->options($roleModel::all()->pluck('name', 'id'));
-        $form->textarea('photo', __('Photo'));
-        $form->radio('status', __('Status'))
-            ->options(['1' => 'Active', '0' => 'Inactive'])
-            ->default('1');
+        $form->multipleSelect('permissions', trans('admin.permissions'))->options($permissionModel::all()->pluck('name', 'id'));
 
-        /*         $form->password('password', __('Password'));
-        $form->text('created_by', __('Created by'))
-            ->default(Administrator::where('username', 'admin')->first()->id); */
 
-        /*         $form->switch('verified', __('Verified')); 
-        $form->datetime('email_verified_at', __('Email verified at'))->default(date('Y-m-d H:i:s'));
-        $form->text('country_id', __('Country id'));
+        $form->saving(function (Form $form) {
+            if ($form->password && $form->model()->password != $form->password) {
+                $form->password = Hash::make($form->password);
+            }
+            $form->username = strtolower($form->email);
+        });
 
-        $form->text('microfinance_id', __('Microfinance id'));
-        $form->text('distributor_id', __('Distributor id'));
-        */
-        $form->hidden('organisation_id', __('Organisation'))
-            ->default(1);
-
-        /*         $form->textarea('username', __('Username'));
- */
         return $form;
     }
 }

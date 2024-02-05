@@ -149,6 +149,10 @@ class User extends Administrator implements      AuthenticatableContract, JWTSub
                     throw new \Exception("Phone number already registered.", 1);
                 }
             }
+            //if email not empty and not null set username to email
+            if ($model->email != null && strlen($model->email) > 3) {
+                $model->username = $model->email;
+            } 
         }); 
     }
 
