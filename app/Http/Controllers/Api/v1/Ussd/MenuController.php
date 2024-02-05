@@ -937,7 +937,7 @@ class MenuController extends Controller
                     $response       = "Shisintsa shina shesi wandikanile khufunakho khulekela?\n";
 
                 }
-                else if($language->language == 'Runyankole'){
+                else if($language->language == 'Lunyakitara'){
 
                     $action         = "request";
                     $response       = "Neishomoki eriwakubeire noyenda oshomesibweho?\n";
