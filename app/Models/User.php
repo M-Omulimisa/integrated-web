@@ -11,12 +11,13 @@ use Spatie\Permission\Traits\HasRoles;
 use App\Models\Traits\Relationships\Users\UserRelationship;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Encore\Admin\Auth\Database\Administrator;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements AuthenticatableContract, JWTSubject
+class User extends Administrator implements      AuthenticatableContract, JWTSubject
 {
     use HasFactory, Notifiable, HasRoles, UserRelationship, HasApiTokens;
 

@@ -158,10 +158,26 @@ use Dflydev\DotAccessData\Util;
 |
 */
 
-/* Route::get('/', function () {
+/* 
+Route::get('/', function () {
     // return view('welcome');
     //return redirect('/home');
-}); */
+});
+*/
+
+Route::get('send-inspector-notification', function () {
+    if(!isset($_GET['id'])){
+        die("ID not set");
+    }
+    $course_id = $_GET['id'];
+    $course = OnlineCourse::find($course_id);
+    if($course == null){
+        die("Course not found");
+    }
+    $course->send_inspector_notification();
+    // return view('welcome');
+    //return redirect('/home');
+});
 
 Route::get('/course-student-batch-importer', function () {
     if (!isset($_GET['id'])) {

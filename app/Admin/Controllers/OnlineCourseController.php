@@ -58,6 +58,11 @@ class OnlineCourseController extends AdminController
             ->sortable();
 
         $grid->column('summary', __('Summary'))->hide();
+        $grid->column('link', __('Send Instructor Notification'))
+            ->display(function () {
+                $url = url('send-inspector-notification?id=' . $this->id);
+                return "<a href='" . $url . "'>Send Instructor Notification</a>";
+            })->sortable();
         $grid->column('video_url', __('Video url'))->hide();
         $grid->column('audio_url', __('Audio url'))
             ->display(function ($audio_url) {
@@ -137,6 +142,9 @@ class OnlineCourseController extends AdminController
         $users = \App\Models\User::all();
         $data = [];
         foreach ($users as $user) {
+            if (!($user->hasRole('instructor'))) {
+                continue;
+            }
             $data[$user->id] = $user->name . " - #" . $user->id;
         }
         $form->select('instructor_id', __('Instructor'))

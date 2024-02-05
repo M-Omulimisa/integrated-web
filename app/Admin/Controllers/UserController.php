@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Models\User;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -28,7 +29,7 @@ class UserController extends AdminController
         $grid = new Grid(new User());
 
         //photo
-    /*     $grid->column('photo', __('Photo'))->lightbox(['width' => 50, 'height' => 50]); */
+        /*     $grid->column('photo', __('Photo'))->lightbox(['width' => 50, 'height' => 50]); */
         $grid->column('id', __('ID'))->sortable();
         $grid->column('name', __('Name'))->sortable();
         $grid->column('organisation_id', __('Organisation'))
@@ -93,29 +94,36 @@ class UserController extends AdminController
     {
         $form = new Form(new User());
         $roleModel = config('admin.database.roles_model');
+        $u = Admin::user();
 
-        $form->text('name', __('Name'));
-        $form->text('phone', __('Phone'));
-        $form->email('email', __('Email'));
+        $form->hidden('created_by', __('Created by'))
+            ->default($u->id);
+       
+        $form->text('name', __('Name'))->rules('required');
+        $form->text('phone', __('Phone'))->rules('required');
+        $form->email('email', __('Email'))->rules('required');
         $form->multipleSelect('roles', trans('admin.roles'))->options($roleModel::all()->pluck('name', 'id'));
         $form->textarea('photo', __('Photo'));
-        $form->password('password', __('Password'));
-        $form->datetime('password_last_updated_at', __('Password last updated at'))->default(date('Y-m-d H:i:s'));
-        $form->datetime('last_login_at', __('Last login at'))->default(date('Y-m-d H:i:s'));
-        $form->text('created_by', __('Created by'));
-        $form->text('status', __('Status'))->default('Active');
-        $form->switch('verified', __('Verified'));
+        $form->radio('status', __('Status'))
+            ->options(['1' => 'Active', '0' => 'Inactive'])
+            ->default('1');
+
+        /*         $form->password('password', __('Password'));
+        $form->text('created_by', __('Created by'))
+            ->default(Administrator::where('username', 'admin')->first()->id); */
+
+        /*         $form->switch('verified', __('Verified')); 
         $form->datetime('email_verified_at', __('Email verified at'))->default(date('Y-m-d H:i:s'));
         $form->text('country_id', __('Country id'));
-        $form->text('organisation_id', __('Organisation id'));
+
         $form->text('microfinance_id', __('Microfinance id'));
         $form->text('distributor_id', __('Distributor id'));
-        $form->text('buyer_id', __('Buyer id'));
-        $form->text('two_auth_method', __('Two auth method'))->default('EMAIL');
-        $form->text('user_hash', __('User hash'));
-        $form->text('remember_token', __('Remember token'));
-        $form->textarea('username', __('Username'));
+        */
+        $form->hidden('organisation_id', __('Organisation'))
+            ->default(1);
 
+        /*         $form->textarea('username', __('Username'));
+ */
         return $form;
     }
 }

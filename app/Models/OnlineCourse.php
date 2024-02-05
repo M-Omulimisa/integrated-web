@@ -82,4 +82,39 @@ class OnlineCourse extends Model
             $onlineCourse->onlineCourseLessons()->delete();
         });
     }
+
+
+    public function send_inspector_notification()
+    {
+        $u = User::find($this->instructor_id);
+        if ($u == null) {
+            throw new \Exception("Instructor not found.");
+        }
+        /*         $u->intro = rand(100000, 999999);
+        $u->save(); */
+        $data['email'] = $u->email;
+        $email = $data['email'];
+        if ($email == null || $email == "") {
+            throw new \Exception("Email is required.");
+        }
+
+        $url = admin_url('online-courses/');
+        $msg = "Dear " . $u->name . ",<br>";
+        $msg .= "You be made a course instructor to the course " . $this->title . ".<br>";
+        $msg .= "Please login to your account using the following link and start feeding the course content.<br>";
+        $msg .= "<a href='" . $url . "'>" . $url . "</a><br>";
+        $msg .= "<br><small>This is an automated message, please do not reply.</small><br>";
+
+        $data['body'] = $msg;
+        $data['view'] = 'mails/mail-1';
+        $data['data'] = $data['body'];
+        $data['name'] = $u->name;
+        $data['mail'] = $u->email;
+        $data['subject'] = "M-Omulimisa - Course Instructor Notification";
+        try {
+            Utils::mail_sender($data);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
 }

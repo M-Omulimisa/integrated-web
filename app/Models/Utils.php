@@ -8,9 +8,36 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Zebra_Image;
 use Berkayk\OneSignal\OneSignalClient;
+use Illuminate\Support\Facades\Mail;
 
 class Utils
 {
+
+
+    //mail sender
+    public static function mail_sender($data)
+    {
+        try {
+            Mail::send(
+                'mails/mail-1',
+                [
+                    'body' => view('mails/mail-1', [
+                        'body' => $data['body'],
+                    ]),
+                    'title' => $data['subject']
+                ],
+                function ($m) use ($data) {
+                    $m->to($data['email'], $data['name'])
+                        ->subject($data['subject']);
+                    $m->from('noreply@hambren.com', $data['subject']);
+                }
+            );
+        } catch (\Throwable $th) {
+            $msg = 'failed';
+            throw $th;
+        }
+    }
+
 
     public static function payment_status_test()
     {
