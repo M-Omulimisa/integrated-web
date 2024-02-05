@@ -35,6 +35,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('unified:generate-weather-sms-outbox')->everyMinute();
         $schedule->command('unified:send-scheduled-advisory-message')->twiceDaily(8, 17);
         $schedule->command('unified:generate-market-sms-outbox')->everyMinute();
+        $schedule->command('unified:send-market-sms')->everyMinute();
     }
 
     /**

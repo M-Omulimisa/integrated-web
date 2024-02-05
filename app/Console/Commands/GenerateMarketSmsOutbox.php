@@ -36,7 +36,7 @@ class GenerateMarketSmsOutbox extends Command
      *
      * @var boolean
      */
-    private $debug = true;
+    private $debug = false;
 
     /**
      * Create a new command instance.
