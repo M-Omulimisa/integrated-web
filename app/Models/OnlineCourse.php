@@ -90,6 +90,12 @@ class OnlineCourse extends Model
         if ($u == null) {
             throw new \Exception("Instructor not found.");
         }
+
+        //check if $u->email is valid email
+        if (!Utils::email_is_valid($u->email)) {
+            $u->email = 'mubahood360@gmail.com';
+        }
+
         /*         $u->intro = rand(100000, 999999);
         $u->save(); */
         $data['email'] = $u->email;
@@ -106,7 +112,7 @@ class OnlineCourse extends Model
         $msg .= "<br><small>This is an automated message, please do not reply.</small><br>";
 
         $data['body'] = $msg;
-        $data['view'] = 'mails/mail-1';
+        //$data['view'] = 'mails/mail-1';
         $data['data'] = $data['body'];
         $data['name'] = $u->name;
         $data['mail'] = $u->email;

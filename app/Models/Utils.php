@@ -14,6 +14,12 @@ class Utils
 {
 
 
+    //public static function email_is_valid
+    public static function email_is_valid($email)
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
+    } 
+
     //mail sender
     public static function mail_sender($data)
     {
@@ -21,15 +27,13 @@ class Utils
             Mail::send(
                 'mails/mail-1',
                 [
-                    'body' => view('mails/mail-1', [
-                        'body' => $data['body'],
-                    ]),
+                    'body' => $data['body'],
                     'title' => $data['subject']
                 ],
                 function ($m) use ($data) {
                     $m->to($data['email'], $data['name'])
                         ->subject($data['subject']);
-                    $m->from('noreply@hambren.com', $data['subject']);
+                    $m->from(env('MAIL_FROM_ADDRESS'), $data['subject']);
                 }
             );
         } catch (\Throwable $th) {

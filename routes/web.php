@@ -174,7 +174,12 @@ Route::get('send-inspector-notification', function () {
     if($course == null){
         die("Course not found");
     }
-    $course->send_inspector_notification();
+    try {
+        $course->send_inspector_notification();
+        die("Success");
+    } catch (\Exception $e) {
+        die($e->getMessage());
+    }
     // return view('welcome');
     //return redirect('/home');
 });
