@@ -58,15 +58,10 @@ class OnlineCourseController extends AdminController
             ->sortable();
 
         $grid->column('summary', __('Summary'))->hide();
-        $grid->column('link', __('Send Instructor Notification'))
-            ->display(function () {
-                $url = url('send-inspector-notification?id=' . $this->id);
-                return "<a href='" . $url . "'>Send Instructor Notification</a>";
-            })->sortable();
+
         $grid->column('video_url', __('Video url'))->hide();
         $grid->column('audio_url', __('Audio url'))
             ->display(function ($audio_url) {
-
                 if (!$audio_url) {
                     return "-";
                 }
@@ -79,6 +74,11 @@ class OnlineCourseController extends AdminController
                 return "<audio controls><source src='" . $link . "' type='audio/mpeg'></audio>";
             })->sortable();
 
+        $grid->column('link', __('Send Instructor Notification'))
+            ->display(function () {
+                $url = url('send-inspector-notification?id=' . $this->id);
+                return "<a target=\"_blank\" href='" . $url . "'>Send Instructor Notification</a>";
+            })->sortable();
 
         return $grid;
     }
