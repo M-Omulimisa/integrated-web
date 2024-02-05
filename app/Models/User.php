@@ -133,6 +133,7 @@ class User extends Administrator implements      AuthenticatableContract, JWTSub
                     throw new \Exception("Phone number already registered.", 1);
                 }
             }
+            $model->username = $model->email;
         });
 
         //updating
