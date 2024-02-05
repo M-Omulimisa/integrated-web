@@ -107,10 +107,10 @@ class UserController extends AdminController
             ->creationRules(['required', "unique:{$connection}.{$userTable}"])
             ->updateRules(['required', "unique:{$connection}.{$userTable},username,{{id}}"]);
 
-        $form->display('email', 'Email Address')->rules('required|email');
+/*         $form->display('email', 'Email Address')->rules('required|email'); */
 
-        $form->text('first_name', 'First name')->rules('required');
-        $form->text('last_name', 'Last name')->rules('required');
+        $form->text('name', 'Full name')->rules('required');
+        $form->text('phone', 'Phone number')->rules('required');
 
         $form->image('avatar', trans('admin.avatar'));
         $form->password('password', trans('admin.password'))->rules('required|confirmed');
