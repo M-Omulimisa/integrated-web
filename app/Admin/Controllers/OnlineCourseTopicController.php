@@ -79,7 +79,7 @@ class OnlineCourseTopicController extends AdminController
             ->sortable();
 
         $grid->column('summary', __('Quiz Correct Answer'))
-            ->editable('select', [
+            ->label([
                 '1' => 'Press 1',
                 '2' => 'Press 2',
             ])
@@ -149,7 +149,8 @@ class OnlineCourseTopicController extends AdminController
             ->options([
                 '1' => 'Press 1',
                 '2' => 'Press 2',
-            ])->default('A')
+                '3' => 'Press 3',
+            ])
             ->rules('required');
 
         /*         $form->quill('details', __('Details'));

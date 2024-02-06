@@ -223,6 +223,91 @@ Route::group([
 id	created_at	updated_at	sessionId	type	phoneNumber	status	postData	cost	
 
 */
+Route::get('/online-make-reminder-calls', function (Request $r) {
+
+    $force = false;
+    if (isset($r->force)) {
+        if ($r->force == 'Yes') {
+            $force = true;
+        }
+    }
+
+    if (!$force) {
+        $now = date('H:i:s');
+        if ($now < '16:00:00' || $now > '16:30:00') {
+            return;
+        }
+    }
+
+    //lessons that were attended today
+    $today_lessons = \App\Models\OnlineCourseLesson::where('attended_at', '>=', date('Y-m-d 00:00:00'))
+        ->where('attended_at', '<=', date('Y-m-d 23:59:59'))
+        ->where('status', 'Attended')
+        ->get();
+
+    $done_student_ids = [];
+    foreach ($today_lessons as $key => $lesson) {
+        $done_student_ids[] = $lesson->student_id;
+    }
+
+    //pending students
+    $pending_students = \App\Models\OnlineCourseStudent::whereNotIn('id', $done_student_ids)
+        ->get();
+
+    $students_to_call = [];
+    foreach ($pending_students as $key => $pending_student) {
+        //get any latest pending lesson
+        $_lesson = \App\Models\OnlineCourseLesson::where('student_id', $pending_student->id)
+            ->where('status', 'Pending')
+            ->orderBy('position', 'asc')
+            ->first();
+        if ($_lesson != null) {
+
+            if (!$force) {
+                if ($_lesson->has_reminder_call == 'Yes') {
+                    continue;
+                }
+            }
+            $students_to_call[] = $pending_student;
+            $_lesson->has_reminder_call = 'Yes';
+            $_lesson->save();
+        }
+    }
+
+    $client = new \GuzzleHttp\Client();
+    $phones = [];
+    foreach ($students_to_call as $key => $value) {
+        $phone = Utils::prepare_phone_number($value->phone);
+        if (!Utils::phone_number_is_valid($phone)) {
+            continue;
+        }
+        $phone = '+256783204665';
+        $phones[] = $phone;
+    }
+
+    if (count($phones) < 1) {
+        die("No students to call.");
+    }
+    try {
+        $client->request('POST', 'https://voice.africastalking.com/call', [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+                'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
+            ],
+            'form_params' => [
+                'username' => 'dninsiima',
+                'to' => implode(',', $phones),
+                'from' => '+256323200710',
+                'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
+            ]
+        ]);
+        die("Success");
+    } catch (\Exception $e) {
+        die("Failed because " . $e->getMessage());
+    }
+    die("No students to call");
+});
 Route::post('/online-course-api', function (Request $r) {
 
 
@@ -470,7 +555,7 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::quizz_menu($topic);
     }
 
-    if ($previous_digit == 5 && ($digit == 1 || $digit == 2)) {
+    if ($previous_digit == 5 && ($digit == 1 || $digit == 2 || $digit == 3)) {
         $lesson->student_quiz_answer = $digit;
         $session->digit = 1; //back to main menu
         $session->save();
