@@ -263,10 +263,8 @@ Route::get('/online-make-reminder-calls', function (Request $r) {
             ->first();
         if ($_lesson != null) {
 
-            if (!$force) {
-                if ($_lesson->has_reminder_call == 'Yes') {
-                    continue;
-                }
+            if ($_lesson->has_reminder_call == 'Yes') {
+                continue;
             }
             $students_to_call[] = $pending_student;
             $_lesson->has_reminder_call = 'Yes';

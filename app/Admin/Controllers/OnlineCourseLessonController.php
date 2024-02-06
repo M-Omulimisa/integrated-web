@@ -26,6 +26,13 @@ class OnlineCourseLessonController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new OnlineCourseLesson());
+
+
+        //add on top of the grid html data
+        $grid->header(function ($query) {
+            $call_url = url('api/online-make-reminder-calls');
+            return "<a target=\"_blank\" href='$call_url' class='btn btn-sm btn-success'>Make Reminder Calls Now</a>";
+        });
         //$grid->disableActions();
         $grid->disableCreateButton();
         $grid->model()->orderBy('id', 'desc');
@@ -88,19 +95,26 @@ class OnlineCourseLessonController extends AdminController
             })
             ->sortable();
         $grid->column('status', __('Status'))
-
             ->sortable()
             ->filter([
                 'Pending' => 'Pending',
                 'Attended' => 'Attended',
             ])
-            ->editable(
-                'select',
-                [
-                    'Pending' => 'Pending',
-                    'Attended' => 'Attended',
-                ]
-            );
+            ->label([
+                'Pending' => 'warning',
+                'Attended' => 'success'
+            ]);
+
+        $grid->column('has_reminder_call', __('Reminder Call'))
+            ->sortable()
+            ->filter([
+                'Pending' => 'Pending',
+                'Attended' => 'Attended',
+            ])
+            ->editable('select', [
+                'No' => 'No',
+                'Yes' => 'Yes'
+            ]);
 
         $grid->column('has_error', __('Has error'))
             ->label([
