@@ -989,6 +989,21 @@ class MenuFunctions
         return $question;
     }
 
+    public function getSessionLanguage($session_id){
+
+        $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();
+
+        $ussd_language = UssdLanguage::select('language')->where('id', $selected_language->data['language_id'])->first();
+
+        if($ussd_language === null){
+
+            return false;
+        }
+        else{
+            return $ussd_language;
+        }
+    }
+
     public function saveEvaluationAnswer($session_id, $current_question, $input_text){
 
         $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();

@@ -937,7 +937,7 @@ class MenuController extends Controller
                     $response       = "Shisintsa shina shesi wandikanile khufunakho khulekela?\n";
 
                 }
-                else if($language->language == 'Lunyakitara'){
+                else if($language->language == 'Runyankore'){
 
                     $action         = "request";
                     $response       = "Neishomoki eriwakubeire noyenda oshomesibweho?\n";
@@ -990,8 +990,30 @@ class MenuController extends Controller
 
             dispatch(new SendUssdAdvisoryMessage($sessionId, $input_text));
 
-            $action         = "end";
-            $response       = "Thank you. Advisory will be sent to you shortly";
+            $ussd_lang =  $this->menu_helper->getSessionLanguage($sessionId);
+
+            if($ussd_lang->language == 'English'){
+
+                $action         = "end";
+                $response       = "Thank you. Advisory will be sent to you shortly";
+
+            }
+            else if($ussd_lang->language == 'Lumasaba'){
+
+                $action         = "end";
+                $response       = "Bubakha buno utsya khubufuna mumbuka ikhali iye aleyi ta.\n";
+
+            }
+            else if($ussd_lang->language == 'Runyankore'){
+
+                $action         = "end";
+                $response       = "Webare. Okushomesebwa nozakutandika kukutunga omukaire kakye\n";
+            }
+            else{
+                $action         = "end";
+                $response       = "Thank you. Advisory will be sent to you shortly";
+            }
+
             $current_menu  = "Sending advisory";
            
         }
