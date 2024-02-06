@@ -30,7 +30,7 @@ class OnlineCourseLessonController extends AdminController
 
         //add on top of the grid html data
         $grid->header(function ($query) {
-            $call_url = url('api/online-make-reminder-calls');
+            $call_url = url('api/online-make-reminder-calls?force=Yes');
             return "<a target=\"_blank\" href='$call_url' class='btn btn-sm btn-success'>Make Reminder Calls Now</a>";
         });
         //$grid->disableActions();
