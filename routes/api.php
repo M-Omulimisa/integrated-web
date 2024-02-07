@@ -324,6 +324,7 @@ Route::post('/online-course-api', function (Request $r) {
 
     $previous_digit = 1;
     $isNewSession = false;
+    $recordingUrl = null;
     $session = OnlineCourseAfricaTalkingCall::where('sessionId', $r->sessionId)->first();
     if ($session == null) {
         $session = new OnlineCourseAfricaTalkingCall();
@@ -337,12 +338,14 @@ Route::post('/online-course-api', function (Request $r) {
 
     if (isset($_POST['recordingUrl'])) {
         $session->recordingUrl = $_POST['recordingUrl'];
+        $recordingUrl = $_POST['recordingUrl'];
         $session->save();
     }
 
     if ($session->recordingUrl == null || strlen($session->recordingUrl) < 3) {
         if (isset($r->recordingUrl)) {
             $session->recordingUrl = $session->recordingUrl;
+            $recordingUrl = $session->recordingUrl;
             $session->save();
         }
     }
@@ -497,8 +500,8 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp_digits('audio', 'Main Menu', $student = $student);
     }
 
-    if ($session->recordingUrl != null && strlen($session->recordingUrl) > 3) {
-        $lesson->student_audio_question = $session->recordingUrl;
+    if ($recordingUrl != null && strlen($recordingUrl) > 3) {
+        $lesson->student_audio_question = $recordingUrl;
         $lesson->save();
         $session->digit = 1; //back to main menu
         $session->save();
