@@ -18,7 +18,7 @@ class Utils
     public static function email_is_valid($email)
     {
         return filter_var($email, FILTER_VALIDATE_EMAIL);
-    } 
+    }
 
     //mail sender
     public static function mail_sender($data)
@@ -809,7 +809,7 @@ class Utils
         die();
     }
 
-    public static function question_menu($topic,$student = null)
+    public static function question_menu($topic, $student = null)
     {
         header('Content-type: text/plain');
 
@@ -819,12 +819,13 @@ class Utils
         if ($menu != null) {
             $url = asset('storage/' . $menu->english_audio);
 
-            if($student!=null){
-                try{
+            if ($student != null) {
+                $audio_1 = null;
+                try {
                     $audio_1 = $student->get_menu_audio_url($menu);
-                }catch(\Throwable $th){ 
-                } 
-                if($audio_1 != null && strlen($audio_1) > 4){
+                } catch (\Throwable $th) {
+                }
+                if ($audio_1 != null && strlen($audio_1) > 4) {
                     $url = $audio_1;
                 }
             }
@@ -847,7 +848,7 @@ class Utils
 
 
 
-    public static function lesson_menu($type, $data, $topic,$student = null)
+    public static function lesson_menu($type, $data, $topic, $student = null)
     {
         header('Content-type: text/plain');
 
@@ -859,13 +860,14 @@ class Utils
             ])->first();
             if ($menu != null) {
                 $url = asset('storage/' . $menu->english_audio);
+                $audio_1 = null;
 
-                if($student!=null){
-                    try{
+                if ($student != null) {
+                    try {
                         $audio_1 = $student->get_menu_audio_url($menu);
-                    }catch(\Throwable $th){ 
-                    } 
-                    if($audio_1 != null && strlen($audio_1) > 4){
+                    } catch (\Throwable $th) {
+                    }
+                    if ($audio_1 != null && strlen($audio_1) > 4) {
                         $url = $audio_1;
                     }
                 }
@@ -876,7 +878,7 @@ class Utils
                 <GetDigits timeout="20" numDigits="1" >
                     <Play url="' . $url . '" />
                 </GetDigits>
-                <Say>We did not get your input number. Good bye</Say>
+                <Say>We did not get your input number. Good bye.</Say>
             </Response>';
                 die();
             }
@@ -891,15 +893,31 @@ class Utils
     }
 
 
-    public static function my_resp_digits($type, $data)
+    public static function my_resp_digits($type, $data, $student = null)
     {
         header('Content-type: text/plain');
         if ($type == 'audio') {
             $menu = OnlineCourseMenu::where([
                 'name' => $data
             ])->first();
+
+
             if ($menu != null) {
+
                 $url = asset('storage/' . $menu->english_audio);
+                $audio_1 = null;
+                if ($student != null) {
+                    try {
+                        $audio_1 = $student->get_menu_audio_url($menu);
+                    } catch (\Throwable $th) {
+                        die($th->getMessage());
+                    }
+                    if ($audio_1 != null && strlen($audio_1) > 4) {
+                        $url = $audio_1;
+                    }
+                }
+
+
                 echo
                 '<Response>
                 <GetDigits timeout="40" numDigits="1" >

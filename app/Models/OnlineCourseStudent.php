@@ -25,8 +25,12 @@ class OnlineCourseStudent extends Model
             if ($onlineCourse->photo == '5548782a-449b-4483-b28a-c3c3012521ef') {
                 return $url;
             }
-            $menuItem = $onlineCourse->menuItems()->where('id', $menu->id)->first();
+            $menuItem = OnlineCourseMenuItem::where('online_course_menu_id', $menu->id)
+                ->where('language_id', $onlineCourse->photo)
+                ->first();
+
             if ($menuItem == null) {
+                die("Menu item not found.");
                 return $url;
             }
             $language = $menuItem->audio;

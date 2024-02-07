@@ -491,6 +491,12 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
+    if ($digit == 0 && (!$isNewSession)) {
+        $session->digit = 1; //back to main menu
+        $session->save();
+        Utils::my_resp_digits('audio', 'Main Menu',$student = $student);
+    }
+
     if ($session->recordingUrl != null && strlen($session->recordingUrl) > 3) {
         $lesson->student_audio_question = $session->recordingUrl;
         $lesson->save();
@@ -500,10 +506,6 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    if ($digit == 0 && (!$isNewSession)) {
-        Utils::my_resp('text', 'Call completed.');
-        return;
-    }
 
 
     if ($digit == null || strlen($digit) < 1 || $digit == 0) {
@@ -516,6 +518,9 @@ Route::post('/online-course-api', function (Request $r) {
     if ($topic == null) {
         Utils::my_resp('text', 'Topic not found.');
     }
+
+
+
 
     if (
         isset(
@@ -541,7 +546,7 @@ Route::post('/online-course-api', function (Request $r) {
     ) {
         $session->digit = 1; //back to main menu
         $session->save();
-        Utils::question_menu($topic,$student);
+        Utils::question_menu($topic, $student);
     }
 
 
@@ -576,7 +581,7 @@ Route::post('/online-course-api', function (Request $r) {
         }
         $session->digit = 1;
         $session->save();
-        Utils::lesson_menu('audio', 'Lesson menu', $topic,$student);
+        Utils::lesson_menu('audio', 'Lesson menu', $topic, $student = $student);
     }
 
     if ($r->callSessionState == 'Completed') {

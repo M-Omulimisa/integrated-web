@@ -70,7 +70,8 @@ class OnlineCourseController extends AdminController
                 }
                 $link = url('storage/' . $audio_url);
                 return "<audio controls><source src='" . $link . "' type='audio/mpeg'></audio>";
-            })->sortable();
+            })->sortable()
+            ->hide();
 
         $grid->column('link', __('Send Instructor Notification'))
             ->display(function () {
@@ -149,11 +150,9 @@ class OnlineCourseController extends AdminController
             ->options($data)
             ->rules('required');
 
-        $form->file('audio_url', __('Introductory Audio'))
-            ->placeholder('Introductory Audio')
-            ->attribute(['accept' => 'audio/*'])
-            ->rules('required')
-            ->uniqueName();
+        $form->hidden('audio_url', __('Introductory Audio'))
+            ->default('');
+        
 
 
         /*         $form->textarea('summary', __('Course Summary'))
