@@ -774,11 +774,6 @@ class Utils
     public static function my_resp($type, $data, $student = null)
     {
         header('Content-type: text/plain');
-        echo
-        '<Response>
-            <Say voice="en-US-Standard-C" playBeep="false" >THANK YOU FOR ASKING</Say>
-        </Response>';
-        die();
         if ($type == 'audio') {
             $menu = OnlineCourseMenu::where([
                 'name' => $data

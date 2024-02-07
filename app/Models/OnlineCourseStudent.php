@@ -30,7 +30,6 @@ class OnlineCourseStudent extends Model
                 ->first();
 
             if ($menuItem == null) {
-                die("Menu item not found.");
                 return $url;
             }
             $language = $menuItem->audio;
