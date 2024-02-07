@@ -504,6 +504,16 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
+    if ($r->callSessionState == 'Completed') {
+        $session->isActive = 'No';
+        $session->save();
+        Utils::my_resp('audio', 'Call Ended', $student = $student);
+        $session->error_message = json_encode($_POST);
+        return;
+    } else {
+
+        $session->save();
+    }
 
     if ($digit == 0 && (!$isNewSession)) {
         $session->digit = 1; //back to main menu
@@ -527,25 +537,6 @@ Route::post('/online-course-api', function (Request $r) {
     }
 
 
-
-
-    if (
-        isset(
-            $_POST['recordingUrl'],
-        )
-    ) {
-        $lesson->student_audio_question = $_POST['recordingUrl'];
-        $session->digit = 1; //back to main menu
-        $session->save();
-        $lesson->save();
-        echo '<Response>
-        <GetDigits timeout="40" numDigits="1" >
-          <Play url="https://unified.m-omulimisa.com/storage/files/ttsMP3.com_VoiceText_2024-2-2_22-49-44.mp3" />
-        </GetDigits>
-        <Say>We did not get your input number. Good bye</Say>
-      </Response>';
-        Utils::my_resp('text', 'Thank you for asking a question. We will get back to you soon.');
-    }
 
 
     if (
@@ -592,17 +583,8 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::lesson_menu('audio', 'Lesson menu', $topic, $student = $student);
     }
 
-    if ($r->callSessionState == 'Completed') {
-        $session->isActive = 'No';
-        $session->save();
-        Utils::my_resp('text', 'Call completed.');
-        $session->error_message = json_encode($_POST);
-        return;
-    } else {
 
-        $session->save();
-    }
 
-    Utils::my_resp('text', 'Invalid option. Please try again.');
+    Utils::my_resp('audio', 'Invalid entry', $student = $student);
     die();
 });
