@@ -809,7 +809,7 @@ class Utils
         die();
     }
 
-    public static function question_menu($topic)
+    public static function question_menu($topic,$student = null)
     {
         header('Content-type: text/plain');
 
@@ -818,6 +818,16 @@ class Utils
         ])->first();
         if ($menu != null) {
             $url = asset('storage/' . $menu->english_audio);
+
+            if($student!=null){
+                try{
+                    $audio_1 = $student->get_menu_audio_url($menu);
+                }catch(\Throwable $th){ 
+                } 
+                if($audio_1 != null && strlen($audio_1) > 4){
+                    $url = $audio_1;
+                }
+            }
             echo
             '<Response>
                 <Record finishOnKey="*" maxLength="120" trimSilence="true" playBeep="true">
@@ -837,7 +847,7 @@ class Utils
 
 
 
-    public static function lesson_menu($type, $data, $topic)
+    public static function lesson_menu($type, $data, $topic,$student = null)
     {
         header('Content-type: text/plain');
 
@@ -849,6 +859,17 @@ class Utils
             ])->first();
             if ($menu != null) {
                 $url = asset('storage/' . $menu->english_audio);
+
+                if($student!=null){
+                    try{
+                        $audio_1 = $student->get_menu_audio_url($menu);
+                    }catch(\Throwable $th){ 
+                    } 
+                    if($audio_1 != null && strlen($audio_1) > 4){
+                        $url = $audio_1;
+                    }
+                }
+
                 echo
                 '<Response>
                 <Play url="' . $lesson_url . '" />

@@ -10,6 +10,34 @@ class OnlineCourseStudent extends Model
 {
     use HasFactory;
 
+    public function get_menu_audio_url($menu)
+    {
+        if ($menu == null) {
+            return null;
+        }
+        $url = asset('storage/' . $menu->english_audio);
+        try {
+            $onlineCourse = $this->onlineCourse;
+        } catch (\Throwable $th) {
+            $onlineCourse = null;
+        }
+        if ($onlineCourse != null) {
+            if ($onlineCourse->photo == '5548782a-449b-4483-b28a-c3c3012521ef') {
+                return $url;
+            }
+            $menuItem = $onlineCourse->menuItems()->where('id', $menu->id)->first();
+            if ($menuItem == null) {
+                return $url;
+            }
+            $language = $menuItem->audio;
+            if ($language  == null || $language == '') {
+                return $url;
+            }
+            $url = asset('storage/' . $language);
+        }
+        return $url;
+    }
+
     //belongs to
     public function onlineCourse()
     {

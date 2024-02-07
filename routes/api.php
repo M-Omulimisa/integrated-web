@@ -541,7 +541,7 @@ Route::post('/online-course-api', function (Request $r) {
     ) {
         $session->digit = 1; //back to main menu
         $session->save();
-        Utils::question_menu($topic);
+        Utils::question_menu($topic,$student);
     }
 
 
@@ -576,7 +576,7 @@ Route::post('/online-course-api', function (Request $r) {
         }
         $session->digit = 1;
         $session->save();
-        Utils::lesson_menu('audio', 'Lesson menu', $topic);
+        Utils::lesson_menu('audio', 'Lesson menu', $topic,$student);
     }
 
     if ($r->callSessionState == 'Completed') {

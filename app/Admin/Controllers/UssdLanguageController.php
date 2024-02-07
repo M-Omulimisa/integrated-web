@@ -26,10 +26,7 @@ class UssdLanguageController extends AdminController
     {
         $grid = new Grid(new UssdLanguage());
 
-        $grid->column('id', __('Id'));
-        $grid->column('language', __('Language'));
-        $grid->column('position', __('Position'));
-        $grid->column('created_at', __('Created at'));
+        $grid->column('language', __('Language'))->sortable();
 
         return $grid;
     }
@@ -63,7 +60,7 @@ class UssdLanguageController extends AdminController
         $form = new Form(new UssdLanguage());
 
         $form->text('language', __('Language'));
-        $form->number('position', __('Position'));
+        $form->decimal('position', __('Position'));
         $form->hidden('menu_id', __('Menu id'))->default(4);
 
         return $form;
