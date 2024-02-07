@@ -460,6 +460,7 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
+  
 
     $lesson = null;
 
@@ -494,12 +495,6 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-    if ($digit == 0 && (!$isNewSession)) {
-        $session->digit = 1; //back to main menu
-        $session->save();
-        Utils::my_resp_digits('audio', 'Main Menu', $student = $student);
-    }
-
     if ($previous_digit == 6) {
         $lesson->student_audio_question = $recordingUrl;
         $lesson->save();
@@ -508,6 +503,15 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp('audio', 'Done asking a question', $student = $student);
         return;
     }
+
+
+    if ($digit == 0 && (!$isNewSession)) {
+        $session->digit = 1; //back to main menu
+        $session->save();
+        Utils::my_resp_digits('audio', 'Main Menu', $student = $student);
+    }
+
+  
 
 
 
