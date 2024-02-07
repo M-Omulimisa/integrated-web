@@ -502,7 +502,7 @@ Route::post('/online-course-api', function (Request $r) {
         $lesson->save();
         $session->digit = 1; //back to main menu
         $session->save();
-        Utils::my_resp('text', 'Thank you for asking a question. We will get back to you soon.');
+        Utils::my_resp('audio', 'Done asking a question', $student = $student);
         return;
     }
 
@@ -555,7 +555,7 @@ Route::post('/online-course-api', function (Request $r) {
     ) {
         $session->digit = 5; //answering quiz
         $session->save();
-        Utils::quizz_menu($topic); 
+        Utils::quizz_menu($topic);
     }
 
     if ($previous_digit == 5 && ($digit == 1 || $digit == 2 || $digit == 3)) {
@@ -563,7 +563,7 @@ Route::post('/online-course-api', function (Request $r) {
         $session->digit = 1; //back to main menu
         $session->save();
         $lesson->save();
-        
+
         Utils::my_resp_digits('audio', 'Quiz Answered', $student = $student);
     }
 

@@ -771,7 +771,7 @@ class Utils
         }
     }
 
-    public static function my_resp($type, $data)
+    public static function my_resp($type, $data, $student = null)
     {
         header('Content-type: text/plain');
         if ($type == 'audio') {
@@ -780,6 +780,20 @@ class Utils
             ])->first();
             if ($menu != null) {
                 $url = asset('storage/' . $menu->english_audio);
+
+                if ($student != null) {
+                    $audio_1 = null;
+                    try {
+                        $audio_1 = $student->get_menu_audio_url($menu);
+                    } catch (\Throwable $th) {
+                        $audio_1 = null;
+                    }
+
+                    if ($audio_1 != null && strlen($audio_1) > 4) {
+                        $url = $audio_1;
+                    }
+                }
+
                 echo
                 '<Response>
                     <Play url="' . $url . '" />
