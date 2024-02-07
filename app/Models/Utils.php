@@ -800,9 +800,8 @@ class Utils
         $lesson_url = asset('storage/' . $topic->video_url);
         echo
         '<Response>
-            <Play url="' . $lesson_url . '" />
             <GetDigits timeout="40" numDigits="1" >
-                <Say>Please enter your quiz answer.</Say>
+                <Play url="' . $lesson_url . '" />
             </GetDigits>
             <Say>We did not get your answer. Good bye</Say>
         </Response>';

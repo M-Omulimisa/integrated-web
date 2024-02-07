@@ -555,7 +555,7 @@ Route::post('/online-course-api', function (Request $r) {
     ) {
         $session->digit = 5; //answering quiz
         $session->save();
-        Utils::quizz_menu($topic);
+        Utils::quizz_menu($topic); 
     }
 
     if ($previous_digit == 5 && ($digit == 1 || $digit == 2 || $digit == 3)) {
@@ -563,7 +563,8 @@ Route::post('/online-course-api', function (Request $r) {
         $session->digit = 1; //back to main menu
         $session->save();
         $lesson->save();
-        Utils::my_resp_digits('audio', 'Quiz Answered');
+        
+        Utils::my_resp_digits('audio', 'Quiz Answered', $student = $student);
     }
 
 
