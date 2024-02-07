@@ -25,7 +25,7 @@ class LanguageController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Language());
-
+        $grid->quickSearch('name');
         $grid->column('id', __('Id'))->hide();
         $grid->column('name', __('Name'))->sortable();
         /*
