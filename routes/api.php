@@ -494,7 +494,7 @@ Route::post('/online-course-api', function (Request $r) {
     if ($digit == 0 && (!$isNewSession)) {
         $session->digit = 1; //back to main menu
         $session->save();
-        Utils::my_resp_digits('audio', 'Main Menu',$student = $student);
+        Utils::my_resp_digits('audio', 'Main Menu', $student = $student);
     }
 
     if ($session->recordingUrl != null && strlen($session->recordingUrl) > 3) {
