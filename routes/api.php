@@ -500,7 +500,7 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp_digits('audio', 'Main Menu', $student = $student);
     }
 
-    if ($recordingUrl != null && strlen($recordingUrl) > 3) {
+    if ($previous_digit == 6) {
         $lesson->student_audio_question = $recordingUrl;
         $lesson->save();
         $session->digit = 1; //back to main menu
@@ -547,7 +547,7 @@ Route::post('/online-course-api', function (Request $r) {
     if (
         ($previous_digit == 1 && ($digit == 3))
     ) {
-        $session->digit = 1; //back to main menu
+        $session->digit = 6; //back to main menu
         $session->save();
         Utils::question_menu($topic, $student);
     }
