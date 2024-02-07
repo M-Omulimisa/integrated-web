@@ -509,7 +509,7 @@ Route::post('/online-course-api', function (Request $r) {
 
 
     if ($digit == null || strlen($digit) < 1 || $digit == 0) {
-        Utils::my_resp_digits('audio', 'Main Menu');
+        Utils::my_resp_digits('audio', 'Main Menu', $student = $student);
         return;
     }
 
