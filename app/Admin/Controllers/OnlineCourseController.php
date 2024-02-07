@@ -70,8 +70,7 @@ class OnlineCourseController extends AdminController
                 }
                 $link = url('storage/' . $audio_url);
                 return "<audio controls><source src='" . $link . "' type='audio/mpeg'></audio>";
-            })->sortable()
-            ->hide();
+            })->sortable();
 
         $grid->column('link', __('Send Instructor Notification'))
             ->display(function () {
