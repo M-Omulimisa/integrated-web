@@ -308,6 +308,30 @@ Route::get('/online-make-reminder-calls', function (Request $r) {
 });
 Route::post('/online-course-api', function (Request $r) {
 
+    if ($r->direction == 'Inbound') {
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('POST', 'https://voice.africastalking.com/call', [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+                'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
+            ],
+            'form_params' => [
+                'username' => 'dninsiima',
+                'to' => $r->callerNumber,
+                'from' => '+256323200710',
+                'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
+            ]
+        ]);
+        header('Content-type: text/plain');
+        echo '<Response> 
+                <Reject/>
+            </Response>';
+        die();
+        return;
+    }
+
+
 
     if (!isset($r->sessionId)) {
         Utils::my_resp('text', 'No session id');
@@ -411,30 +435,7 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp('text', 'Failed to save session.');
     }
 
-    //direction
-    if ($session->direction == 'Inbound') {
-        $client = new \GuzzleHttp\Client();
-        $response = $client->request('POST', 'https://voice.africastalking.com/call', [
-            'headers' => [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/x-www-form-urlencoded',
-                'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
-            ],
-            'form_params' => [
-                'username' => 'dninsiima',
-                'to' => $session->callerNumber,
-                'from' => '+256323200710',
-                'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
-            ]
-        ]);
-        header('Content-type: text/plain');
-        echo '<Response> 
-                <Reject/>
-            </Response>';
-        die();
-        return;
-    }
-
+ 
 
 
     /*     if ($session->Answered != 'Answered') {
