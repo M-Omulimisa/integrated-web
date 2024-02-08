@@ -85,15 +85,7 @@ class OnlineCourseStudentController extends AdminController
             ->sortable();
         $grid->column('position', __('Position'))->hide();
         $grid->column('has_listened_to_intro', __('Listened to Intro'))
-            ->label([
-                'Yes' => 'success',
-                'No' => 'danger'
-            ])
-            ->sortable()
-            ->filter([
-                'Yes' => 'Yes',
-                'No' => 'No'
-            ])
+            ->sortable() 
             ->editable('select', [
                 'Yes' => 'Yes',
                 'No' => 'No'
