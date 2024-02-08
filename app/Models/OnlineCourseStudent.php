@@ -82,6 +82,7 @@ class OnlineCourseStudent extends Model
         static::creating(function ($onlineCourseStudent) {
             $onlineCourseStudent = self::prepare($onlineCourseStudent);
             $onlineCourseStudent->user_id = 1;
+            $onlineCourseStudent->has_listened_to_intro = 'No';
             return $onlineCourseStudent;
         });
         static::updating(function ($onlineCourseStudent) {

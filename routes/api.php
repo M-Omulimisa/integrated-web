@@ -526,7 +526,21 @@ Route::post('/online-course-api', function (Request $r) {
 
 
     if ($digit == null || strlen($digit) < 1 || $digit == 0) {
-        Utils::my_resp_digits('audio', 'Main Menu', $student = $student);
+        $prefixContent = '';
+        if($student->has_listened_to_intro != 'Yes'){
+            $course = $lesson->onlineCourse;
+            if ($course != null) {
+                $intro_audio = $course->audio_url;
+                if ($intro_audio != null && strlen($intro_audio) > 3) {
+                    $link = url('storage/' . $intro_audio);
+                    $prefixContent = '<Play url="' . $link . '" />';
+                    $student->has_listened_to_intro = 'Yes';
+                    $student->save();
+                }
+            }
+        }
+
+        Utils::my_resp_digits('audio', 'Main Menu', $student = $student,$prefixContent = $prefixContent);
         return;
     }
 
@@ -580,17 +594,7 @@ Route::post('/online-course-api', function (Request $r) {
         } catch (\Exception $e) {
         }
         $session->digit = 1;
-        $session->save();
-        if ($lesson->position == 1) {
-            $course = $lesson->onlineCourse;
-            if ($course != null) {
-                $intro_audio = $course->audio_url;
-                if ($intro_audio != null && strlen($intro_audio) > 3) {
-                    $link = url('storage/' . $intro_audio);
-                    $prefixContent = '<Play url="' . $link . '" />';
-                }
-            }
-        }
+        $session->save(); 
         Utils::lesson_menu('audio', 'Lesson menu', $topic, $student = $student, $prefixContent = $prefixContent);
     }
 

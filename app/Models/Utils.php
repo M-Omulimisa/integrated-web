@@ -907,7 +907,7 @@ class Utils
     }
 
 
-    public static function my_resp_digits($type, $data, $student = null)
+    public static function my_resp_digits($type, $data, $student = null, $prefixContent = '')
     {
         header('Content-type: text/plain');
         if ($type == 'audio') {
@@ -935,6 +935,7 @@ class Utils
                 echo
                 '<Response>
                 <GetDigits timeout="20" numDigits="1" >
+                    ' . $prefixContent . '
                     <Play url="' . $url . '" />
                 </GetDigits>
                 <Say>We did not get your input number. Good bye</Say>
