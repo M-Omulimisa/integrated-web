@@ -808,12 +808,13 @@ class Utils
         die();
     }
 
-    public static function quizz_menu($topic)
+    public static function quizz_menu($topic,$prefixContent = '')
     {
         header('Content-type: text/plain');
         $lesson_url = asset('storage/' . $topic->video_url);
         echo
         '<Response>
+            '.$prefixContent.'
             <GetDigits timeout="40" numDigits="1" >
                 <Play url="' . $lesson_url . '" />
             </GetDigits>

@@ -435,7 +435,7 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp('text', 'Failed to save session.');
     }
 
- 
+
 
 
     /*     if ($session->Answered != 'Answered') {
@@ -528,7 +528,7 @@ Route::post('/online-course-api', function (Request $r) {
 
     if ($digit == null || strlen($digit) < 1 || $digit == 0) {
         $prefixContent = '';
-        if($student->has_listened_to_intro != 'Yes'){
+        if ($student->has_listened_to_intro != 'Yes') {
             $course = $lesson->onlineCourse;
             if ($course != null) {
                 $intro_audio = $course->audio_url;
@@ -541,7 +541,7 @@ Route::post('/online-course-api', function (Request $r) {
             }
         }
 
-        Utils::my_resp_digits('audio', 'Main Menu', $student = $student,$prefixContent = $prefixContent);
+        Utils::my_resp_digits('audio', 'Main Menu', $student = $student, $prefixContent = $prefixContent);
         return;
     }
 
@@ -568,7 +568,27 @@ Route::post('/online-course-api', function (Request $r) {
     ) {
         $session->digit = 5; //answering quiz
         $session->save();
-        Utils::quizz_menu($topic);
+
+        //check if has already attended lesson
+        $prefixContent = null;
+        try {
+            if ($lesson->status != 'Attended') {
+                if ($topic->audio_url != null && strlen($topic->audio_url) > 3) {
+                    $link = url('storage/' . $topic->audio_url);
+                    $prefixContent = '<Play url="' . $link . '" />';
+                }
+            }
+        } catch (\Exception $e) {
+            $prefixContent = null;
+        }
+
+        if ($prefixContent != null && strlen($prefixContent) > 3) {
+            $lesson->attended_at = date('Y-m-d H:i:s');
+            $lesson->status = 'Attended';
+            $lesson->save();
+        }
+
+        Utils::quizz_menu($topic, $prefixContent = $prefixContent);
     }
 
     if ($previous_digit == 5 && ($digit == 1 || $digit == 2 || $digit == 3)) {
@@ -595,7 +615,7 @@ Route::post('/online-course-api', function (Request $r) {
         } catch (\Exception $e) {
         }
         $session->digit = 1;
-        $session->save(); 
+        $session->save();
         Utils::lesson_menu('audio', 'Lesson menu', $topic, $student = $student, $prefixContent = $prefixContent);
     }
 
