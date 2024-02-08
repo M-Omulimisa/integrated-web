@@ -934,7 +934,7 @@ class Utils
 
                 echo
                 '<Response>
-                <GetDigits timeout="40" numDigits="1" >
+                <GetDigits timeout="20" numDigits="1" >
                     <Play url="' . $url . '" />
                 </GetDigits>
                 <Say>We did not get your input number. Good bye</Say>
