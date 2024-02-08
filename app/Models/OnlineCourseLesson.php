@@ -17,6 +17,22 @@ class OnlineCourseLesson extends Model
             if ($model->status != 'Attended')
                 $model->attended_at = null;
         });
+
+        //updated
+        static::updated(function ($model) {
+            $student = $model->student;
+            if ($student != null) {
+                $student->update_progress();
+            }
+        });
+
+        //deleted
+        static::deleted(function ($model) {
+            $student = $model->student;
+            if ($student != null) {
+                $student->update_progress();
+            }
+        }); 
     }
 
     //belongs to student_id

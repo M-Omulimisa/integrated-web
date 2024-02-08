@@ -41,6 +41,21 @@ class OnlineCourseStudent extends Model
         return $url;
     }
 
+    //update progress
+    public function update_progress()
+    {
+        $lessons = $this->onlineCourseStudentLessons;
+        $total = count($lessons);
+        $attended = 0;
+        foreach ($lessons as $lesson) {
+            if ($lesson->status == 'Attended') {
+                $attended++;
+            }
+        }
+        $this->progress = $total == 0 ? 0 : ($attended / $total) * 100;
+        $this->save();
+    }
+
     //belongs to
     public function onlineCourse()
     {
