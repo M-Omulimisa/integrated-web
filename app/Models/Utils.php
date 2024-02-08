@@ -861,7 +861,7 @@ class Utils
 
 
 
-    public static function lesson_menu($type, $data, $topic, $student = null)
+    public static function lesson_menu($type, $data, $topic, $student = null, $prefixContent = '')
     {
         header('Content-type: text/plain');
 
@@ -887,6 +887,7 @@ class Utils
 
                 echo
                 '<Response>
+                ' . $prefixContent . '
                 <Play url="' . $lesson_url . '" />
                 <GetDigits timeout="20" numDigits="1" >
                     <Play url="' . $url . '" />

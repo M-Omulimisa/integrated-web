@@ -460,7 +460,7 @@ Route::post('/online-course-api', function (Request $r) {
         return;
     }
 
-  
+
 
     $lesson = null;
 
@@ -521,7 +521,7 @@ Route::post('/online-course-api', function (Request $r) {
         Utils::my_resp_digits('audio', 'Main Menu', $student = $student);
     }
 
-  
+
 
 
 
@@ -570,6 +570,7 @@ Route::post('/online-course-api', function (Request $r) {
 
 
     if ($digit == 1 || $digit == 4) {
+        $prefixContent = '';
         try {
             if ($lesson->attended_at == null || $lesson->attended_at == '') {
                 $lesson->attended_at = date('Y-m-d H:i:s');
@@ -580,7 +581,17 @@ Route::post('/online-course-api', function (Request $r) {
         }
         $session->digit = 1;
         $session->save();
-        Utils::lesson_menu('audio', 'Lesson menu', $topic, $student = $student);
+        if ($lesson->position == 1) {
+            $course = $lesson->onlineCourse;
+            if ($course != null) {
+                $intro_audio = $course->audio_url;
+                if ($intro_audio != null && strlen($intro_audio) > 3) {
+                    $link = url('storage/' . $intro_audio);
+                    $prefixContent = '<Play url="' . $link . '" />';
+                }
+            }
+        }
+        Utils::lesson_menu('audio', 'Lesson menu', $topic, $student = $student, $prefixContent = $prefixContent);
     }
 
 
