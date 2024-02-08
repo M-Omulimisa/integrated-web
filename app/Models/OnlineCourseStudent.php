@@ -53,7 +53,7 @@ class OnlineCourseStudent extends Model
             }
         }
         $pecentage = 0;
-        if($total > 0){
+        if ($total > 0) {
             $pecentage = ($attended / $total) * 100;
         }
 
@@ -98,16 +98,22 @@ class OnlineCourseStudent extends Model
         //created
         static::created(function ($onlineCourseStudent) {
 
-            try {
-                $message = "Hello {$onlineCourseStudent->name},\nYou have been enrolled to {$onlineCourseStudent->onlineCourse->title} online course. Please call 0323200710 to start learning today. Thank you.";
-                Utils::send_sms($onlineCourseStudent->phone, $message);
-            } catch (Exception $e) {
-                //throw $th;
-            }
-
             $course = OnlineCourse::find($onlineCourseStudent->online_course_id);
             if ($course != null) {
                 $course->update_lessons();
+            }
+
+            try {
+                //$message = "Hello {$onlineCourseStudent->name},\nYou have been enrolled to {$onlineCourseStudent->onlineCourse->title} online course. Please call 0323200710 to start learning today. Thank you.";
+                $message = $course->summary;
+                $message = trim($message);
+                $message = str_replace('[STUDENT_NAME]', $onlineCourseStudent->name, $message);
+                $message = str_replace('STUDENT_NAME', $onlineCourseStudent->name, $message);
+                $message = str_replace('[COURSE_NAME]', $onlineCourseStudent->onlineCourse->title, $message);
+                $message = str_replace('COURSE_NAME', $onlineCourseStudent->onlineCourse->title, $message);
+                Utils::send_sms($onlineCourseStudent->phone, $message);
+            } catch (Exception $e) {
+                //throw $th;
             }
         });
 

@@ -154,7 +154,16 @@ class OnlineCourseController extends AdminController
             ->rules('required')
             ->help('Please upload an audio file');
 
-
+        $form->divider();
+        $form->html(
+            <<<HTML
+        <small><b>NOTE: Use following keywords</b><br><code>[STUDENT_NAME]</code> to be dynamically substituded by student's name in SMS.</small><br>
+        <small><code>[COURSE_NAME]</code> to be dynamically substituded by course's name in SMS.</small><br>
+        HTML
+        );
+        $form->textarea('summary', __('Welcome Message To Student (SMS) - Template'))
+            ->placeholder('Enter Welcome Message To Student Here')
+            ->rules('required');
 
         /*         $form->textarea('summary', __('Course Summary'))
             ->placeholder('Enter Course Summary Here');
