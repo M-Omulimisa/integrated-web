@@ -129,6 +129,9 @@ class OnlineCourseStudentController extends AdminController
 
         $form->text('name', __('Student Name'))
             ->rules('required');
+        $form->hidden('has_listened_to_intro', __('Student Name'))
+            ->rules('required')
+            ->default('No');
 
         $form->text('phone', __('Student Phone Number'))
             ->rules('required');
