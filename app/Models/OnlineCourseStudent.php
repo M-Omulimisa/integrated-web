@@ -52,7 +52,12 @@ class OnlineCourseStudent extends Model
                 $attended++;
             }
         }
-        $this->progress = $total == 0 ? 0 : ($attended / $total) * 100;
+        $pecentage = 0;
+        if($total > 0){
+            $pecentage = ($attended / $total) * 100;
+        }
+
+        $this->progress = $pecentage;
         $this->save();
     }
 
