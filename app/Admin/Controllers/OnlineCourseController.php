@@ -149,9 +149,11 @@ class OnlineCourseController extends AdminController
             ->options($data)
             ->rules('required');
 
-        $form->hidden('audio_url', __('Introductory Audio'))
-            ->default('');
-        
+        $form->file('audio_url', __('Introductory Audio'))
+            ->attribute(['accept' => 'audio/*'])
+            ->rules('required')
+            ->help('Please upload an audio file');
+
 
 
         /*         $form->textarea('summary', __('Course Summary'))
