@@ -35,11 +35,21 @@ class OnlineCourseTopic extends Model
         });
 
         //cannot delete if there is a course
-        static::deleting(function ($topic) {
-            if ($topic->onlineCourseTopicLessons()->count() > 0) {
-                throw new \Exception("Cannot delete topic because there are lessons associated with it.");
+        static::deleted(function ($topic) {
+            //delete onlineCourseTopicLessons
+            $topic->onlineCourseTopicLessons()->delete();
+            $course = OnlineCourse::find($topic->online_course_id);
+            if ($course == null) {
+                throw new \Exception("Course not found 3.");
             }
+            $course->update_lessons();
         });
+    }
+
+    //has many OnlineCourseLesson
+    public function onlineCourseTopicLessons()
+    {
+        return $this->hasMany(OnlineCourseLesson::class);
     }
 
     public static function prepareData($data)
