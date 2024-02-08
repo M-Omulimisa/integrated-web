@@ -724,9 +724,9 @@ class MenuFunctions
         return $season->$param ?? null;
     }
 
-    public function seasonItemList($season_id)
+    public function seasonItemList()
     {
-        $enterprises = InsurancePremiumOption::whereSeasonId($season_id)->whereStatus(TRUE)->orderBy('menu', 'ASC')->get();
+        $enterprises = InsurancePremiumOption::whereStatus(TRUE)->orderBy('menu', 'ASC')->get();
 
         if (count($enterprises) > 0) {
             $list = '';
@@ -756,15 +756,15 @@ class MenuFunctions
         return $enterprise->$param ?? null;
     }
 
-    public function checkIfSeasonItemIsValid($season_id, $item_menu)
+    public function checkIfSeasonItemIsValid($item_menu)
     {
-        $enterprise = InsurancePremiumOption::whereSeasonId($season_id)->whereMenu($item_menu)->whereStatus(TRUE)->first();
+        $enterprise = InsurancePremiumOption::whereMenu($item_menu)->whereStatus(TRUE)->first();
         return $enterprise ? true : false;
     }
 
-    public function getSeasonItemDetails($season_id, $item_menu, $param)
+    public function getSeasonItemDetails($item_menu, $param)
     {
-        $enterprise = InsurancePremiumOption::whereSeasonId($season_id)->whereMenu($item_menu)->whereStatus(TRUE)->first();
+        $enterprise = InsurancePremiumOption::whereMenu($item_menu)->whereStatus(TRUE)->first();
         return $enterprise->$param ?? null;
     }
 

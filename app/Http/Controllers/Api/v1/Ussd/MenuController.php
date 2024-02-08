@@ -149,8 +149,10 @@ class MenuController extends Controller
                 $current_menu   = "insurance_phone";
             }
             else{
-                $response       = "Enter District e.g Kampala";
-                $current_menu   = "insurance_district";
+
+                $response       = "Crop you want to insure:\n";
+                $response       .= $this->menu_helper->seasonItemList();
+                $current_menu   = "insurance_item";
 
                 if ($last_menu != "insurance_phone") {
                     $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_subscrption_for', 'self');
@@ -227,38 +229,33 @@ class MenuController extends Controller
                 $current_menu   = "insurance_subcounty";
             }
         } 
-        elseif ($last_menu == "insurance_season" || $last_menu == "insurance_another" && $input_text == "2") {
+        elseif ($last_menu == "insurance_another" && $input_text == "2") {
             $action = "request";
 
             if($last_menu == "insurance_another") {
-                $this->menu_helper->savePreviousItemList($sessionId, $phoneNumber);
-                $seasonId   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_season_id');
-                $input_text = $this->menu_helper->getSeasonMenu($seasonId);
-            }
 
-            if ($this->menu_helper->checkIfSeasonIsValid($input_text)) {
-                $seasonId       = $this->menu_helper->getSeasonDetail($input_text, 'id');
+                $this->menu_helper->savePreviousItemList($sessionId, $phoneNumber);
+                
                 $response       = "Crop you want to insure:\n";
-                $response       .= $this->menu_helper->seasonItemList($seasonId);
+                $response       .= $this->menu_helper->seasonItemList();
                 $current_menu   = "insurance_item";
 
-                $field = "insurance_season_id";
-                $input_text = $seasonId;
+                
             }
             else{
-                $response       = "Wrong input! Select season:\n";
-                $response       .= $this->menu_helper->insuranceSeasonList();
-                $current_menu   = "insurance_season";
+                $response       = "Wrong input! Select option:\n";
+                $response       .= $insure_more;
+                $current_menu   = "insurance_another";
             }
         }  
         elseif ($last_menu == "insurance_item") {
             $action         = "request";
-            $seasonId       = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_season_id');
-            if ($this->menu_helper->checkIfSeasonItemIsValid($seasonId, $input_text)) {
+            
+            if ($this->menu_helper->checkIfSeasonItemIsValid($input_text)) {
                 $response       = $acreage;
                 $current_menu   = "insurance_acreage";
                 $field          = "insurance_enterprise_id";
-                $input_text     = $this->menu_helper->getSeasonItemDetails($seasonId, $input_text, 'enterprise_id');
+                $input_text     = $this->menu_helper->getSeasonItemDetails($input_text, 'enterprise_id');
             }
             else{
                 $response       = "Wrong Item!\n";
