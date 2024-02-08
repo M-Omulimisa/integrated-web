@@ -86,7 +86,7 @@ class OnlineCourseStudent extends Model
         });
         static::updating(function ($onlineCourseStudent) {
             $onlineCourseStudent = self::prepare($onlineCourseStudent);
-            $onlineCourseStudent->user_id = $this->id;
+            $onlineCourseStudent->user_id = $onlineCourseStudent->id;
             return $onlineCourseStudent;
         });
         static::deleting(function ($onlineCourseStudent) {
