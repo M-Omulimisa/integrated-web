@@ -27,13 +27,26 @@ class InsurancePremiumOptionController extends AdminController
         $grid = new Grid(new InsurancePremiumOption());
 
         $grid->column('id', __('Id'));
-        $grid->column('country_id', __('Country id'));
-        $grid->column('season_id', __('Season id'));
-        $grid->column('enterprise_id', __('Enterprise id'));
+        $grid->column('country_id', __('Country'))->display(function ($country_data) {
+            if ($this->country == 'null') {
+
+                return $country_data;
+
+            }
+            return $this->country->name;
+        });
+        
+        $grid->column('enterprise_id', __('Enterprise'))->display(function ($enterprise_data) {
+            if ($this->enterprise == 'null') {
+
+                return $enterprise_data;
+
+            }
+            return $this->enterprise->name;
+        });
         $grid->column('sum_insured_per_acre', __('Sum insured per acre'));
         $grid->column('premium_per_acre', __('Premium per acre'));
-        $grid->column('menu', __('Menu'));
-        $grid->column('status', __('Status'));
+        $grid->column('menu', __('Position'));
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
 
@@ -52,7 +65,6 @@ class InsurancePremiumOptionController extends AdminController
 
         $show->field('id', __('Id'));
         $show->field('country_id', __('Country id'));
-        $show->field('season_id', __('Season id'));
         $show->field('enterprise_id', __('Enterprise id'));
         $show->field('sum_insured_per_acre', __('Sum insured per acre'));
         $show->field('premium_per_acre', __('Premium per acre'));
@@ -76,14 +88,13 @@ class InsurancePremiumOptionController extends AdminController
         $form->select('country_id', __('Country'))
             ->options(\App\Models\Settings\Country::all()->pluck('name', 'id'))
             ->rules('required');
-        $form->select('season_id', __('Season'))
-            ->options(\App\Models\Settings\Season::all()->pluck('name', 'id'));
+ 
         $form->select('enterprise_id', __('Enterprise'))
             ->options(\App\Models\Settings\Enterprise::all()->pluck('name', 'id'));
 
         $form->decimal('sum_insured_per_acre', __('Sum insured per acre'))->default(0.00);
         $form->decimal('premium_per_acre', __('Premium per acre'))->default(0.00);
-        $form->text('menu', __('Menu'));
+        $form->text('menu', __('Position'));
         $form->switch('status', __('Status'))->default(1);
 
         return $form;

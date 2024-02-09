@@ -768,9 +768,9 @@ class MenuFunctions
         return $enterprise->$param ?? null;
     }
 
-    public function getPremiumOptionDetails($season_id, $enterprise_id, $param)
+    public function getPremiumOptionDetails($enterprise_id, $param)
     {
-        $enterprise = InsurancePremiumOption::whereSeasonId($season_id)->whereEnterpriseId($enterprise_id)->whereStatus(TRUE)->first();
+        $enterprise = InsurancePremiumOption::whereEnterpriseId($enterprise_id)->whereStatus(TRUE)->first();
         return $enterprise->$param ?? null;
     }
 
@@ -797,8 +797,6 @@ class MenuFunctions
 
         $acerage     = $saved_data->insurance_acreage.'A';
 
-        $seasonId       = $saved_data->insurance_season_id;
-        $seasonName     = $this->getSeason($seasonId, 'name');
 
         $enterprise_id  = $saved_data->insurance_enterprise_id;
         $enterpriseName = $this->getEnterprise($enterprise_id, 'name');
@@ -821,7 +819,7 @@ class MenuFunctions
 
         $this->saveToField($sessionId, $phoneNumber, 'insurance_amount', $premium);
 
-        return "Insuring ".$acerage." of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured)." in ".$seasonName.". Pay premium of ugx".number_format(($premium));
+        return "Insuring ".$acerage." of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured).". Pay premium of ugx".number_format(($premium));
     }
 
     /**

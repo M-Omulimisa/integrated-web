@@ -42,4 +42,5 @@ class InsurancePremiumOption extends BaseModel
      * @var bool
      */
     public $incrementing = false;
+
 }
