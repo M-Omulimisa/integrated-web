@@ -19,12 +19,16 @@ use Faker\Provider\ar_JO\Company;
 
 class HomeController extends Controller
 {
-    public function index(Content $content)
+
+    public function stats(Content $content)
     {
-        Admin::js('/vendor/chartjs/dist/Chart.min.js'); 
+        $course = Training::where([])
+            ->get();
+
+        Admin::js('/vendor/chartjs/dist/Chart.min.js');
         return $content
-            ->title('M-Omulimisa')
-            ->description('Hello...')
+            ->title(strtoupper('Online Courses - Statistics'))
+            /* ->description('Hello...') */
             /* ->row(Dashboard::title()) */
             ->row(function (Row $row) {
                 $row->column(3, function (Column $column) {
@@ -34,24 +38,24 @@ class HomeController extends Controller
                         'detail' => Organisation::count(),
                     ];
                     $data[] = [
-                        'title' => 'Registered Users',
+                        'title' => 'Students',
                         'detail' => \App\Models\User::count(),
                     ];
                     $data[] = [
-                        'title' => 'Extension Officers',
+                        'title' => 'Extension Calls',
                         'detail' => AdminRoleUser::where([
                             'role_id' => 2
                         ])
                             ->count(),
                     ];
                     $box = new Box(
-                        'System Users',
+                        'Courses',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
                             'url' => route('admin.farmers.index')
                         ])
                     );
-                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">More info <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -78,13 +82,13 @@ class HomeController extends Controller
                             ->count(),
                     ];
                     $box = new Box(
-                        'Famers registered',
+                        'Recent Calls',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
                             'url' => route('admin.farmers.index')
                         ])
                     );
-                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">More info <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -114,13 +118,13 @@ class HomeController extends Controller
                             ->count(),
                     ];
                     $box = new Box(
-                        'Marketplace',
+                        'Students',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
                             'url' => route('admin.farmers.index')
                         ])
                     );
-                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">More info <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -132,29 +136,27 @@ class HomeController extends Controller
                 $row->column(3, function (Column $column) {
                     $data = [];
                     $data[] = [
-                        'title' => 'Upcoming Trainings',
+                        'title' => 'Courses',
                         'detail' => Training::count(),
                     ];
                     $data[] = [
-                        'title' => 'Conducted Trainings',
-                        'detail' => TrainingSession::where([
-                        ])
+                        'title' => 'Students',
+                        'detail' => TrainingSession::where([])
                             ->count(),
                     ];
                     $data[] = [
-                        'title' => 'Attendance',
-                        'detail' => TrainingSession::where([
-                        ])
+                        'title' => 'Recent Calls',
+                        'detail' => TrainingSession::where([])
                             ->count(),
                     ];
                     $box = new Box(
-                        'Trainings',
+                        'Best performers',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
                             'url' => route('admin.farmers.index')
                         ])
                     );
-                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">More info <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -198,7 +200,7 @@ class HomeController extends Controller
                             'url' => route('admin.farmers.index')
                         ])
                     );
-                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">More info <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -206,7 +208,7 @@ class HomeController extends Controller
                         ->removable();
                     $column->append($box);
                 });
-                
+
                 $row->column(6, function (Column $column) {
                     $data = [];
                     $data[] = [
@@ -231,7 +233,7 @@ class HomeController extends Controller
                             'url' => route('admin.farmers.index')
                         ])
                     );
-                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">More info <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -240,7 +242,241 @@ class HomeController extends Controller
                     $column->append($box);
                 });
 
- 
+
+
+
+                /*                
+
+                $row->column(4, function (Column $column) {
+                    $column->append(Dashboard::extensions());
+                });
+
+                $row->column(4, function (Column $column) {
+                    $column->append(Dashboard::dependencies());
+                }); */
+            });
+    }
+
+    public function index(Content $content)
+    {
+        Admin::js('/vendor/chartjs/dist/Chart.min.js');
+        return $content
+            ->title('M-Omulimisa')
+            ->description('Hello...')
+            /* ->row(Dashboard::title()) */
+            ->row(function (Row $row) {
+                $row->column(3, function (Column $column) {
+                    $data = [];
+                    $data[] = [
+                        'title' => 'Organisation',
+                        'detail' => Organisation::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Registered Users',
+                        'detail' => \App\Models\User::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Extension Officers',
+                        'detail' => AdminRoleUser::where([
+                            'role_id' => 2
+                        ])
+                            ->count(),
+                    ];
+                    $box = new Box(
+                        'System Users',
+                        view('admin.widgets.widget-1', [
+                            'data' => $data,
+                            'url' => route('admin.farmers.index')
+                        ])
+                    );
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+                $row->column(3, function (Column $column) {
+                    $data = [];
+                    $data[] = [
+                        'title' => 'All Farmers',
+                        'detail' => \App\Models\Farmers\Farmer::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Farmer Groups',
+                        'detail' => \App\Models\Farmers\FarmerGroup::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Individual farmers',
+                        'detail' => \App\Models\Farmers\Farmer::where([
+                            'farmer_group_id' => 1
+                        ])
+                            ->count(),
+                    ];
+                    $box = new Box(
+                        'Famers registered',
+                        view('admin.widgets.widget-1', [
+                            'data' => $data,
+                            'url' => route('admin.farmers.index')
+                        ])
+                    );
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+                $row->column(3, function (Column $column) {
+                    $data = [];
+                    $data[] = [
+                        'title' => 'Products',
+                        'detail' => Product::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Vendors',
+                        'detail' => AdminRoleUser::where([
+                            'role_id' => 3
+                        ])
+                            ->count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Orders',
+                        'detail' => \App\Models\Farmers\Farmer::where([
+                            'farmer_group_id' => 1
+                        ])
+                            ->count(),
+                    ];
+                    $box = new Box(
+                        'Marketplace',
+                        view('admin.widgets.widget-1', [
+                            'data' => $data,
+                            'url' => route('admin.farmers.index')
+                        ])
+                    );
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+                $row->column(3, function (Column $column) {
+                    $data = [];
+                    $data[] = [
+                        'title' => 'Upcoming Trainings',
+                        'detail' => Training::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Conducted Trainings',
+                        'detail' => TrainingSession::where([])
+                            ->count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Attendance',
+                        'detail' => TrainingSession::where([])
+                            ->count(),
+                    ];
+                    $box = new Box(
+                        'Trainings',
+                        view('admin.widgets.widget-1', [
+                            'data' => $data,
+                            'url' => route('admin.farmers.index')
+                        ])
+                    );
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+
+                /*                
+
+                $row->column(4, function (Column $column) {
+                    $column->append(Dashboard::extensions());
+                });
+
+                $row->column(4, function (Column $column) {
+                    $column->append(Dashboard::dependencies());
+                }); */
+            })->row(function (Row $row) {
+                $row->column(6, function (Column $column) {
+                    $data = [];
+                    $data[] = [
+                        'title' => 'Organisation',
+                        'detail' => Organisation::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Registered Users',
+                        'detail' => \App\Models\User::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Extension Officers',
+                        'detail' => AdminRoleUser::where([
+                            'role_id' => 2
+                        ])
+                            ->count(),
+                    ];
+                    $box = new Box(
+                        'System Users',
+                        view('admin.widgets.widget-graph-1', [
+                            'data' => $data,
+                            'url' => route('admin.farmers.index')
+                        ])
+                    );
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+                $row->column(6, function (Column $column) {
+                    $data = [];
+                    $data[] = [
+                        'title' => 'Organisation',
+                        'detail' => Organisation::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Registered Users',
+                        'detail' => \App\Models\User::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Extension Officers',
+                        'detail' => AdminRoleUser::where([
+                            'role_id' => 2
+                        ])
+                            ->count(),
+                    ];
+                    $box = new Box(
+                        'System Users',
+                        view('admin.widgets.widget-graph-2', [
+                            'data' => $data,
+                            'url' => route('admin.farmers.index')
+                        ])
+                    );
+                    $link = '<a href="' . route('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+
 
 
                 /*                

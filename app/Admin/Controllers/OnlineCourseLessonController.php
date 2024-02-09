@@ -206,11 +206,121 @@ class OnlineCourseLessonController extends AdminController
     protected function form()
     {
         $form = new Form(new OnlineCourseLesson());
+
+        $form->file('details', __('Answer Auido'))
+            ->uniqueName()
+            ->removable();
+
         $form->radio('status', __('Status'))
             ->options([
                 'Pending' => 'Pending',
                 'Attended' => 'Attended',
             ])->default('Pending');
+
+        $form->html(<<<SCRIPT
+        <script>
+        $(document).ready(function(){
+            // audio recorder
+            let recorder, audio_stream;
+            const recordButton = document.getElementById("recordButton");
+            const details = $(".details");
+            recordButton.addEventListener("click", startRecording);
+            
+            // stop recording
+            const stopButton = document.getElementById("stopButton");
+            stopButton.addEventListener("click", stopRecording);
+            stopButton.disabled = true;
+            
+            // set preview
+            const preview = document.getElementById("audio-playback");
+            
+            // set download button event
+            const downloadAudio = document.getElementById("downloadButton");
+            downloadAudio.addEventListener("click", downloadRecording);
+            
+            function startRecording() {
+                // button settings
+                recordButton.disabled = true;
+                recordButton.innerText = "Recording..."
+                $(".details").addClass("hide");
+                $("#recordButton").addClass("button-animate");
+            
+                $("#stopButton").removeClass("inactive");
+                stopButton.disabled = false;
+            
+            
+                if (!$("#audio-playback").hasClass("hidden")) {
+                    $("#audio-playback").addClass("hidden")
+                };
+            
+                if (!$("#downloadContainer").hasClass("hidden")) {
+                    $("#downloadContainer").addClass("hidden")
+                };
+            
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function (stream) {
+                        audio_stream = stream;
+                        recorder = new MediaRecorder(stream);
+            
+                        // when there is data, compile into object for preview src
+                        recorder.ondataavailable = function (e) {
+                            const url = URL.createObjectURL(e.data);
+                            preview.src = url;
+            
+                            // set link href as blob url, replaced instantly if re-recorded
+                            downloadAudio.href = url;
+                        };
+                        recorder.start();
+            
+                        timeout_status = setTimeout(function () {
+                            console.log("5 min timeout");
+                            stopRecording();
+                        }, 300000);
+                    });
+            }
+            
+            function stopRecording() {
+                recorder.stop();
+                audio_stream.getAudioTracks()[0].stop();
+            
+                // buttons reset
+                recordButton.disabled = false;
+                recordButton.innerText = "Redo Recording"
+                $("#recordButton").removeClass("button-animate");
+            
+                $("#stopButton").addClass("inactive");
+                stopButton.disabled = true;
+            
+                $("#audio-playback").removeClass("hidden");
+            
+                $("#downloadContainer").removeClass("hidden");
+            }
+            
+            function downloadRecording(){
+                var name = new Date();
+                var res = name.toISOString().slice(0,10)
+                downloadAudio.download = res + '.wav';
+            }
+        });
+        </script>
+        SCRIPT);
+
+        $form->html(<<<HTML
+        <div class="form-group">
+            <label for="audio-playback">Audio Playback</label>
+            <audio id="audio-playback" controls class="form-control"></audio>
+        </div>
+        <div class="form-group">
+            <button id="recordButton" class="btn btn-primary">Record Audio</button>
+            <button id="stopButton" class="btn btn-danger inactive">Stop Recording</button>
+        </div>
+        <div class="form-group hidden" id="downloadContainer">
+            <a id="downloadButton" class="btn btn-success" download>Download Audio</a>
+        </div>
+        HTML);
+
+
+
         return $form;
         $form->number('online_course_topic_id', __('Online course topic id'));
         $form->number('online_course_id', __('Online course id'));
@@ -221,7 +331,7 @@ class OnlineCourseLessonController extends AdminController
         $form->text('status', __('Status'))->default('Pending');
         $form->text('has_error', __('Has error'))->default('No');
         $form->textarea('error_message', __('Error message'));
-        $form->textarea('details', __('Details'));
+
 
         return $form;
     }
