@@ -819,7 +819,7 @@ class MenuFunctions
 
         $this->saveToField($sessionId, $phoneNumber, 'insurance_amount', $premium);
 
-        return "Insuring ".$acerage." of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured)." in ".$seasonName.". Pay premium of ugx".number_format(($premium));
+        return "Insuring ".$acerage." of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured).". Pay premium of ugx".number_format(($premium));
     }
 
     /**
