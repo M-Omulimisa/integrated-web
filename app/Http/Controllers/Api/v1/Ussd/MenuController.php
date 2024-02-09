@@ -270,10 +270,9 @@ class MenuController extends Controller
 
                 $input_text = $this->menu_helper->getAcerage($input_text);
 
-                $seasonId       = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_season_id');
                 $enterprise_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_enterprise_id');
-                $sum_insured    = $this->menu_helper->getPremiumOptionDetails($seasonId, $enterprise_id, 'sum_insured_per_acre');
-                $premium        = $this->menu_helper->getPremiumOptionDetails($seasonId, $enterprise_id, 'premium_per_acre');
+                $sum_insured    = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'sum_insured_per_acre');
+                $premium        = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'premium_per_acre');
 
                 $response       = $insure_more;
                 $current_menu   = "insurance_another";
