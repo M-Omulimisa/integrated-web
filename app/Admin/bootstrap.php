@@ -3,8 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 
 
-$done_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->id)
-    ->where('status', 'Pedning')
+$done_lesson = \App\Models\OnlineCourseLesson::where('status', 'Pedning')
     ->update([
         'has_reminder_call' => 'No',
         'reminder_date' => null,
