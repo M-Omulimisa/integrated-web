@@ -301,6 +301,7 @@ Route::get('/online-make-reminder-calls', function (Request $r) {
         if (!Utils::phone_number_is_valid($phone)) {
             continue;
         }
+        //$phone = '+256783204665'; //for testing
         $phones[] = $phone;
     }
 
@@ -321,6 +322,9 @@ Route::get('/online-make-reminder-calls', function (Request $r) {
                 'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
             ]
         ]);
+        foreach ($phones as $key => $value) {
+            echo $value . '<br>';
+        }
         die("Success");
     } catch (\Exception $e) {
         die("Failed because " . $e->getMessage());
