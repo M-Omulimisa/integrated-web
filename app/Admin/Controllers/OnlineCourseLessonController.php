@@ -108,13 +108,22 @@ class OnlineCourseLessonController extends AdminController
         $grid->column('has_reminder_call', __('Reminder Call'))
             ->sortable()
             ->filter([
-                'Pending' => 'Pending',
-                'Attended' => 'Attended',
+                'No' => 'No',
+                'Yes' => 'Yes'
             ])
             ->editable('select', [
                 'No' => 'No',
                 'Yes' => 'Yes'
             ]);
+        //reminder_date
+        $grid->column('reminder_date', __('Reminder Date'))
+            ->display(function ($reminder_date) {
+                if ($reminder_date == null || strlen($reminder_date) < 2) {
+                    return 'Not set';
+                }
+                return date('d M Y H:i', strtotime($reminder_date));
+            })
+            ->sortable(); 
 
         $grid->column('has_error', __('Has error'))
             ->label([

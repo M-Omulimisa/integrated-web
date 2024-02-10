@@ -256,6 +256,16 @@ Route::get('/online-make-reminder-calls', function (Request $r) {
 
     $students_to_call = [];
     foreach ($pending_students as $key => $pending_student) {
+
+        //get lesson where reminder is yes and reminder date is today
+        $lesson = \App\Models\OnlineCourseLesson::where('student_id', $pending_student->id)
+            ->where('has_reminder_call', 'Yes')
+            ->where('reminder_date', date('Y-m-d'))
+            ->first();
+        if ($lesson != null) {
+            continue;
+        }
+
         //get any latest pending lesson
         $_lesson = \App\Models\OnlineCourseLesson::where('student_id', $pending_student->id)
             ->where('status', 'Pending')
@@ -268,6 +278,7 @@ Route::get('/online-make-reminder-calls', function (Request $r) {
             }
             $students_to_call[] = $pending_student;
             $_lesson->has_reminder_call = 'Yes';
+            $_lesson->reminder_date = date('Y-m-d');
             $_lesson->save();
         }
     }
