@@ -2,6 +2,14 @@
 
 use Illuminate\Support\Facades\Schema;
 
+
+$done_lesson = \App\Models\OnlineCourseLesson::where('student_id', $student->id)
+    ->where('status', 'Pedning')
+    ->update([
+        'has_reminder_call' => 'No',
+        'reminder_date' => null,
+    ]);
+dd(count($done_lesson));
 /* 
 curl -X POST \
     https://voice.sandbox.africastalking.com/call \
