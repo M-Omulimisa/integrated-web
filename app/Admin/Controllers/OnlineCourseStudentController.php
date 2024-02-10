@@ -29,7 +29,7 @@ class OnlineCourseStudentController extends AdminController
             $filter->disableIdFilter();
 
             $filter->equal('online_course_id', 'Course')->select(\App\Models\OnlineCourse::getDropDownList());
-            
+
             $filter->equal('status', 'Status')->select([
                 'active' => 'Active',
                 'inactive' => 'Inactive'
@@ -40,22 +40,16 @@ class OnlineCourseStudentController extends AdminController
             ]);
         });
 
+        $grid->quickSearch('name', 'phone')->placeholder('Search by name or phone number');
+
         $grid->column('created_at', __('Date enrolled'))
             ->display(function ($created_at) {
                 return date('d M Y', strtotime($created_at));
             })
             ->sortable()
             ->hide();
-        $grid->column('user_id', __('Student'))
-            ->display(function ($user_id) {
-                $u = $this->user;
-                if ($u != null) {
-                    return $u->name;
-                }
-                $this->delete();
-                return 'Deleted';
-            })
-            ->sortable();
+        $grid->column('name', __('Student'))->sortable();
+        $grid->column('phone', __('Phone number'))->sortable();
         $grid->column('online_course_id', __('Course'))
             ->display(function ($online_course_id) {
                 return \App\Models\OnlineCourse::find($online_course_id)->title;
@@ -85,7 +79,7 @@ class OnlineCourseStudentController extends AdminController
             ->sortable();
         $grid->column('position', __('Position'))->hide();
         $grid->column('has_listened_to_intro', __('Listened to Intro'))
-            ->sortable() 
+            ->sortable()
             ->editable('select', [
                 'Yes' => 'Yes',
                 'No' => 'No'
