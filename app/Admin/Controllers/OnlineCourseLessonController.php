@@ -40,7 +40,7 @@ class OnlineCourseLessonController extends AdminController
             $filter->disableIdFilter();
         });
 
-        $grid->column('position', __('Position'))->sortable();
+        $grid->column('id', __('ID'))->sortable()->hide();
         $grid->column('student_id', __('Student'))
             ->display(function ($student_id) {
                 $item = OnlineCourseStudent::find($student_id);
