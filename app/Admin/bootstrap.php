@@ -3,12 +3,12 @@
 use Illuminate\Support\Facades\Schema;
 
 
-/* $done_lesson = \App\Models\OnlineCourseLesson::where('status', 'Pedning')
+$done_lesson = \App\Models\OnlineCourseLesson::where('status', 'Pending')
     ->update([
         'has_reminder_call' => 'No',
         'reminder_date' => null,
     ]);
-dd(($done_lesson)); */
+dd(($done_lesson));
 /* 
 curl -X POST \
     https://voice.sandbox.africastalking.com/call \
