@@ -12,6 +12,7 @@ use App\Models\OnlineCourseAfricaTalkingCall;
 use App\Models\OnlineCourseStudent;
 use App\Models\User;
 use App\Models\Utils;
+use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
 
 /*
@@ -275,6 +276,16 @@ Route::get('/online-make-reminder-calls', function (Request $r) {
 
             if ($_lesson->has_reminder_call == 'Yes') {
                 continue;
+            }
+
+            $reminder_date = $_lesson->reminder_date;
+            //check if is today
+            if ($reminder_date != null && strlen($reminder_date) > 3) {
+                $today = Carbon::now();
+                $reminder_date = Carbon::parse($reminder_date);
+                if ($today->diffInDays($reminder_date) > 0) {
+                    continue;
+                }
             }
             $students_to_call[] = $pending_student;
             $_lesson->has_reminder_call = 'Yes';
