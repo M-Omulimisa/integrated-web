@@ -290,7 +290,6 @@ Route::get('/online-make-reminder-calls', function (Request $r) {
         if (!Utils::phone_number_is_valid($phone)) {
             continue;
         }
-        $phone = '+256783204665';
         $phones[] = $phone;
     }
 
