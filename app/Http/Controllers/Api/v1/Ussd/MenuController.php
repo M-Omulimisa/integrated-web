@@ -387,7 +387,7 @@ class MenuController extends Controller
 
                 foreach($packages as $package){
 
-                    $response .= $package->menu.") ".$package->name."(".$package->ents->pluck('name')->implode(',').")"."\n";
+                    $response .= $package->menu.") ".$package->ents->pluck('name')->implode(',')."\n";
 
                 }
 
