@@ -27,12 +27,12 @@ class OnlineCourseLessonController extends AdminController
     {
         $grid = new Grid(new OnlineCourseLesson());
 
-
         //add on top of the grid html data
         $grid->header(function ($query) {
             $call_url = url('api/online-make-reminder-calls?force=Yes');
             return "<a target=\"_blank\" href='$call_url' class='btn btn-sm btn-success'>Make Reminder Calls Now</a>";
         });
+
         //$grid->disableActions();
         $grid->disableCreateButton();
         $grid->model()->orderBy('id', 'desc');
@@ -123,7 +123,7 @@ class OnlineCourseLessonController extends AdminController
                 }
                 return date('d M Y H:i', strtotime($reminder_date));
             })
-            ->sortable(); 
+            ->sortable();
 
         $grid->column('has_error', __('Has error'))
             ->label([
@@ -176,7 +176,8 @@ class OnlineCourseLessonController extends AdminController
                 }
                 return 'No Answer';
             });
-
+        $grid->column('student_listened_to_answer', __('Listened to Answer'))->sortable();
+        $grid->column('has_answer', __('Has Answer'))->sortable();
         return $grid;
     }
 
@@ -215,120 +216,31 @@ class OnlineCourseLessonController extends AdminController
     protected function form()
     {
         $form = new Form(new OnlineCourseLesson());
+        $form->disableCreatingCheck();
 
-        $form->file('details', __('Answer Auido'))
+        /*         $form->file('details', __('Answer Auido'))
             ->uniqueName()
             ->removable();
-
+ */
         $form->radio('status', __('Status'))
             ->options([
                 'Pending' => 'Pending',
                 'Attended' => 'Attended',
             ])->default('Pending');
 
-        $form->html(<<<SCRIPT
-        <script>
-        $(document).ready(function(){
-            // audio recorder
-            let recorder, audio_stream;
-            const recordButton = document.getElementById("recordButton");
-            const details = $(".details");
-            recordButton.addEventListener("click", startRecording);
-            
-            // stop recording
-            const stopButton = document.getElementById("stopButton");
-            stopButton.addEventListener("click", stopRecording);
-            stopButton.disabled = true;
-            
-            // set preview
-            const preview = document.getElementById("audio-playback");
-            
-            // set download button event
-            const downloadAudio = document.getElementById("downloadButton");
-            downloadAudio.addEventListener("click", downloadRecording);
-            
-            function startRecording() {
-                // button settings
-                recordButton.disabled = true;
-                recordButton.innerText = "Recording..."
-                $(".details").addClass("hide");
-                $("#recordButton").addClass("button-animate");
-            
-                $("#stopButton").removeClass("inactive");
-                stopButton.disabled = false;
-            
-            
-                if (!$("#audio-playback").hasClass("hidden")) {
-                    $("#audio-playback").addClass("hidden")
-                };
-            
-                if (!$("#downloadContainer").hasClass("hidden")) {
-                    $("#downloadContainer").addClass("hidden")
-                };
-            
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(function (stream) {
-                        audio_stream = stream;
-                        recorder = new MediaRecorder(stream);
-            
-                        // when there is data, compile into object for preview src
-                        recorder.ondataavailable = function (e) {
-                            const url = URL.createObjectURL(e.data);
-                            preview.src = url;
-            
-                            // set link href as blob url, replaced instantly if re-recorded
-                            downloadAudio.href = url;
-                        };
-                        recorder.start();
-            
-                        timeout_status = setTimeout(function () {
-                            console.log("5 min timeout");
-                            stopRecording();
-                        }, 300000);
-                    });
-            }
-            
-            function stopRecording() {
-                recorder.stop();
-                audio_stream.getAudioTracks()[0].stop();
-            
-                // buttons reset
-                recordButton.disabled = false;
-                recordButton.innerText = "Redo Recording"
-                $("#recordButton").removeClass("button-animate");
-            
-                $("#stopButton").addClass("inactive");
-                stopButton.disabled = true;
-            
-                $("#audio-playback").removeClass("hidden");
-            
-                $("#downloadContainer").removeClass("hidden");
-            }
-            
-            function downloadRecording(){
-                var name = new Date();
-                var res = name.toISOString().slice(0,10)
-                downloadAudio.download = res + '.wav';
-            }
+        $id = request()->route('online_course_lesson');
+        if ((int)($id) > 0) {
+            $form->html(view('admin.components.recording', ['id' => $id]));
+        }
+
+
+
+        $form->disableSubmit();
+        $form->disableEditingCheck();
+        $form->tools(function (Form\Tools $tools) {
+            $tools->disableView();
+            $tools->disableDelete();
         });
-        </script>
-        SCRIPT);
-
-        $form->html(<<<HTML
-        <div class="form-group">
-            <label for="audio-playback">Audio Playback</label>
-            <audio id="audio-playback" controls class="form-control"></audio>
-        </div>
-        <div class="form-group">
-            <button id="recordButton" class="btn btn-primary">Record Audio</button>
-            <button id="stopButton" class="btn btn-danger inactive">Stop Recording</button>
-        </div>
-        <div class="form-group hidden" id="downloadContainer">
-            <a id="downloadButton" class="btn btn-success" download>Download Audio</a>
-        </div>
-        HTML);
-
-
 
         return $form;
         $form->number('online_course_topic_id', __('Online course topic id'));

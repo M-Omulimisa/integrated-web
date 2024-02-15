@@ -8,7 +8,9 @@ use App\Http\Controllers\Api\v1\Ussd\MenuController;
 use App\Http\Controllers\Api\v1\ApiAuthController;
 use App\Http\Controllers\Api\v1\ApiShopController;
 use App\Http\Middleware\JwtMiddleware;
+use App\Models\OnlineCourse;
 use App\Models\OnlineCourseAfricaTalkingCall;
+use App\Models\OnlineCourseLesson;
 use App\Models\OnlineCourseStudent;
 use App\Models\User;
 use App\Models\Utils;
@@ -108,11 +110,51 @@ Route::get('/select-parishes', function (Request $request) {
     ]);
 });
 
+Route::post("upload-file", function (Request $r) {
+    //upload file name audio
+    $path = Utils::file_upload($r->file('audio'));
+    if ($path == '') {
+        die("failed");
+    }
+    $session = OnlineCourseLesson::find($r->id);
+    if ($session == null) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Session not found'
+        ]);
+    }
+    $original = $session;
+
+    if (strlen($path) > 3) {
+        $session->has_answer = 'Yes';
+        $session->instructor_audio_question = $path;
+        $session->student_listened_to_answer = 'No';
+        $session->save();
+    }
+
+    if ($original->has_answer != 'Yes') {
+        if ($session->has_answer == 'Yes') {
+            $student = $session->student;
+            if ($student != null) {
+                $phone = Utils::prepare_phone_number($student->phone);
+                if (Utils::phone_number_is_valid($phone)) {
+                    try {
+                        Utils::send_sms($phone, 'Your instructor has answered your question. Please call 0323200710 to listen to the answer.');
+                    } catch (\Exception $e) {
+                    }
+                }
+            }
+        }
+    }
+});
+
 Route::group([
     'prefix' => '/v1'
 ], function () {
 
     //get all jea 
+
+
 
     Route::middleware([JwtMiddleware::class])->group(function () {
         /* ==============START OF SHOP API================== */
@@ -565,6 +607,15 @@ Route::post('/online-course-api', function (Request $r) {
                 }
             }
         }
+        if ($lesson->has_answer == 'Yes') {
+            if ($lesson->student_listened_to_answer != 'Yes') {
+                $link = url('storage/' . $lesson->instructor_audio_question);
+                $prefixContent .= '<Play url="' . $link . '" />';
+                $lesson->student_listened_to_answer = 'Yes';
+                $lesson->save();
+            }
+        }
+
 
         Utils::my_resp_digits('audio', 'Main Menu', $student = $student, $prefixContent = $prefixContent);
         return;

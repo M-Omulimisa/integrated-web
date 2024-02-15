@@ -13,6 +13,21 @@ use Illuminate\Support\Facades\Mail;
 class Utils
 {
 
+    public static function file_upload($file)
+    {
+        if ($file == null) {
+            return '';
+        }
+        //GET FILE EXTENSION FILE NAME FRO FILE
+        $file_extension = $file->getClientOriginalExtension();
+        //get file extension
+        $file_extension = $file->getClientOriginalExtension();
+        $file_name = $file->getClientOriginalName();
+        $public_path = public_path() . "/storage/files";
+        $file->move($public_path, $file_name);
+        $url = 'files/' . $file_name;
+        return $url;
+    }
 
     //public static function email_is_valid
     public static function email_is_valid($email)
@@ -808,13 +823,13 @@ class Utils
         die();
     }
 
-    public static function quizz_menu($topic,$prefixContent = '')
+    public static function quizz_menu($topic, $prefixContent = '')
     {
         header('Content-type: text/plain');
         $lesson_url = asset('storage/' . $topic->video_url);
         echo
         '<Response>
-            '.$prefixContent.'
+            ' . $prefixContent . '
             <GetDigits timeout="40" numDigits="1" >
                 <Play url="' . $lesson_url . '" />
             </GetDigits>
