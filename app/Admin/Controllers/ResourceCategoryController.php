@@ -31,7 +31,7 @@ class ResourceCategoryController extends AdminController
         $grid->quickSearch('name')->placeholder('Search by name...');
         $grid->model()->orderBy('name', 'asc');
         $grid->column('name', __('Name'))->sortable();
-        $grid->column('type', __('Thumbnail'))->sortable();
+        $grid->column('type', __('Type'))->sortable();
         $grid->column('details', __('Details'))->hide();
 
         return $grid;
