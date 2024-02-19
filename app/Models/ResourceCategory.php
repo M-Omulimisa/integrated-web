@@ -10,7 +10,7 @@ class ResourceCategory extends Model
 {
     use HasFactory;
 
-    private $appends = [
+    protected $appends = [
         'post_count'
     ];
 
