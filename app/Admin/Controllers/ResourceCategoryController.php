@@ -31,8 +31,8 @@ class ResourceCategoryController extends AdminController
         $grid->quickSearch('name')->placeholder('Search by name...');
         $grid->model()->orderBy('name', 'asc');
         $grid->column('name', __('Name'))->sortable();
-        //$grid->column('thumbnail', __('Thumbnail'));
-        $grid->column('details', __('Details'));
+        $grid->column('type', __('Thumbnail'))->sortable();
+        $grid->column('details', __('Details'))->hide();
 
         return $grid;
     }
@@ -66,7 +66,12 @@ class ResourceCategoryController extends AdminController
     {
         $form = new Form(new ResourceCategory());
 
-        $form->text('name', __('Name'));
+        $form->text('name', __('Name'))->rules('required');
+        $form->radio('type', __('Category Type'))
+            ->options([
+                'Crops' => 'Crops',
+                'Livestock' => 'Livestock',
+            ])->rules('required');
         $form->image('thumbnail', __('Thumbnail'));
         $form->textarea('details', __('Details'));
 
