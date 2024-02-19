@@ -48,6 +48,7 @@ Route::group([
     $router->resource('enterprises', EnterpriseController::class);
     $router->resource('market-subscriptions', MarketSubscriptionController::class);
     $router->resource('market-outboxes', MarketOutboxController::class);
+    $router->resource('subscription-payments', SubscriptionPaymentController::class);
 
     /*===============e-learning start=============*/
     $router->resource('e-learning-courses', OnlineCourseController::class);
