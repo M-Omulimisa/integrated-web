@@ -166,12 +166,12 @@ Route::get('/', function () {
 */
 
 Route::get('send-inspector-notification', function () {
-    if(!isset($_GET['id'])){
+    if (!isset($_GET['id'])) {
         die("ID not set");
     }
     $course_id = $_GET['id'];
     $course = OnlineCourse::find($course_id);
-    if($course == null){
+    if ($course == null) {
         die("Course not found");
     }
     try {
@@ -417,7 +417,7 @@ Route::get('/gen-form', function () {
 })->name("gen-form");
 
 
-Auth::routes();
+/* Auth::routes();
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('logout-with-otp', [LoginController::class, 'logout'])->name("auth.otp.logout");
@@ -425,9 +425,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/login/verify', [OtpController::class, 'view'])->name("otp.view");
     Route::post('/login/check', [OtpController::class, 'check'])->name("otp.verify");
     Route::get('/login/resend', [OtpController::class, 'resend'])->name('otp.resend');
-});
+}); */
 //Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::group(['middleware' => ['auth', 'otp_verification']], function () {
+/* Route::group(['middleware' => ['auth', 'otp_verification']], function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -813,3 +813,4 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function () {
     Route::get('get_dialing_code_by_country', [CountryController::class, 'autoPickDialingCode']);
     Route::get('get-period-by-frequency', [InformationController::class, 'getFrequencyPeriod']);
 });
+ */
