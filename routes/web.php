@@ -426,7 +426,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/login/check', [OtpController::class, 'check'])->name("otp.verify");
     Route::get('/login/resend', [OtpController::class, 'resend'])->name('otp.resend');
 });
-Route::get('/', [HomeController::class, 'index'])->name('home');
+//Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::group(['middleware' => ['auth', 'otp_verification']], function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
