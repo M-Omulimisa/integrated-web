@@ -32,7 +32,7 @@ class WeatherConditionController extends AdminController
         $grid->column('digit', __('Digit'));
         $grid->column('language_id', __('Language'))->display(function ($language_id) {
 
-            $f = \App\Models\Settings\Language::find($language_id);
+            $f = Language::find($language_id);
 
             if ($f == null) {
 
@@ -79,7 +79,7 @@ class WeatherConditionController extends AdminController
         $form = new Form(new WeatherCondition());
 
         $form->number('digit', __('Digit'));
-        $form->select('language_id', 'Select language')->options(UssdLanguage::all()->pluck('language', 'id'));
+        $form->select('language_id', 'Select language')->options(Language::all()->pluck('language', 'id'));
         $form->text('description', __('Description'));
 
         return $form;
