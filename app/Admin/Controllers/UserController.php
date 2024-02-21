@@ -109,6 +109,7 @@ class UserController extends AdminController
 
 /*         $form->display('email', 'Email Address')->rules('required|email'); */
 
+        $form->text('username', 'Username')->rules('required');
         $form->text('name', 'Full name')->rules('required');
         $form->text('phone', 'Phone number')->rules('required');
 
