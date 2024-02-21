@@ -49,6 +49,7 @@ Route::group([
     $router->resource('market-subscriptions', MarketSubscriptionController::class);
     $router->resource('market-outboxes', MarketOutboxController::class);
     $router->resource('subscription-payments', SubscriptionPaymentController::class);
+    $router->resource('weather-conditions', WeatherConditionController::class);
 
     /*===============e-learning start=============*/
     $router->resource('e-learning-courses', OnlineCourseController::class);
