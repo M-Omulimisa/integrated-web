@@ -79,7 +79,7 @@ class WeatherConditionController extends AdminController
         $form = new Form(new WeatherCondition());
 
         $form->number('digit', __('Digit'));
-        $form->select('language_id', 'Select language')->options(Language::all()->pluck('language', 'id'));
+        $form->select('language_id', 'Select language')->options(Language::all()->pluck('name', 'id'));
         $form->text('description', __('Description'));
 
         return $form;
