@@ -142,7 +142,7 @@ class OnlineCourseController extends AdminController
         $data = [];
         $instructors = [];
         foreach ($users as $user) {
-            if (!($user->hasRole('instructor'))) {
+            if (!($user->isRole('instructor'))) {
                 continue;
             }
             $data[$user->id] = $user->name . " - #" . $user->id;
