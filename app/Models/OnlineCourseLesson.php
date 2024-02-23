@@ -14,8 +14,11 @@ class OnlineCourseLesson extends Model
     {
         parent::boot();
         static::updating(function ($model) {
-            if ($model->status != 'Attended')
+            if ($model->status != 'Attended') {
                 $model->attended_at = null;
+            }else{
+                $model->attended_at = now();
+            }
         });
 
         //updated
@@ -32,7 +35,7 @@ class OnlineCourseLesson extends Model
             if ($student != null) {
                 $student->update_progress();
             }
-        }); 
+        });
     }
 
     //belongs to student_id

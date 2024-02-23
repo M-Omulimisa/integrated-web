@@ -13,6 +13,20 @@ use Illuminate\Support\Facades\Mail;
 class Utils
 {
 
+
+    public static function greet()
+    {
+        //according to the time of the day
+        $hour = date('H');
+        if ($hour < 12) {
+            return "Good morning";
+        } else if ($hour < 17) {
+            return "Good afternoon";
+        } else {
+            return "Good evening";
+        }
+    }
+
     public static function file_upload($file)
     {
         if ($file == null) {

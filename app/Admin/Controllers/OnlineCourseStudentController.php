@@ -2,8 +2,10 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\OnlineCourse;
 use App\Models\OnlineCourseStudent;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -39,6 +41,17 @@ class OnlineCourseStudentController extends AdminController
                 'incomplete' => 'Incomplete'
             ]);
         });
+
+        $u = Admin::user();
+        if ($u->isRole('instructor')) {
+            $grid->disableCreateButton();
+            $myStudents = OnlineCourse::getMyStudents($u); 
+            $ids = [];
+            foreach ($myStudents as $student) {
+                $ids[] = $student['id'];
+            }  
+            $grid->model()->whereIn('id', $ids);
+        } 
 
         $grid->quickSearch('name', 'phone')->placeholder('Search by name or phone number');
 

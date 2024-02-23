@@ -58,6 +58,10 @@ class OnlineCourseStudent extends Model
         }
 
         $this->progress = $pecentage;
+
+        if ($this->progress >= 99) {
+            $this->completion_status = 'Completed';
+        }
         $this->save();
     }
 

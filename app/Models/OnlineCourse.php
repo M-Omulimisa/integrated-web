@@ -137,4 +137,32 @@ class OnlineCourse extends Model
             throw $th;
         }
     }
+
+    public static function getMyStudents($u){
+        $my_courses = OnlineCourse::getMyCouses($u);
+        $students = [];
+        foreach ($my_courses as $course) {
+            $students = array_merge($students, OnlineCourseStudent::where('online_course_id', $course->id)->get()->toArray());
+        }
+        return $students;
+    }
+    public static function getMyCouses($u)
+    {
+        $courses = OnlineCourse::where('instructor_id', $u->id)->get();
+        foreach (OnlineCourse::all() as $key => $value) {
+            if ($value->other_instructors != null) {
+                $instructors = $value->other_instructors;
+                if (in_array($u->id, $instructors)) {
+                    $courses->push($value);
+                }
+            }
+        }
+        return $courses;
+    }
+
+    //has many students
+    public function students()
+    {
+        return $this->hasMany(OnlineCourseStudent::class);
+    } 
 }

@@ -2,9 +2,11 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\OnlineCourse;
 use App\Models\OnlineCourseLesson;
 use App\Models\OnlineCourseStudent;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -28,10 +30,10 @@ class OnlineCourseLessonController extends AdminController
         $grid = new Grid(new OnlineCourseLesson());
 
         //add on top of the grid html data
-        $grid->header(function ($query) {
+        /* $grid->header(function ($query) {
             $call_url = url('api/online-make-reminder-calls?force=Yes');
             return "<a target=\"_blank\" href='$call_url' class='btn btn-sm btn-success'>Make Reminder Calls Now</a>";
-        });
+        }); */
 
         //$grid->disableActions();
         $grid->disableCreateButton();
@@ -39,6 +41,17 @@ class OnlineCourseLessonController extends AdminController
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
         });
+
+        $u = Admin::user();
+        if ($u->isRole('instructor')) {
+            $grid->disableCreateButton();
+            $myStudents = OnlineCourse::getMyStudents($u);
+            $ids = [];
+            foreach ($myStudents as $student) {
+                $ids[] = $student['id'];
+            }
+            $grid->model()->whereIn('student_id', $ids);
+        }
 
         $grid->column('id', __('ID'))->sortable()->hide();
         $grid->column('student_id', __('Student'))
@@ -80,6 +93,7 @@ class OnlineCourseLessonController extends AdminController
                 }
                 return 'Deleted';
             })
+            ->hide()
             ->sortable();
         $grid->column('sheduled_at', __('Sheduled'))
             ->display(function ($sheduled_at) {
@@ -226,16 +240,12 @@ class OnlineCourseLessonController extends AdminController
             ->options([
                 'Pending' => 'Pending',
                 'Attended' => 'Attended',
-            ])->default('Pending');
+            ]);
 
         $id = request()->route('online_course_lesson');
         if ((int)($id) > 0) {
             $form->html(view('admin.components.recording', ['id' => $id]));
         }
-
-
-
-        $form->disableSubmit();
         $form->disableEditingCheck();
         $form->tools(function (Form\Tools $tools) {
             $tools->disableView();
