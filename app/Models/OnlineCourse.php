@@ -121,7 +121,7 @@ class OnlineCourse extends Model
         $url = admin_url('online-courses/');
         $msg = "Dear " . $u->name . ",<br>";
         $msg .= "You have been made a course instructor to the course " . $this->title . ".<br><br>";
-        $msg .= "Please login to your account using the following link and start feeding the course content.<br>";
+        $msg .= "Please login to your account using the following link and login credentials start monitoring students enrolled to your course.<br><br>";
         $msg .= "<b>Username:</b> " . $u->email . "<br>";
         $msg .= "<b>Default Password:</b> " . '4321' . "<br>";
         $msg .= "<a href='" . $url . "'>" . $url . "</a><br>";
