@@ -360,7 +360,7 @@ class HomeController extends Controller
             });
         }
 
-        if ($u->isRole('admin')) {
+        if ($u->isRole('administrator')) {
             $content->row(function (Row $row) {
                 $row->column(3, function (Column $column) {
                     $data = [];
