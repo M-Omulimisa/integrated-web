@@ -10,6 +10,20 @@ class OnlineCourse extends Model
 {
     use HasFactory;
 
+    //getter for other_instructors 
+    public function getOtherInstructorsAttribute($value)
+    {
+        if ($value != null)
+            return json_decode($value);
+    }
+
+    //setter for other_instructors
+    public function setOtherInstructorsAttribute($value)
+    {
+        if ($value != null)
+            $this->attributes['other_instructors'] = json_encode($value);
+    }
+
     //getDropDownList
     public static function getDropDownList()
     {

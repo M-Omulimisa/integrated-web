@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\AdminRoleUser;
 use App\Models\OnlineCourse;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -139,11 +140,13 @@ class OnlineCourseController extends AdminController
         $link = ('/api/ajax-users');
         $users = \App\Models\User::all();
         $data = [];
+        $instructors = [];
         foreach ($users as $user) {
             if (!($user->hasRole('instructor'))) {
-                //continue;
+                continue;
             }
             $data[$user->id] = $user->name . " - #" . $user->id;
+            $instructors[$user->id] = $user->name . " - #" . $user->id;
         }
         $form->select('instructor_id', __('Instructor'))
             ->options($data)
@@ -165,8 +168,10 @@ class OnlineCourseController extends AdminController
             ->placeholder('Enter Welcome Message To Student Here')
             ->rules('required');
 
-        /*         $form->textarea('summary', __('Course Summary'))
-            ->placeholder('Enter Course Summary Here');
+
+        $form->multipleSelect('other_instructors', __('Other Instructors'))
+            ->options($instructors);
+        /*         
 
         $form->file('video_url', __('Intro Video'))
             ->attribute(['accept' => 'video/*']);
