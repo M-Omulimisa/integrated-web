@@ -120,10 +120,12 @@ class OnlineCourse extends Model
 
         $url = admin_url('online-courses/');
         $msg = "Dear " . $u->name . ",<br>";
-        $msg .= "You be made a course instructor to the course " . $this->title . ".<br>";
+        $msg .= "You have been made a course instructor to the course " . $this->title . ".<br><br>";
         $msg .= "Please login to your account using the following link and start feeding the course content.<br>";
+        $msg .= "<b>Username:</b> " . $u->email . "<br>";
+        $msg .= "<b>Default Password:</b> " . '4321' . "<br>";
         $msg .= "<a href='" . $url . "'>" . $url . "</a><br>";
-        $msg .= "<br><small>This is an automated message, please do not reply.</small><br>";
+        $msg .= "<br><br><small>This is an automated message, please do not reply.</small><br>";
 
         $data['body'] = $msg;
         //$data['view'] = 'mails/mail-1';
@@ -138,7 +140,8 @@ class OnlineCourse extends Model
         }
     }
 
-    public static function getMyStudents($u){
+    public static function getMyStudents($u)
+    {
         $my_courses = OnlineCourse::getMyCouses($u);
         $students = [];
         foreach ($my_courses as $course) {
@@ -164,5 +167,5 @@ class OnlineCourse extends Model
     public function students()
     {
         return $this->hasMany(OnlineCourseStudent::class);
-    } 
+    }
 }
