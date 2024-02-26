@@ -870,7 +870,7 @@ class ApiAuthController extends Controller
 
     public function register(Request $r)
     {
-       
+
         if ($r->first_name == null) {
             return $this->error('First name is required.');
         }
@@ -878,7 +878,7 @@ class ApiAuthController extends Controller
         if ($r->last_name == null) {
             return $this->error('Last name is required.');
         }
-  
+
         $u = User::where('email', $r->phone)
             ->orWhere('phone', $r->phone)
             ->orWhere('username', $r->phone)
