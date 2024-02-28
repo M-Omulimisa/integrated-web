@@ -151,7 +151,7 @@ class ApiShopController extends Controller
         $subscription->period_paid = $r->period;
         $subscription->total_price = $r->total_price;
         $subscription->start_date = Carbon::now();
-        $subscription->end_date = Carbon::now()->addMonths($r->period);
+        $subscription->end_date = Carbon::now()->addDays($r->period);
         $subscription->status = 0;
         $subscription->user_id = $u->id;
         $subscription->seen_by_admin = 0;
