@@ -207,10 +207,8 @@ class ApiAuthController extends Controller
 
     public function farmers()
     {
-        $u = auth('api')->user();
-        return $this->success(Farmer::where([
-            'organisation_id' => $u->organisation_id
-        ])->get(), "Success");
+        //$u = auth('api')->user();
+        return $this->success(Farmer::where([])->get(), "Success");
     }
 
     public function countries()
