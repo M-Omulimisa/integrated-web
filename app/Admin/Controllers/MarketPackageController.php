@@ -29,6 +29,7 @@ class MarketPackageController extends AdminController
     {
         $grid = new Grid(new MarketPackage());
         $grid->quickSearch('name')->placeholder('Search by name');
+        $grid->model()->orderBy('name', 'asc');
         $grid->column('name', __('Name'))->sortable();
 
         return $grid;
