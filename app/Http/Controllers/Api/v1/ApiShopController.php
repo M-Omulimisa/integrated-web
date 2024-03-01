@@ -685,11 +685,11 @@ class ApiShopController extends Controller
             return $this->error('Item ID is missing.');
         }
         $order = Order::find($r->order_id);
-        if($order->payment_confirmation == 'PAID'){
+        if ($order->payment_confirmation == 'PAID') {
             return $this->error('You cannot delete a paid order.');
-        } 
+        }
         if ($order == null) {
-            return $this->error('Order not found.'); 
+            return $this->error('Order not found.');
         }
         $order->delete();
         return $this->success(null, $message = "Order Deleted Successfully.", 200);
@@ -1053,7 +1053,7 @@ class ApiShopController extends Controller
         $pro->url = $u->url;
         $pro->user = $u->id;
         $pro->supplier = $u->id;
-        $pro->in_stock = 1;
+        $pro->in_stock = $r->in_stock;
         $pro->rates = 1;
 
 
