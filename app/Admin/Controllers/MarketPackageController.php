@@ -31,6 +31,13 @@ class MarketPackageController extends AdminController
         $grid->quickSearch('name')->placeholder('Search by name');
         $grid->model()->orderBy('name', 'asc');
         $grid->column('name', __('Name'))->sortable();
+        $grid->column('ents', __('Enterprise'))->display(function ($ents) {
+            $ents = array_map(function ($ent) {
+                return "<span class='label label-success'>{$ent['name']}</span>";
+            }, $ents);
+            return join('&nbsp;', $ents);
+        }); 
+
 
         return $grid;
     }
