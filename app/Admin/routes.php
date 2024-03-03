@@ -71,6 +71,8 @@ Route::group([
     $router->resource('ussd-advisory-message-outboxes', UssdAdvisoryMessageOutboxController::class);
     $router->resource('calls', OnlineCourseAfricaTalkingCallController::class);
     $router->resource('online-course-menus', OnlineCourseMenuController::class);
+    $router->resource('weather-subscriptions', WeatherSubscriptionController::class);
+
     
 });
 
