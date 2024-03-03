@@ -55,10 +55,10 @@ Route::group([
     $router->resource('e-learning-courses', OnlineCourseController::class);
     $router->resource('courses', OnlineCourseController::class);
     $router->resource('online-course-categories', OnlineCourseCategoryController::class);
-    $router->resource('online-course-chapters', OnlineCourseChapterController::class); 
+    $router->resource('online-course-chapters', OnlineCourseChapterController::class);
     $router->resource('online-course-topics', OnlineCourseTopicController::class);
     $router->resource('online-course-students', OnlineCourseStudentController::class);
-    $router->resource('online-course-lessons', OnlineCourseLessonController::class); 
+    $router->resource('online-course-lessons', OnlineCourseLessonController::class);
     $router->resource('student-batch-importers', OnlineCourseStudentBatchImporterController::class);
     $router->resource('languages', LanguageController::class);
 
@@ -72,7 +72,4 @@ Route::group([
     $router->resource('calls', OnlineCourseAfricaTalkingCallController::class);
     $router->resource('online-course-menus', OnlineCourseMenuController::class);
     $router->resource('weather-subscriptions', WeatherSubscriptionController::class);
-
-    
 });
-
