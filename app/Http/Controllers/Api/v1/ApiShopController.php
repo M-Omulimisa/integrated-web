@@ -397,6 +397,31 @@ district_id
         return $this->success($subs, 'Success');
     }
 
+    public function weather_subscriptions_status(Request $r)
+    {
+
+        if (!isset($r->id) || $r->id == null) {
+            return $this->error('Item ID is missing.');
+        }
+
+        $item = WeatherSubscription::find($r->id);
+        if ($item == null) {
+            return $this->error('Item not found.');
+        }
+        if (strtoupper($item->is_paid) == 'PAID') {
+            return $this->success($item, 'Already paid!');
+        }
+
+        try {
+            $item->check_payment_status();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+
+        $order = WeatherSubscription::find($r->id);
+        return $this->success($order, $message = "Success", 200);
+    }
+
     public function market_subscriptions_status(Request $r)
     {
 
@@ -493,7 +518,7 @@ district_id
             if (strtoupper($MarketSubscription->is_paid) == 'PAID') {
                 return $this->error('This market subscription #' . $MarketSubscription->id . ' is already paid.');
             }
-        }  else if ($r->type == 'WeatherSubscriptionModel') {
+        } else if ($r->type == 'WeatherSubscriptionModel') {
             $MarketSubscription = WeatherSubscription::find($r->item_id);
             if ($MarketSubscription == null) {
                 return $this->error('Market subscription not found.');
@@ -577,7 +602,7 @@ district_id
             } catch (\Throwable $th) {
                 //throw $th;
             }
-        }else if ($r->type == 'WeatherSubscriptionModel') {
+        } else if ($r->type == 'WeatherSubscriptionModel') {
             $MarketSubscription->TransactionStatus = $payment_resp->TransactionStatus;
             $MarketSubscription->TransactionReference = $payment_resp->TransactionReference;
             $MarketSubscription->payment_reference_id = $payment_reference_id;
@@ -590,7 +615,7 @@ district_id
             } catch (\Throwable $th) {
                 //throw $th;
             }
-        }  
+        }
         return $this->success($payment_resp, $message = "GOOD TO GO WITH $phone_number", 200);
     }
 

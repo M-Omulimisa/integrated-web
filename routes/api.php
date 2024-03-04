@@ -176,6 +176,7 @@ Route::group([
         Route::post("initiate-payment", [ApiShopController::class, 'initiate_payment']);
         Route::post("order-payment-status", [ApiShopController::class, 'order_payment_status']);
         Route::post("market-subscriptions-status", [ApiShopController::class, 'market_subscriptions_status']);
+        Route::post("weather-subscriptions-status", [ApiShopController::class, 'weather_subscriptions_status']);
         /* ==============END OF SHOP API================== */
 
         /*==============START OF Market Information Endpoints==============*/
