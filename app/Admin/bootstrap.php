@@ -85,7 +85,7 @@ use Encore\Admin\Grid;
 //default grid settings
 Grid::init(function (Grid $grid) {
     $grid->disableRowSelector();
-    $grid->disableExport();
+    //$grid->disableExport();
     $grid->actions(function (Grid\Displayers\Actions $actions) {
         $actions->disableDelete();
     });
