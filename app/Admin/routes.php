@@ -43,6 +43,7 @@ Route::group([
     $router->resource('seasons', SeasonController::class);
     $router->resource('insurance-premium-options', InsurancePremiumOptionController::class);
     $router->resource('orders', OrderController::class);
+
     $router->resource('market-packages', MarketPackageController::class);
     $router->resource('market-package-messages', MartketPackageMessageController::class);
     $router->resource('enterprises', EnterpriseController::class);
@@ -50,6 +51,9 @@ Route::group([
     $router->resource('market-outboxes', MarketOutboxController::class);
     $router->resource('subscription-payments', SubscriptionPaymentController::class);
     $router->resource('weather-conditions', WeatherConditionController::class);
+    $router->resource('market-subscription-payments', MarketPaymentSubscriptionController::class);
+    $router->resource('insurance-subscription-payments', InsurancePaymentSubscriptionController::class);
+    $router->resource('weather-subscription-payments', WeatherPaymentSubscriptionController::class);
 
     /*===============e-learning start=============*/
     $router->resource('e-learning-courses', OnlineCourseController::class);

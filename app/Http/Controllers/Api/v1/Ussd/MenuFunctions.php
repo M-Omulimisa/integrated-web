@@ -1039,7 +1039,7 @@ class MenuFunctions
                 'account'   => $sessionData->weather_subscriber,
                 'amount'    => $sessionData->weather_amount,
                 'sms_api'   => $this->getServiceProvider($sessionData->weather_subscriber, 'sms_api'),
-                'narrative' => $sessionData->weather_frequency .' Market subscription',
+                'narrative' => $sessionData->weather_frequency .' Weather subscription',
                 'reference_id' => $this->generateReference($api),
                 'payment_api'  => $api,
                 'status' => 'INITIATED'
