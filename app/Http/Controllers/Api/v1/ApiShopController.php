@@ -381,6 +381,21 @@ district_id
         ])->get();
         return $this->success($subs, 'Success');
     }
+    public function weather_subscriptions(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = User::find($administrator_id);
+        }
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $subs = WeatherSubscription::where([
+            'farmer_id' => $u->id
+        ])->get();
+        return $this->success($subs, 'Success');
+    }
 
     public function market_subscriptions_status(Request $r)
     {

@@ -181,6 +181,7 @@ Route::group([
         /*==============START OF Market Information Endpoints==============*/
         Route::get("market-packages", [ApiShopController::class, "market_packages"]);
         Route::get("market-subscriptions", [ApiShopController::class, "market_subscriptions"]);
+        Route::get("weather-subscriptions", [ApiShopController::class, "weather_subscriptions"]);
         Route::post("market-packages-subscribe", [ApiShopController::class, "market_packages_subscribe"]);
         Route::post("weather-packages-subscribe", [ApiShopController::class, "weather_packages_subscribe"]);
         Route::get("languages", [ApiShopController::class, "languages"]);
