@@ -182,6 +182,7 @@ Route::group([
         Route::get("market-packages", [ApiShopController::class, "market_packages"]);
         Route::get("market-subscriptions", [ApiShopController::class, "market_subscriptions"]);
         Route::post("market-packages-subscribe", [ApiShopController::class, "market_packages_subscribe"]);
+        Route::post("weather-packages-subscribe", [ApiShopController::class, "weather_packages_subscribe"]);
         Route::get("languages", [ApiShopController::class, "languages"]);
         /*==============END OF Market Information Endpoints==============*/
 
@@ -221,6 +222,7 @@ Route::group([
         Route::get('regions', [ApiAuthController::class, 'regions']);
         Route::get('subcounties', [ApiAuthController::class, 'subcounties']);
         Route::get('parishes', [ApiAuthController::class, 'parishes']);
+        Route::get('parishes-2', [ApiAuthController::class, 'parishes_2']);
         Route::get('villages', [ApiAuthController::class, 'villages']);
         Route::get('permissions', [ApiAuthController::class, 'permissions']);
         Route::get('my-permissions', [ApiAuthController::class, 'my_permissions']);

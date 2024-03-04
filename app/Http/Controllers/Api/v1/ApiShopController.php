@@ -23,6 +23,7 @@ use App\Models\SlaughterHouse;
 use App\Models\SlaughterRecord;
 use App\Models\User;
 use App\Models\Utils;
+use App\Models\Weather\WeatherSubscription;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
@@ -151,7 +152,7 @@ class ApiShopController extends Controller
         $subscription->period_paid = $r->period;
         $subscription->total_price = $r->total_price;
         $subscription->start_date = Carbon::now();
-        $subscription->end_date = Carbon::now()->addMonths($r->period);
+        $subscription->end_date = Carbon::now()->addDays($r->period);
         $subscription->status = 0;
         $subscription->user_id = $u->id;
         $subscription->seen_by_admin = 0;
@@ -182,6 +183,95 @@ class ApiShopController extends Controller
         }
         return $this->success($sub, 'Success');
     }
+
+
+
+
+    public function weather_packages_subscribe(Request $r)
+    {
+        /* 
+             'subscriber_id': mainController.loggedInUser.id.toString(),
+          'package_id': widget.package.id,
+          'pricing_id': '27ab2deb-2a6b-445c-bb40-53873aa5bee5',
+          'language_id': '0332b59f-9699-4a32-99c4-1dae3666fc93',
+        */
+        if (!isset($r->subscriber_id) || $r->subscriber_id == null) {
+            return $this->error('Subscriber ID is missing.');
+        }
+        if (!isset($r->package_id) || $r->package_id == null) {
+            return $this->error('Package ID is missing.');
+        }
+        if (!isset($r->pricing_id) || $r->pricing_id == null) {
+            return $this->error('Pricing ID is missing.');
+        }
+        if (!isset($r->language_id) || $r->language_id == null) {
+            return $this->error('Language ID is missing.');
+        }
+
+        if (!isset($r->total_price) || $r->total_price == null) {
+            return $this->error('Total price is missing.');
+        }
+
+        //period
+        if (!isset($r->period) || $r->period == null) {
+            return $this->error('Period is missing.');
+        }
+
+        $u = User::find($r->subscriber_id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+
+
+        $existing_subs = \App\Models\Market\MarketSubscription::where([
+            'farmer_id' => $r->subscriber_id,
+        ])->get();
+
+
+        $sub = null;
+
+        $language = \App\Models\Settings\Language::find($r->language_id);
+        if ($language == null) {
+            return $this->error('Language not found.');
+        }
+
+        $subscription = new WeatherSubscription();
+
+        $subscription->farmer_id = $r->subscriber_id;
+        $subscription->language_id = $language->id;
+        /* 
+   		location_id	district_id	subcounty_id	parish_id	first_name	last_name	email	frequency	period_paid	start_date	end_date	status	user_id	outbox_generation_status	outbox_reset_status	outbox_last_date	awhere_field_id	seen_by_admin	trial_expiry_sms_sent_at	trial_expiry_sms_failure_reason	renewal_id	organisation_id	created_at	updated_at	phone	payment_id	MNOTransactionReferenceId	payment_reference_id	TransactionStatus	TransactionAmount	TransactionCurrencyCode	TransactionReference	TransactionInitiationDate	TransactionCompletionDate	is_paid	total_price	
+
+   */
+
+
+        $phone = $u->phone;
+        $phone = Utils::prepare_phone_number($phone);
+        if (!Utils::phone_number_is_valid($phone)) {
+            $phone = $u->phone_number;
+            $phone = Utils::prepare_phone_number($phone);
+            if (!Utils::phone_number_is_valid($phone)) {
+                return $this->error('Invalid phone number. Update your account phone number and try again.');
+            }
+        }
+        $subscription->phone = Utils::prepare_phone_number($phone);
+        $subscription->region_id = 1;
+        $subscription->payment_id = 1;
+        try {
+            $subscription->save();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+        $sub = \App\Models\Market\MarketSubscription::find($subscription->id);
+        if ($sub == null) {
+            return $this->error('Failed to save subscription.');
+        }
+        return $this->success($sub, 'Success');
+    }
+
+
+
 
     public function market_packages()
     {
@@ -685,11 +775,11 @@ class ApiShopController extends Controller
             return $this->error('Item ID is missing.');
         }
         $order = Order::find($r->order_id);
-        if($order->payment_confirmation == 'PAID'){
+        if ($order->payment_confirmation == 'PAID') {
             return $this->error('You cannot delete a paid order.');
-        } 
+        }
         if ($order == null) {
-            return $this->error('Order not found.'); 
+            return $this->error('Order not found.');
         }
         $order->delete();
         return $this->success(null, $message = "Order Deleted Successfully.", 200);
@@ -1053,7 +1143,7 @@ class ApiShopController extends Controller
         $pro->url = $u->url;
         $pro->user = $u->id;
         $pro->supplier = $u->id;
-        $pro->in_stock = 1;
+        $pro->in_stock = $r->in_stock;
         $pro->rates = 1;
 
 

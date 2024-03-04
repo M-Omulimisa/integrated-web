@@ -207,10 +207,8 @@ class ApiAuthController extends Controller
 
     public function farmers()
     {
-        $u = auth('api')->user();
-        return $this->success(Farmer::where([
-            'organisation_id' => $u->organisation_id
-        ])->get(), "Success");
+        //$u = auth('api')->user();
+        return $this->success(Farmer::where([])->get(), "Success");
     }
 
     public function countries()
@@ -243,9 +241,28 @@ class ApiAuthController extends Controller
     {
         return $this->success(SubcountyModel::where([])->get(), "Success");
     }
+
     public function parishes()
     {
         return $this->success(ParishModel::where([])->get(), "Success");
+    }
+
+    public function parishes_2()
+    {
+        $select = "parish.id, parish.name as p_name, subcounty.name as s_name, district.name as d_name";
+        $sql = "SELECT $select
+         FROM `parish`, `subcounty`, `district` WHERE `parish`.`subcounty_id` = `subcounty`.`id` AND `subcounty`.`district_id` = `district`.`id`";
+        $temp_data = DB::select($sql);
+
+        $data = [];
+        foreach ($temp_data as $key => $value) {
+            $d = [];
+            $d['id'] = $value->id;
+            $d['name'] = $value->d_name . ", " . $value->s_name . ", " . $value->p_name;
+            $data[] = $d;
+        }
+
+        return $this->success($data, "Success");
     }
 
     public function villages()

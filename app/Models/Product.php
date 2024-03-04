@@ -33,7 +33,7 @@ class Product extends Model
     //product has many images
     public function images()
     {
-        return $this->hasMany(Image::class, 'parent_id','id'); 
+        return $this->hasMany(Image::class, 'parent_id', 'id');
     }
 
     //getter for feature_photo 
@@ -42,11 +42,20 @@ class Product extends Model
         if (strpos($src, 'images/') === false) {
             return '/images/' . $src;
         }
-        return $src;   
+        return $src;
     }
-    
+
 
     protected $casts = [
         'data' => 'json',
     ];
+
+    //getter for in_stock
+    public function getInStockAttribute($value)
+    {
+        if ($value == 1 || $value == '0' || $value == '' || $value == null) {
+            return 'Units';
+        }
+        return $value;
+    }
 }

@@ -146,6 +146,32 @@ class ProductController extends AdminController
         $form->text('name', __('Name'))
             ->rules('required');
 
+        //measurement unit radio
+
+        /* 
+                'Liters',
+                'Pieces',
+                'Bags',
+                'Boxes',
+                'Packets',
+                'Bottles',
+                'Cans',
+                'Units',
+                 */
+        $form->radio('in_stock', 'Mesurement Units')
+            ->options([
+                'KG' => 'KG',
+                'Meters' => 'Meters',
+                'Liters' => 'Liters',
+                'Pieces' => 'Pieces',
+                'Bags' => 'Bags',
+                'Boxes' => 'Boxes',
+                'Packets' => 'Packets',
+                'Bottles' => 'Bottles',
+                'Cans' => 'Cans',
+                'Units' => 'Units',
+            ])->rules('required');
+
         $form->decimal('price_2', __('Original Price'))
             ->rules('required');
         $form->decimal('price_1', __('Selling Price'))

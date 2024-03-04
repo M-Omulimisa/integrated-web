@@ -28,7 +28,16 @@ class MarketPackageController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new MarketPackage());
-        $grid->column('name', __('Name'));
+        $grid->quickSearch('name')->placeholder('Search by name');
+        $grid->model()->orderBy('name', 'asc');
+        $grid->column('name', __('Name'))->sortable();
+        $grid->column('ents', __('Enterprise'))->display(function ($ents) {
+            $ents = array_map(function ($ent) {
+                return "<span class='label label-success'>{$ent['name']}</span>";
+            }, $ents);
+            return join('&nbsp;', $ents);
+        }); 
+
 
         return $grid;
     }
@@ -67,15 +76,14 @@ class MarketPackageController extends AdminController
         $form->select('country_id',  __('Select a country'))->options(Country::all()->pluck('name', 'id'));
         $form->text('name', __('Name of package'));
         $form->hidden('menu')->default($next_market_package);
-    
+
         $form->multipleSelect('ents', 'Select enterprise')->options(Enterprise::all()->pluck('name', 'id'));
 
         $form->hasMany('pricing', function (Form\NestedForm $form) {
 
-            $form->select('frequency', 'Select frequency')->options(['trial' => 'trial', 'daily' => 'daily', 'weekly' => 'weekly', 'monthly' => 'monthly', 'yearly'=>'yearly']);
+            $form->select('frequency', 'Select frequency')->options(['trial' => 'trial', 'daily' => 'daily', 'weekly' => 'weekly', 'monthly' => 'monthly', 'yearly' => 'yearly']);
             $form->text('cost', __('Cost of package'));
             $form->hidden('messages')->default(1);
-           
         });
 
         $form->deleted(function () {
