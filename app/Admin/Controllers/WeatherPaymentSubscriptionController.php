@@ -26,13 +26,11 @@ class WeatherPaymentSubscriptionController extends AdminController
     {
         $grid = new Grid(new SubscriptionPayment());
 
-        $grid->column('id', __('Id'));
-
         $grid->model()->where(function ($query) {
 
             $query->whereNotNull('weather_session_id');
         
-        });
+        })->orderBy('created_at', 'desc');
 
         $grid->disableBatchActions();
 

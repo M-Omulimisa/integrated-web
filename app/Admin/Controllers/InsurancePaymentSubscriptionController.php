@@ -30,13 +30,12 @@ class InsurancePaymentSubscriptionController extends AdminController
 
             $query->whereNotNull('insurance_session_id');
         
-        });
+        })->orderBy('created_at', 'desc');
 
         $grid->disableBatchActions();
 
         $grid->disableCreateButton();
 
-        $grid->column('id', __('Id'));
         $grid->column('method', __('Method'));
         $grid->column('provider', __('Provider'));
         $grid->column('account', __('Account'));
