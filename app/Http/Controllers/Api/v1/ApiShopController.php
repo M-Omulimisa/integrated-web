@@ -8,6 +8,7 @@ use App\Models\Animal;
 use App\Models\BatchSession;
 use App\Models\ChatHead;
 use App\Models\ChatMessage;
+use App\Models\DistrictModel;
 use App\Models\DrugStockBatch;
 use App\Models\Event;
 use App\Models\Farm;
@@ -17,10 +18,12 @@ use App\Models\Market\MarketSubscription;
 use App\Models\Movement;
 use App\Models\Order;
 use App\Models\OrderedItem;
+use App\Models\ParishModel;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\SlaughterHouse;
 use App\Models\SlaughterRecord;
+use App\Models\SubcountyModel;
 use App\Models\User;
 use App\Models\Utils;
 use App\Models\Weather\WeatherSubscription;
@@ -198,9 +201,6 @@ class ApiShopController extends Controller
         if (!isset($r->subscriber_id) || $r->subscriber_id == null) {
             return $this->error('Subscriber ID is missing.');
         }
-        if (!isset($r->package_id) || $r->package_id == null) {
-            return $this->error('Package ID is missing.');
-        }
         if (!isset($r->pricing_id) || $r->pricing_id == null) {
             return $this->error('Pricing ID is missing.');
         }
@@ -212,10 +212,40 @@ class ApiShopController extends Controller
             return $this->error('Total price is missing.');
         }
 
+        if (!isset($r->parish_id) || $r->parish_id == null) {
+            return $this->error('Parish ID is missing.');
+        }
+
+        if (!isset($r->frequency) || $r->frequency == null) {
+            return $this->error('Frequency is missing.');
+        }
+        if (!isset($r->phone) || $r->phone == null) {
+            return $this->error('Phone is missing.');
+        }
+        if (!isset($r->days) || $r->days == null) {
+            return $this->error('Days is missing.');
+        }
+
+
         //period
         if (!isset($r->period) || $r->period == null) {
             return $this->error('Period is missing.');
         }
+
+        $parish = ParishModel::find($r->parish_id);
+        if ($parish == null) {
+            return $this->error('Parish not found.');
+        }
+
+        $subcounty = SubcountyModel::find($r->subcounty_id);
+        if ($subcounty == null) {
+            return $this->error('Subcounty not found.');
+        }
+        $district = DistrictModel::find($r->district_id);
+        if ($district == null) {
+            return $this->error('District not found.');
+        }
+
 
         $u = User::find($r->subscriber_id);
         if ($u == null) {
@@ -240,34 +270,84 @@ class ApiShopController extends Controller
 
         $subscription->farmer_id = $r->subscriber_id;
         $subscription->language_id = $language->id;
-        /* 
-   		location_id	district_id	subcounty_id	parish_id	first_name	last_name	email	frequency	period_paid	start_date	end_date	status	user_id	outbox_generation_status	outbox_reset_status	outbox_last_date	awhere_field_id	seen_by_admin	trial_expiry_sms_sent_at	trial_expiry_sms_failure_reason	renewal_id	organisation_id	created_at	updated_at	phone	payment_id	MNOTransactionReferenceId	payment_reference_id	TransactionStatus	TransactionAmount	TransactionCurrencyCode	TransactionReference	TransactionInitiationDate	TransactionCompletionDate	is_paid	total_price	
-
-   */
-
-
-        $phone = $u->phone;
-        $phone = Utils::prepare_phone_number($phone);
-        if (!Utils::phone_number_is_valid($phone)) {
-            $phone = $u->phone_number;
-            $phone = Utils::prepare_phone_number($phone);
-            if (!Utils::phone_number_is_valid($phone)) {
-                return $this->error('Invalid phone number. Update your account phone number and try again.');
-            }
+        $subscription->location_id = $parish->id;
+        $subscription->district_id = $district->id;
+        $subscription->subcounty_id = $subcounty->id;
+        $subscription->parish_id = $parish->id;
+        $subscription->first_name = $u->first_name;
+        $subscription->last_name = $u->last_name;
+        if ($subscription->first_name == null || strlen($subscription->first_name) < 2) {
+            $subscription->first_name = $u->name;
         }
-        $subscription->phone = Utils::prepare_phone_number($phone);
-        $subscription->region_id = 1;
-        $subscription->payment_id = 1;
+        if ($subscription->last_name == null || strlen($subscription->last_name) < 2) {
+            $subscription->last_name = $u->name;
+        }
+        $subscription->email = $u->email;
+        $subscription->frequency = $r->frequency;
+        $subscription->period_paid = $r->period;
+        $subscription->total_price = $r->total_price;
+        $total_price = $r->total_price;
+        $subscription->user_id = $u->id;
+        $subscription->status = 0;
+        $subscription->outbox_reset_status = 0;
+        $subscription->is_paid = 'No';
+
+        if ((int)($total_price) < 100) {
+            $subscription->status = 1;
+            $subscription->outbox_reset_status = 1;
+            $subscription->is_paid = 'Yes';
+        }
+
+        $days = ((int)($r->days));
+        if ($days < 1) {
+            return $this->error('Days should be greater than 0.');
+        }
+        $subscription->start_date = Carbon::now();
+        $subscription->end_date = Carbon::now()->addDays($days);
+        $subscription->trial_expiry_sms_sent_at = Carbon::now()->addDays(7);
+
+        $phone_number = Utils::prepare_phone_number($r->phone);
+        if (!Utils::phone_number_is_valid($phone_number)) {
+            return $this->error('Invalid phone number.');
+        }
+
+        $subscription->phone = $phone_number;
         try {
             $subscription->save();
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }
-        $sub = \App\Models\Market\MarketSubscription::find($subscription->id);
-        if ($sub == null) {
+        $subscription = WeatherSubscription::find($subscription->id);
+        if ($subscription == null) {
             return $this->error('Failed to save subscription.');
         }
-        return $this->success($sub, 'Success');
+
+        //Send sms, subscription successfull, open the app to pay
+        //$msg = "Hello, your weather info subscription worth UGX " . number_format($subscription->total_price) . ", " . $subscription->frequency . "(" . $subscription->period_paid . ") was successful. Alerts will be sent between midnight and 6AM. M-Omulimisa";
+        $msg = "Hello, your weather info subscription worth UGX " . number_format($subscription->total_price) . ", " . $subscription->frequency . "(" . $subscription->period_paid . ") was successful.  Please open the app to pay. M-Omulimisa";
+
+        try {
+            $resp = Utils::send_sms($phone_number, $msg);
+        } catch (Exception $e) {
+        }
+
+
+        //days
+        /* 
+
+id	
+name	
+	
+lat	
+lng	
+district_id	
+	
+
+			payment_id	MNOTransactionReferenceId	payment_reference_id	TransactionStatus	TransactionAmount	TransactionCurrencyCode	TransactionReference	TransactionInitiationDate	TransactionCompletionDate	is_paid	total_price	
+
+   */
+
+        return $this->success($subscription, 'Weather subscription saved successfully.');
     }
 
 
