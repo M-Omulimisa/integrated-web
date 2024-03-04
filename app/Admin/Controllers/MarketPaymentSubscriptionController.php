@@ -41,7 +41,6 @@ class MarketPaymentSubscriptionController extends AdminController
         $grid->column('provider', __('Provider'));
         $grid->column('account', __('Account'));
         $grid->column('reference_id', __('Reference id'));
-        $grid->column('reference', __('Reference'));
         $grid->column('narrative', __('Narrative'));
         $grid->column('payment_api', __('Payment api'));
         $grid->column('sms_api', __('Sms api'));
@@ -50,7 +49,6 @@ class MarketPaymentSubscriptionController extends AdminController
         $grid->column('details', __('Details'));
         $grid->column('error_message', __('Error message'));
         $grid->column('created_at', __('Created at'));
-        $grid->column('market_session_id', __('Market session id'));
 
         return $grid;
     }

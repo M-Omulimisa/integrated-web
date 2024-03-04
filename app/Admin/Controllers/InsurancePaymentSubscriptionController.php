@@ -41,7 +41,6 @@ class InsurancePaymentSubscriptionController extends AdminController
         $grid->column('provider', __('Provider'));
         $grid->column('account', __('Account'));
         $grid->column('reference_id', __('Reference id'));
-        $grid->column('reference', __('Reference'));
         $grid->column('narrative', __('Narrative'));
         $grid->column('payment_api', __('Payment api'));
         $grid->column('sms_api', __('Sms api'));
