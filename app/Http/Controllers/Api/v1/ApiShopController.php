@@ -468,7 +468,9 @@ district_id
             $r->type != 'ORDER'
         ) {
             if ($r->type != 'MarketSubscription') {
-                return $this->error('Invalid type.');
+                if ($r->type != 'WeatherSubscriptionModel') {
+                    return $this->error('Invalid type.');
+                }
             }
         }
 
@@ -490,6 +492,14 @@ district_id
             }
             if (strtoupper($MarketSubscription->is_paid) == 'PAID') {
                 return $this->error('This market subscription #' . $MarketSubscription->id . ' is already paid.');
+            }
+        }  else if ($r->type == 'WeatherSubscriptionModel') {
+            $MarketSubscription = WeatherSubscription::find($r->item_id);
+            if ($MarketSubscription == null) {
+                return $this->error('Market subscription not found.');
+            }
+            if (strtoupper($MarketSubscription->is_paid) == 'PAID') {
+                return $this->error('This weather subscription #' . $MarketSubscription->id . ' is already paid.');
             }
         }
 
@@ -553,7 +563,8 @@ district_id
             } catch (\Throwable $th) {
                 //throw $th;
             }
-        } else if ($r->type == 'MarketSubscription') {
+        } else 
+        if ($r->type == 'MarketSubscription') {
             $MarketSubscription->TransactionStatus = $payment_resp->TransactionStatus;
             $MarketSubscription->TransactionReference = $payment_resp->TransactionReference;
             $MarketSubscription->payment_reference_id = $payment_reference_id;
@@ -566,7 +577,20 @@ district_id
             } catch (\Throwable $th) {
                 //throw $th;
             }
-        }
+        }else if ($r->type == 'WeatherSubscriptionModel') {
+            $MarketSubscription->TransactionStatus = $payment_resp->TransactionStatus;
+            $MarketSubscription->TransactionReference = $payment_resp->TransactionReference;
+            $MarketSubscription->payment_reference_id = $payment_reference_id;
+            try {
+                $MarketSubscription->save();
+                try {
+                    $MarketSubscription->check_payment_status();
+                } catch (\Throwable $th) {
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }  
         return $this->success($payment_resp, $message = "GOOD TO GO WITH $phone_number", 200);
     }
 
