@@ -237,11 +237,11 @@ class ApiShopController extends Controller
             return $this->error('Parish not found.');
         }
 
-        $subcounty = SubcountyModel::find($r->subcounty_id);
+        $subcounty = SubcountyModel::find($parish->subcounty_id);
         if ($subcounty == null) {
             return $this->error('Subcounty not found.');
         }
-        $district = DistrictModel::find($r->district_id);
+        $district = DistrictModel::find($subcounty->district_id);
         if ($district == null) {
             return $this->error('District not found.');
         }
