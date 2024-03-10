@@ -3,39 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 
 
-/* $done_lesson = \App\Models\OnlineCourseLesson::where('status', 'Pending')
-    ->update([
-        'has_reminder_call' => 'No',
-        'reminder_date' => null,
-    ]);
-dd(($done_lesson)); */
-/* 
-curl -X POST \
-    https://voice.sandbox.africastalking.com/call \
-    -H 'Accept: application/json' \
-    -H 'Content-Type: application/x-www-form-urlencoded' \
-    -H 'apiKey: MyAppAPIKey' \
-    -d 'username=myAppUserName&to=%5B%2B24572301837%2C%20%2B2546371910283%5D&from=%2B2549284789292'
-*/
-
-// post request to make a call use guzzle
-/* $client = new \GuzzleHttp\Client();
-$response = $client->request('POST', 'https://voice.africastalking.com/call', [
-    'headers' => [
-        'Accept' => 'application/json',
-        'Content-Type' => 'application/x-www-form-urlencoded',
-        'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
-    ],
-    'form_params' => [
-        'username' => 'dninsiima',
-        'to' => '+256783204665',
-        'from' => '+256323200710', 
-        'apiKey' => '96813c0c9bba6dc78573be66f4965e634e636bee86ffb23ca6d2bebfd9b177bd',
-    ]
-]);
-echo $response->getBody();
-die(); */
-
+ 
 /* 
 curl -X GET "https://api.app.outscraper.com/maps/search-v3?query=restaurants%2C%20Manhattan%2C%20NY%2C%20USA&limit=3&async=false" -H  "X-API-KEY: YOUR-API-KEY" 
 */
@@ -100,8 +68,8 @@ Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
 if (!Utils::isLocalhost()) {
     Utils::syncGroups();
 }
-/* 
-$parishes = ParishModel::where('lat', null)
+
+/* $parishes = ParishModel::where([])
     ->limit(100)
     ->get();
 
@@ -119,7 +87,7 @@ foreach ($parishes as $parish) {
             $_district = $parish->subcounty->district->name;
         }
     }
-    $keyword = Str::lower("Uganda, $_district,  $_county, $_subcounty, $_parish");
+    $keyword = strtolower("Uganda, $_district,  $_county, $_subcounty, $_parish");
     echo $keyword . "<br>";
     $latLog =  get_gps($keyword);
     if ($latLog != null) {
@@ -127,17 +95,20 @@ foreach ($parishes as $parish) {
     }
 }
 
+ */
 
 
-
-
-function get_gps($keyword)
+/* function get_gps($keyword)
 {
-    $googleAPiKey = 'AIzaSyBbXYigCGL7Du8zAiJ9ZWP1a0mw1zOJevw';
+    $keyword = urlencode('ndere center');
+    $googleAPiKey = 'AIzaSyBlJdnkYKX-flnDzdOJn6NrQnCmR6TqqSc';
     $url = "https://maps.googleapis.com/maps/api/geocode/json?address=$keyword,Uganda&key=$googleAPiKey";
+    echo '<a href="' . $url . '">' . $url . '</a><br>';
+    die();
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
     $output = curl_exec($curl);
+    dd($url);
     curl_close($curl);
     if (($output != null) && $output != false) {
         dd($output);
