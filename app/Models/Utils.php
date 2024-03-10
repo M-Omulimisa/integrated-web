@@ -504,7 +504,7 @@ class Utils
         $notificationData = [
             'app_id' => $appId,
             'contents' => ['en' => $data['msg']],
-            'headings' => ['en' => $data['headings']],
+            'headings' => ['en' => $data['headings']] . ' - M-Omulimisa',
             'include_external_user_ids' => is_array($userId) ? $userId : array($userId),
         ];
 

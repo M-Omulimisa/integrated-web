@@ -16,6 +16,7 @@ use App\Models\Image;
 use App\Models\Market\MarketPackagePricing;
 use App\Models\Market\MarketSubscription;
 use App\Models\Movement;
+use App\Models\NotificationMessage;
 use App\Models\Order;
 use App\Models\OrderedItem;
 use App\Models\ParishModel;
@@ -617,6 +618,22 @@ district_id
             }
         }
         return $this->success($payment_resp, $message = "GOOD TO GO WITH $phone_number", 200);
+    }
+
+    public function get_orders_notification_nessage(Request $r)
+    {
+
+
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = Administrator::find($administrator_id);
+        }
+        $u = Administrator::find($u->id);
+        $data = NotificationMessage::where([
+            'user_id' => $u->id
+        ])->get();
+        return $this->success($data, $message = "Success!", 200);
     }
 
     public function orders_get(Request $r)

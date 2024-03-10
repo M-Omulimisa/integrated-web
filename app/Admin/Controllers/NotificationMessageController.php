@@ -15,7 +15,7 @@ class NotificationMessageController extends AdminController
      *
      * @var string
      */
-    protected $title = 'NotificationMessage';
+    protected $title = 'Notification Messages';
 
     /**
      * Make a grid builder.
