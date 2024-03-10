@@ -70,7 +70,7 @@ class NotificationMessageController extends AdminController
             ->limit(30)
             ->sortable();
         $grid->column('image', __('Image'))
-            ->lightbox(['width' => 50, 'height' => 50])
+            ->image('', 100, 100)
             ->sortable();
         $grid->column('url', __('Url'))->sortable()->hide();
         $grid->column('type', __('Type'))->sortable()->hide();

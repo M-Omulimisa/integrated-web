@@ -52,7 +52,7 @@ class NotificationCampaignController extends AdminController
             ->sortable();
         $grid->column('body', __('Body'))->hide();
         $grid->column('image', __('Image'))
-            ->lightbox(['width' => 50, 'height' => 50])
+            ->image('', 100, 100)
             ->sortable();
 
         $grid->column('type', __('Type'))

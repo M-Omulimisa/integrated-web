@@ -30,7 +30,9 @@ class UserController extends AdminController
         $grid = new Grid(new User());
 
         //photo
-        /*     $grid->column('photo', __('Photo'))->lightbox(['width' => 50, 'height' => 50]); */
+        $grid->column('photo', __('Photo'))
+            ->image('', 100, 100)
+            ->sortable();
         $grid->column('id', __('ID'))->sortable();
         $grid->column('name', __('Name'))->sortable();
         $grid->column('organisation_id', __('Organisation'))
@@ -107,7 +109,7 @@ class UserController extends AdminController
             ->creationRules(['required', "unique:{$connection}.{$userTable}"])
             ->updateRules(['required', "unique:{$connection}.{$userTable},username,{{id}}"]);
 
-/*         $form->display('email', 'Email Address')->rules('required|email'); */
+        /*         $form->display('email', 'Email Address')->rules('required|email'); */
 
         $form->text('username', 'Username')->rules('required');
         $form->text('name', 'Full name')->rules('required');

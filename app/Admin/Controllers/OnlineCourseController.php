@@ -33,12 +33,7 @@ class OnlineCourseController extends AdminController
             $filter->equal('instructor_id', 'Instructor')->select(\App\Models\User::all()->pluck('name', 'id'));
             $filter->equal('online_course_category_id', 'Course Category')->select(\App\Models\OnlineCourseCategory::all()->pluck('name', 'id'));
         });
-
-
-        /*   $grid->column('photo', __('Photo'))
-            ->lightbox(['width' => 50, 'height' => 50,])
-            ->sortable()
-            ->width(50); */
+ 
         $grid->column('title', __('Title'))->sortable();
 
         $grid->column('instructor_id', __('Instructor'))
