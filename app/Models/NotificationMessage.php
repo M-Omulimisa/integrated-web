@@ -189,9 +189,11 @@ class NotificationMessage extends Model
             'headings' => $this->title,
             'receiver' => $this->user_id,
         ];
+        
         if ($img != null) {
             $params['big_picture'] = $img;
         }
+
 
         //check if type is url 
         if (strtolower($this->type) == 'url') {
@@ -205,10 +207,13 @@ class NotificationMessage extends Model
             $this->notification_sent = 'Yes';
             $this->notification_seen = 'No';
             $this->notification_seen_time = null;
+
             $this->save();
         } catch (\Throwable $th) {
             $this->notification_sent = 'Failed because ' . $th->getMessage();
+            throw $th;
             $this->save();
+
         }
     }
 }

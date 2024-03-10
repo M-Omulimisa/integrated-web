@@ -499,13 +499,27 @@ class Utils
         $appId = $ONESIGNAL_APP_ID;
         $userId = $data['receiver'];
 
+        if ($userId == null) {
+            throw new \Exception("User id is required");
+        }
+        if ($userId == '') {
+            throw new \Exception("User id is required");
+        }
+
+        //if(is array)
+        $receivers = [];
+        if (!is_array($userId)) {
+            $receivers = array($userId);
+        } else {
+            $receivers = $userId;
+        }
 
         // Notification data
         $notificationData = [
             'app_id' => $appId,
             'contents' => ['en' => $data['msg']],
-            'headings' => ['en' => $data['headings']] . ' - M-Omulimisa',
-            'include_external_user_ids' => is_array($userId) ? $userId : array($userId),
+            'headings' => ['en' => $data['headings'] . ' - M-Omulimisa'],
+            'include_external_user_ids' => $receivers,
         ];
 
 

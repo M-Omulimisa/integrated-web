@@ -176,7 +176,7 @@ Route::get('send-notification-campaigns', function () {
     if ($item == null) {
         die("Notification not found");
     }
-    if(!$item->ready_to_send){
+    if ($item->ready_to_send != 'Yes') {
         die("Not ready to send. STATUS: {$item->ready_to_send}");
     }
     try {
