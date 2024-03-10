@@ -159,7 +159,7 @@ Route::group([
     Route::middleware([JwtMiddleware::class])->group(function () {
         /* ==============START OF SHOP API================== */
         Route::get("notification-message", [ApiShopController::class, "get_orders_notification_nessage"]);
-        Route::post("notification-messages-seen", [ApiShopController::class, "set_notification_messages_seen"]);
+        Route::POST("notification-messages-seen", [ApiShopController::class, "set_notification_messages_seen"]);
         Route::get("orders", [ApiShopController::class, "orders_get"]);
         Route::get("vendors", [ApiShopController::class, "vendors_get"]);
         Route::post("become-vendor", [ApiShopController::class, 'become_vendor']);
