@@ -620,6 +620,16 @@ district_id
         return $this->success($payment_resp, $message = "GOOD TO GO WITH $phone_number", 200);
     }
 
+    public function set_notification_messages_seen(Request $r)
+    {
+        $not = NotificationMessage::find($r->notification_id);
+        if ($not == null) {
+            return $this->error('Notification not found.');
+        }
+        $not->notification_seen = 'Yes';
+        $not->notification_seen_time = Carbon::now();
+        $not->save();
+    }
     public function get_orders_notification_nessage(Request $r)
     {
 
