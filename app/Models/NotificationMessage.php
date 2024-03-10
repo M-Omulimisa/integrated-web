@@ -203,10 +203,11 @@ class NotificationMessage extends Model
         try {
             Utils::sendNotification2($params);
             $this->notification_sent = 'Yes';
-            $this->notification_sent = 'No';
+            $this->notification_seen = 'No';
+            $this->notification_seen_time = null;
             $this->save();
         } catch (\Throwable $th) {
-            $this->notification_sent = 'Failed';
+            $this->notification_sent = 'Failed because ' . $th->getMessage();
             $this->save();
         }
     }
