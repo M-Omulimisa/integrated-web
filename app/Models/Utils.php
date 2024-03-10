@@ -511,7 +511,9 @@ class Utils
 
         if (isset($data['big_picture']) && $data['big_picture'] != null && $data['big_picture'] != '' && strlen($data['big_picture']) > 2) {
             $notificationData['big_picture'] = $data['big_picture'];
+            $notificationData['small_icon'] = $data['big_picture'];
         }
+        //$notificationData['big_picture'] = $data['big_picture'];
         //if url is set
         if (isset($data['url']) && $data['url'] != null && $data['url'] != '' && strlen($data['url']) > 2) {
             $notificationData['url'] = $data['url'];
