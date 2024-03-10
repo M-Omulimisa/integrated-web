@@ -98,11 +98,54 @@ class NotificationMessageController extends AdminController
                 'Yes' => 'Yes',
             ])->hide();
         $grid->column('send_notification', __('Notification'))->sortable()->hide();
-        $grid->column('send_email', __('Email'))->hide();
-        $grid->column('send_sms', __('Send sms'))->hide();
+        $grid->column('send_email', __('Email'))->sortable()
+            ->label([
+                'No' => 'danger',
+                'Yes' => 'success',
+            ])
+            ->filter([
+                'No' => 'No',
+                'Yes' => 'Yes',
+            ]);
+        $grid->column('send_sms', __('Send sms'))->sortable()
+            ->label([
+                'No' => 'danger',
+                'Yes' => 'success',
+            ])
+            ->filter([
+                'No' => 'No',
+                'Yes' => 'Yes',
+            ]);
         $grid->column('sheduled_at', __('Sheduled at'))->hide();
-        $grid->column('email_sent', __('Email sent'))->hide();
-        $grid->column('sms_sent', __('Sms sent'))->hide();
+        $grid->column('email_sent', __('Email sent'))
+            ->sortable()
+            ->label([
+                'No' => 'danger',
+                'Yes' => 'success',
+            ])
+            ->filter([
+                'No' => 'No',
+                'Yes' => 'Yes',
+            ]);
+        $grid->column('sms_sent', __('Sms sent'))->sortable()
+            ->label([
+                'No' => 'danger',
+                'Yes' => 'success',
+            ])
+            ->filter([
+                'No' => 'No',
+                'Yes' => 'Yes',
+            ]);
+        $grid->column('notification_sent', __('Notification Sent'))->sortable()
+            ->label([
+                'No' => 'danger',
+                'Yes' => 'success',
+            ])
+            ->filter([
+                'No' => 'No',
+                'Yes' => 'Yes',
+            ]);
+
         $grid->column('notification_seen', __('Notification seen'))
             ->sortable()
             ->label([
@@ -187,7 +230,8 @@ class NotificationMessageController extends AdminController
             $form->select('notification_campaign_id', __('Notification Campaign'))
                 ->options(\App\Models\NotificationCampaign::all()->pluck('title', 'id'));
             $form->select('user_id', __('Reciever'))
-                ->options(\App\Models\User::getDropDownList([]));
+                ->options(\App\Models\User::getDropDownList([]))
+                ->rules('required');
         }
         $form->text('title', __('Title'))->rules('required');
         $form->text('phone_number', __('Phone Number'));
@@ -238,10 +282,7 @@ class NotificationMessageController extends AdminController
                 $form->textarea('sms_body', __('sms_body'))->rules('required');
             });
 
-        $form->hidden('email_sent', __('Email sent'))->default('No');
-        $form->hidden('sms_sent', __('Sms sent'))->default('No');
-        $form->hidden('notification_seen', __('Notification seen'))->default('No');
-        $form->hidden('notification_sent', __('Notification seen'))->default('No');
+
 
         $form->radio('status', __('Publish Status'))
             ->options([
@@ -260,9 +301,35 @@ class NotificationMessageController extends AdminController
                     ->options([
                         'No' => 'No',
                         'Yes' => 'Yes',
+                        'Sent' => 'Sent'
                     ])
                     ->rules('required')
                     ->help('This will send the notification to all target users. Please be sure before you click "Yes", this action cannot be undone.');
+
+                $form->radio('email_sent', __('Email sent'))->default('No')
+                    ->options([
+                        'No' => 'No',
+                        'Yes' => 'Yes',
+                    ])
+                    ->rules('required');
+                $form->radio('sms_sent', __('Sms sent'))->default('No')
+                    ->options([
+                        'No' => 'No',
+                        'Yes' => 'Yes',
+                    ])
+                    ->rules('required');
+                $form->radio('notification_seen', __('Notification seen'))->default('No')
+                    ->options([
+                        'No' => 'No',
+                        'Yes' => 'Yes',
+                    ])
+                    ->rules('required');
+                $form->radio('notification_sent', __('Notification seen'))->default('No')
+                    ->options([
+                        'No' => 'No',
+                        'Yes' => 'Yes',
+                    ])
+                    ->rules('required');
             });
 
         return $form;

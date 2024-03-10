@@ -25,6 +25,33 @@ class NotificationMessage extends Model
                     }
                 }
             }
+            //has sms
+            if ($m->send_sms == 'Yes') {
+                //user
+                $u = User::find($m->user_id);
+                if ($u == null) {
+                    return false;
+                }
+                //phone
+                $phone = Utils::prepare_phone_number($m->phone_number);
+                if (Utils::phone_number_is_valid($phone)) {
+                    //phone_number
+                    $m->phone_number = $phone;
+                }
+            }
+
+            //has email
+            if ($m->send_email == 'Yes') {
+                //user
+                $u = User::find($m->user_id);
+                if ($u == null) {
+                    return false;
+                }
+                //email
+                if (filter_var($u->email, FILTER_VALIDATE_EMAIL)) {
+                    $m->email = $u->email;
+                }
+            }
         });
     }
 
@@ -54,11 +81,19 @@ class NotificationMessage extends Model
         if ($this->sms_sent != 'No') {
             return;
         }
-        $u = User::find($this->user_id);
-        if ($u == null) {
-            $this->sms_sent = 'Failed because user not found';
-            $this->save();
-            return;
+
+        $phone = '';
+        if ($this->phone_number != null) {
+            $phone = Utils::prepare_phone_number($this->phone_number);
+        }
+
+        if (!Utils::phone_number_is_valid($phone)) {
+            $u = User::find($this->user_id);
+            if ($u == null) {
+                $this->sms_sent = 'Failed because user not found';
+                $this->save();
+                return;
+            }
         }
 
         //check if phone number is valid
@@ -119,7 +154,7 @@ class NotificationMessage extends Model
     {
 
         if ($this->notification_sent != 'No') {
-            //return;
+            return;
         }
         $img = $this->image;
         //check image file exists

@@ -490,12 +490,14 @@ class Utils
             throw new \Exception("Receiver is required");
         }
 
+        /* 
+        */
+        $ONESIGNAL_APP_ID = '2007b43a-6c6b-4cab-b619-b367e5c184fb';
+        $ONESIGNAL_REST_API_KEY = 'ZTNlODJhYTktMjVjOC00NjVkLTgwZmEtYzU3YTI3MGNkNzY1';
         // OneSignal API Key and App ID
-        $apiKey = env('ONESIGNAL_REST_API_KEY');
-        $appId = env('ONESIGNAL_APP_ID');
+        $apiKey = $ONESIGNAL_REST_API_KEY;
+        $appId = $ONESIGNAL_APP_ID;
         $userId = $data['receiver'];
-
-
 
 
         // Notification data
@@ -568,8 +570,6 @@ class Utils
         }
 
         return $responseData['id'];
-
-
     }
 
 
