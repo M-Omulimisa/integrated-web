@@ -130,14 +130,14 @@ class NotificationMessage extends Model
             }
         }
 
+        $u = User::find($this->user_id);
+        if ($u == null) {
+            $this->email_sent = 'Failed because user not found';
+            $this->save();
+            return;
+        }
         //validate email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $u = User::find($this->user_id);
-            if ($u == null) {
-                $this->email_sent = 'Failed because user not found';
-                $this->save();
-                return;
-            }
             $email = $u->email;
         }
 
