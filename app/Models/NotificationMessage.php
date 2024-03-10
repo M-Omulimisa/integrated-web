@@ -121,25 +121,40 @@ class NotificationMessage extends Model
         if ($this->email_sent != 'No') {
             return;
         }
-        $u = User::find($this->user_id);
-        if ($u == null) {
-            $this->email_sent = 'Failed because user not found';
-            $this->save();
-            return;
+
+        $email = '';
+        if ($this->email != null) {
+            //validate email
+            if (filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                $email = $this->email;
+            }
+        }
+
+        //validate email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $u = User::find($this->user_id);
+            if ($u == null) {
+                $this->email_sent = 'Failed because user not found';
+                $this->save();
+                return;
+            }
+            $email = $u->email;
         }
 
         //check if email is valid
-        if (!filter_var($u->email, FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->email_sent = 'Failed because user email is not valid';
             $this->save();
             return;
         }
 
+        $this->email = $email;
+
         $data['body'] = $this->body;
         //$data['view'] = 'mails/mail-1';
         $data['data'] = $data['body'];
         $data['name'] = $u->name;
-        $data['email'] = $u->email;
+        $data['email'] = $email;
         $data['subject'] = $this->title . ' - M-Omulimisa';
         try {
             Utils::mail_sender($data);
