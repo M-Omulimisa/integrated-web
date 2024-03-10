@@ -139,12 +139,15 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\IdValidations\PhoneValidationController;
 use App\Models\DistrictModel;
 use App\Models\Gen;
+use App\Models\NotificationCampaign;
+use App\Models\NotificationMessage;
 use App\Models\OnlineCourse;
 use App\Models\OnlineCourseStudent;
 use App\Models\OnlineCourseStudentBatchImporter;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
 use App\Models\Utils;
+use App\Traits\Notification;
 use Dflydev\DotAccessData\Util;
 
 /*
@@ -165,13 +168,53 @@ Route::get('/', function () {
 });
 */
 
+Route::get('send-notification-campaigns', function () {
+    if (!isset($_GET['id'])) {
+        die("ID not set");
+    }
+    $item = NotificationCampaign::find($_GET['id']);
+    if ($item == null) {
+        die("Notification not found");
+    }
+    if(!$item->ready_to_send){
+        die("Not ready to send. STATUS: {$item->ready_to_send}");
+    }
+    try {
+        $item->send_now();
+        die("sent");
+    } catch (\Exception $e) {
+        die($e->getMessage());
+    }
+    // return view('welcome');
+    //return redirect('/home');
+});
+
+Route::get('send-notification', function () {
+    if (!isset($_GET['id'])) {
+        die("ID not set");
+    }
+    $course_id = $_GET['id'];
+    $course = NotificationMessage::find($course_id);
+    if ($course == null) {
+        die("Notification not found");
+    }
+    try {
+        $course->send_now();
+        die("sent");
+    } catch (\Exception $e) {
+        die($e->getMessage());
+    }
+    // return view('welcome');
+    //return redirect('/home');
+});
+
 Route::get('send-inspector-notification', function () {
-    if(!isset($_GET['id'])){
+    if (!isset($_GET['id'])) {
         die("ID not set");
     }
     $course_id = $_GET['id'];
     $course = OnlineCourse::find($course_id);
-    if($course == null){
+    if ($course == null) {
         die("Course not found");
     }
     try {

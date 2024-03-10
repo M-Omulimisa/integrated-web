@@ -213,3 +213,16 @@ foreach ($counties as $county) {
 }
 die();
  */
+
+/*  $u = Admin::user();
+ try {
+     Utils::sendNotification(
+         'Test message kjsds',
+         "1",
+         'Test title', 
+     );
+     die('Sent');
+ } catch (\Throwable $th) {
+     //throw $th;
+     die($th->getMessage()); 
+ } */

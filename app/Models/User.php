@@ -216,4 +216,18 @@ class User extends Administrator implements      AuthenticatableContract, JWTSub
     {
         return \App\Models\Mobile\MobileAppOneTimePassword::whereUserId($this->id)->where("status", "!=", "discarded")->first();
     }
+
+    //get dropdown list of users
+    public static function getDropDownList($conds){
+        $users = User::where($conds)->get();
+        $list = [];
+        foreach ($users as $user) {
+            $list[$user->id] = $user->name;
+            //check if phone number is set
+            if($user->phone != null && strlen($user->phone) > 3){
+                $list[$user->id] .= " (" . $user->phone . ")";
+            } 
+        }
+        return $list;
+    }
 }

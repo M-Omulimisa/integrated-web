@@ -451,16 +451,10 @@ class Utils
                 env('ONESIGNAL_REST_API_KEY'),
                 env('USER_AUTH_KEY')
             );
-            $client->addParams(
-                [
-                    'android_channel_id' => '7ae6ea3e-3d7b-4a4c-aca4-b07634205ec3',
-                    'large_icon' => env('APP_URL') . '/assets/images/logo.png',
-                    'small_icon' => 'logo',
-                ]
-            )
+            $client
                 ->sendNotificationToExternalUser(
                     $msg,
-                    "$receiver",
+                    $receiver,
                     $url = $url,
                     $data = $data,
                     $buttons = $buttons,
@@ -474,6 +468,108 @@ class Utils
 
 
         return;
+    }
+
+
+    public static function sendNotification2(
+        $data = [
+            'msg' => null,
+            'receiver' => null,
+            'headings' => 'M-OMULIMISA',
+            'data' => null,
+            'url' => null,
+            'buttons' => null,
+            'schedule' => null,
+            'type' => 'text'
+        ]
+    ) {
+        if ($data['msg'] == null) {
+            throw new \Exception("Message is required");
+        }
+        if ($data['receiver'] == null) {
+            throw new \Exception("Receiver is required");
+        }
+
+        // OneSignal API Key and App ID
+        $apiKey = env('ONESIGNAL_REST_API_KEY');
+        $appId = env('ONESIGNAL_APP_ID');
+        $userId = $data['receiver'];
+
+
+
+
+        // Notification data
+        $notificationData = [
+            'app_id' => $appId,
+            'contents' => ['en' => $data['msg']],
+            'headings' => ['en' => $data['headings']],
+            'include_external_user_ids' => is_array($userId) ? $userId : array($userId),
+        ];
+
+
+        if (isset($data['big_picture']) && $data['big_picture'] != null && $data['big_picture'] != '' && strlen($data['big_picture']) > 2) {
+            $notificationData['big_picture'] = $data['big_picture'];
+        }
+        //if url is set
+        if (isset($data['url']) && $data['url'] != null && $data['url'] != '' && strlen($data['url']) > 2) {
+            $notificationData['url'] = $data['url'];
+        }
+
+        //if data is set
+        if (isset($data['data']) && $data['data'] != null && $data['data'] != '' && strlen($data['data']) > 2) {
+            $notificationData['data'] = $data['data'];
+        }
+        //if buttons is set
+        if (isset($data['buttons']) && $data['buttons'] != null && $data['buttons'] != '' && strlen($data['buttons']) > 2) {
+            $notificationData['buttons'] = $data['buttons'];
+        }
+        //if schedule is set
+        if (isset($data['schedule']) && $data['schedule'] != null && $data['schedule'] != '' && strlen($data['schedule']) > 2) {
+            $notificationData['send_after'] = $data['schedule'];
+        }
+        //if type is set
+        if (isset($data['type']) && $data['type'] != null && $data['type'] != '' && strlen($data['type']) > 2) {
+            $notificationData['content_type'] = $data['type'];
+        }
+
+        // Initialize Guzzle client
+        $client = new \GuzzleHttp\Client();
+        $response = null;
+
+        try {
+            // Send POST request to OneSignal API
+            $response = $client->post('https://onesignal.com/api/v1/notifications', [
+                'headers' => [
+                    'Authorization' => 'Basic ' . $apiKey,
+                    'Content-Type' => 'application/json',
+                    'body' => json_encode($notificationData)
+                ],
+                'json' => $notificationData,
+            ]);
+        } catch (\Throwable $th) {
+            $response = null;
+            throw $th;
+        }
+        if ($response == null) {
+            throw new \Exception("Failed to send notification because response is null");
+        }
+
+        // Get the response body
+        $responseBody = $response->getBody();
+
+        // Decode the JSON response
+        $responseData = json_decode($responseBody, true);
+        if ($responseData == null) {
+            throw new \Exception("Failed to send notification because response data is null");
+        }
+
+        if (!isset($responseData['id'])) {
+            throw new \Exception("Failed to send notification because response data id is not set");
+        }
+
+        return $responseData['id'];
+
+
     }
 
 
