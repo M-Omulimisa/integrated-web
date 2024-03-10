@@ -187,7 +187,7 @@ class NotificationMessageController extends AdminController
             $form->select('notification_campaign_id', __('Notification Campaign'))
                 ->options(\App\Models\NotificationCampaign::all()->pluck('title', 'id'));
             $form->select('user_id', __('Reciever'))
-                ->options(\App\Models\User::all()->pluck('name', 'id'));
+                ->options(\App\Models\User::getDropDownList([]));
         }
         $form->text('title', __('Title'))->rules('required');
         $form->text('phone_number', __('Phone Number'));
