@@ -318,13 +318,13 @@ class NotificationMessageController extends AdminController
                         'Yes' => 'Yes',
                     ])
                     ->rules('required');
-                $form->radio('notification_seen', __('Notification seen'))->default('No')
+                /* $form->radio('notification_seen', __('Notification seen'))->default('No')
                     ->options([
                         'No' => 'No',
                         'Yes' => 'Yes',
                     ])
-                    ->rules('required');
-                $form->radio('notification_sent', __('Notification seen'))->default('No')
+                    ->rules('required'); */
+                $form->radio('notification_sent', __('Notification Sent'))->default('No')
                     ->options([
                         'No' => 'No',
                         'Yes' => 'Yes',
