@@ -66,7 +66,7 @@ Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
 });
 
 if (!Utils::isLocalhost()) {
-    Utils::syncGroups();
+    //Utils::syncGroups();
 }
 
 /* $parishes = ParishModel::where([])
