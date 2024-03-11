@@ -5,10 +5,11 @@ namespace App\Models\Farmers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use App\Models\Traits\Relationships\FarmerGroupRelationship;
+use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 
 class FarmerGroup extends BaseModel
 {
-    use  FarmerGroupRelationship;
+    use Uuid,FarmerGroupRelationship;
 
     protected $fillable = [
         'name',
