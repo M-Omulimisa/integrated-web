@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eddd99fed7ffd6484d0a23df46004ec5",
+    "content-hash": "f806ea48062638b71185cb6b5c181d4c",
     "packages": [
         {
             "name": "africastalking/africastalking",
@@ -239,16 +239,16 @@
         },
         {
             "name": "berkayk/onesignal-laravel",
-            "version": "v1.10",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/berkayk/laravel-onesignal.git",
-                "reference": "e37aaf474903789f20239949c73e20382bd623bf"
+                "reference": "2eeca4d516ae791a6d764f0c605186b7d5d1c95e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/berkayk/laravel-onesignal/zipball/e37aaf474903789f20239949c73e20382bd623bf",
-                "reference": "e37aaf474903789f20239949c73e20382bd623bf",
+                "url": "https://api.github.com/repos/berkayk/laravel-onesignal/zipball/2eeca4d516ae791a6d764f0c605186b7d5d1c95e",
+                "reference": "2eeca4d516ae791a6d764f0c605186b7d5d1c95e",
                 "shasum": ""
             },
             "require": {
@@ -301,9 +301,9 @@
             ],
             "support": {
                 "issues": "https://github.com/berkayk/laravel-onesignal/issues",
-                "source": "https://github.com/berkayk/laravel-onesignal/tree/v.1.10"
+                "source": "https://github.com/berkayk/laravel-onesignal/tree/v2.0.1"
             },
-            "time": "2023-02-21T08:06:05+00:00"
+            "time": "2024-02-09T15:51:26+00:00"
         },
         {
             "name": "brick/math",
@@ -2456,65 +2456,6 @@
                 "source": "https://github.com/laravel-admin-extensions/chartjs/tree/master"
             },
             "time": "2018-09-16T17:28:26+00:00"
-        },
-        {
-            "name": "laravel-admin-ext/grid-lightbox",
-            "version": "v1.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laravel-admin-extensions/grid-lightbox.git",
-                "reference": "f8a247f0d017eb05830cc720fb621401b1bfbc2c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laravel-admin-extensions/grid-lightbox/zipball/f8a247f0d017eb05830cc720fb621401b1bfbc2c",
-                "reference": "f8a247f0d017eb05830cc720fb621401b1bfbc2c",
-                "shasum": ""
-            },
-            "require": {
-                "encore/laravel-admin": "~1.6",
-                "php": ">=7.0.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~6.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Encore\\Grid\\Lightbox\\LightboxServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Encore\\Grid\\Lightbox\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "song",
-                    "email": "zosong@126.com"
-                }
-            ],
-            "description": "Turn your grid into a lightbox & gallery",
-            "homepage": "https://github.com/laravel-admin-ext/grid-lightbox",
-            "keywords": [
-                "extension",
-                "gallery",
-                "grid",
-                "laravel-admin",
-                "lightbox"
-            ],
-            "support": {
-                "issues": "https://github.com/laravel-admin-extensions/grid-lightbox/issues",
-                "source": "https://github.com/laravel-admin-extensions/grid-lightbox/tree/v1.0.3"
-            },
-            "time": "2019-10-11T06:38:51+00:00"
         },
         {
             "name": "laravel/framework",
