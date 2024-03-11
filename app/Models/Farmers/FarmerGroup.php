@@ -44,7 +44,7 @@ class FarmerGroup extends BaseModel
     {
         parent::boot();
         self::creating(function (FarmerGroup $model) {
-            $model->id = (string) \Str::uuid();
+            $model->id = $model->generateUuid();
         });
     }
 
