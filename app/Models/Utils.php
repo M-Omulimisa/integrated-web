@@ -306,6 +306,15 @@ class Utils
                 $external_id = $lastGroup->external_id;
             }
         }
+        //get last created at time from now in minutes
+        if ($lastGroup != null) {
+            $now = Carbon::now();
+            $last = Carbon::parse($lastGroup->created_at);
+            $diff = $now->diffInMinutes($last);
+            if ($diff < 5) {
+                return;
+            }
+        }
 
 
         //http grt request to url using guzzlehttp 
@@ -331,59 +340,14 @@ class Utils
         if ($data == null) {
             return;
         }
+
         if (!isset($data['data'])) {
             return;
         }
         $groups = $data['data'];
-
-        /* 
-        array:49 [▼ 
-  
-  "group_bank_account" => false
-  "financial_institution_id" => null
-  "account_number" => null
-  "account_name" => null
-  "new_group" => false
-  "received_other_ngo_support" => false
-  "participation_of_collective_marketing" => true
-  "is_member_of_dairy_cooperative" => false
-  "cooperative_id" => null
-  "have_a_market_map" => false
-  "have_a_storage_facility" => false
-  "have_modern_dairy_equipment" => false
-  "type_of_dairy_equipment_ownership" => null
-  "have_constitution_or_law" => true
-  "is_group_involved_in_selling_related_dairy_products" => false
-  "does_group_keep_records" => true
-  "records_description" => "Sales and VSL"
-  "last_updated_market_map" => "2023-11-27"
-  "have_a_business_plan" => true
-  "last_updated_business_plan" => "2023-11-27"
-  "involved_in_vsla_services" => true
-  "vsla_services_description" => null
-  "enterprise_id" => 9
-  "loan_received_in_last_year" => false
-  "loan_financial_institution_id" => null
-  "registration_status" => "Registered"
-  "registration_number" => "656"
-  "" => 3085
-
-  "group_position_id" => 4
-
-  "group_representative_mobile_money" => false
-  "received_mastercard_support" => false
-  "mastercard_program_id" => null
-  "user_id" => 8
-  "deleted_at" => null
-  "created_at" => "2023-11-10T07:35:06.000000Z"
-  "updated_at" => "2023-11-27T10:51:49.000000Z"
-  "non_government_organisation_id" => null
-  "non_government_organisations" => []
-  "supporting_ngos_ids" => ""
-  "enterprise_text" => "Milk Vending & Retailing"
-  "group_position_text" => "Member"
-]
-        */
+        if ($groups == null) {
+            return;
+        } 
         foreach ($groups as $key => $ext) {
             $old = FarmerGroup::where([
                 'external_id' => $ext['id']
@@ -391,7 +355,6 @@ class Utils
             if ($old != null) {
                 continue;
             }
-
             try {
                 $new = new FarmerGroup();
                 $new->external_id = $ext['id'];
@@ -408,7 +371,95 @@ class Utils
                 $new->status = 'Active';
                 $new->id_photo_front = 'External';
                 $new->save();
+                //echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
             } catch (\Throwable $th) {
+                echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
+                continue;
+            }
+        }
+    }
+
+
+    static function syncFarmers()
+    {
+        $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();
+        $external_id = 0;
+        if ($lastGroup != null) {
+            if ($lastGroup->external_id != null) {
+                $external_id = $lastGroup->external_id;
+            }
+        }
+        //get last created at time from now in minutes
+        if ($lastGroup != null) {
+            $now = Carbon::now();
+            $last = Carbon::parse($lastGroup->created_at);
+            $diff = $now->diffInMinutes($last);
+            if ($diff < 5) {
+                return;
+            }
+        }
+
+
+        //http grt request to url using guzzlehttp 
+        $client = new \GuzzleHttp\Client();
+        $response = null;
+        try {
+            $response = $client->request('GET', "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7");
+        } catch (\Throwable $th) {
+            throw $th;
+            return;
+        }
+
+        dd($response);
+        if ($response == null) {
+            throw new \Exception("Failed to get response");
+            return;
+        }
+
+        $data = null;
+
+        try {
+            $data = json_decode($response->getBody(), true);
+        } catch (\Throwable $th) {
+            $data = null;
+        }
+        if ($data == null) {
+            return;
+        }
+
+        if (!isset($data['data'])) {
+            return;
+        }
+        $groups = $data['data'];
+        if ($groups == null) {
+            return;
+        } 
+        foreach ($groups as $key => $ext) {
+            $old = FarmerGroup::where([
+                'external_id' => $ext['id']
+            ])->first();
+            if ($old != null) {
+                continue;
+            }
+            try {
+                $new = new FarmerGroup();
+                $new->external_id = $ext['id'];
+                $new->name = $ext['farmer_group'];
+                $new->country_id = '3578d4de-da91-43f2-b630-35b3017b67ec';
+                $new->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
+                $new->code = $ext['farmer_group_code'];
+                $new->address = $ext['email_address'];
+                $new->group_leader = $ext['group_representative_first_name'] . " " . $ext['group_representative_last_name'];
+                $new->group_leader_contact = $ext['group_representative_contact'];
+                $new->establishment_year = $ext['establishment_year'];
+                $new->registration_year = $ext['establishment_year'];
+                $new->location_id = $ext['village_id'];
+                $new->status = 'Active';
+                $new->id_photo_front = 'External';
+                $new->save();
+                //echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
+            } catch (\Throwable $th) {
+                echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
                 continue;
             }
         }
