@@ -535,6 +535,23 @@ class MenuFunctions
         return $list;
     }
 
+
+    public function getInsuranceRegionList()
+    {
+        $locations = RegionModel::orderBy('name', 'ASC')->get();
+
+        $list = '';
+        if (count($locations) > 0) {
+            $count = 0;
+            foreach ($locations as $region) {
+                $list .= (++$count).") ".ucwords(strtolower($region->name))."\n";
+            }
+        }
+
+        return $list;
+    }
+
+
     public function getMostSimilarDistrict($district_name, $country_name)
     {
         $country = Country::whereName($country_name)->first();
