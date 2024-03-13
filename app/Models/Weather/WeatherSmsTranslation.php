@@ -1,15 +1,15 @@
 <?php
 
 namespace App\Models\Weather;
-  
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
-  
+
 class WeatherSmsTranslation extends BaseModel
 {
     use Uuid;
-  
+
     protected $fillable = [
         'language_id',
         'translation',
@@ -43,4 +43,10 @@ class WeatherSmsTranslation extends BaseModel
      * @var bool
      */
     public $incrementing = false;
+
+    //belongs to language
+    public function language()
+    {
+        return $this->belongsTo('App\Models\Settings\Language');
+    }
 }
