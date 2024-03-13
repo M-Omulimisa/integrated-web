@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Models\Weather\WeatherCondition;
 use App\Services\Weather\TomorrowApi;
 use App\Models\Settings\Language;
+use App\Models\Weather\WeatherSmsTranslation;
 
 class GenerateWeatherSmsOutbox extends Command
 {
@@ -151,6 +152,24 @@ class GenerateWeatherSmsOutbox extends Command
                                 $codeDescription = isset($codeDescription) ? $codeDescription.'. ' : '';
 
                                 $sms = str_replace('  ', ' ', $date.' Weather: '.$codeDescription.'Temperature ('.$min_temp.'C <> '.$max_temp.'C) Rain Chance ('.$min_rain_chance.'% <> '.$max_rain_chance.'%). M-Omulimisa');
+
+                                if ($sms_translation = WeatherSmsTranslation::whereLanguageId($languageId)->first()) {
+                                    if (strpos($sms_translation->translation, ',') !== false) {
+                                        $_translations = explode(",", $sms_translation->translation);
+                                        for ($i=0; $i < count($_translations); $i++) {
+                                            if (strpos($_translations[$i], ':') !== false) {
+                                                $_translation = explode(":", $_translations[$i]);
+                                                $sms = str_replace($_translation[0], $_translation[1], $sms); 
+                                             } 
+                                        }
+                                    }
+                                    else{
+                                        if (strpos($sms_translation->translation, ':') !== false) {
+                                            $_translation = explode(":", $sms_translation->translation);
+                                            $sms = str_replace($_translation[0], $_translation[1], $sms); 
+                                        }
+                                    }
+                                }
                                         
                                 if($this->debug) logger($sms);
                                 if($this->debug) logger(strlen($sms));
