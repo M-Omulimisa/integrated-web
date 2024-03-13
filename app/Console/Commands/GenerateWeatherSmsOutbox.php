@@ -63,7 +63,7 @@ class GenerateWeatherSmsOutbox extends Command
 
             try {
 
-                WeatherSubscription::where('end_date', '>', Carbon::now())
+                $subscriptions = WeatherSubscription::where('end_date', '>', Carbon::now())
                     ->where(function ($query) {
                         $query->whereOutboxGenerationStatus(false)
                             ->whereOutboxResetStatus(false)
@@ -80,8 +80,13 @@ class GenerateWeatherSmsOutbox extends Command
                             ->whereRaw('LENGTH(lng) > 0')
                             ->from(with(new ParishModel)->getTable());
                     })
-                    ->chunk(500, function ($subscriptions) {
+                    ->limit(200)->get();
 
+                    if (count($subscriptions) > 0) {
+
+                        $recordsPerSecond = 5;
+                        $delayInSeconds = 1 / $recordsPerSecond;
+                        
                         if ($this->debug) logger(count($subscriptions));
                         if ($this->debug) echo count($subscriptions);                        
                         if ($this->debug) logger([$subscriptions->pluck('id')->toArray()]);
@@ -175,8 +180,12 @@ class GenerateWeatherSmsOutbox extends Command
                             else{
                                 if ($this->debug) logger($result->error_message);
                             }
+
+                            sleep($delayInSeconds);
                         }
-                    });
+                    }
+
+
             }
             catch (\Throwable $r) {
                 Log::error(['GenerateWeatherSmsOutbox' => $r->getMessage()]);            
