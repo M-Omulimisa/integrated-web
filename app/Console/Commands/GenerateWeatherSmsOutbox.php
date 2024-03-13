@@ -62,29 +62,33 @@ class GenerateWeatherSmsOutbox extends Command
         // if ($this->debug) Log::info(['Command' => 'Past 12am']);
 
         try {
+                $subscriptions = WeatherSubscription::where('end_date', '>', Carbon::now())
+                    ->where(function ($query) {
+                        $query->whereOutboxGenerationStatus(false)
+                            ->whereOutboxResetStatus(false)
+                            ->whereNull('outbox_last_date')
+                            ->orWhere(function ($query) {
+                                $query->whereOutboxGenerationStatus(false)
+                                    ->whereOutboxResetStatus(true)
+                                    ->whereDate('outbox_last_date', '!=', Carbon::today());
+                            });
+                    })
+                    ->whereIn('parish_id', function ($query) {
+                        $query->select('id')
+                            ->whereRaw('LENGTH(lat) > 0')
+                            ->whereRaw('LENGTH(lng) > 0')
+                            ->from(with(new ParishModel)->getTable());
+                    })
+                    ->limit(200)->get();
 
-            WeatherSubscription::where('end_date', '>', Carbon::now())
-                ->where(function ($query) {
-                    $query->whereOutboxGenerationStatus(false)
-                        ->whereOutboxResetStatus(false)
-                        ->whereNull('outbox_last_date')
-                        ->orWhere(function ($query) {
-                            $query->whereOutboxGenerationStatus(false)
-                                ->whereOutboxResetStatus(true)
-                                ->whereDate('outbox_last_date', '!=', Carbon::today());
-                        });
-                })
-                ->whereIn('parish_id', function ($query) {
-                    $query->select('id')
-                        ->whereRaw('LENGTH(lat) > 0')
-                        ->whereRaw('LENGTH(lng) > 0')
-                        ->from(with(new ParishModel)->getTable());
-                })
-                ->chunk(500, function ($subscriptions) {
+                    if (count($subscriptions) > 0) {
 
-                    if ($this->debug) logger(count($subscriptions));
-                    if ($this->debug) echo count($subscriptions);                        
-                    if ($this->debug) logger([$subscriptions->pluck('id')->toArray()]);
+                        $recordsPerSecond = 5;
+                        $delayInSeconds = 1 / $recordsPerSecond;
+                        
+                        if ($this->debug) logger(count($subscriptions));
+                        if ($this->debug) echo count($subscriptions);                        
+                        if ($this->debug) logger([$subscriptions->pluck('id')->toArray()]);
 
                     WeatherSubscription::whereIn('id', $subscriptions->pluck('id')->toArray())->update(['outbox_generation_status' => 2]);
 
@@ -166,20 +170,21 @@ class GenerateWeatherSmsOutbox extends Command
                                     }else{
                                         if($this->debug) logger('Outbox sms for ID'.$subscription->id.' not updated');
                                     }
+                                } // endif sms
+                            }
+                            else{
+                                if ($this->debug) logger($result->error_message);
+                            }
 
-                                }else{
-                                    if($this->debug) logger('Outbox sms for ID'.$subscription->id.' not created');
-                                }
-                            } // endif sms
-                        }
-                        else{
-                            if ($this->debug) logger($result->error_message);
+                            sleep($delayInSeconds);
                         }
                     }
-                });
-        }
-        catch (\Throwable $r) {
-            Log::error(['GenerateWeatherSmsOutbox' => $r->getMessage()]);            
+
+
+            }
+            catch (\Throwable $r) {
+                Log::error(['GenerateWeatherSmsOutbox' => $r->getMessage()]);            
+            } 
         }  
     }
 
