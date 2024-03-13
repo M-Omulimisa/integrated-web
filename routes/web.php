@@ -139,8 +139,16 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\IdValidations\PhoneValidationController;
 use App\Models\DistrictModel;
 use App\Models\Gen;
+use App\Models\NotificationCampaign;
+use App\Models\NotificationMessage;
+use App\Models\OnlineCourse;
+use App\Models\OnlineCourseStudent;
+use App\Models\OnlineCourseStudentBatchImporter;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
+use App\Models\Utils;
+use App\Traits\Notification;
+use Dflydev\DotAccessData\Util;
 
 /*
 |--------------------------------------------------------------------------
@@ -153,11 +161,177 @@ use App\Models\SubcountyModel;
 |
 */
 
-/* Route::get('/', function () {
+/* 
+Route::get('/', function () {
     // return view('welcome');
     //return redirect('/home');
-}); */
+});
+*/
 
+Route::get('sync-data', function () {
+    Utils::syncGroups();
+    //Utils::syncFarmers();
+});
+Route::get('send-notification-campaigns', function () {
+    if (!isset($_GET['id'])) {
+        die("ID not set");
+    }
+    $item = NotificationCampaign::find($_GET['id']);
+    if ($item == null) {
+        die("Notification not found");
+    }
+    if ($item->ready_to_send != 'Yes') {
+        die("Not ready to send. STATUS: {$item->ready_to_send}");
+    }
+    try {
+        $item->send_now();
+        die("sent");
+    } catch (\Exception $e) {
+        die($e->getMessage());
+    }
+    // return view('welcome');
+    //return redirect('/home');
+});
+
+Route::get('send-notification', function () {
+    if (!isset($_GET['id'])) {
+        die("ID not set");
+    }
+    $course_id = $_GET['id'];
+    $course = NotificationMessage::find($course_id);
+    if ($course == null) {
+        die("Notification not found");
+    }
+    try {
+        $course->send_now();
+        die("sent");
+    } catch (\Exception $e) {
+        die($e->getMessage());
+    }
+    // return view('welcome');
+    //return redirect('/home');
+});
+
+Route::get('send-inspector-notification', function () {
+    if (!isset($_GET['id'])) {
+        die("ID not set");
+    }
+    $course_id = $_GET['id'];
+    $course = OnlineCourse::find($course_id);
+    if ($course == null) {
+        die("Course not found");
+    }
+    try {
+        $course->send_inspector_notification();
+        die("Success");
+    } catch (\Exception $e) {
+        die($e->getMessage());
+    }
+    // return view('welcome');
+    //return redirect('/home');
+});
+
+Route::get('/course-student-batch-importer', function () {
+    if (!isset($_GET['id'])) {
+        die("ID not set");
+    }
+    $importer = OnlineCourseStudentBatchImporter::find($_GET['id']);
+    if ($importer == null) {
+        die("Importer not found");
+    }
+    $course = OnlineCourse::find($importer->online_course_id);
+    if ($course == null) {
+        die("Course not found");
+    }
+    $file = "storage/" . $importer->file_path;
+    //check if file exists  
+    if (!file_exists($file)) {
+        die("File not found");
+    }
+    $data = [];
+    $file = fopen($file, "r");
+    if (!$file) {
+        die("Error opening data file.");
+    }
+    while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
+        $data[] = $column;
+    }
+    fclose($file);
+    $i = 0;
+    $success = 0;
+    $failed = 0;
+    $error_message = "";
+    foreach ($data as $key => $value) {
+        $i++;
+        if ($key > 0) {
+            if (!isset($value[0])) {
+                $error_message .= "Row $i: NAME NOT SET\n";
+                $failed++;
+                continue;
+            }
+            if (!isset($value[1])) {
+                $error_message .= "Row $i: PHONE NOT SET\n";
+                $failed++;
+                continue;
+            }
+            $name = $value[0];
+            $phone = Utils::prepare_phone_number($value[1]);
+            if (!Utils::phone_number_is_valid($phone)) {
+                $error_message .= "Row $i: $name, has INVALID PHONE NUMBER: $phone\n";
+                $failed++;
+                continue;
+            }
+
+            $already_enrolled = OnlineCourseStudent::where([
+                'online_course_id' => $course->id,
+                'phone' => $phone
+            ])->first();
+
+            if ($already_enrolled != null) {
+                $error_message .= "Row $i: $name, $phone, is already enrolled to this course.\n";
+                $failed++;
+                $success++;
+                continue;
+            }
+            $farmer = new OnlineCourseStudent();
+            $farmer->online_course_id = $course->id;
+            $farmer->name = $name;
+            $farmer->phone = $phone;
+            $farmer->status = "Active";
+            try {
+                $farmer->save();
+            } catch (\Exception $e) {
+                $error_message .= "Row $i: $name, $phone, " . $e->getMessage() . "\n";
+                $failed++;
+                continue;
+            }
+
+            //$farmer->courses()->attach($course->id);
+            $success++;
+            continue;
+        }
+    }
+    $importer->total = $i;
+    $importer->success = $success;
+    $importer->failed = $failed;
+    $importer->error_message = $error_message;
+    $importer->status = "Imported";
+    $importer->save();
+    die("done");
+});
+Route::get('/prepare-lessons', function () {
+    foreach (OnlineCourse::all() as $key => $course) {
+        $course->prepare_lessons();
+    }
+});
+
+
+Route::get('/payment-test', function () {
+    Utils::payment_status_test();
+    die("<br>done.");
+    Utils::payment_test();
+    die("<br>done.");
+});
 Route::get('/prepare-data', function () {
 
     die("done");
@@ -299,7 +473,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/login/check', [OtpController::class, 'check'])->name("otp.verify");
     Route::get('/login/resend', [OtpController::class, 'resend'])->name('otp.resend');
 });
-Route::get('/', [HomeController::class, 'index'])->name('home');
+//Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::group(['middleware' => ['auth', 'otp_verification']], function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');

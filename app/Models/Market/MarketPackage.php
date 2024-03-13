@@ -27,9 +27,32 @@ class MarketPackage extends BaseModel
     protected static function boot()
     {
         parent::boot();
+
         self::creating(function (MarketPackage $model) {
             $model->id = $model->generateUuid();
         });
+
+        static::deleted(function () {
+
+
+            $market_packages =  MarketPackage::orderBy('created_at', 'asc')->get();
+
+            $counter = 1;
+            foreach($market_packages as $package){
+
+                $package->update(['menu' => $counter]);
+
+                $counter++;
+
+            }
+
+
+
+        });
+
+
+
+
     }
 
     /**
@@ -76,5 +99,21 @@ class MarketPackage extends BaseModel
                                                 ->whereRegionId($region_id)
                                                 ->first();
         return $package_region->$param ?? null;
+    }
+
+    public function getEnterprisesAttribute($enterprises)
+    {
+
+        return json_decode($enterprises, true);
+       
+    }
+
+    public function setEnterprisesAttribute($enterprises)
+    {
+        if(!empty($enterprises)){
+
+            $this->attributes['enterprise'] = json_encode($enterprises);
+        }
+ 
     }
 }

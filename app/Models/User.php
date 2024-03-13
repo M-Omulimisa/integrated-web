@@ -8,21 +8,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-use App\Models\Traits\Relationships\Users\UserRelationship; 
+use App\Models\Traits\Relationships\Users\UserRelationship;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Encore\Admin\Auth\Database\Administrator;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements AuthenticatableContract, JWTSubject
+class User extends Administrator implements      AuthenticatableContract, JWTSubject
 {
     use HasFactory, Notifiable, HasRoles, UserRelationship, HasApiTokens;
 
     protected $connection = 'mysql';
 
-    
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -120,7 +121,40 @@ class User extends Authenticatable implements AuthenticatableContract, JWTSubjec
         self::creating(function (User $model) {
             //$model->id = $model->generateUuid(); 
             //$model->created_by = auth()->user()->id ?? null;
+
+            if ($model->phone != null && strlen($model->phone) > 3) {
+                $model->phone = Utils::prepare_phone_number($model->phone);
+                if (!Utils::phone_number_is_valid($model->phone)) {
+                    throw new \Exception("Invalid phone number " . $model->phone, 1);
+                }
+                //check if phone number is already registered
+                $user = User::where('phone', $model->phone)->first();
+                if ($user != null) {
+                    throw new \Exception("Phone number already registered.", 1);
+                }
+            }
+            $model->username = $model->email;
         });
+
+        //updating
+        self::updating(function (User $model) {
+            //$model->updated_by = auth()->user()->id ?? null;
+            if ($model->phone != null && strlen($model->phone) > 3) {
+                $model->phone = Utils::prepare_phone_number($model->phone);
+                if (!Utils::phone_number_is_valid($model->phone)) {
+                    throw new \Exception("Invalid phone number " . $model->phone, 1);
+                }
+                //check if phone number is already registered
+                $user = User::where('phone', $model->phone)->first();
+                if ($user != null && $user->id != $model->id) {
+                    throw new \Exception("Phone number already registered.", 1);
+                }
+            }
+            //if email not empty and not null set username to email
+            if ($model->email != null && strlen($model->email) > 3) {
+                $model->username = $model->email;
+            } 
+        }); 
     }
 
     /**
@@ -181,5 +215,19 @@ class User extends Authenticatable implements AuthenticatableContract, JWTSubjec
     public function getUserMobileOTP()
     {
         return \App\Models\Mobile\MobileAppOneTimePassword::whereUserId($this->id)->where("status", "!=", "discarded")->first();
+    }
+
+    //get dropdown list of users
+    public static function getDropDownList($conds){
+        $users = User::where($conds)->get();
+        $list = [];
+        foreach ($users as $user) {
+            $list[$user->id] = $user->name;
+            //check if phone number is set
+            if($user->phone != null && strlen($user->phone) > 3){
+                $list[$user->id] .= " (" . $user->phone . ")";
+            } 
+        }
+        return $list;
     }
 }

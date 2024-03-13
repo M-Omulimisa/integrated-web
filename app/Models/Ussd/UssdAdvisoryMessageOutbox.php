@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Ussd\UssdSession;
 
 class UssdAdvisoryMessageOutbox extends Model
 {
@@ -16,7 +17,7 @@ class UssdAdvisoryMessageOutbox extends Model
     
     protected $fillable = [
 
-        'session_id', 'status', 'message'
+        'session_id', 'status', 'message', 'batch_number', 'message_schedule_number'
 
     ];
 
@@ -31,4 +32,10 @@ class UssdAdvisoryMessageOutbox extends Model
     protected $keyType = 'string';
 
     public $incrementing = false;
+
+    public function session(){
+
+        return $this->belongsTo(UssdSession::class, 'session_id');
+
+    }
 }

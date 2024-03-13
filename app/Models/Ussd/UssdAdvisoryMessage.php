@@ -24,4 +24,10 @@ class UssdAdvisoryMessage extends Model
 
     ];
 
+
+    public function option(){
+
+        return $this->belongsTo(UssdQuestionOption::class, 'ussd_question_option_id');
+
+    }
 }

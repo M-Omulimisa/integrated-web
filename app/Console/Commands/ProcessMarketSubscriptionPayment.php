@@ -96,10 +96,8 @@ class ProcessMarketSubscriptionPayment extends Command
 
                                     $data = [
                                         'phone' => $payment->account,
-                                        'region_id' => $session->market_region_id,
                                         'language_id' => $session->market_language_id,
                                         'package_id' => $session->market_package_id,
-
                                         'frequency'     => ucfirst($session->market_frequency),
                                         'period_paid'   => $session->market_frequency_count,
                                         'start_date'    => date("Y-m-d"),

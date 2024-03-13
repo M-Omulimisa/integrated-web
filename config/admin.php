@@ -62,7 +62,7 @@ return [
     */
     'route' => [
 
-        'prefix' => env('ADMIN_ROUTE_PREFIX', 'admin'),
+        'prefix' => env('ADMIN_ROUTE_PREFIX', '/'),
 
         'namespace' => 'App\\Admin\\Controllers',
 
@@ -408,9 +408,17 @@ return [
     */
     'extensions' => [
         'chartjs' => [
-        
+
             // Set to `false` if you want to disable this extension
             'enable' => true,
+        ],
+        'extensions' => [
+
+            'grid-lightbox' => [
+
+                // Set to `false` if you want to disable this extension
+                'enable' => true,
+            ]
         ],
         'quill' => [
             // If the value is set to false, this extension will be disabled

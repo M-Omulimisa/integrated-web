@@ -3,13 +3,209 @@
 namespace App\Models;
 
 use App\Models\Farmers\FarmerGroup;
+use App\Services\Payments\PaymentServiceFactory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Zebra_Image;
 use Berkayk\OneSignal\OneSignalClient;
+use Illuminate\Support\Facades\Mail;
 
 class Utils
 {
+
+
+    public static function greet()
+    {
+        //according to the time of the day
+        $hour = date('H');
+        if ($hour < 12) {
+            return "Good morning";
+        } else if ($hour < 17) {
+            return "Good afternoon";
+        } else {
+            return "Good evening";
+        }
+    }
+
+    public static function file_upload($file)
+    {
+        if ($file == null) {
+            return '';
+        }
+        //GET FILE EXTENSION FILE NAME FRO FILE
+        $file_extension = $file->getClientOriginalExtension();
+        //get file extension
+        $file_extension = $file->getClientOriginalExtension();
+        $file_name = $file->getClientOriginalName();
+        $public_path = public_path() . "/storage/files";
+        $file->move($public_path, $file_name);
+        $url = 'files/' . $file_name;
+        return $url;
+    }
+
+    //public static function email_is_valid
+    public static function email_is_valid($email)
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+
+    //mail sender
+    public static function mail_sender($data)
+    {
+        try {
+            Mail::send(
+                'mails/mail-1',
+                [
+                    'body' => $data['body'],
+                    'title' => $data['subject']
+                ],
+                function ($m) use ($data) {
+                    $m->to($data['email'], $data['name'])
+                        ->subject($data['subject']);
+                    $m->from(env('MAIL_FROM_ADDRESS'), $data['subject']);
+                }
+            );
+        } catch (\Throwable $th) {
+            $msg = 'failed';
+            throw $th;
+        }
+    }
+
+
+    public static function payment_status_test()
+    {
+        $PaymentFactory = new PaymentServiceFactory();
+        $service = $PaymentFactory->getService('yo_ug');
+        if (!$service) {
+            throw new \Exception("Failed to get payment service");
+        }
+        $service->set_URL();
+        $service->set_username();
+        $service->set_password();
+
+        //$faild_reference_id = "PaoHpb4vpfkZ9hzdxR04PdtJR4H6ot0ZGurv6qdOOVdHEcjhxuCz4XMZhSOF2fdh61074cec31f11636c82e2b5783ffcb4f";
+        $faild_reference_id = "Ef8BFyJ3NhULq2vBNTVu47GgnP1XV1vP0CxsGlixN0cMOLYahQBkGsi57KjqUJaf0ba161438d0d8c4d877f1f03541379a1";
+        $faild_reference_id = "Oh145te1z62t2pZ7tbLic2NNKBuIxuadAC7B8YYNMBGQmlcKdBJuE7QXAknvVD4h47fffd5e9d22f8e0d1602012c943dcd7";
+        $my_reference_id = "464988113";
+        $response = $service->getTransactionStatus(
+            $faild_reference_id,
+            $my_reference_id,
+        );
+        dd($response);
+
+        die("success");
+    }
+
+    public static function payment_test()
+    {
+        $PaymentFactory = new PaymentServiceFactory();
+        $service = $PaymentFactory->getService('yo_ug');
+        if (!$service) {
+            throw new \Exception("Failed to get payment service");
+        }
+        $service->set_URL();
+        $service->set_username();
+        $service->set_password();
+
+        $phone = "256783204665";
+        $phone = "256706638494";
+        $amount = 500;
+        $narrative = "Test payment";
+        $reference_id = "464988113";
+        $response = $service->depositFunds(
+            $phone,
+            $amount,
+            $narrative,
+            $reference_id
+        );
+        dd($response);
+
+        die("success");
+    }
+
+
+    public static function init_payment($phone_number, $amount, $reference_id)
+    {
+        $phone_number = Utils::prepare_phone_number($phone_number);
+        if (Utils::phone_number_is_valid($phone_number) == false) {
+            throw new \Exception("Invalid phone numbe $phone_number");
+        }
+        $phone_number = str_replace("+", "", $phone_number);
+        $amount = (int)($amount);
+        if ($amount < 500) {
+            throw new \Exception("Amount must be greater than UGX 499");
+        }
+
+        /* $test_resp = new \stdClass();
+        $test_resp->Status = "OK";
+        $test_resp->StatusCode = "1";
+        $test_resp->StatusMessage = "";
+        $test_resp->TransactionStatus = "PENDING";
+        $test_resp->TransactionReference = "PaoHpb4vpfkZ9hzdxR04PdtJR4H6ot0ZGurv6qdOOVdHEcjhxuCz4XMZhSOF2fdh61074cec31f11636c82e2b5783ffcb4f";
+        return $test_resp; */
+
+
+        $PaymentFactory = new PaymentServiceFactory();
+        $service = null;
+
+        try {
+            $service = $PaymentFactory->getService('yo_ug');
+        } catch (\Throwable $th) {
+            throw new \Exception("Failed to get payment service because " . $th->getMessage());
+        }
+
+        if ($service == null) {
+            throw new \Exception("Failed to get payment service");
+        }
+        $service->set_URL();
+        $service->set_username();
+        $service->set_password();
+
+        $narrative = "Omulimisa payment.";
+        $amount = 500;
+        $response = null;
+        try {
+            $response = $service->depositFunds(
+                $phone_number,
+                $amount,
+                $narrative,
+                $reference_id
+            );
+        } catch (\Throwable $th) {
+            throw new \Exception("Failed to initiate payment because " . $th->getMessage());
+        }
+        if ($response == null) {
+            throw new \Exception("Failed to initiate payment");
+        }
+        return $response;
+    }
+
+
+    public static function payment_status_check($token, $payment_reference_id)
+    {
+        $PaymentFactory = new PaymentServiceFactory();
+        $service = $PaymentFactory->getService('yo_ug');
+        if (!$service) {
+            throw new \Exception("Failed to get payment service");
+        }
+        $service->set_URL();
+        $service->set_username();
+        $service->set_password();
+
+        //$faild_reference_id = "PaoHpb4vpfkZ9hzdxR04PdtJR4H6ot0ZGurv6qdOOVdHEcjhxuCz4XMZhSOF2fdh61074cec31f11636c82e2b5783ffcb4f";
+        // $faild_reference_id = "Ef8BFyJ3NhULq2vBNTVu47GgnP1XV1vP0CxsGlixN0cMOLYahQBkGsi57KjqUJaf0ba161438d0d8c4d877f1f03541379a1";
+        // $faild_reference_id = "Oh145te1z62t2pZ7tbLic2NNKBuIxuadAC7B8YYNMBGQmlcKdBJuE7QXAknvVD4h47fffd5e9d22f8e0d1602012c943dcd7";
+        // $my_reference_id = "464988113";
+        try {
+            $response = $service->getTransactionStatus($token, $payment_reference_id);
+        } catch (\Throwable $th) {
+            throw new \Exception("Failed to check payment status because " . $th->getMessage());
+        }
+        if ($response == null) {
+            throw new \Exception("Failed to check payment status");
+        }
+        return $response;
+    }
 
     public static function phone_number_is_valid($phone_number)
     {
@@ -57,10 +253,10 @@ class Utils
         $url .= "&sppass=mul1m1s4";
         $url .= "&numbers=$phone";
         $url .= "&msg=$sms";
-        $url .= "&type=json"; 
+        $url .= "&type=json";
 
-        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/".$url;
- 
+        $url = "https://sms.dmarkmobile.com/v2/api/send_sms/" . $url;
+
         //use guzzle to make the request 
         $body = null;
         try {
@@ -100,7 +296,7 @@ class Utils
         return 'success';
     }
 
-    
+
     static function syncGroups()
     {
         $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();
@@ -110,6 +306,16 @@ class Utils
                 $external_id = $lastGroup->external_id;
             }
         }
+        //get last created at time from now in minutes
+        if ($lastGroup != null) {
+            $now = Carbon::now();
+            $last = Carbon::parse($lastGroup->created_at);
+            $diff = $now->diffInMinutes($last);
+            if ($diff < 5) {
+                return;
+            }
+        }
+
 
         //http grt request to url using guzzlehttp 
         $client = new \GuzzleHttp\Client();
@@ -134,59 +340,14 @@ class Utils
         if ($data == null) {
             return;
         }
+
         if (!isset($data['data'])) {
             return;
         }
         $groups = $data['data'];
-
-        /* 
-        array:49 [▼ 
-  
-  "group_bank_account" => false
-  "financial_institution_id" => null
-  "account_number" => null
-  "account_name" => null
-  "new_group" => false
-  "received_other_ngo_support" => false
-  "participation_of_collective_marketing" => true
-  "is_member_of_dairy_cooperative" => false
-  "cooperative_id" => null
-  "have_a_market_map" => false
-  "have_a_storage_facility" => false
-  "have_modern_dairy_equipment" => false
-  "type_of_dairy_equipment_ownership" => null
-  "have_constitution_or_law" => true
-  "is_group_involved_in_selling_related_dairy_products" => false
-  "does_group_keep_records" => true
-  "records_description" => "Sales and VSL"
-  "last_updated_market_map" => "2023-11-27"
-  "have_a_business_plan" => true
-  "last_updated_business_plan" => "2023-11-27"
-  "involved_in_vsla_services" => true
-  "vsla_services_description" => null
-  "enterprise_id" => 9
-  "loan_received_in_last_year" => false
-  "loan_financial_institution_id" => null
-  "registration_status" => "Registered"
-  "registration_number" => "656"
-  "" => 3085
-
-  "group_position_id" => 4
-
-  "group_representative_mobile_money" => false
-  "received_mastercard_support" => false
-  "mastercard_program_id" => null
-  "user_id" => 8
-  "deleted_at" => null
-  "created_at" => "2023-11-10T07:35:06.000000Z"
-  "updated_at" => "2023-11-27T10:51:49.000000Z"
-  "non_government_organisation_id" => null
-  "non_government_organisations" => []
-  "supporting_ngos_ids" => ""
-  "enterprise_text" => "Milk Vending & Retailing"
-  "group_position_text" => "Member"
-]
-        */
+        if ($groups == null) {
+            return;
+        } 
         foreach ($groups as $key => $ext) {
             $old = FarmerGroup::where([
                 'external_id' => $ext['id']
@@ -194,7 +355,6 @@ class Utils
             if ($old != null) {
                 continue;
             }
-
             try {
                 $new = new FarmerGroup();
                 $new->external_id = $ext['id'];
@@ -211,7 +371,95 @@ class Utils
                 $new->status = 'Active';
                 $new->id_photo_front = 'External';
                 $new->save();
+                //echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
             } catch (\Throwable $th) {
+                echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
+                continue;
+            }
+        }
+    }
+
+
+    static function syncFarmers()
+    {
+        $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();
+        $external_id = 0;
+        if ($lastGroup != null) {
+            if ($lastGroup->external_id != null) {
+                $external_id = $lastGroup->external_id;
+            }
+        }
+        //get last created at time from now in minutes
+        if ($lastGroup != null) {
+            $now = Carbon::now();
+            $last = Carbon::parse($lastGroup->created_at);
+            $diff = $now->diffInMinutes($last);
+            if ($diff < 5) {
+                return;
+            }
+        }
+
+
+        //http grt request to url using guzzlehttp 
+        $client = new \GuzzleHttp\Client();
+        $response = null;
+        try {
+            $response = $client->request('GET', "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7");
+        } catch (\Throwable $th) {
+            throw $th;
+            return;
+        }
+
+        dd($response);
+        if ($response == null) {
+            throw new \Exception("Failed to get response");
+            return;
+        }
+
+        $data = null;
+
+        try {
+            $data = json_decode($response->getBody(), true);
+        } catch (\Throwable $th) {
+            $data = null;
+        }
+        if ($data == null) {
+            return;
+        }
+
+        if (!isset($data['data'])) {
+            return;
+        }
+        $groups = $data['data'];
+        if ($groups == null) {
+            return;
+        } 
+        foreach ($groups as $key => $ext) {
+            $old = FarmerGroup::where([
+                'external_id' => $ext['id']
+            ])->first();
+            if ($old != null) {
+                continue;
+            }
+            try {
+                $new = new FarmerGroup();
+                $new->external_id = $ext['id'];
+                $new->name = $ext['farmer_group'];
+                $new->country_id = '3578d4de-da91-43f2-b630-35b3017b67ec';
+                $new->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
+                $new->code = $ext['farmer_group_code'];
+                $new->address = $ext['email_address'];
+                $new->group_leader = $ext['group_representative_first_name'] . " " . $ext['group_representative_last_name'];
+                $new->group_leader_contact = $ext['group_representative_contact'];
+                $new->establishment_year = $ext['establishment_year'];
+                $new->registration_year = $ext['establishment_year'];
+                $new->location_id = $ext['village_id'];
+                $new->status = 'Active';
+                $new->id_photo_front = 'External';
+                $new->save();
+                //echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
+            } catch (\Throwable $th) {
+                echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
                 continue;
             }
         }
@@ -255,16 +503,10 @@ class Utils
                 env('ONESIGNAL_REST_API_KEY'),
                 env('USER_AUTH_KEY')
             );
-            $client->addParams(
-                [
-                    'android_channel_id' => '7ae6ea3e-3d7b-4a4c-aca4-b07634205ec3',
-                    'large_icon' => env('APP_URL') . '/assets/images/logo.png',
-                    'small_icon' => 'logo',
-                ]
-            )
+            $client
                 ->sendNotificationToExternalUser(
                     $msg,
-                    "$receiver",
+                    $receiver,
                     $url = $url,
                     $data = $data,
                     $buttons = $buttons,
@@ -278,6 +520,124 @@ class Utils
 
 
         return;
+    }
+
+
+    public static function sendNotification2(
+        $data = [
+            'msg' => null,
+            'receiver' => null,
+            'headings' => 'M-OMULIMISA',
+            'data' => null,
+            'url' => null,
+            'buttons' => null,
+            'schedule' => null,
+            'type' => 'text'
+        ]
+    ) {
+        if ($data['msg'] == null) {
+            throw new \Exception("Message is required");
+        }
+        if ($data['receiver'] == null) {
+            throw new \Exception("Receiver is required");
+        }
+
+        /* 
+        */
+        $ONESIGNAL_APP_ID = '2007b43a-6c6b-4cab-b619-b367e5c184fb';
+        $ONESIGNAL_REST_API_KEY = 'ZTNlODJhYTktMjVjOC00NjVkLTgwZmEtYzU3YTI3MGNkNzY1';
+        // OneSignal API Key and App ID
+        $apiKey = $ONESIGNAL_REST_API_KEY;
+        $appId = $ONESIGNAL_APP_ID;
+        $userId = $data['receiver'];
+
+        if ($userId == null) {
+            throw new \Exception("User id is required");
+        }
+        if ($userId == '') {
+            throw new \Exception("User id is required");
+        }
+
+        //if(is array)
+        $receivers = [];
+        if (!is_array($userId)) {
+            $receivers = array($userId);
+        } else {
+            $receivers = $userId;
+        }
+
+        // Notification data
+        $notificationData = [
+            'app_id' => $appId,
+            'contents' => ['en' => $data['msg']],
+            'headings' => ['en' => $data['headings'] . ' - M-Omulimisa'],
+            'include_external_user_ids' => $receivers,
+        ];
+
+
+        if (isset($data['big_picture']) && $data['big_picture'] != null && $data['big_picture'] != '' && strlen($data['big_picture']) > 2) {
+            $notificationData['big_picture'] = $data['big_picture'];
+            $notificationData['small_icon'] = $data['big_picture'];
+        }
+        //$notificationData['big_picture'] = $data['big_picture'];
+        //if url is set
+        if (isset($data['url']) && $data['url'] != null && $data['url'] != '' && strlen($data['url']) > 2) {
+            $notificationData['url'] = $data['url'];
+        }
+
+        //if data is set
+        if (isset($data['data']) && $data['data'] != null && $data['data'] != '' && strlen($data['data']) > 2) {
+            $notificationData['data'] = $data['data'];
+        }
+        //if buttons is set
+        if (isset($data['buttons']) && $data['buttons'] != null && $data['buttons'] != '' && strlen($data['buttons']) > 2) {
+            $notificationData['buttons'] = $data['buttons'];
+        }
+        //if schedule is set
+        if (isset($data['schedule']) && $data['schedule'] != null && $data['schedule'] != '' && strlen($data['schedule']) > 2) {
+            $notificationData['send_after'] = $data['schedule'];
+        }
+        //if type is set
+        if (isset($data['type']) && $data['type'] != null && $data['type'] != '' && strlen($data['type']) > 2) {
+            $notificationData['content_type'] = $data['type'];
+        }
+
+        // Initialize Guzzle client
+        $client = new \GuzzleHttp\Client();
+        $response = null;
+
+        try {
+            // Send POST request to OneSignal API
+            $response = $client->post('https://onesignal.com/api/v1/notifications', [
+                'headers' => [
+                    'Authorization' => 'Basic ' . $apiKey,
+                    'Content-Type' => 'application/json',
+                    'body' => json_encode($notificationData)
+                ],
+                'json' => $notificationData,
+            ]);
+        } catch (\Throwable $th) {
+            $response = null;
+            throw $th;
+        }
+        if ($response == null) {
+            throw new \Exception("Failed to send notification because response is null");
+        }
+
+        // Get the response body
+        $responseBody = $response->getBody();
+
+        // Decode the JSON response
+        $responseData = json_decode($responseBody, true);
+        if ($responseData == null) {
+            throw new \Exception("Failed to send notification because response data is null");
+        }
+
+        if (!isset($responseData['id'])) {
+            throw new \Exception("Failed to send notification because response data id is not set");
+        }
+
+        return $responseData['id'];
     }
 
 
@@ -602,5 +962,187 @@ class Utils
                 }
             }
         }
+    }
+
+    public static function my_resp($type, $data, $student = null)
+    {
+        header('Content-type: text/plain');
+        if ($type == 'audio') {
+            $menu = OnlineCourseMenu::where([
+                'name' => $data
+            ])->first();
+            if ($menu != null) {
+                $url = asset('storage/' . $menu->english_audio);
+
+                if ($student != null) {
+                    $audio_1 = null;
+                    try {
+                        $audio_1 = $student->get_menu_audio_url($menu);
+                    } catch (\Throwable $th) {
+                        $audio_1 = null;
+                    }
+
+                    if ($audio_1 != null && strlen($audio_1) > 4) {
+                        $url = $audio_1;
+                    }
+                }
+
+                echo
+                '<Response>
+                    <Play url="' . $url . '" />
+                </Response>';
+                die();
+            }
+        }
+        echo
+        '<Response>
+            <Say voice="en-US-Standard-C" playBeep="false" >' . $data . '</Say>
+        </Response>';
+        die();
+    }
+
+    public static function quizz_menu($topic, $prefixContent = '')
+    {
+        header('Content-type: text/plain');
+        $lesson_url = asset('storage/' . $topic->video_url);
+        echo
+        '<Response>
+            ' . $prefixContent . '
+            <GetDigits timeout="40" numDigits="1" >
+                <Play url="' . $lesson_url . '" />
+            </GetDigits>
+            <Say>We did not get your answer. Good bye</Say>
+        </Response>';
+        die();
+    }
+
+    public static function question_menu($topic, $student = null)
+    {
+        header('Content-type: text/plain');
+
+        $menu = OnlineCourseMenu::where([
+            'name' => 'Record Question'
+        ])->first();
+        if ($menu != null) {
+            $url = asset('storage/' . $menu->english_audio);
+
+            if ($student != null) {
+                $audio_1 = null;
+                try {
+                    $audio_1 = $student->get_menu_audio_url($menu);
+                } catch (\Throwable $th) {
+                }
+                if ($audio_1 != null && strlen($audio_1) > 4) {
+                    $url = $audio_1;
+                }
+            }
+            echo
+            '<Response>
+                <Record finishOnKey="*" maxLength="120" trimSilence="true" playBeep="true">
+                    <Play url="' . $url . '" />
+                </Record>
+            </Response>';
+            die();
+        }
+
+        echo
+        '<Response>
+            <Record finishOnKey="*" maxLength="120" trimSilence="true" playBeep="true">
+                <Say voice="en-US-Standard-C" playBeep="false" >Please record your question.</Say>
+            </Record>';
+        die();
+    }
+
+
+
+    public static function lesson_menu($type, $data, $topic, $student = null, $prefixContent = '')
+    {
+        header('Content-type: text/plain');
+
+        $lesson_url = asset('storage/' . $topic->audio_url);
+
+        if ($type == 'audio') {
+            $menu = OnlineCourseMenu::where([
+                'name' => $data
+            ])->first();
+            if ($menu != null) {
+                $url = asset('storage/' . $menu->english_audio);
+                $audio_1 = null;
+
+                if ($student != null) {
+                    try {
+                        $audio_1 = $student->get_menu_audio_url($menu);
+                    } catch (\Throwable $th) {
+                    }
+                    if ($audio_1 != null && strlen($audio_1) > 4) {
+                        $url = $audio_1;
+                    }
+                }
+
+                echo
+                '<Response>
+                ' . $prefixContent . '
+                <Play url="' . $lesson_url . '" />
+                <GetDigits timeout="20" numDigits="1" >
+                    <Play url="' . $url . '" />
+                </GetDigits>
+                <Say>We did not get your input number. Good bye.</Say>
+            </Response>';
+                die();
+            }
+        }
+        echo     '<Response>
+        <GetDigits timeout="40" >
+            <Say voice="en-US-Standard-C" playBeep="false" >' . $data . '</Say>
+            </GetDigits>
+            <Say>We did not get your input number. Good bye</Say>
+        </Response>';
+        die();
+    }
+
+
+    public static function my_resp_digits($type, $data, $student = null, $prefixContent = '')
+    {
+        header('Content-type: text/plain');
+        if ($type == 'audio') {
+            $menu = OnlineCourseMenu::where([
+                'name' => $data
+            ])->first();
+
+
+            if ($menu != null) {
+
+                $url = asset('storage/' . $menu->english_audio);
+                $audio_1 = null;
+                if ($student != null) {
+                    try {
+                        $audio_1 = $student->get_menu_audio_url($menu);
+                    } catch (\Throwable $th) {
+                        die($th->getMessage());
+                    }
+                    if ($audio_1 != null && strlen($audio_1) > 4) {
+                        $url = $audio_1;
+                    }
+                }
+
+
+                echo
+                '<Response>
+                ' . $prefixContent . '
+                <GetDigits timeout="20" numDigits="1" >
+                    <Play url="' . $url . '" />
+                </GetDigits>
+                <Say>We did not get your input number. Good bye</Say>
+            </Response>';
+                die();
+            }
+        }
+        echo     '<Response>
+        <GetDigits timeout="40" >
+            <Say voice="en-US-Standard-C" playBeep="false" >' . $data . '</Say>
+            </GetDigits>
+            <Say>We did not get your input number. Good bye</Say>
+        </Response>';
+        die();
     }
 }

@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Schema;
 
+
+ 
 /* 
 curl -X GET "https://api.app.outscraper.com/maps/search-v3?query=restaurants%2C%20Manhattan%2C%20NY%2C%20USA&limit=3&async=false" -H  "X-API-KEY: YOUR-API-KEY" 
 */
@@ -46,12 +48,28 @@ die();  */
 use App\Models\ParishModel;
 use App\Models\Utils;
 use Dflydev\DotAccessData\Util;
+use Encore\Admin\Grid;
+
+//default grid settings
+Grid::init(function (Grid $grid) {
+    $grid->disableRowSelector();
+    //$grid->disableExport();
+    $grid->actions(function (Grid\Displayers\Actions $actions) {
+        $actions->disableDelete();
+    });
+});
+
+//default form settings
+Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
+    $form->disableViewCheck();
+    $form->disableReset();
+});
 
 if (!Utils::isLocalhost()) {
-    Utils::syncGroups();
+    //Utils::syncGroups();
 }
-/* 
-$parishes = ParishModel::where('lat', null)
+
+/* $parishes = ParishModel::where([])
     ->limit(100)
     ->get();
 
@@ -69,7 +87,7 @@ foreach ($parishes as $parish) {
             $_district = $parish->subcounty->district->name;
         }
     }
-    $keyword = Str::lower("Uganda, $_district,  $_county, $_subcounty, $_parish");
+    $keyword = strtolower("Uganda, $_district,  $_county, $_subcounty, $_parish");
     echo $keyword . "<br>";
     $latLog =  get_gps($keyword);
     if ($latLog != null) {
@@ -77,17 +95,20 @@ foreach ($parishes as $parish) {
     }
 }
 
+ */
 
 
-
-
-function get_gps($keyword)
+/* function get_gps($keyword)
 {
-    $googleAPiKey = 'AIzaSyBbXYigCGL7Du8zAiJ9ZWP1a0mw1zOJevw';
+    $keyword = urlencode('ndere center');
+    $googleAPiKey = 'AIzaSyBlJdnkYKX-flnDzdOJn6NrQnCmR6TqqSc';
     $url = "https://maps.googleapis.com/maps/api/geocode/json?address=$keyword,Uganda&key=$googleAPiKey";
+    echo '<a href="' . $url . '">' . $url . '</a><br>';
+    die();
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
     $output = curl_exec($curl);
+    dd($url);
     curl_close($curl);
     if (($output != null) && $output != false) {
         dd($output);
@@ -163,3 +184,16 @@ foreach ($counties as $county) {
 }
 die();
  */
+
+/*  $u = Admin::user();
+ try {
+     Utils::sendNotification(
+         'Test message kjsds',
+         "1",
+         'Test title', 
+     );
+     die('Sent');
+ } catch (\Throwable $th) {
+     //throw $th;
+     die($th->getMessage()); 
+ } */

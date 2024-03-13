@@ -12,6 +12,7 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index')->name('home');
+    $router->get('courses-stats', 'HomeController@stats')->name('home');
     $router->resource('users', UserController::class);
     $router->resource('organisations', OrganisationController::class);
     $router->resource('trainings', TrainingController::class);
@@ -19,7 +20,7 @@ Route::group([
     $router->resource('e-learning-resources', ELearningResourceController::class);
     $router->resource('training-subtopics', TrainingSubtopicController::class);
     $router->resource('countries', CountryController::class);
-    $router->resource('e-learning-courses', ELearningCourseController::class);
+    //$router->resource('e-learning-courses', ELearningCourseController::class);
     $router->resource('training-resources', TrainingResourceCourseController::class);
     $router->resource('training-sessions', TrainingSessionCourseController::class);
     $router->resource('farmer-groups', FarmerGroupController::class);
@@ -42,4 +43,42 @@ Route::group([
     $router->resource('seasons', SeasonController::class);
     $router->resource('insurance-premium-options', InsurancePremiumOptionController::class);
     $router->resource('orders', OrderController::class);
+
+    $router->resource('market-packages', MarketPackageController::class);
+    $router->resource('market-package-messages', MartketPackageMessageController::class);
+    $router->resource('enterprises', EnterpriseController::class);
+    $router->resource('market-subscriptions', MarketSubscriptionController::class);
+    $router->resource('market-outboxes', MarketOutboxController::class);
+    $router->resource('subscription-payments', SubscriptionPaymentController::class);
+    $router->resource('weather-conditions', WeatherConditionController::class);
+    $router->resource('market-subscription-payments', MarketPaymentSubscriptionController::class);
+    $router->resource('insurance-subscription-payments', InsurancePaymentSubscriptionController::class);
+    $router->resource('weather-subscription-payments', WeatherPaymentSubscriptionController::class);
+
+    /*===============e-learning start=============*/
+    $router->resource('e-learning-courses', OnlineCourseController::class);
+    $router->resource('courses', OnlineCourseController::class);
+    $router->resource('online-course-categories', OnlineCourseCategoryController::class);
+    $router->resource('online-course-chapters', OnlineCourseChapterController::class);
+    $router->resource('online-course-topics', OnlineCourseTopicController::class);
+    $router->resource('online-course-students', OnlineCourseStudentController::class);
+    $router->resource('online-course-lessons', OnlineCourseLessonController::class);
+    $router->resource('student-batch-importers', OnlineCourseStudentBatchImporterController::class);
+    $router->resource('languages', LanguageController::class);
+    /*===============e-learning ends=============*/
+
+    /*============== notifications start here =============*/
+    $router->resource('notification-campaigns', NotificationCampaignController::class);
+    $router->resource('notification-messages', NotificationMessageController::class);
+    /*============== notifications ends here =============*/
+
+    $router->resource('ussd-advisory-topics', UssdAdvisoryTopicController::class);
+    $router->resource('ussd-advisory-questions', UssdAdvisoryQuestionController::class);
+    $router->resource('ussd-languages', UssdLanguageController::class);
+    $router->resource('ussd-question-options', UssdQuestionOptionController::class);
+    $router->resource('ussd-advisory-messages', UssdAdvisoryMessageController::class);
+    $router->resource('ussd-advisory-message-outboxes', UssdAdvisoryMessageOutboxController::class);
+    $router->resource('calls', OnlineCourseAfricaTalkingCallController::class);
+    $router->resource('online-course-menus', OnlineCourseMenuController::class);
+    $router->resource('weather-subscriptions', WeatherSubscriptionController::class);
 });

@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Product;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
@@ -31,8 +32,6 @@ class ProductController extends AdminController
         $grid->actions(function ($actions) {
             $actions->disableView();
         });
-        $grid->disableCreateButton();
-        $grid->disableExport();
 
         $grid->quickSearch('name')->placeholder('Search by name');
 
@@ -46,7 +45,6 @@ class ProductController extends AdminController
             $filter->between('price_1', 'Select Price');
             $filter->between('created_at', 'Created at')->datetime();
         });
-        $grid->disableBatchActions();
         $grid->model()->orderBy('id', 'desc');
         $grid->column('id', __('Id'))->sortable();
         $grid->column('name', __('Name'))->sortable()
@@ -61,7 +59,7 @@ class ProductController extends AdminController
             ->sortable()
             ->editable();
         $grid->picture('feature_photo', __('Photo'))
-            ->lightbox(['width' => 50, 'height' => 50])
+            ->image('', 100, 100)
             ->hide();
 
         $grid->column('user', __('Vendor'))
@@ -86,7 +84,7 @@ class ProductController extends AdminController
 
         $grid->column('created_at', __('Created'))
             ->display(function ($created_at) {
-                return date('Y-m-d H:i:s', strtotime($created_at));
+                return Utils::my_date($created_at);
             })->sortable();
         return $grid;
     }
@@ -148,6 +146,32 @@ class ProductController extends AdminController
         $form->text('name', __('Name'))
             ->rules('required');
 
+        //measurement unit radio
+
+        /* 
+                'Liters',
+                'Pieces',
+                'Bags',
+                'Boxes',
+                'Packets',
+                'Bottles',
+                'Cans',
+                'Units',
+                 */
+        $form->radio('in_stock', 'Mesurement Units')
+            ->options([
+                'KG' => 'KG',
+                'Meters' => 'Meters',
+                'Liters' => 'Liters',
+                'Pieces' => 'Pieces',
+                'Bags' => 'Bags',
+                'Boxes' => 'Boxes',
+                'Packets' => 'Packets',
+                'Bottles' => 'Bottles',
+                'Cans' => 'Cans',
+                'Units' => 'Units',
+            ])->rules('required');
+
         $form->decimal('price_2', __('Original Price'))
             ->rules('required');
         $form->decimal('price_1', __('Selling Price'))
@@ -157,7 +181,7 @@ class ProductController extends AdminController
 
         $form->image('feature_photo', __('Feature photo'))
             ->rules('required')
-            ->attribute(['accept' => 'image/*']); 
+            ->attribute(['accept' => 'image/*']);
 
         $cats = \App\Models\ProductCategory::all();
         $form->select('category', __('Category'))

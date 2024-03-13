@@ -35,8 +35,6 @@ class FarmerController extends AdminController
     {
         $grid = new Grid(new Farmer());
 
-        $grid->column('id', __('Id'));
-        $grid->column('organisation_id', __('Organisation id'));
         $grid->column('farmer_group_id', __('Farmer group id'));
         $grid->column('first_name', __('First name'));
         $grid->column('last_name', __('Last name'));

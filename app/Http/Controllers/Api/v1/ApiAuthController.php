@@ -57,7 +57,7 @@ class ApiAuthController extends Controller
         $currentUrl = request()->path();
         $segments = explode('/', $currentUrl);
         $lastSegment = end($segments);
-        if (!in_array($lastSegment, ['login', 'register', 'request-otp-sms'])) {
+        /* if (!in_array($lastSegment, ['login', 'register', 'request-otp-sms'])) {
             $u = auth('api')->user();
             if ($u == null) {
                 header('Content-Type: application/json');
@@ -67,7 +67,7 @@ class ApiAuthController extends Controller
                     'data' => null
                 ]));
             }
-        }
+        } */
         //$this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
@@ -207,10 +207,8 @@ class ApiAuthController extends Controller
 
     public function farmers()
     {
-        $u = auth('api')->user();
-        return $this->success(Farmer::where([
-            'organisation_id' => $u->organisation_id
-        ])->get(), "Success");
+        //$u = auth('api')->user();
+        return $this->success(Farmer::where([])->get(), "Success");
     }
 
     public function countries()
@@ -243,9 +241,28 @@ class ApiAuthController extends Controller
     {
         return $this->success(SubcountyModel::where([])->get(), "Success");
     }
+
     public function parishes()
     {
         return $this->success(ParishModel::where([])->get(), "Success");
+    }
+
+    public function parishes_2()
+    {
+        $select = "parish.id, parish.name as p_name, subcounty.name as s_name, district.name as d_name";
+        $sql = "SELECT $select
+         FROM `parish`, `subcounty`, `district` WHERE `parish`.`subcounty_id` = `subcounty`.`id` AND `subcounty`.`district_id` = `district`.`id`";
+        $temp_data = DB::select($sql);
+
+        $data = [];
+        foreach ($temp_data as $key => $value) {
+            $d = [];
+            $d['id'] = $value->id;
+            $d['name'] = $value->d_name . ", " . $value->s_name . ", " . $value->p_name;
+            $data[] = $d;
+        }
+
+        return $this->success($data, "Success");
     }
 
     public function villages()
@@ -870,7 +887,7 @@ class ApiAuthController extends Controller
 
     public function register(Request $r)
     {
-       
+
         if ($r->first_name == null) {
             return $this->error('First name is required.');
         }
@@ -878,7 +895,7 @@ class ApiAuthController extends Controller
         if ($r->last_name == null) {
             return $this->error('Last name is required.');
         }
-  
+
         $u = User::where('email', $r->phone)
             ->orWhere('phone', $r->phone)
             ->orWhere('username', $r->phone)

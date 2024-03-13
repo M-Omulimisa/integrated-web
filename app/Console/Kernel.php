@@ -13,6 +13,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+
+        Commands\ProcessMarketSubscriptionPayment::class,
+        Commands\ProcessWeatherSubscriptionPayment::class,
         //
     ];
 
@@ -25,6 +28,14 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('unified:process-market-subscription-payment')->everyMinute();
+        $schedule->command('unified:process-weather-subscription-payment')->everyMinute();
+        $schedule->command('unified:send-weather-sms')->everyMinute();
+        $schedule->command('unified:process-insurance-subscription-payment')->everyMinute();
+        $schedule->command('unified:generate-weather-sms-outbox')->everyMinute();
+        $schedule->command('unified:send-scheduled-advisory-message')->twiceDaily(8, 17);
+        $schedule->command('unified:generate-market-sms-outbox')->everyMinute();
+        $schedule->command('unified:send-market-sms')->everyMinute();
     }
 
     /**

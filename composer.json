@@ -1,6 +1,7 @@
 {
     "name": "laravel/laravel",
     "type": "project",
+    "platform-check": false,
     "description": "The Laravel Framework.",
     "keywords": [
         "framework",
@@ -22,6 +23,7 @@
         "intervention/image": "^2.7",
         "jxlwqq/quill": "^1.0",
         "laravel-admin-ext/chartjs": "^1.0",
+        "laravel-admin-ext/grid-lightbox": "^1.0",
         "laravel/framework": "^8.0",
         "laravel/legacy-factories": "^1.1",
         "laravel/passport": "^10.4",

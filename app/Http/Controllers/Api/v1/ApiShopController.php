@@ -8,21 +8,29 @@ use App\Models\Animal;
 use App\Models\BatchSession;
 use App\Models\ChatHead;
 use App\Models\ChatMessage;
+use App\Models\DistrictModel;
 use App\Models\DrugStockBatch;
 use App\Models\Event;
 use App\Models\Farm;
 use App\Models\Image;
+use App\Models\Market\MarketPackagePricing;
+use App\Models\Market\MarketSubscription;
 use App\Models\Movement;
+use App\Models\NotificationMessage;
 use App\Models\Order;
 use App\Models\OrderedItem;
+use App\Models\ParishModel;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\SlaughterHouse;
 use App\Models\SlaughterRecord;
+use App\Models\SubcountyModel;
 use App\Models\User;
 use App\Models\Utils;
+use App\Models\Weather\WeatherSubscription;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
+use Dflydev\DotAccessData\Util;
 use Encore\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
@@ -32,14 +40,623 @@ class ApiShopController extends Controller
 
     use ApiResponser;
 
-    public function orders_get(Request $r)
+    public function languages()
     {
+        $items = \App\Models\Settings\Language::where([])->get();
+        return $this->success($items, 'Success');
+    }
+
+    public function market_packages_subscribe(Request $r)
+    {
+        /* 
+             'subscriber_id': mainController.loggedInUser.id.toString(),
+          'package_id': widget.package.id,
+          'pricing_id': '27ab2deb-2a6b-445c-bb40-53873aa5bee5',
+          'language_id': '0332b59f-9699-4a32-99c4-1dae3666fc93',
+        */
+        if (!isset($r->subscriber_id) || $r->subscriber_id == null) {
+            return $this->error('Subscriber ID is missing.');
+        }
+        if (!isset($r->package_id) || $r->package_id == null) {
+            return $this->error('Package ID is missing.');
+        }
+        if (!isset($r->pricing_id) || $r->pricing_id == null) {
+            return $this->error('Pricing ID is missing.');
+        }
+        if (!isset($r->language_id) || $r->language_id == null) {
+            return $this->error('Language ID is missing.');
+        }
+
+        if (!isset($r->total_price) || $r->total_price == null) {
+            return $this->error('Total price is missing.');
+        }
+
+        //period
+        if (!isset($r->period) || $r->period == null) {
+            return $this->error('Period is missing.');
+        }
+
+        $u = User::find($r->subscriber_id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        $package = \App\Models\Market\MarketPackage::find($r->package_id);
+        if ($package == null) {
+            return $this->error('Package not found.');
+        }
+
+        $pricing = \App\Models\Market\MarketPackagePricing::find($r->pricing_id);
+        if ($pricing == null) {
+            return $this->error('Pricing not found.');
+        }
+
+
+        $existing_subs = \App\Models\Market\MarketSubscription::where([
+            'farmer_id' => $r->subscriber_id,
+            'package_id' => $r->package_id,
+            'language_id' => $r->language_id,
+        ])->get();
+
+
+        $sub = null;
+        foreach ($existing_subs as $key => $val) {
+            if ($val->start_date == null || $val->end_date == null) {
+                if ($val->status != 1) {
+                    $sub = $val;
+                    break;
+                }
+            }
+
+            if (strlen($val->start_date) < 2 || strlen($val->end_date) < 2) {
+                if ($val->status != 1) {
+                    $sub = $val;
+                    break;
+                }
+            }
+            $start_date = Carbon::parse($val->start_date);
+            $end_date = Carbon::parse($val->end_date);
+            $now = Carbon::now();
+            if ($now->between($start_date, $end_date)) {
+                if ($val->status != 1) {
+                    $sub = $val;
+                    break;
+                } else {
+                    if ($val->is_paid == 'PAID') {
+                        return $this->error('You are already subscribed to this package.');
+                    }
+                    return $this->success($val, 'You are already subscribed to this package.');
+                }
+            }
+        }
+
+        if ($sub != null) {
+            $sub->status = 1;
+            $sub->save();
+            return $this->success($sub, 'Success.');
+        }
+        $language = \App\Models\Settings\Language::find($r->language_id);
+        if ($language == null) {
+            return $this->error('Language not found.');
+        }
+
+        $subscription = new \App\Models\Market\MarketSubscription();
+        $subscription->farmer_id = $r->subscriber_id;
+        $subscription->package_id = $r->package_id;
+        $subscription->language_id = $language->id;
+        $subscription->location_id = 1;
+        $subscription->region_id = 1;
+        $subscription->district_id = 1;
+        $subscription->subcounty_id = 1;
+        $subscription->parish_id = 1;
+        $subscription->first_name = $u->first_name;
+        $subscription->last_name = $u->last_name;
+        $subscription->email = $u->email;
+        $subscription->frequency = $pricing->frequency;
+        $subscription->period_paid = $r->period;
+        $subscription->total_price = $r->total_price;
+        $subscription->start_date = Carbon::now();
+        $subscription->end_date = Carbon::now()->addDays($r->period);
+        $subscription->status = 0;
+        $subscription->user_id = $u->id;
+        $subscription->seen_by_admin = 0;
+        $subscription->trial_expiry_sms_sent_at = Carbon::now()->addDays(7);
+        $subscription->organisation_id = $u->organisation_id;
+        $subscription->package_id = $package->id;
+        $subscription->phone = $u->phone;
+        $phone = $u->phone;
+        $phone = Utils::prepare_phone_number($phone);
+        if (!Utils::phone_number_is_valid($phone)) {
+            $phone = $u->phone_number;
+            $phone = Utils::prepare_phone_number($phone);
+            if (!Utils::phone_number_is_valid($phone)) {
+                return $this->error('Invalid phone number. Update your account phone number and try again.');
+            }
+        }
+        $subscription->phone = Utils::prepare_phone_number($phone);
+        $subscription->region_id = 1;
+        $subscription->payment_id = 1;
+        try {
+            $subscription->save();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+        $sub = \App\Models\Market\MarketSubscription::find($subscription->id);
+        if ($sub == null) {
+            return $this->error('Failed to save subscription.');
+        }
+        return $this->success($sub, 'Success');
+    }
+
+
+
+
+    public function weather_packages_subscribe(Request $r)
+    {
+        /* 
+             'subscriber_id': mainController.loggedInUser.id.toString(),
+          'package_id': widget.package.id,
+          'pricing_id': '27ab2deb-2a6b-445c-bb40-53873aa5bee5',
+          'language_id': '0332b59f-9699-4a32-99c4-1dae3666fc93',
+        */
+        if (!isset($r->subscriber_id) || $r->subscriber_id == null) {
+            return $this->error('Subscriber ID is missing.');
+        }
+        if (!isset($r->pricing_id) || $r->pricing_id == null) {
+            return $this->error('Pricing ID is missing.');
+        }
+        if (!isset($r->language_id) || $r->language_id == null) {
+            return $this->error('Language ID is missing.');
+        }
+
+        if (!isset($r->total_price) || $r->total_price == null) {
+            return $this->error('Total price is missing.');
+        }
+
+        if (!isset($r->parish_id) || $r->parish_id == null) {
+            return $this->error('Parish ID is missing.');
+        }
+
+        if (!isset($r->frequency) || $r->frequency == null) {
+            return $this->error('Frequency is missing.');
+        }
+        if (!isset($r->phone) || $r->phone == null) {
+            return $this->error('Phone is missing.');
+        }
+        if (!isset($r->days) || $r->days == null) {
+            return $this->error('Days is missing.');
+        }
+
+
+        //period
+        if (!isset($r->period) || $r->period == null) {
+            return $this->error('Period is missing.');
+        }
+
+        $parish = ParishModel::find($r->parish_id);
+        if ($parish == null) {
+            return $this->error('Parish not found.');
+        }
+
+        $subcounty = SubcountyModel::find($parish->subcounty_id);
+        if ($subcounty == null) {
+            return $this->error('Subcounty not found.');
+        }
+        $district = DistrictModel::find($subcounty->district_id);
+        if ($district == null) {
+            return $this->error('District not found.');
+        }
+
+
+        $u = User::find($r->subscriber_id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+
+
+        $existing_subs = \App\Models\Market\MarketSubscription::where([
+            'farmer_id' => $r->subscriber_id,
+        ])->get();
+
+
+        $sub = null;
+
+        $language = \App\Models\Settings\Language::find($r->language_id);
+        if ($language == null) {
+            return $this->error('Language not found.');
+        }
+
+        $subscription = new WeatherSubscription();
+
+        $subscription->farmer_id = $r->subscriber_id;
+        $subscription->language_id = $language->id;
+        $subscription->location_id = $parish->id;
+        $subscription->district_id = $district->id;
+        $subscription->subcounty_id = $subcounty->id;
+        $subscription->parish_id = $parish->id;
+        $subscription->first_name = $u->first_name;
+        $subscription->last_name = $u->last_name;
+        if ($subscription->first_name == null || strlen($subscription->first_name) < 2) {
+            $subscription->first_name = $u->name;
+        }
+        if ($subscription->last_name == null || strlen($subscription->last_name) < 2) {
+            $subscription->last_name = $u->name;
+        }
+        $subscription->email = $u->email;
+        $subscription->frequency = $r->frequency;
+        $subscription->period_paid = $r->period;
+        $subscription->total_price = $r->total_price;
+        $total_price = $r->total_price;
+        $subscription->user_id = $u->id;
+        $subscription->status = 0;
+        $subscription->outbox_reset_status = 0;
+        $subscription->is_paid = 'No';
+
+        if ((int)($total_price) < 100) {
+            $subscription->status = 1;
+            $subscription->outbox_reset_status = 1;
+            $subscription->is_paid = 'Yes';
+        }
+
+        $days = ((int)($r->days));
+        if ($days < 1) {
+            return $this->error('Days should be greater than 0.');
+        }
+        $subscription->start_date = Carbon::now();
+        $subscription->end_date = Carbon::now()->addDays($days);
+        $subscription->trial_expiry_sms_sent_at = Carbon::now()->addDays(7);
+
+        $phone_number = Utils::prepare_phone_number($r->phone);
+        if (!Utils::phone_number_is_valid($phone_number)) {
+            return $this->error('Invalid phone number.');
+        }
+
+        $subscription->phone = $phone_number;
+        try {
+            $subscription->save();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+        $subscription = WeatherSubscription::find($subscription->id);
+        if ($subscription == null) {
+            return $this->error('Failed to save subscription.');
+        }
+
+        //Send sms, subscription successfull, open the app to pay
+        //$msg = "Hello, your weather info subscription worth UGX " . number_format($subscription->total_price) . ", " . $subscription->frequency . "(" . $subscription->period_paid . ") was successful. Alerts will be sent between midnight and 6AM. M-Omulimisa";
+        $msg = "Hello, your weather info subscription worth UGX " . number_format($subscription->total_price) . ", " . $subscription->frequency . "(" . $subscription->period_paid . ") was successful.  Please open the app to pay. M-Omulimisa";
+
+        try {
+            $resp = Utils::send_sms($phone_number, $msg);
+        } catch (Exception $e) {
+        }
+
+
+        //days
+        /* 
+
+id	
+name	
+	
+lat	
+lng	
+district_id	
+	
+
+			payment_id	MNOTransactionReferenceId	payment_reference_id	TransactionStatus	TransactionAmount	TransactionCurrencyCode	TransactionReference	TransactionInitiationDate	TransactionCompletionDate	is_paid	total_price	
+
+   */
+
+        return $this->success($subscription, 'Weather subscription saved successfully.');
+    }
+
+
+
+
+    public function market_packages()
+    {
+        $packages = [];
+        foreach (\App\Models\Market\MarketPackage::where([])->get() as $package) {
+            $pricings = MarketPackagePricing::where([
+                'package_id' => $package->id
+            ])->get();
+            $package->pricings = json_encode($pricings);
+            $package->other = json_encode($package->ents);
+            $packages[] = $package;
+        }
+        return $this->success($packages, 'Success');
+    }
+    public function market_subscriptions(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = User::find($administrator_id);
+        }
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $subs = \App\Models\Market\MarketSubscription::where([
+            'farmer_id' => $u->id
+        ])->get();
+        return $this->success($subs, 'Success');
+    }
+    public function weather_subscriptions(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = User::find($administrator_id);
+        }
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $subs = WeatherSubscription::where([
+            'farmer_id' => $u->id
+        ])->get();
+        return $this->success($subs, 'Success');
+    }
+
+    public function weather_subscriptions_status(Request $r)
+    {
+
+        if (!isset($r->id) || $r->id == null) {
+            return $this->error('Item ID is missing.');
+        }
+
+        $item = WeatherSubscription::find($r->id);
+        if ($item == null) {
+            return $this->error('Item not found.');
+        }
+        if (strtoupper($item->is_paid) == 'PAID') {
+            return $this->success($item, 'Already paid!');
+        }
+
+        try {
+            $item->check_payment_status();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+
+        $order = WeatherSubscription::find($r->id);
+        return $this->success($order, $message = "Success", 200);
+    }
+
+    public function market_subscriptions_status(Request $r)
+    {
+
+        if (!isset($r->id) || $r->id == null) {
+            return $this->error('Item ID is missing.');
+        }
+
+        $item = \App\Models\Market\MarketSubscription::find($r->id);
+        if ($item == null) {
+            return $this->error('Item not found.');
+        }
+        if (strtoupper($item->is_paid) == 'PAID') {
+            return $this->success($item, 'Already paid!');
+        }
+
+        try {
+            $item->check_payment_status();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+
+        $order = MarketSubscription::find($r->id);
+        return $this->success($order, $message = "Success", 200);
+    }
+
+    public function order_payment_status(Request $r)
+    {
+
+        if (!isset($r->id) || $r->id == null) {
+            return $this->error('Item ID is missing.');
+        }
+
+        $order = Order::find($r->id);
+        if ($order == null) {
+            return $this->error('Order not found.');
+        }
+        if (strtoupper($order->payment_confirmation) == 'PAID') {
+            return $this->error('This order #' . $order->id . ' is already paid.');
+        }
+
+        try {
+            $order->check_payment_status();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+
+        $order = Order::find($r->id);
+
+        return $this->success($order, $message = "Success", 200);
+    }
+
+    public function initiate_payment(Request $r)
+    {
+
+        if (!isset($r->amount) || $r->amount == null) {
+            return $this->error('Amount is missing.');
+        }
+        if (!isset($r->phone_number) || $r->phone_number == null) {
+            return $this->error('Phone number is missing.');
+        }
+        if (!isset($r->item_id) || $r->item_id == null) {
+            return $this->error('Item ID is missing.');
+        }
+        if (!isset($r->type) || $r->type == null) {
+            return $this->error('Type is missing.');
+        }
+
+        if (
+            $r->type != 'ORDER'
+        ) {
+            if ($r->type != 'MarketSubscription') {
+                if ($r->type != 'WeatherSubscriptionModel') {
+                    return $this->error('Invalid type.');
+                }
+            }
+        }
+
+        $tyep = $r->type;
+        $MarketSubscription = null;
+        $payment_reference_id = time() . rand(1000, 9999);
+        if ($r->type == 'ORDER') {
+            $order = Order::find($r->item_id);
+            if ($order == null) {
+                return $this->error('Order not found.');
+            }
+            if (strtoupper($order->payment_confirmation) == 'PAID') {
+                return $this->error('This order #' . $order->id . ' is already paid.');
+            }
+        } else if ($r->type == 'MarketSubscription') {
+            $MarketSubscription = \App\Models\Market\MarketSubscription::find($r->item_id);
+            if ($MarketSubscription == null) {
+                return $this->error('Market subscription not found.');
+            }
+            if (strtoupper($MarketSubscription->is_paid) == 'PAID') {
+                return $this->error('This market subscription #' . $MarketSubscription->id . ' is already paid.');
+            }
+        } else if ($r->type == 'WeatherSubscriptionModel') {
+            $MarketSubscription = WeatherSubscription::find($r->item_id);
+            if ($MarketSubscription == null) {
+                return $this->error('Market subscription not found.');
+            }
+            if (strtoupper($MarketSubscription->is_paid) == 'PAID') {
+                return $this->error('This weather subscription #' . $MarketSubscription->id . ' is already paid.');
+            }
+        }
+
+        $amount = (int)(($r->amount));
+        if ($amount < 500) {
+            return $this->error('Amount should be greater or equal to UGX 500.');
+        }
+        $phone_number = Utils::prepare_phone_number($r->phone_number);
+        if (!Utils::phone_number_is_valid($r->phone_number)) {
+            return $this->error('Invalid phone number ' . $r->phone_number . ".");
+        }
+
+        $phone_number = $r->phone_number;
+        $phone_number = str_replace('+', '', $phone_number);
+
+        $payment_resp = null;
+        try {
+            $payment_resp = Utils::init_payment($phone_number, $amount, $payment_reference_id);
+        } catch (\Throwable $th) {
+            $payment_resp = null;
+            return $this->error($th->getMessage());
+        }
+
+        if ($payment_resp == null) {
+            return $this->error('Failed to initiate payment.');
+        }
+
+
+        if (!isset($payment_resp->Status)) {
+            return $this->error('Failed to initiate payment.');
+        }
+
+        if ($payment_resp->Status != 'OK') {
+            //StatusMessage
+            if (isset($payment_resp->StatusMessage)) {
+                return $this->error($payment_resp->StatusMessage);
+            }
+            return $this->error('Failed to initiate payment.');
+        }
+
+        //TransactionStatus
+        if (!isset($payment_resp->TransactionStatus)) {
+            return $this->error('Failed to initiate payment because TransactionStatus is missing.');
+        }
+
+        //TransactionReference
+        if (!isset($payment_resp->TransactionReference)) {
+            return $this->error('Failed to initiate payment because TransactionReference is missing.');
+        }
+
+        if ($r->type == 'ORDER') {
+            $order->TransactionStatus = $payment_resp->TransactionStatus;
+            $order->TransactionReference = $payment_resp->TransactionReference;
+            $order->payment_reference_id = $payment_reference_id;
+            try {
+                $order->save();
+                try {
+                    $order->check_payment_status();
+                } catch (\Throwable $th) {
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        } else 
+        if ($r->type == 'MarketSubscription') {
+            $MarketSubscription->TransactionStatus = $payment_resp->TransactionStatus;
+            $MarketSubscription->TransactionReference = $payment_resp->TransactionReference;
+            $MarketSubscription->payment_reference_id = $payment_reference_id;
+            try {
+                $MarketSubscription->save();
+                try {
+                    $MarketSubscription->check_payment_status();
+                } catch (\Throwable $th) {
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        } else if ($r->type == 'WeatherSubscriptionModel') {
+            $MarketSubscription->TransactionStatus = $payment_resp->TransactionStatus;
+            $MarketSubscription->TransactionReference = $payment_resp->TransactionReference;
+            $MarketSubscription->payment_reference_id = $payment_reference_id;
+            try {
+                $MarketSubscription->save();
+                try {
+                    $MarketSubscription->check_payment_status();
+                } catch (\Throwable $th) {
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+        return $this->success($payment_resp, $message = "GOOD TO GO WITH $phone_number", 200);
+    }
+
+    public function set_notification_messages_seen(Request $r)
+    {
+        $not = NotificationMessage::find($r->notification_id);
+        if ($not == null) {
+            return $this->error('Notification not found.');
+        }
+        $not->notification_seen = 'Yes';
+        $not->notification_seen_time = Carbon::now();
+        $not->save();
+    }
+    public function get_orders_notification_nessage(Request $r)
+    {
+
 
         $u = auth('api')->user();
         if ($u == null) {
             $administrator_id = Utils::get_user_id($r);
             $u = Administrator::find($administrator_id);
         }
+        $u = Administrator::find($u->id);
+        $data = NotificationMessage::where([
+            'user_id' => $u->id
+        ])->get();
+        return $this->success($data, $message = "Success!", 200);
+    }
+
+    public function orders_get(Request $r)
+    {
+
+
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = Administrator::find($administrator_id);
+        }
+        $u = Administrator::find($u->id);
+
 
         if ($u == null) {
             return $this->error('User not found.');
@@ -47,9 +664,7 @@ class ApiShopController extends Controller
         $orders = [];
         $conds = [];
 
-        if (!$u->hasRole('admin')) {
-            $conds['user'] = $u->id;
-        }
+        $conds['user'] = $u->id;
 
         foreach (Order::where($conds)->get() as $order) {
             $items = $order->get_items();
@@ -325,6 +940,22 @@ class ApiShopController extends Controller
     }
 
 
+    public function orders_delete(Request $r)
+    {
+        if (!isset($r->order_id) || $r->order_id == null) {
+            return $this->error('Item ID is missing.');
+        }
+        $order = Order::find($r->order_id);
+        if ($order->payment_confirmation == 'PAID') {
+            return $this->error('You cannot delete a paid order.');
+        }
+        if ($order == null) {
+            return $this->error('Order not found.');
+        }
+        $order->delete();
+        return $this->success(null, $message = "Order Deleted Successfully.", 200);
+    }
+
     public function orders_submit(Request $r)
     {
 
@@ -431,8 +1062,16 @@ class ApiShopController extends Controller
             );
         } catch (\Throwable $th) {
             //throw $th;
-        } 
-        Utils::send_sms($noti_body, $delivery->phone_number);
+        }
+        if ($order == null) {
+            return $this->error('Failed to save order.');
+        }
+        //Utils::send_sms($noti_body, $delivery->phone_number);
+        $order = Order::find($order->id);
+
+        $_items = $order->get_items();
+        $order->items = json_encode($_items);
+
         return $this->success($order, $message = "Order Submitted Successfully.", 200);
     }
 
@@ -675,7 +1314,7 @@ class ApiShopController extends Controller
         $pro->url = $u->url;
         $pro->user = $u->id;
         $pro->supplier = $u->id;
-        $pro->in_stock = 1;
+        $pro->in_stock = $r->in_stock;
         $pro->rates = 1;
 
 
