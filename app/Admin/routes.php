@@ -81,4 +81,5 @@ Route::group([
     $router->resource('calls', OnlineCourseAfricaTalkingCallController::class);
     $router->resource('online-course-menus', OnlineCourseMenuController::class);
     $router->resource('weather-subscriptions', WeatherSubscriptionController::class);
+    $router->resource('weather-sms-translations', WeatherSmsTranslationController::class);
 });
