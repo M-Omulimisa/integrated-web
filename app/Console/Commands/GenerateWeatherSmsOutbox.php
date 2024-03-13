@@ -57,11 +57,12 @@ class GenerateWeatherSmsOutbox extends Command
     {
         if ($this->debug) Log::info(['Command' => 'Generating weather info']);
 
-        if (time() > strtotime('12 am')) { } 
+        if (time() > strtotime('12 am') && time() < strtotime('6 am')) {
 
-        // if ($this->debug) Log::info(['Command' => 'Past 12am']);
+            if ($this->debug) Log::info(['Command' => 'Past 12am']);
 
-        try {
+            try {
+
                 $subscriptions = WeatherSubscription::where('end_date', '>', Carbon::now())
                     ->where(function ($query) {
                         $query->whereOutboxGenerationStatus(false)
@@ -90,85 +91,89 @@ class GenerateWeatherSmsOutbox extends Command
                         if ($this->debug) echo count($subscriptions);                        
                         if ($this->debug) logger([$subscriptions->pluck('id')->toArray()]);
 
-                    WeatherSubscription::whereIn('id', $subscriptions->pluck('id')->toArray())->update(['outbox_generation_status' => 2]);
+                        WeatherSubscription::whereIn('id', $subscriptions->pluck('id')->toArray())->update(['outbox_generation_status' => 2]);
 
-                    foreach ($subscriptions as $subscription) {
+                        foreach ($subscriptions as $subscription) {
 
-                        $subscription->update(['outbox_generation_status' => 3]);
+                            $subscription->update(['outbox_generation_status' => 3]);
 
-                        $weatherApi = new TomorrowApi;
-                        $weatherApi->set_URL(config('tomorrow.host'));
-                        $weatherApi->set_key(config('tomorrow.key'));
+                            $weatherApi = new TomorrowApi;
+                            $weatherApi->set_URL(config('tomorrow.host'));
+                            $weatherApi->set_key(config('tomorrow.key'));
 
-                        if ($this->debug) logger('Lat: '.$subscription->parish->lat);
-                        if ($this->debug) logger('Lng: '.$subscription->parish->lng);
+                            if ($this->debug) logger('Lat: '.$subscription->parish->lat);
+                            if ($this->debug) logger('Lng: '.$subscription->parish->lng);
 
-                        $result = $weatherApi->forecast($subscription->parish->lat, $subscription->parish->lng, 'daily');
+                            $result = $weatherApi->forecast($subscription->parish->lat, $subscription->parish->lng, 'daily');
 
-                        $sms = $codeDescription = null;
+                            $sms = $codeDescription = null;
 
-                        if (isset($result->forecast)) {
+                            if (isset($result->forecast)) {
 
-                            for ($i=0; $i < count($result->forecast->daily); $i++) {
-                                $dateTime = new DateTime($result->forecast->daily[$i]->time);
-                                $date = $dateTime->format('d-m-Y');
+                                for ($i=0; $i < count($result->forecast->daily); $i++) {
+                                    $dateTime = new DateTime($result->forecast->daily[$i]->time);
+                                    $date = $dateTime->format('d-m-Y');
 
-                                if ($date == date('d-m-Y')) {
-                                    $weather = $result->forecast->daily[$i]->values;
-                                    break;
-                                }
-                            }                              
-                            
-                            if (isset($weather) && Schema::hasTable('weather_conditions')) {
+                                    if ($date == date('d-m-Y')) {
+                                        $weather = $result->forecast->daily[$i]->values;
+                                        break;
+                                    }
+                                }                              
                                 
-                                $avg_temp = $weather->temperatureAvg;
-                                $max_temp = $weather->temperatureMax;
-                                $min_temp = $weather->temperatureMin;
-
-                                $avg_rain_chance = $weather->precipitationProbabilityAvg;
-                                $max_rain_chance = $weather->precipitationProbabilityMax;
-                                $min_rain_chance = $weather->precipitationProbabilityMin;
-
-                                $max_code = $weather->weatherCodeMax;
-                                $min_code = $weather->weatherCodeMin;
-
-                                $languageId = $subscription->language_id ?? Language::whereName('English')->first()->id;
-                                if ($max_code == $min_code) {
-                                    $code = $this->translations($max_code, $languageId);
-                                    $codeDescription = $code->description ?? null;
-                                }
-                                else {
-                                    $minCode = $this->translations($min_code, $languageId);
-                                    $maxCode = $this->translations($max_code, $languageId);
-                                    $codeDescription = isset($minCode->description) ? $minCode->description.'/'.$maxCode->description : null;
-                                }
-                            }
-                            else{
-                                if ($this->debug) logger('Missing table weather conditions');
-                            }
-
-                            $codeDescription = isset($codeDescription) ? $codeDescription.'. ' : '';
-
-                            $sms = str_replace('  ', ' ', $date.' Weather: '.$codeDescription.'Temperature ('.$min_temp.'C <> '.$max_temp.'C) Rain Chance ('.$min_rain_chance.'% <> '.$max_rain_chance.'%). M-Omulimisa');
+                                if (isset($weather) && Schema::hasTable('weather_conditions')) {
                                     
-                            if($this->debug) logger($sms);
-                            if($this->debug) logger(strlen($sms));
+                                    $avg_temp = $weather->temperatureAvg;
+                                    $max_temp = $weather->temperatureMax;
+                                    $min_temp = $weather->temperatureMin;
 
-                            if ($sms !== '' && strlen($sms) > 10) {
-                                $outbox_sms = [
-                                    'subscription_id' => $subscription->id,
-                                    // 'farmer_id'       => $subscription->farmer_id,
-                                    'recipient'       => $subscription->phone,
-                                    'message'         => $sms,
-                                    'status'          => 'PENDING'
-                                ];
-                                if (WeatherOutbox::create($outbox_sms)) {
-                                    if($this->debug) logger('Outbox sms created');
+                                    $avg_rain_chance = $weather->precipitationProbabilityAvg;
+                                    $max_rain_chance = $weather->precipitationProbabilityMax;
+                                    $min_rain_chance = $weather->precipitationProbabilityMin;
 
-                                    if ($subscription->update(['outbox_generation_status' => true])) {
-                                        if($this->debug) logger('Outbox sms updated');
+                                    $max_code = $weather->weatherCodeMax;
+                                    $min_code = $weather->weatherCodeMin;
+
+                                    $languageId = $subscription->language_id ?? Language::whereName('English')->first()->id;
+                                    if ($max_code == $min_code) {
+                                        $code = $this->translations($max_code, $languageId);
+                                        $codeDescription = $code->description ?? null;
+                                    }
+                                    else {
+                                        $minCode = $this->translations($min_code, $languageId);
+                                        $maxCode = $this->translations($max_code, $languageId);
+                                        $codeDescription = isset($minCode->description) ? $minCode->description.'/'.$maxCode->description : null;
+                                    }
+                                }
+                                else{
+                                    if ($this->debug) logger('Missing table weather conditions');
+                                }
+
+                                $codeDescription = isset($codeDescription) ? $codeDescription.'. ' : '';
+
+                                $sms = str_replace('  ', ' ', $date.' Weather: '.$codeDescription.'Temperature ('.$min_temp.'C <> '.$max_temp.'C) Rain Chance ('.$min_rain_chance.'% <> '.$max_rain_chance.'%). M-Omulimisa');
+                                        
+                                if($this->debug) logger($sms);
+                                if($this->debug) logger(strlen($sms));
+
+                                if ($sms !== '' && strlen($sms) > 10) {
+                                    $outbox_sms = [
+                                        'subscription_id' => $subscription->id,
+                                        // 'farmer_id'       => $subscription->farmer_id,
+                                        'recipient'       => $subscription->phone,
+                                        'message'         => $sms,
+                                        'status'          => 'PENDING'
+                                    ];
+                                    if (WeatherOutbox::create($outbox_sms)) {
+                                        if($this->debug) logger('Outbox sms created');
+
+                                        if ($subscription->update(['outbox_generation_status' => true])) {
+                                            if($this->debug) logger('Outbox sms updated');
+                                        }else{
+                                            if($this->debug) logger('Outbox sms for ID'.$subscription->id.' not updated');
+                                        }
+
                                     }else{
-                                        if($this->debug) logger('Outbox sms for ID'.$subscription->id.' not updated');
+                                        if($this->debug) logger('Outbox sms for ID'.$subscription->id.' not created');
                                     }
                                 } // endif sms
                             }
