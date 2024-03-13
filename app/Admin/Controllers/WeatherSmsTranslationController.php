@@ -15,7 +15,7 @@ class WeatherSmsTranslationController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Weather Sms Translations';
+    protected $title = 'Weather SMS Translations';
 
     /**
      * Make a grid builder.
