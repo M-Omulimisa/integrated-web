@@ -34,7 +34,6 @@ use App\Models\Utils;
 use App\Models\VillageModel;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
-use Encore\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\WeatherSubscriptionRelationship;
+use App\Models\User;
 use App\Models\Utils;
 
 class WeatherSubscription extends BaseModel
@@ -51,6 +52,38 @@ class WeatherSubscription extends BaseModel
         parent::boot();
         self::creating(function (WeatherSubscription $model) {
             $model->id = $model->generateUuid();
+        });
+
+        //created
+        self::created(function (WeatherSubscription $model) {
+            $u = User::find($model->farmer_id);
+            if ($u == null) {
+                $u = User::find($model->user_id);
+            }
+            $name = $model->first_name;
+            $phone = $model->phone;
+            if ($u != null) {
+                $name = $u->name;
+            }
+
+            //welcome message for subscription to weather
+            $msg = "Thank you for subscribing to our weather updates. You will receive weather updates every " . $model->frequency . " days. Thank you for subscribing.";
+            try {
+                Utils::send_sms($phone, $msg);
+            } catch (\Throwable $th) {
+                //throw $th; 
+            }
+            if ($u != null) {
+                try {
+                    Utils::sendNotification2([
+                        'msg' => $msg,
+                        'headings' => 'Weather Subscription',
+                        'receiver' => $u->id,
+                        'type' => 'text',
+                    ]);
+                } catch (\Throwable $th) {
+                }
+            }
         });
     }
 

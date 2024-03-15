@@ -156,7 +156,6 @@ die(); */
 
 use App\Models\CountyModel;
 use App\Models\SubcountyModel;
-use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Facades\Admin;
 use PHPUnit\Framework\Constraint\Count;
 

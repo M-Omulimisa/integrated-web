@@ -17,7 +17,7 @@ class WeatherConditionController extends AdminController
      *
      * @var string
      */
-    protected $title = 'WeatherCondition';
+    protected $title = 'Weather Conditions';
 
     /**
      * Make a grid builder.
@@ -27,8 +27,7 @@ class WeatherConditionController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new WeatherCondition());
-
-        $grid->column('id', __('Id'));
+        $grid->model()->orderBy('created_at', 'desc');
         $grid->column('digit', __('Digit'));
         $grid->column('language_id', __('Language'))->display(function ($language_id) {
 
@@ -37,14 +36,11 @@ class WeatherConditionController extends AdminController
             if ($f == null) {
 
                 return 'Unknown';
-
             }
             return $f->name;
         });
- 
         $grid->column('description', __('Description'));
-        $grid->column('created_at', __('Created at'));
- 
+
 
         return $grid;
     }
