@@ -2,6 +2,9 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\DistrictModel;
+use App\Models\ParishModel;
+use App\Models\SubcountyModel;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -15,7 +18,7 @@ class WeatherSubscriptionController extends AdminController
      *
      * @var string
      */
-    protected $title = 'WeatherSubscription';
+    protected $title = 'Weather Subscriptions';
 
     /**
      * Make a grid builder.
@@ -25,36 +28,87 @@ class WeatherSubscriptionController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new WeatherSubscription());
+        $grid->disableCreateButton();
+        $grid->model()->orderBy('created_at', 'desc');
+        $grid->quickSearch('first_name')->placeholder('Search first name...');
 
-        $grid->column('id', __('Id'));
-        $grid->column('farmer_id', __('Farmer id'));
-        $grid->column('language_id', __('Language id'));
-        $grid->column('location_id', __('Location id'));
-        $grid->column('district_id', __('District id'));
-        $grid->column('subcounty_id', __('Subcounty id'));
-        $grid->column('parish_id', __('Parish id'));
-        $grid->column('first_name', __('First name'));
-        $grid->column('last_name', __('Last name'));
-        $grid->column('email', __('Email'));
-        $grid->column('frequency', __('Frequency'));
-        $grid->column('period_paid', __('Period paid'));
-        $grid->column('start_date', __('Start date'));
-        $grid->column('end_date', __('End date'));
-        $grid->column('status', __('Status'));
-        $grid->column('user_id', __('User id'));
-        $grid->column('outbox_generation_status', __('Outbox generation status'));
-        $grid->column('outbox_reset_status', __('Outbox reset status'));
-        $grid->column('outbox_last_date', __('Outbox last date'));
-        $grid->column('awhere_field_id', __('Awhere field id'));
-        $grid->column('seen_by_admin', __('Seen by admin'));
-        $grid->column('trial_expiry_sms_sent_at', __('Trial expiry sms sent at'));
-        $grid->column('trial_expiry_sms_failure_reason', __('Trial expiry sms failure reason'));
-        $grid->column('renewal_id', __('Renewal id'));
-        $grid->column('organisation_id', __('Organisation id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('phone', __('Phone'));
-        $grid->column('payment_id', __('Payment id'));
+        $grid->column('first_name', __('Name'))
+            ->display(function ($first_name) {
+                return $first_name . ' ' . $this->last_name;
+            })->sortable();
+        $grid->column('farmer_id', __('Farmer'))
+            ->display(function ($farmer_id) {
+                $u = \App\Models\User::find($farmer_id);
+                if ($u == null) {
+                    return '-';
+                }
+                return $u->name;
+            })->sortable();
+        $grid->column('language_id', __('Language'))
+            ->display(function ($language_id) {
+                $lang = \App\Models\Settings\Language::find($language_id);
+                if ($lang == null) {
+                    return '-';
+                }
+                return $lang->name;
+            })->sortable();
+        $grid->column('location_id', __('Location id'))->hide();
+        $grid->column('district_id', __('District'))
+            ->display(function ($district_id) {
+                $d = DistrictModel::find($district_id);
+                if ($d == null) {
+                    return '-';
+                }
+                return $d->name;
+            })->sortable();
+        $grid->column('subcounty_id', __('Subcounty'))
+            ->display(function ($subcounty_id) {
+                $s = SubcountyModel::find($subcounty_id);
+                if ($s == null) {
+                    return '-';
+                }
+                return $s->name;
+            })->sortable();
+        $grid->column('parish_id', __('Parish'))
+            ->display(function ($parish_id) {
+                $p = ParishModel::find($parish_id);
+                if ($p == null) {
+                    return '-';
+                }
+                return $p->name;
+            })->sortable();
+        $grid->column('email', __('Email'))->hide();
+        $grid->column('frequency', __('Frequency'))->sortable();
+        $grid->column('period_paid', __('Period Paid'))->sortable();
+        $grid->column('start_date', __('Start Date'))->sortable();
+        $grid->column('end_date', __('End date'))->sortable();
+        $grid->column('status', __('Status'))
+            ->using([
+                0 => 'Inactive',
+                1 => 'Active',
+                2 => 'Expired',
+                3 => 'Suspended',
+                4 => 'Cancelled',
+            ])->sortable()
+            ->filter([
+                0 => 'Inactive',
+                1 => 'Active',
+                2 => 'Expired',
+                3 => 'Suspended',
+                4 => 'Cancelled',
+            ]);
+        $grid->column('outbox_generation_status', __('Outbox generation status'))->hide();
+        $grid->column('outbox_reset_status', __('Outbox reset status'))->hide();
+        $grid->column('outbox_last_date', __('Outbox last date'))->hide();
+        $grid->column('awhere_field_id', __('Awhere field id'))->hide();
+        $grid->column('seen_by_admin', __('Seen by admin'))->hide();
+        $grid->column('trial_expiry_sms_sent_at', __('Trial expiry sms sent at'))->hide();
+        $grid->column('trial_expiry_sms_failure_reason', __('Trial expiry sms failure reason'))->hide();
+        $grid->column('created_at', __('Created'))
+            ->display(function ($created_at) {
+                return date('Y-m-d', strtotime($created_at));
+            })->sortable();
+        $grid->column('phone', __('Phone'))->sortable();
 
         return $grid;
     }
@@ -111,22 +165,35 @@ class WeatherSubscriptionController extends AdminController
     {
         $form = new Form(new WeatherSubscription());
 
-        $form->text('farmer_id', __('Farmer id'));
-        $form->text('language_id', __('Language id'));
-        $form->text('location_id', __('Location id'));
-        $form->text('district_id', __('District id'));
-        $form->text('subcounty_id', __('Subcounty id'));
-        $form->text('parish_id', __('Parish id'));
+        /* $form->text('farmer_id', __('Farmer id'));
+                $form->text('location_id', __('Location id'));
+                        $form->text('subcounty_id', __('Subcounty id'));
+        $form->text('parish_id', __('Parish id'))
+                $form->text('frequency', __('Frequency'));
+        $form->number('period_paid', __('Period paid'));
+      
+        $form->display('language_id', __('Language'))
+            ->with(function ($language_id) {
+                $lang = \App\Models\Settings\Language::find($language_id);
+                if ($lang == null) {
+                    return '-';
+                }
+                return $lang->name;
+            });  */
         $form->text('first_name', __('First name'));
         $form->text('last_name', __('Last name'));
         $form->email('email', __('Email'));
-        $form->text('frequency', __('Frequency'));
-        $form->number('period_paid', __('Period paid'));
-        $form->text('start_date', __('Start date'));
-        $form->text('end_date', __('End date'));
-        $form->switch('status', __('Status'));
-        $form->text('user_id', __('User id'));
-        $form->switch('outbox_generation_status', __('Outbox generation status'));
+
+        $form->date('start_date', __('Start Date'))
+            ->rules('required');
+        $form->date('end_date', __('End date'))
+            ->rules('required');
+        $form->radio('status', __('Status'))
+            ->options([
+                0 => 'Inactive',
+                1 => 'Active',
+            ])->rules('required');
+        /*         $form->switch('outbox_generation_status', __('Outbox generation status'));
         $form->switch('outbox_reset_status', __('Outbox reset status'));
         $form->date('outbox_last_date', __('Outbox last date'))->default(date('Y-m-d'));
         $form->text('awhere_field_id', __('Awhere field id'));
@@ -134,9 +201,10 @@ class WeatherSubscriptionController extends AdminController
         $form->datetime('trial_expiry_sms_sent_at', __('Trial expiry sms sent at'))->default(date('Y-m-d H:i:s'));
         $form->textarea('trial_expiry_sms_failure_reason', __('Trial expiry sms failure reason'));
         $form->text('renewal_id', __('Renewal id'));
-        $form->text('organisation_id', __('Organisation id'));
-        $form->mobile('phone', __('Phone'));
-        $form->text('payment_id', __('Payment id'));
+        $form->text('organisation_id', __('Organisation id')); */
+        $form->text('phone', __('Phone number'))->rules('required');
+        $form->disableCreatingCheck();
+        /*         $form->text('payment_id', __('Payment id')); */
 
         return $form;
     }

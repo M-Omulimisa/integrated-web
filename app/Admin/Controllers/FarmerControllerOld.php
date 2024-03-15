@@ -35,19 +35,28 @@ class FarmerController extends AdminController
     {
         $grid = new Grid(new Farmer());
 
-        $grid->column('id', __('Id'));
-        $grid->column('organisation_id', __('Organisation id'));
-        $grid->column('farmer_group_id', __('Farmer group id'));
-        $grid->column('first_name', __('First name'));
-        $grid->column('last_name', __('Last name'));
-        $grid->column('country_id', __('Country id'));
-        $grid->column('language_id', __('Language id'));
-        $grid->column('national_id_number', __('National id number'));
-        $grid->column('gender', __('Gender'));
-        $grid->column('education_level', __('Education level'));
-        $grid->column('year_of_birth', __('Year of birth'));
-        $grid->column('phone', __('Phone'));
-        $grid->column('email', __('Email'));
+        $grid->model()->orderBy('id', 'desc');
+        $grid->quickSearch('first_name', 'last_name', 'phone', 'email', 'national_id_number', 'address', 'village', 'street', 'house_number', 'land_registration_numbers')
+            ->placeholder('Search...');
+
+        $grid->column('first_name', __('First name'))
+            ->display(function ($name) {
+                return $this->first_name . ' ' . $this->last_name;
+            })->sortable();
+
+        $grid->column('phone', __('Phone'))->sortable();
+        $grid->column('email', __('Email'))->sortable();
+        $grid->column('national_id_number', __('NIN'))
+            ->sortable();
+        $grid->column('gender', __('Gender'))
+            ->filter([
+                'Male' => 'Male',
+                'Female' => 'Female',
+            ])->sortable();
+        $grid->column('education_level', __('Education Level'))
+            ->sortable();
+        $grid->column('year_of_birth', __('Year of birth'))->sortable();
+
         $grid->column('is_your_phone', __('Is your phone'));
         $grid->column('is_mm_registered', __('Is mm registered'));
         $grid->column('other_economic_activity', __('Other economic activity'));
@@ -198,32 +207,11 @@ class FarmerController extends AdminController
     protected function form()
     {
         $form = new Form(new Farmer());
-
         $u = Auth::user();
 
-        $form->select('district_id', __('District'))->options(function ($id) {
-            $district = DistrictModel::find($id);
-            if ($district) {
-                return [$district->id => $district->name];
-            }
-        })->ajax(env('APP_URL') . '/api/select-distcists')->rules('required')
-            ->load('subcounty_id', env('APP_URL') . '/api/select-subcounties?by_id=1', 'id', 'name');
-
+        $form->text('phone', __('Phone number'))
+            ->rules('required|unique:farmer,phone');
         return $form;
-        $form->select('subcounty_id', __('Subcounty'))->options(function ($id) {
-            $item = SubcountyModel::find($id);
-            if ($item) {
-                return [$item->id => $item->name];
-            }
-        })->rules('required')
-            ->load('parish_id', env('APP_URL') . '/api/select-parishes?by_id=1', 'id', 'name');
-
-        $form->select('parish_id', __('Parish'))->options(function ($id) {
-            $item = ParishModel::find($id);
-            if ($item) {
-                return [$item->id => $item->name];
-            }
-        })->rules('required');
 
 
 
@@ -254,54 +242,119 @@ class FarmerController extends AdminController
         ])->rules('required');
         $form->image('photo', __('Farmer\'s Photo'));
         $form->year('year_of_birth', __('Year of birth'));
-        $form->select('country_id', __('Country'))
-            ->options(Country::where([])
-                ->orderBy('name', 'asc')
-                ->get()->pluck('name', 'id'))
-            ->rules('required');
         $form->select('language_id', __('Primary Language'))->options(Language::where([])
             ->orderBy('name', 'asc')
             ->get()->pluck('name', 'id'));
+        $form->select('marital_status', __('Marital status'))->options([
+            'Single' => 'Single',
+            'Married' => 'Married',
+            'Divorced' => 'Divorced',
+            'Widowed' => 'Widowed',
+        ])->rules('required');
+        $form->decimal('family_size', __('Family size'));
+        $form->radioCard('farm_decision_role', __('Can the farmer make farm decisions?'))->options([
+            'Yes' => 'Yes',
+            'No' => 'No',
+        ])->rules('required');
+
+        $form->radioCard('is_pwd', __('Is this farmer a person with disability?'))->options([
+            'Yes' => 'Yes',
+            'No' => 'No',
+        ])->rules('required');
+        $form->radioCard('is_refugee', __('Is this farmer a refugee?'))->options([
+            'Yes' => 'Yes',
+            'No' => 'No',
+        ])->rules('required');
+
+        /* $form->select('preferred_info_type', __('Preferred info type'))->options([
+            'Crops' => 'Crops',
+            'Livestock' => 'Livestock',
+            'Weather' => 'Weather',
+            'Market' => 'Market',
+            'Finance' => 'Finance',
+            'Insurance' => 'Insurance',
+            'Other' => 'Other',
+            'All' => 'All',
+            'None' => 'None',
+            'Not sure' => 'Not sure',
+            'Crops' => 'Crops',
+        ]); */
+
+
         $form->text('national_id_number', __('National ID Number'));
 
+
+
+        $form->select('phone_type', __('Phone type'))->options([
+            'Feature phone' => 'Feature phone',
+            'Smart phone' => 'Smart phone',
+        ]);
+
+
+        $form->radioCard('is_your_phone', __('Is the number provided your own phone?'))->options([
+            '1' => 'Yes',
+            '0' => 'No',
+        ])->rules('required');
         $form->select('education_level', __('Education level'))->options([
             'None' => 'None',
             'Primary' => 'Primary',
             'Secondary' => 'Secondary',
             'Tertiary' => 'Tertiary',
         ])->rules('required');
-
-        $form->text('phone', __('Phone number'));
-        $form->radioCard('is_your_phone', __('Is the number provided your own phone?'))->options([
-            '1' => 'Yes',
-            '0' => 'No',
-        ])->rules('required');
         $form->email('email', __('Email Address'));
         $form->textarea('other_economic_activity', __('Economic activity'));
 
+
         $form->divider('Location Information');
-        $form->select('location_id', __('Location'))->options(Location::where([])
-            ->orderBy('name', 'asc')
-            ->get()->pluck('name', 'id'));
+        $form->select('country_id', __('Country'))
+            ->options(Country::where([])
+                ->orderBy('name', 'asc')
+                ->get()->pluck('name', 'id'))
+            ->rules('required');
+        $form->select('district_id', __('District'))->options(function ($id) {
+            $district = DistrictModel::find($id);
+            if ($district) {
+                return [$district->id => $district->name];
+            }
+        })->ajax(env('APP_URL') . '/api/select-distcists')->rules('required')
+            ->load('subcounty_id', env('APP_URL') . '/api/select-subcounties?by_id=1', 'id', 'name');
+        $form->select('subcounty_id', __('Subcounty'))->options(function ($id) {
+            $item = SubcountyModel::find($id);
+            if ($item) {
+                return [$item->id => $item->name];
+            }
+        })->rules('required')
+            ->load('parish_id', env('APP_URL') . '/api/select-parishes?by_id=1', 'id', 'name');
+
+        $form->select('parish_id', __('Parish'))->options(function ($id) {
+            $item = ParishModel::find($id);
+            if ($item) {
+                return [$item->id => $item->name];
+            }
+        })->rules('required');
+        $form->text('village', __('Village'));
         $form->text('address', __('Address'));
+
         $form->text('latitude', __('Farmer\'s Home GPS Latitude'));
         $form->text('longitude', __('Farmer\'s Home GPS Longitude'));
-        $form->text('village', __('Village'));
 
-        $form->divider('Farming Details');
-        $form->select('farming_scale', __('Farming Production Scale'))->options([
-            'Small' => 'Small Scale',
-            'Medium' => 'Medium Scale',
-            'Large' => 'Large Scale',
-        ])->rules('required');
 
         $form->divider('Business Planning and Risks');
-        $form->text('ever_received_credit', __('Ever received credit'));
-        $form->radioCard('ever_bought_insurance', __('Ever bought insurance?'))
-            ->options([
-                '1' => 'Yes',
-                '0' => 'No',
-            ])->rules('required');
+        $form->select('farming_scale', __('Farming Production Scale'))->options([
+            'Small Scale' => 'Small Scale',
+            'Medium Scale' => 'Medium Scale',
+            'Large Scale' => 'Large Scale',
+        ])->rules('required');
+
+        $form->radioCard('ever_bought_insurance', __('Has this farmer bought insurance in past 6 months?'))->options([
+            'Yes' => 'Yes',
+            'No' => 'No',
+        ])->when('Yes', function (Form $form) {
+            $form->text('insurance_company_name', __('Insurance company name'));
+            $form->decimal('insurance_cost', __('Insurance cost'));
+            $form->decimal('repaid_amount', __('Insurance Repay amount'));
+            $form->text('covered_risks', __('Covered risks'));
+        });
         $form->select('poverty_level', __('Poverty level'))->options([
             'Poor' => 'Poor',
             'Vulnerable' => 'Vulnerable',
@@ -314,44 +367,20 @@ class FarmerController extends AdminController
             'Very low food security' => 'Very low food security'
         ]);
 
-        $form->divider('Economic and Social Profile');
-        $form->select('marital_status', __('Marital status'))->options([
-            'Single' => 'Single',
-            'Married' => 'Married',
-            'Divorced' => 'Divorced',
-            'Widowed' => 'Widowed',
-        ])->rules('required');
-        $form->decimal('family_size', __('Family size'));
-        $form->radioCard('farm_decision_role', __('Can the farmer make farm decisions?'))->options([
-            'Yes' => 'Yes',
-            'No' => 'No',
-        ])->rules('required');
-        $form->radioCard('is_pwd', __('Is this farmer a person with disability?'))->options([
-            'Yes' => 'Yes',
-            'No' => 'No',
-        ])->rules('required');
-        $form->radioCard('is_refugee', __('Is this farmer a refugee?'))->options([
-            'Yes' => 'Yes',
-            'No' => 'No',
-        ])->rules('required');
-        $form->select('phone_type', __('Phone type'))->options([
-            'Feature phone' => 'Feature phone',
-            'Smart phone' => 'Smart phone',
-        ]);
-        $form->select('preferred_info_type', __('Preferred info type'))->options([
-            'Crops' => 'Crops',
-            'Livestock' => 'Livestock',
-            'Weather' => 'Weather',
-            'Market' => 'Market',
-            'Finance' => 'Finance',
-            'Insurance' => 'Insurance',
-            'Other' => 'Other',
-            'All' => 'All',
-            'None' => 'None',
-            'Not sure' => 'Not sure',
-            'Crops' => 'Crops',
-        ]);
 
+        $form->radioCard('has_receive_loan', __('Has this farmer received a loan in past 6 months?'))->options([
+            'Yes' => 'Yes',
+            'No' => 'No',
+        ])->when('Yes', function (Form $form) {
+            $form->select('loan_usage', __('Main Purpose of Loan'))
+                ->options([
+                    'Input' => 'Input',
+                    'Equipment' => 'Equipment',
+                    'Livestock' => 'Livestock',
+                    'Personal' => 'Personal',
+                ]);
+            $form->decimal('loan_size', __('Loan size'));
+        });
 
         $form->divider('Farm Workforce and Assets');
         $form->decimal('labor_force', __('Labor force / Number of employees'));
@@ -377,25 +406,14 @@ class FarmerController extends AdminController
                     ->get()->pluck('name', 'id'));
             $form->text('bank_account_name', __('Bank account name'));
             $form->text('bank_account_number', __('Bank account number'));
+            $form->divider();
         });
 
 
-        $form->text('payments_or_transfers', __('Payments or transfers'));
-        $form->text('financial_service_provider', __('Financial service provider'));
-
-        $form->divider('Insurance Details');
-        $form->switch('has_credit', __('Has credit'));
-        $form->decimal('loan_size', __('Loan size'));
-        $form->text('loan_usage', __('Loan usage'));
-        $form->textarea('farm_business_plan', __('Farm business plan'));
-        $form->text('covered_risks', __('Covered risks'));
-        $form->text('insurance_company_name', __('Insurance company name'));
-        $form->decimal('insurance_cost', __('Insurance cost'));
-        $form->decimal('repaid_amount', __('Insurance Repay amount'));
+        //$form->text('payments_or_transfers', __('Payments or transfers'));
+        //$form->text('financial_service_provider', __('Financial service provider'));
 
 
-        $form->divider('Authentication and Security');
-        $form->password('password', __('Password'));
         //$form->hidden('status', __('Status'))->default('Active');
 
         return $form;

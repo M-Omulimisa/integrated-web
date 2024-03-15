@@ -28,6 +28,10 @@ class LanguageController extends AdminController
         $grid->quickSearch('name');
         $grid->column('id', __('Id'))->hide();
         $grid->column('name', __('Name'))->sortable();
+        $grid->column('position', __('Position'))->sortable();
+        $grid->column('weather', __('Weather Subscription'))->sortable();
+        $grid->column('market', __('Market information'))->sortable();
+        $grid->column('insurance', __('Insurance information'))->sortable();
         /*
             $grid->column('country_id', __('Country id'));
             $grid->column('created_at', __('Created at'));
@@ -69,7 +73,16 @@ class LanguageController extends AdminController
 
         $form->text('name', __('Name'));
         $form->hidden('country_id', __('Country id'))->default(1);
-        $form->hidden('position', __('Position'))->default(1);
+        $form->decimal('position', __('Position'))->default(1);
+        $form->radio('weather', __('Weather Subscription'))
+            ->options(['Yes' => 'Yes', 'No' => 'No'])
+            ->default('Yes');
+        $form->radio('market', __('Market information'))
+            ->options(['Yes' => 'Yes', 'No' => 'No'])
+            ->default('Yes');
+        $form->radio('insurance', __('Insurance information'))
+            ->options(['Yes' => 'Yes', 'No' => 'No'])
+            ->default('Yes');
 
         return $form;
     }

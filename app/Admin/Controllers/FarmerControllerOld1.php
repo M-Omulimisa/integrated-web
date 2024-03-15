@@ -9,6 +9,7 @@ use App\Models\FinancialInstitution;
 use App\Models\ParishModel;
 use App\Models\Settings\Country;
 use App\Models\Settings\Language;
+use App\Models\Settings\Location;
 use App\Models\SubcountyModel;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -16,14 +17,14 @@ use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use Illuminate\Support\Facades\Auth;
 
-class FarmerController extends AdminController
+class FarmerControllerOld1 extends AdminController
 {
     /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = 'Farmer';
+    protected $title = 'Farmers';
 
     /**
      * Make a grid builder.
@@ -34,19 +35,28 @@ class FarmerController extends AdminController
     {
         $grid = new Grid(new Farmer());
 
-        $grid->column('id', __('Id'));
-        $grid->column('organisation_id', __('Organisation id'));
-        $grid->column('farmer_group_id', __('Farmer group id'));
-        $grid->column('first_name', __('First name'));
-        $grid->column('last_name', __('Last name'));
-        $grid->column('country_id', __('Country id'));
-        $grid->column('language_id', __('Language id'));
-        $grid->column('national_id_number', __('National id number'));
-        $grid->column('gender', __('Gender'));
-        $grid->column('education_level', __('Education level'));
-        $grid->column('year_of_birth', __('Year of birth'));
-        $grid->column('phone', __('Phone'));
-        $grid->column('email', __('Email'));
+        $grid->model()->orderBy('id', 'desc');
+        $grid->quickSearch('first_name', 'last_name', 'phone', 'email', 'national_id_number', 'address', 'village', 'street', 'house_number', 'land_registration_numbers')
+            ->placeholder('Search...');
+
+        $grid->column('first_name', __('First name'))
+            ->display(function ($name) {
+                return $this->first_name . ' ' . $this->last_name;
+            })->sortable();
+
+        $grid->column('phone', __('Phone'))->sortable();
+        $grid->column('email', __('Email'))->sortable();
+        $grid->column('national_id_number', __('NIN'))
+            ->sortable();
+        $grid->column('gender', __('Gender'))
+            ->filter([
+                'Male' => 'Male',
+                'Female' => 'Female',
+            ])->sortable();
+        $grid->column('education_level', __('Education Level'))
+            ->sortable();
+        $grid->column('year_of_birth', __('Year of birth'))->sortable();
+
         $grid->column('is_your_phone', __('Is your phone'));
         $grid->column('is_mm_registered', __('Is mm registered'));
         $grid->column('other_economic_activity', __('Other economic activity'));
@@ -101,18 +111,6 @@ class FarmerController extends AdminController
         $grid->column('insurance_company_name', __('Insurance company name'));
         $grid->column('insurance_cost', __('Insurance cost'));
         $grid->column('repaid_amount', __('Repaid amount'));
-        $grid->column('photo', __('Photo'));
-        $grid->column('district_id', __('District id'));
-        $grid->column('subcounty_id', __('Subcounty id'));
-        $grid->column('parish_id', __('Parish id'));
-        $grid->column('bank_id', __('Bank id'));
-        $grid->column('other_livestock_count', __('Other livestock count'));
-        $grid->column('poultry_count', __('Poultry count'));
-        $grid->column('sheep_count', __('Sheep count'));
-        $grid->column('goat_count', __('Goat count'));
-        $grid->column('cattle_count', __('Cattle count'));
-        $grid->column('bank_account_number', __('Bank account number'));
-        $grid->column('has_receive_loan', __('Has receive loan'));
 
         return $grid;
     }
@@ -125,8 +123,11 @@ class FarmerController extends AdminController
      */
     protected function detail($id)
     {
+        $data = Farmer::findOrFail($id);
+        return view('admin.farmer-profile', [
+            's' => $data
+        ]);
         $show = new Show(Farmer::findOrFail($id));
-
         $show->field('id', __('Id'));
         $show->field('organisation_id', __('Organisation id'));
         $show->field('farmer_group_id', __('Farmer group id'));
@@ -194,18 +195,6 @@ class FarmerController extends AdminController
         $show->field('insurance_company_name', __('Insurance company name'));
         $show->field('insurance_cost', __('Insurance cost'));
         $show->field('repaid_amount', __('Repaid amount'));
-        $show->field('photo', __('Photo'));
-        $show->field('district_id', __('District id'));
-        $show->field('subcounty_id', __('Subcounty id'));
-        $show->field('parish_id', __('Parish id'));
-        $show->field('bank_id', __('Bank id'));
-        $show->field('other_livestock_count', __('Other livestock count'));
-        $show->field('poultry_count', __('Poultry count'));
-        $show->field('sheep_count', __('Sheep count'));
-        $show->field('goat_count', __('Goat count'));
-        $show->field('cattle_count', __('Cattle count'));
-        $show->field('bank_account_number', __('Bank account number'));
-        $show->field('has_receive_loan', __('Has receive loan'));
 
         return $show;
     }
@@ -218,8 +207,11 @@ class FarmerController extends AdminController
     protected function form()
     {
         $form = new Form(new Farmer());
-        $form->text('phone', __('Phone'));
         $u = Auth::user();
+
+        $form->text('phone', __('Phone number'))
+            ->rules('required|unique:farmer,phone');
+        return $form;
 
 
 
@@ -235,7 +227,8 @@ class FarmerController extends AdminController
 
         $form->select('farmer_group_id', __('Farmer\'s group'))
             ->options(FarmerGroup::where(
-                []
+                'organisation_id',
+                Auth::user()->organisation_id
             )
                 ->orderBy('name', 'asc')
                 ->get()->pluck('name', 'id'))
@@ -417,84 +410,11 @@ class FarmerController extends AdminController
         });
 
 
-        return $form;
+        //$form->text('payments_or_transfers', __('Payments or transfers'));
+        //$form->text('financial_service_provider', __('Financial service provider'));
 
-        $form->text('organisation_id', __('Organisation id'));
-        $form->text('farmer_group_id', __('Farmer group id'));
-        $form->text('first_name', __('First name'));
-        $form->text('last_name', __('Last name'));
-        $form->text('country_id', __('Country id'));
-        $form->text('language_id', __('Language id'));
-        $form->text('national_id_number', __('National id number'));
-        $form->text('gender', __('Gender'));
-        $form->text('education_level', __('Education level'));
-        $form->text('year_of_birth', __('Year of birth'));
 
-        $form->email('email', __('Email'));
-        $form->textarea('is_your_phone', __('Is your phone'));
-        $form->textarea('is_mm_registered', __('Is mm registered'));
-        $form->textarea('other_economic_activity', __('Other economic activity'));
-        $form->text('location_id', __('Location id'));
-        $form->text('address', __('Address'));
-        $form->text('latitude', __('Latitude'));
-        $form->text('longitude', __('Longitude'));
-        $form->password('password', __('Password'));
-        $form->text('farming_scale', __('Farming scale'));
-        $form->decimal('land_holding_in_acres', __('Land holding in acres'));
-        $form->decimal('land_under_farming_in_acres', __('Land under farming in acres'));
-        $form->textarea('ever_bought_insurance', __('Ever bought insurance'));
-        $form->text('ever_received_credit', __('Ever received credit'));
-        $form->text('status', __('Status'));
-        $form->text('created_by_user_id', __('Created by user id'));
-        $form->text('created_by_agent_id', __('Created by agent id'));
-        $form->text('agent_id', __('Agent id'));
-        $form->text('poverty_level', __('Poverty level'));
-        $form->text('food_security_level', __('Food security level'));
-        $form->text('marital_status', __('Marital status'));
-        $form->number('family_size', __('Family size'));
-        $form->text('farm_decision_role', __('Farm decision role'));
-        $form->textarea('is_pwd', __('Is pwd'));
-        $form->textarea('is_refugee', __('Is refugee'));
-        $form->date('date_of_birth', __('Date of birth'))->default(date('Y-m-d'));
-        $form->text('age_group', __('Age group'));
-        $form->text('language_preference', __('Language preference'));
-        $form->text('phone_number', __('Phone number'));
-        $form->text('phone_type', __('Phone type'));
-        $form->text('preferred_info_type', __('Preferred info type'));
-        $form->decimal('home_gps_latitude', __('Home gps latitude'));
-        $form->decimal('home_gps_longitude', __('Home gps longitude'));
-        $form->text('village', __('Village'));
-        $form->text('street', __('Street'));
-        $form->text('house_number', __('House number'));
-        $form->text('land_registration_numbers', __('Land registration numbers'));
-        $form->text('labor_force', __('Labor force'));
-        $form->text('equipment_owned', __('Equipment owned'));
-        $form->text('livestock', __('Livestock'));
-        $form->text('crops_grown', __('Crops grown'));
-        $form->textarea('has_bank_account', __('Has bank account'));
-        $form->textarea('has_mobile_money_account', __('Has mobile money account'));
-        $form->text('payments_or_transfers', __('Payments or transfers'));
-        $form->text('financial_service_provider', __('Financial service provider'));
-        $form->textarea('has_credit', __('Has credit'));
-        $form->number('loan_size', __('Loan size'));
-        $form->text('loan_usage', __('Loan usage'));
-        $form->textarea('farm_business_plan', __('Farm business plan'));
-        $form->text('covered_risks', __('Covered risks'));
-        $form->text('insurance_company_name', __('Insurance company name'));
-        $form->number('insurance_cost', __('Insurance cost'));
-        $form->number('repaid_amount', __('Repaid amount'));
-        $form->textarea('photo', __('Photo'));
-        $form->number('district_id', __('District id'));
-        $form->number('subcounty_id', __('Subcounty id'));
-        $form->number('parish_id', __('Parish id'));
-        $form->number('bank_id', __('Bank id'));
-        $form->number('other_livestock_count', __('Other livestock count'));
-        $form->number('poultry_count', __('Poultry count'));
-        $form->number('sheep_count', __('Sheep count'));
-        $form->number('goat_count', __('Goat count'));
-        $form->number('cattle_count', __('Cattle count'));
-        $form->textarea('bank_account_number', __('Bank account number'));
-        $form->text('has_receive_loan', __('Has receive loan'))->default('No');
+        //$form->hidden('status', __('Status'))->default('Active');
 
         return $form;
     }

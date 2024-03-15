@@ -1,17 +1,18 @@
 <?php
 
 namespace App\Models\Market;
-  
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\MarketSubscriptionRelationship;
+use App\Models\User;
 use App\Models\Utils;
 
 class MarketSubscription extends BaseModel
 {
     use Uuid, MarketSubscriptionRelationship;
-  
+
     protected $fillable = [
         'farmer_id',
         'language_id',
@@ -52,6 +53,38 @@ class MarketSubscription extends BaseModel
         self::creating(function (MarketSubscription $model) {
             $model->id = $model->generateUuid();
         });
+
+        //created
+        self::created(function (MarketSubscription $model) {
+            $u = User::find($model->farmer_id);
+            if ($u == null) {
+                $u = User::find($model->user_id);
+            }
+            $name = $model->first_name;
+            $phone = $model->phone;
+            if ($u != null) {
+                $name = $u->name;
+            }
+
+            //welcome message for subscription to market
+            $msg = "You have successfully subscribed to the market. You will now receive market updates. Thank you for subscribing.";
+            try {
+                Utils::send_sms($phone, $msg);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+            if ($u != null) {
+                try {
+                    Utils::sendNotification2([
+                        'msg' => $msg,
+                        'headings' => 'Market Subscription',
+                        'receiver' => $u->id,
+                        'type' => 'text',
+                    ]);
+                } catch (\Throwable $th) {
+                }
+            }
+        });
     }
 
     /**
@@ -68,67 +101,66 @@ class MarketSubscription extends BaseModel
      */
     public $incrementing = false;
 
-       //check payment status
-       public function check_payment_status()
-       {
-           if ($this->TransactionReference == null) {
-               return 'NOT PAID';
-           }
-           if (strlen($this->TransactionReference) < 3) {
-               return 'NOT PAID';
-           }
-           $resp = null;
-           try {
-               $resp = Utils::payment_status_check($this->TransactionReference, $this->payment_reference_id);
-           } catch (\Throwable $th) {
-               return 'NOT PAID';
-           }
-           if ($resp == null) {
-               return 'NOT PAID';
-           }
-           if ($resp->Status == 'OK') {
-               if ($resp->TransactionStatus == 'PENDING') {
-                   $this->TransactionStatus = 'PENDING';
-                   if (isset($resp->Amount) && $resp->Amount != null) {
-                       $this->TransactionAmount = $resp->Amount;
-                   }
-                   if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
-                       $this->TransactionCurrencyCode = $resp->CurrencyCode;
-                   }
-                   if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
-                       $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
-                   }
-                   if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
-                       $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
-                   }
-                   $this->save();
-               } else if (
-                   $resp->TransactionStatus == 'SUCCEEDED' ||
-                   $resp->TransactionStatus == 'SUCCESSFUL'
-               ) {
-                   $this->TransactionStatus = 'SUCCEEDED';
-                   if (isset($resp->Amount) && $resp->Amount != null) {
-                       $this->TransactionAmount = $resp->Amount;
-                   }
-                   if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
-                       $this->TransactionCurrencyCode = $resp->CurrencyCode;
-                   }
-                   if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
-                       $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
-                   }
-                   if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
-                       $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
-                   }
-                   //MNOTransactionReferenceId
-                   if (isset($resp->MNOTransactionReferenceId) && $resp->MNOTransactionReferenceId != null) {
-                       $this->MNOTransactionReferenceId = $resp->MNOTransactionReferenceId;
-                   }
-                   $this->is_paid = 'PAID';
-                   $this->save();
-               }
-           }
-   
-           return 'NOT PAID';
-       }
+    //check payment status
+    public function check_payment_status()
+    {
+        if ($this->TransactionReference == null) {
+            return 'NOT PAID';
+        }
+        if (strlen($this->TransactionReference) < 3) {
+            return 'NOT PAID';
+        }
+        $resp = null;
+        try {
+            $resp = Utils::payment_status_check($this->TransactionReference, $this->payment_reference_id);
+        } catch (\Throwable $th) {
+            return 'NOT PAID';
+        }
+        if ($resp == null) {
+            return 'NOT PAID';
+        }
+        if ($resp->Status == 'OK') {
+            if ($resp->TransactionStatus == 'PENDING') {
+                $this->TransactionStatus = 'PENDING';
+                if (isset($resp->Amount) && $resp->Amount != null) {
+                    $this->TransactionAmount = $resp->Amount;
+                }
+                if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
+                    $this->TransactionCurrencyCode = $resp->CurrencyCode;
+                }
+                if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
+                    $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
+                }
+                if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
+                    $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
+                }
+                $this->save();
+            } else if (
+                $resp->TransactionStatus == 'SUCCEEDED' ||
+                $resp->TransactionStatus == 'SUCCESSFUL'
+            ) {
+                $this->TransactionStatus = 'SUCCEEDED';
+                if (isset($resp->Amount) && $resp->Amount != null) {
+                    $this->TransactionAmount = $resp->Amount;
+                }
+                if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
+                    $this->TransactionCurrencyCode = $resp->CurrencyCode;
+                }
+                if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
+                    $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
+                }
+                if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
+                    $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
+                }
+                //MNOTransactionReferenceId
+                if (isset($resp->MNOTransactionReferenceId) && $resp->MNOTransactionReferenceId != null) {
+                    $this->MNOTransactionReferenceId = $resp->MNOTransactionReferenceId;
+                }
+                $this->is_paid = 'PAID';
+                $this->save();
+            }
+        }
 
+        return 'NOT PAID';
+    }
 }
