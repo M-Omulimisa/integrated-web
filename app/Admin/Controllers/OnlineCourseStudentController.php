@@ -36,22 +36,22 @@ class OnlineCourseStudentController extends AdminController
                 'active' => 'Active',
                 'inactive' => 'Inactive'
             ]);
-            $filter->equal('completion_status', 'Completion')->select([
+            /*             $filter->equal('completion_status', 'Completion')->select([
                 'completed' => 'Completed',
                 'incomplete' => 'Incomplete'
-            ]);
+            ]); */
         });
 
         $u = Admin::user();
         if ($u->isRole('instructor')) {
             $grid->disableCreateButton();
-            $myStudents = OnlineCourse::getMyStudents($u); 
+            $myStudents = OnlineCourse::getMyStudents($u);
             $ids = [];
             foreach ($myStudents as $student) {
                 $ids[] = $student['id'];
-            }  
+            }
             $grid->model()->whereIn('id', $ids);
-        } 
+        }
 
         $grid->quickSearch('name', 'phone')->placeholder('Search by name or phone number');
 

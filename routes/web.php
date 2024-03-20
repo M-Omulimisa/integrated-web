@@ -172,6 +172,7 @@ Route::get('sync-data', function () {
     Utils::syncGroups();
     //Utils::syncFarmers();
 });
+
 Route::get('send-notification-campaigns', function () {
     if (!isset($_GET['id'])) {
         die("ID not set");
