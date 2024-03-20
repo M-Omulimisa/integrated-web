@@ -16,7 +16,7 @@ class DamarkRercordController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Dmark Records';
+    protected $title = 'DMARK Records';
 
     /**
      * Make a grid builder.
