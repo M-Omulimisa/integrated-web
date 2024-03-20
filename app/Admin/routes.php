@@ -82,4 +82,5 @@ Route::group([
     $router->resource('online-course-menus', OnlineCourseMenuController::class);
     $router->resource('weather-subscriptions', WeatherSubscriptionController::class);
     $router->resource('weather-sms-translations', WeatherSmsTranslationController::class);
+    $router->resource('damark-rercords', DamarkRercordController::class);
 });

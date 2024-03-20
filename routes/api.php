@@ -148,13 +148,14 @@ Route::post("upload-file", function (Request $r) {
     }
 });
 
+
 Route::group([
     'prefix' => '/v1'
 ], function () {
 
     //get all jea 
 
-
+    Route::match(['get', 'post'], "dmark-sms-webhook", [ApiShopController::class, "dmark_sms_webhook"]);
 
     Route::middleware([JwtMiddleware::class])->group(function () {
         /* ==============START OF SHOP API================== */

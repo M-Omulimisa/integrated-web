@@ -329,9 +329,10 @@ class FarmerQuestionController extends AdminController
             $form->mobile('phone', __('Phone'))->readonly();
             $form->text('sent_via', __('Sent via'))->readonly();
         }
+        $form->textarea('answer_body', __('Answer'));
 
-        $form->file('audio', __('Audio'));
-        $form->image('photo', __('Photo'));
+/*         $form->file('audio', __('Audio'));
+        $form->image('photo', __('Photo')); */
 
         if (!$form->isCreating()) {
             $form->hasMany('farmer_question_answers', __('Answers'), function (Form\NestedForm $form) {
