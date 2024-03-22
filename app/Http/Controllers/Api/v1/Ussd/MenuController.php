@@ -77,13 +77,7 @@ class MenuController extends Controller
         $invalid_phone = "Invalid phone number";
 
         // "Enter no. of acres\n";
-        $acreage = "Acreage you want to insure\n";
-        $acreage .= "1) Half acre\n";
-        $acreage .= "2) 1 acre\n";
-        $acreage .= "3) 2 acre\n";
-        $acreage .= "4) 3 acre\n";
-        $acreage .= "5) 4 acre\n";
-        $acreage .= "6) 5 acre\n";
+        $acreage = "How many acres do you want to insure\n";
 
         $weather_period = "Subscription Period\n";
         $weather_period .= "1) Weekly\n";
@@ -96,7 +90,6 @@ class MenuController extends Controller
 
         $sum_insured = 0;
         $premium = 0;
-
 
         $insurance_coverage = "Select insurance coverage\n";
         $insurance_coverage .= "1) Half coverage (45%)\n";
@@ -380,7 +373,6 @@ class MenuController extends Controller
             $current_menu   = "market_phone_option"; 
         } 
         elseif ($last_menu == "market_region") {
-
             $region = $this->menu_helper->getSelectedRegion($input_text);
             $input_text = $region->name ?? null;
 
@@ -394,6 +386,7 @@ class MenuController extends Controller
                 $field = "market_region";
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_region_id', $region->id);
             }
+
             else{
                 $action         = "request";
                 $response       = "Wrong input!\n";
@@ -638,7 +631,6 @@ class MenuController extends Controller
         }  
         
         /******************* START WEATHER *******************/
-
         elseif ($last_menu == "weather_phone_option" && $input_text == '1' || $last_menu == "weather_phone") {
             $action         = "request";
 
@@ -833,6 +825,7 @@ class MenuController extends Controller
             }
         }
 
+        /******************* START ADVISORY SHIT *******************/
         elseif ($last_menu == "advisory_option_menu") {
 
             if($input_text == 1){
@@ -869,7 +862,6 @@ class MenuController extends Controller
                 $current_menu   = "advisory_option_menu";  
             }
         }
-
         elseif($last_menu == "tip_language_menu"){
 
             $menu_id = 4;
@@ -925,9 +917,6 @@ class MenuController extends Controller
 
            
         }
-
-        
-
         elseif ($last_menu == "advisory_menu") {
 
             $advisory_questions =   $this->menu_helper->getAdvisoryQuestions($input_text, $sessionId);
@@ -942,7 +931,6 @@ class MenuController extends Controller
             $current_menu   = "advisory_subtopic_menu";
            
         }
-
         elseif ($last_menu == "advisory_subtopic_menu") {
 
             dispatch(new SendUssdAdvisoryMessage($sessionId, $input_text));
@@ -974,7 +962,6 @@ class MenuController extends Controller
             $current_menu  = "Sending advisory";
            
         }
-
         elseif($last_menu == "evaluation_language_menu"){
 
             $menu_id = 4;
@@ -1010,9 +997,7 @@ class MenuController extends Controller
             }
 
 
-        }
-
-        
+        } 
         elseif ($last_menu == "advisory_evaluation_two") {
 
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 1, $input_text);
@@ -1029,7 +1014,6 @@ class MenuController extends Controller
             $current_menu   = "advisory_evaluation_three";
            
         }
-
         elseif ($last_menu == "advisory_evaluation_three") {
 
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 2, $input_text);
@@ -1110,9 +1094,7 @@ class MenuController extends Controller
             $current_menu   = "advisory_evaluation_seven";
            
         }
-
         elseif ($last_menu == "advisory_evaluation_seven") {
-
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 6, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(7, $sessionId);
@@ -1136,15 +1118,6 @@ class MenuController extends Controller
             $current_menu  = "advisory_evaluation_end";
            
         }
-
-
-        
-
-        
-
-
-        
-
         else {
             $response  = "An Error occured. Contact M-Omulimisa team for help!";
             $current_menu = "system_error";
@@ -1165,5 +1138,4 @@ class MenuController extends Controller
         //logIt("Response sent: ".$response);
         print($response);
     } 
-
 }

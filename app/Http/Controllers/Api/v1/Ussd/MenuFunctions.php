@@ -690,18 +690,22 @@ class MenuFunctions
 
     public function insuranceSeasonList()
     {
-        $seasons = Season::whereStatus(TRUE)->orderBy('start_date', 'ASC')->get();
+        $currentDate = now(); // Get the current date and time
 
-        if (count($seasons) > 0) {
+        $seasons = Season::where('status', true)
+                        ->whereDate('end_date', '>=', $currentDate) // Filter by end date
+                        ->orderBy('start_date', 'ASC')
+                        ->get();
+
+        if ($seasons->isNotEmpty()) {
             $list = '';
             $count = 0;
             foreach ($seasons as $season) {
                 $list .= (++$count).") ".$season->name."\n";
             }
             return $list;
-        }
-        else{
-            return null;
+        } else {
+            return "No seasons added yet."; // Return message when no seasons found
         }
     }
 
@@ -759,12 +763,9 @@ class MenuFunctions
 
     public function getAcerage($input_text)
     {
-        if($input_text=="1") return 0.5;
-        if($input_text=="2") return 1;
-        if($input_text=="3") return 2;
-        if($input_text=="4") return 3;
-        if($input_text=="5") return 4;
-        if($input_text=="6") return 5;
+        // Use PHP's built-in function intval() to convert the input text to an integer
+        // If the input text is "1", it will be converted to the integer 1
+        return intval($input_text);
     }
 
     public function getEnterprise($enterprise_id, $param)
