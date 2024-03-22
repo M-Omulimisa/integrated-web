@@ -11,6 +11,7 @@ class NotificationMessage extends Model
     use HasFactory;
 
     //boot
+    //password from phpmyadmin: $2y$10$wjEIpBoax4BpJhqTdiCtMO7cmepyIYLxSu3c8eg35OS5iTigwG/AO
     protected static function boot()
     {
         parent::boot();

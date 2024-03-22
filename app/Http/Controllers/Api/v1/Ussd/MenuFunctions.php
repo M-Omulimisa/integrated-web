@@ -536,6 +536,22 @@ class MenuFunctions
     }
 
 
+    public function seasonItemList()
+    {
+        $enterprises = InsurancePremiumOption::whereStatus(TRUE)->orderBy('menu', 'ASC')->get();
+
+        if (count($enterprises) > 0) {
+            $list = '';
+            foreach ($enterprises as $enterprise) {
+                $list .= $enterprise->menu.") ".$enterprise->enterprise->name."\n";
+            }
+            return $list;
+        }
+        else{
+            return null;
+        }
+    }
+
     public function getInsuranceRegionList()
     {
         $locations = RegionModel::orderBy('name', 'ASC')->get();
@@ -739,22 +755,6 @@ class MenuFunctions
     {
         $season = Season::whereId($season_id)->first();
         return $season->$param ?? null;
-    }
-
-    public function seasonItemList()
-    {
-        $enterprises = InsurancePremiumOption::whereStatus(TRUE)->orderBy('menu', 'ASC')->get();
-
-        if (count($enterprises) > 0) {
-            $list = '';
-            foreach ($enterprises as $enterprise) {
-                $list .= $enterprise->menu.") ".$enterprise->enterprise->name."\n";
-            }
-            return $list;
-        }
-        else{
-            return null;
-        }
     }
 
     public function getAcerage($input_text)
