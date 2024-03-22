@@ -95,8 +95,6 @@ class Gen extends Model
 
   public  function makeVars($tables)
   {
-
-
     $_data = "";
     $i = 0;
     $done = [];
