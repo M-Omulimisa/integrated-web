@@ -191,7 +191,7 @@ class FarmerQuestionController extends AdminController
             })
             ->sortable();
 
-        $grid->column('category', __('Category'))
+        /*  $grid->column('category', __('Category'))
             ->label(
                 [
                     'crops' => 'primary',
@@ -227,9 +227,17 @@ class FarmerQuestionController extends AdminController
                     'training' => 'training',
                     'other' => 'other',
                 ]
-            );
+            ); */
         $grid->column('phone', __('Phone'));
-        $grid->column('sent_via', __('Sent Via'));
+        $grid->column('sent_via', __('Sent Via'))
+            ->display(function ($sent_via) {
+                if (strtolower($sent_via) == 'sms') {
+                    return 'SMS';
+                }
+                $this->sent_via = 'Mobile App';
+                $this->save();
+                return $sent_via;
+            });
         $grid->column('answered', __('Answered'))
             ->filter(['yes' => 'yes', 'no' => 'no'])
             ->dot(['yes' => 'success', 'no' => 'danger'])
