@@ -49,8 +49,6 @@ class Gen extends Model
         }
       }
     }
-
-
     return $_data;
   }
 
