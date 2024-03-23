@@ -234,10 +234,13 @@ class FarmerQuestionController extends AdminController
                 if (strtolower($sent_via) == 'sms') {
                     return 'SMS';
                 }
-                $this->sent_via = 'Mobile App';
-                $this->save();
-                return $sent_via;
-            });
+                if ($this->sent_via != 'Mobile App') {
+                    $this->sent_via = 'Mobile App';
+                    $this->save();
+                }
+                return $this->sent_via;
+            })->sortable()
+            ->filter(['SMS' => 'SMS', 'Mobile App' => 'Mobile App']);
         $grid->column('answered', __('Answered'))
             ->filter(['yes' => 'yes', 'no' => 'no'])
             ->dot(['yes' => 'success', 'no' => 'danger'])
