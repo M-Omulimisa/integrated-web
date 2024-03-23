@@ -8,6 +8,7 @@ use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\MarketSubscriptionRelationship;
 use App\Models\User;
 use App\Models\Utils;
+use Carbon\Carbon;
 
 class MarketSubscription extends BaseModel
 {
@@ -52,6 +53,13 @@ class MarketSubscription extends BaseModel
         parent::boot();
         self::creating(function (MarketSubscription $model) {
             $model->id = $model->generateUuid();
+            $model->created_at = date('Y-m-d H:i:s'); 
+            return self::prepare($model);
+        });
+
+        //updating
+        self::updating(function (MarketSubscription $model) {
+            return self::prepare($model);
         });
 
         //created
@@ -85,6 +93,84 @@ class MarketSubscription extends BaseModel
                 }
             }
         });
+    }
+
+    //prepre
+    public static function prepare($m)
+    {
+        $frequencies =  ['trial' => 'trial', 'daily' => 'daily', 'weekly' => 'weekly', 'monthly' => 'monthly', 'yearly' => 'yearly'];
+        $frequency_text = "";
+        $frequency = null;
+        $m->frequency = strtolower($m->frequency);
+
+        $famer = User::find($m->farmer_id);
+        if ($famer != null) {
+            $famer = User::find($m->user_id);
+        }
+        if ($famer != null) {
+            $m->user_id = $famer->id;
+            $m->farmer_id = $famer->id;
+        }
+
+        foreach ($frequencies as $key => $value) {
+            if ($m->frequency == strtolower($key)) {
+                $frequency_text = $value;
+                break;
+            }
+        }
+        if ($frequency_text == "") {
+            $frequency = MarketPackagePricing::find($m->frequency);
+        }
+        if ($frequency == null) {
+            if (strlen($frequency_text) > 2) {
+                $frequency = MarketPackagePricing::where([
+                    'package_id' => $m->package_id,
+                    'frequency' => $frequency_text
+                ])->first();
+            }
+        }
+        if ($frequency == null) {
+            $frequency = MarketPackagePricing::where([
+                'package_id' => $m->package_id,
+                'frequency' => 'trial'
+            ])->first();
+        }
+
+        $m->period_paid = (int)($m->period_paid);
+
+
+        $days = 1;
+        if (
+            strtolower($m->frequency) == 'tiral'
+        ) {
+            $days = 3 * $m->period_paid;
+        } else if (
+            strtolower($m->frequency) == 'weekly'
+        ) {
+            $days = 7 * $m->period_paid;
+        } else if (
+            strtolower($m->frequency) == 'monthly'
+        ) {
+            $days = 30 * $m->period_paid;
+        } else if (
+            strtolower($m->frequency) == 'yearly'
+        ) {
+            $days = 365 * $m->period_paid;
+        }
+
+        $created_time = Carbon::parse($m->created_at);
+        $created_time_1 = Carbon::parse($m->created_at);
+
+        $m->start_date = $created_time;
+        $m->end_date = $created_time_1->addDays($days);
+        $now = Carbon::now();
+        if ($now->gt($m->end_date)) {
+            $m->status = 0;
+        } else {
+            $m->status = 1;
+        }
+
+        return $m;
     }
 
     /**
@@ -168,5 +254,5 @@ class MarketSubscription extends BaseModel
     public function package()
     {
         return $this->belongsTo(MarketPackage::class, 'package_id');
-    } 
+    }
 }

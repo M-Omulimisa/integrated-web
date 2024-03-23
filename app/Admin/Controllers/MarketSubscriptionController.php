@@ -59,9 +59,13 @@ class MarketSubscriptionController extends AdminController
                 return date('d-m-Y', strtotime($start_date));
             })->sortable();
         $grid->column('status', __('Status'))
-            ->using(['1' => 'Active', '0' => 'Inactive'])
+            ->using(['1' => 'Active', '0' => 'Expired'])
             ->sortable()
-            ->filter(['1' => 'Active', '0' => 'Inactive']);
+            ->label([
+                '1' => 'success',
+                '0' => 'danger'
+            ])
+            ->filter(['1' => 'Active', '0' => 'Expired']);
 
         /*         $grid->column('outbox_generation_status', __('Outbox generation status'));
         $grid->column('outbox_reset_status', __('Outbox reset status'));
@@ -160,24 +164,27 @@ class MarketSubscriptionController extends AdminController
         }
 
 
-        $url = '/api/market-package-pricings';
+        //$url = '/api/market-package-pricings';
         $form->select('package_id', __('Package'))
             ->options($packages)
-            ->load('frequency', $url);
-        $form->select('frequency', __('Frequency'));
-        return $form;
-
-
-
+            ->rules('required');
+        $form->select('frequency', __('Frequency'))
+            ->options([
+                'trial' => 'Trial (Free)',
+                'weekly' => 'Weekly',
+                'monthly' => 'Monthly',
+                'yearly' => 'Yearly'
+            ])
+            ->rules('required');
         $form->decimal('period_paid', __('Period Paid'))->rules('required');
 
         if ($form->isEditing()) {
-            $form->date('start_date', __('Start date'))->rules('required');
-            $form->date('end_date', __('End date'))->rules('required');
-            $form->radio('status', __('Status'))
-                ->options(['1' => 'Active', '0' => 'Expired'])
-                ->default('active')
-                ->rules('required');
+            $form->date('start_date', __('Start date'))
+                ->readonly();
+            $form->date('end_date', __('End date'))
+                ->readonly();
+            $form->hidden('status', __('Status'))
+                ->default(1);
         }
         $u = Admin::user();
         $form->hidden('farmer_id', __('Farmer_id'))
