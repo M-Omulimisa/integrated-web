@@ -243,16 +243,21 @@ class FarmerQuestionController extends AdminController
                 if ($rec == null || strlen($rec) < 2) {
                     return "No Audio";
                 }
-                $link = url('storage/files/' . $rec);
-                return '<a target="_blank" href="' . $link . '">Play Audio</a>';
+                $link = url('storage/' . $rec);
+                //retun audio player
+                return '<audio controls>
+                <source src="' . $link . '" type="audio/mpeg">
+                Your browser does not support the audio element.
+                </audio>';
             })->sortable();
         $grid->column('photo', __('Photo'))
             ->display(function ($rec) {
                 if ($rec == null || strlen($rec) < 2) {
                     return "No Picture";
                 }
-                $link = url('storage/files/' . $rec);
-                return '<a target="_blank" href="' . $link . '">View Image</a>';
+                $link = url('storage/' . $rec);
+                //retun photo with link
+                return '<a href="' . $link . '" target="_blank"><img src="' . $link . '" style="max-width:100px;max-height:100px" /></a>';
             })->sortable();
         $grid->column('video', __('Video'))->hide();
         $grid->column('document', __('Document'))->hide();
