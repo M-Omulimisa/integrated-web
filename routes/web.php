@@ -171,8 +171,8 @@ Route::get('/', function () {
 
 Route::get('sync-data', function () {
     foreach (OnlineCourseStudent::all() as $key => $s) {
-        //dd($s);
-        //$s->update_progress();
+        //dd($s); 
+        $s->update_progress();
         echo $s->id . ", Percentage: {$s->completion_status} : {$s->progress} <br>";
     }
     die("romina");
