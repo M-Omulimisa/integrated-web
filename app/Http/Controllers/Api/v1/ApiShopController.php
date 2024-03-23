@@ -766,9 +766,6 @@ district_id
             return $this->error('Business email is missing.');
         }
 
-
-
-
         $msg = "";
         $u->first_name = $request->first_name;
         $u->last_name = $request->last_name;

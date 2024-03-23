@@ -813,8 +813,7 @@ class MenuFunctions
                                             ->wherePhoneNumber($phoneNumber)
                                             ->first();
 
-        $acerage     = $saved_data->insurance_acreage.'A';
-
+        $acerage     = $saved_data->insurance_acreage.' acre(s)';
 
         $enterprise_id  = $saved_data->insurance_enterprise_id;
         $enterpriseName = $this->getEnterprise($enterprise_id, 'name');
@@ -837,7 +836,7 @@ class MenuFunctions
 
         $this->saveToField($sessionId, $phoneNumber, 'insurance_amount', $premium);
 
-        return "Insuring ".$acerage." of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured).". Pay premium of ugx".number_format(($premium));
+        return "You are insuring ".$acerage." of ".$enterpriseName." for ".$phone." at  UGX".number_format($sum_insured).". You'll pay a premium of UGX".number_format(($premium));
     }
 
     /**
