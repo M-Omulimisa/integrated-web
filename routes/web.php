@@ -142,6 +142,7 @@ use App\Models\Gen;
 use App\Models\NotificationCampaign;
 use App\Models\NotificationMessage;
 use App\Models\OnlineCourse;
+use App\Models\OnlineCourseLesson;
 use App\Models\OnlineCourseStudent;
 use App\Models\OnlineCourseStudentBatchImporter;
 use App\Models\ParishModel;
@@ -169,6 +170,13 @@ Route::get('/', function () {
 */
 
 Route::get('sync-data', function () {
+    foreach (OnlineCourseStudent::all() as $key => $s) {
+        //dd($s);
+        //$s->update_progress();
+        echo $s->id . ", Percentage: {$s->completion_status} : {$s->progress} <br>";
+    }
+    die("romina");
+    return;
     Utils::syncGroups();
     //Utils::syncFarmers();
 });
