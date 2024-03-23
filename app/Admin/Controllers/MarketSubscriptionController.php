@@ -29,16 +29,19 @@ class MarketSubscriptionController extends AdminController
     {
         $grid = new Grid(new MarketSubscription());
         $grid->model()->orderBy('created_at', 'desc');
-        $grid->quickSearch('first_name')->placeholder('Search first name...');
+        $grid->quickSearch('phone')->placeholder('Search first name...');
         /*         $grid->column('language_id', __('Language id'));
         $grid->column('location_id', __('Location id'));
         $grid->column('district_id', __('District id'));
         $grid->column('subcounty_id', __('Subcounty id'));
         $grid->column('parish_id', __('Parish id')); */
+
+        $grid->column('phone', __('Phone'))->sortable();
         $grid->column('first_name', __('name'))
             ->display(function ($first_name) {
                 return $first_name . ' ' . $this->last_name;
-            })->sortable();
+            })->sortable()
+            ->hide(); 
 
         $grid->column('package_id', __('Package'))
             ->display(function ($package_id) {
@@ -78,7 +81,7 @@ class MarketSubscriptionController extends AdminController
         $grid->column('package_id', __('Package id'));
 
         $grid->column('updated_at', __('Updated at')); */
-        $grid->column('phone', __('Phone'))->sortable();
+
         /*         $grid->column('region_id', __('Region id'));
         $grid->column('payment_id', __('Payment id'));
         $grid->column('outbox_count', __('Outbox count')); */
