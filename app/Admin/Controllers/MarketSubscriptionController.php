@@ -2,8 +2,11 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\Market\MarketPackagePricing;
 use App\Models\Market\MarketSubscription;
+use App\Models\Settings\Location;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -25,7 +28,6 @@ class MarketSubscriptionController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new MarketSubscription());
-        $grid->disableCreateButton();
         $grid->model()->orderBy('created_at', 'desc');
         $grid->quickSearch('first_name')->placeholder('Search first name...');
         /*         $grid->column('language_id', __('Language id'));
@@ -37,11 +39,25 @@ class MarketSubscriptionController extends AdminController
             ->display(function ($first_name) {
                 return $first_name . ' ' . $this->last_name;
             })->sortable();
-        $grid->column('email', __('Email'))->sortable();
+
+        $grid->column('package_id', __('Package'))
+            ->display(function ($package_id) {
+                if ($this->package == null) {
+                    return '-';
+                }
+                return $this->package->name;
+            })->sortable();
+
         $grid->column('frequency', __('Frequency'))->sortable();
-        $grid->column('period_paid', __('Period Paid'))->sortable();
-        $grid->column('start_date', __('Start date'))->sortable();
-        $grid->column('end_date', __('End date'))->sortable();
+        $grid->column('period_paid', __('Period'))->sortable();
+        $grid->column('start_date', __('Start date'))
+            ->display(function ($start_date) {
+                return date('d-m-Y', strtotime($start_date));
+            })->sortable();
+        $grid->column('end_date', __('End date'))
+            ->display(function ($start_date) {
+                return date('d-m-Y', strtotime($start_date));
+            })->sortable();
         $grid->column('status', __('Status'))
             ->using(['1' => 'Active', '0' => 'Inactive'])
             ->sortable()
@@ -63,10 +79,11 @@ class MarketSubscriptionController extends AdminController
         $grid->column('payment_id', __('Payment id'));
         $grid->column('outbox_count', __('Outbox count')); */
 
+
         $grid->column('created_at', __('Created'))->sortable()
             ->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
-            });
+            })->hide();
 
         return $grid;
     }
@@ -123,42 +140,129 @@ class MarketSubscriptionController extends AdminController
      */
     protected function form()
     {
+        $f =  MarketSubscription::find('e0a7f6d1-e00c-4394-bbe5-7b376bc28eca');
+        //$f->total_price = rand(1000, 10000);
+        //$f->save();
+        //dd($f->total_price);
         $form = new Form(new MarketSubscription());
 
-        /*         $form->text('farmer_id', __('Farmer id'));
-        $form->text('language_id', __('Language id'));
-        $form->text('location_id', __('Location id'));
-        $form->text('district_id', __('District id'));
-        $form->text('subcounty_id', __('Subcounty id'));
-        $form->text('parish_id', __('Parish id'));
-        $form->text('frequency', __('Frequency'));  
-
-                $form->text('user_id', __('User id'));
-        $form->switch('outbox_generation_status', __('Outbox generation status'));
-        $form->switch('outbox_reset_status', __('Outbox reset status'));
-        $form->date('outbox_last_date', __('Outbox last date'))->default(date('Y-m-d'));
-        $form->switch('seen_by_admin', __('Seen by admin'));
-        $form->datetime('trial_expiry_sms_sent_at', __('Trial expiry sms sent at'))->default(date('Y-m-d H:i:s'));
-        $form->textarea('trial_expiry_sms_failure_reason', __('Trial expiry sms failure reason'));
-        $form->text('renewal_id', __('Renewal id'));
-        $form->text('organisation_id', __('Organisation id'));
-        $form->text('package_id', __('Package id'));
-        $form->mobile('phone', __('Phone'));
-        $form->text('region_id', __('Region id'));
-        $form->text('payment_id', __('Payment id'));
-        $form->text('outbox_count', __('Outbox count'));
-
-
-        */
-        $form->text('first_name', __('First name'));
+        $form->text('first_name', __('First Name'));
         $form->text('last_name', __('Last name'));
         $form->text('email', __('Email'));
-        $form->decimal('period_paid', __('Period Paid'));
-        $form->date('start_date', __('Start date'))->rules('required');
-        $form->date('end_date', __('End date'))->rules('required');
-        $form->radio('status', __('Status'))
-            ->options(['1' => 'Active', '0' => 'Inactive'])
-            ->default('active');
+        $form->text('phone', __('Phone number'))->rules('required');
+        $form->divider();
+        $packages = [];
+        foreach (\App\Models\Market\MarketPackage::all() as $key => $package) {
+            $packages[$package->id] = $package->name;
+            $pricings = MarketPackagePricing::where([
+                'package_id' => $package->id
+            ])->get();
+        }
+
+
+        $url = '/api/market-package-pricings';
+        $form->select('package_id', __('Package'))
+            ->options($packages)
+            ->load('frequency', $url);
+        $form->select('frequency', __('Frequency'));
+        return $form;
+
+
+
+        $form->decimal('period_paid', __('Period Paid'))->rules('required');
+
+        if ($form->isEditing()) {
+            $form->date('start_date', __('Start date'))->rules('required');
+            $form->date('end_date', __('End date'))->rules('required');
+            $form->radio('status', __('Status'))
+                ->options(['1' => 'Active', '0' => 'Expired'])
+                ->default('active')
+                ->rules('required');
+        }
+        $u = Admin::user();
+        $form->hidden('farmer_id', __('Farmer_id'))
+            ->rules('required')
+            ->default($u->id);
+        $form->hidden('user_id', __('FARMER'))
+            ->rules('required')
+            ->default($u->id);
+        $langs = [];
+        foreach (\App\Models\Settings\Language::where([
+            'market' => 'Yes'
+        ])
+            ->orderBy('position', 'asc')
+            ->get() as $key => $lang) {
+            $langs[$lang->id] = $lang->name;
+        }
+
+        $form->select('language_id', __('Language'))
+            ->options($langs)
+            ->rules('required');
+        $locations = [];
+        foreach (Location::all() as $key => $location) {
+            $locations[$location->id] = $location->name;
+        }
+        $form->select('location_id', __('Region'))
+            ->options($locations)
+            ->rules('required');
+        /* 
+            "id" => "579d65cc-368e-48cd-bc8b-ae07c49ded51"
+    "name" => "Luganda"
+    "country_id" => "1eb0bc53-d0ee-49ad-827f-98b862d90ee8"
+    "created_at" => "2022-07-09 11:38:57"
+    "updated_at" => "2024-03-20 13:46:20"
+    "position" => 1
+    "weather" => "Yes" 
+    "insurance" => "Yes"
+    "sms_keyword" => "manya"
+    "sms_registration_keyword" => "mulimisa"
+        */
+        //language_id
+
+
+        /*	
+farmer_id	
+language_id	
+location_id	
+district_id	
+subcounty_id	
+parish_id	
+first_name	
+last_name	
+email	
+frequency	
+period_paid	
+start_date	
+end_date	
+status	
+user_id	
+outbox_generation_status	
+outbox_reset_status	
+outbox_last_date	
+seen_by_admin	
+trial_expiry_sms_sent_at	
+trial_expiry_sms_failure_reason	
+renewal_id	
+organisation_id	
+package_id	
+created_at	
+updated_at	
+phone	
+region_id	
+payment_id	
+outbox_count	
+MNOTransactionReferenceId	
+payment_reference_id	
+TransactionStatus	
+TransactionAmount	
+TransactionCurrencyCode	
+TransactionReference	
+TransactionInitiationDate	
+TransactionCompletionDate	
+is_paid	
+total_price	
+ 
+*/
         $form->disableCreatingCheck();
         return $form;
     }

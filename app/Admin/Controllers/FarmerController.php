@@ -34,19 +34,21 @@ class FarmerController extends AdminController
     {
         $grid = new Grid(new Farmer());
 
-        $grid->column('id', __('Id'));
-        $grid->column('organisation_id', __('Organisation id'));
-        $grid->column('farmer_group_id', __('Farmer group id'));
-        $grid->column('first_name', __('First name'));
-        $grid->column('last_name', __('Last name'));
-        $grid->column('country_id', __('Country id'));
-        $grid->column('language_id', __('Language id'));
-        $grid->column('national_id_number', __('National id number'));
-        $grid->column('gender', __('Gender'));
+        $grid->column('first_name', __('Name'))
+            ->display(function ($name) {
+                return $this->first_name . ' ' . $this->last_name;
+            })->sortable();
+        $grid->column('national_id_number', __('NIN'));
+        $grid->column('gender', __('Gender'))
+            ->display(function ($gender) {
+                if ($gender != 'Male' && $gender != 'Female') return 'Unknown';
+                return $gender;
+            })->sortable(); 
         $grid->column('education_level', __('Education level'));
-        $grid->column('year_of_birth', __('Year of birth'));
         $grid->column('phone', __('Phone'));
         $grid->column('email', __('Email'));
+
+        $grid->column('year_of_birth', __('Year of birth'));
         $grid->column('is_your_phone', __('Is your phone'));
         $grid->column('is_mm_registered', __('Is mm registered'));
         $grid->column('other_economic_activity', __('Other economic activity'));

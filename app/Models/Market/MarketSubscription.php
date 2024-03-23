@@ -163,4 +163,10 @@ class MarketSubscription extends BaseModel
 
         return 'NOT PAID';
     }
+
+    //belongs to package_id
+    public function package()
+    {
+        return $this->belongsTo(MarketPackage::class, 'package_id');
+    } 
 }
