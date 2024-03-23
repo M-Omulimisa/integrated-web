@@ -173,6 +173,10 @@ Route::get('sync-data', function () {
     foreach (OnlineCourseStudent::all() as $key => $s) {
         //dd($s); 
         $s->update_progress();
+        if ($s->progress >= 99) {
+            $s->completion_status = 'Completed';
+            $s->save(); 
+        }
         echo $s->id . ", Percentage: {$s->completion_status} : {$s->progress} <br>";
     }
     die("romina");
