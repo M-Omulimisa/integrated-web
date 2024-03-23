@@ -33,6 +33,8 @@ Route::group([
     $router->resource('products', ProductController::class);
 
     $router->resource('farmer-questions', FarmerQuestionController::class);
+    $router->resource('farmer-questions-unanswered', FarmerQuestionController::class);
+    $router->resource('farmer-questions', FarmerQuestionController::class);
     $router->resource('farmer-question-answers', FarmerQuestionAnswerController::class);
     $router->resource('product-categories', ProductCategoryController::class);
     $router->resource('districts', DistrictModelController::class);

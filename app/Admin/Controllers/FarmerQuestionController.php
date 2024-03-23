@@ -160,6 +160,18 @@ class FarmerQuestionController extends AdminController
 
  */
         $grid = new Grid(new FarmerQuestion());
+
+        //segments
+        $segs = request()->segments();
+        $grid->model()->where('answered', 'no');
+        if (isset($segs[0])) {
+            $text = $segs[0];
+            //if contains unanswered
+            if (strpos($text, 'unanswered') !== false) {
+                $grid->model()->where('answered', 'no');
+            }
+        }
+
         $grid->model()->orderBy('id', 'desc');
         $grid->disableBatchActions();
         $grid->quickSearch('body', 'phone', 'category')
@@ -244,7 +256,6 @@ class FarmerQuestionController extends AdminController
             })->sortable();
         $grid->column('video', __('Video'))->hide();
         $grid->column('document', __('Document'))->hide();
-        $grid->column('views', __('Views'))->sortable();
         $grid->column('user_id', __('Farmer'))
             ->display(function ($user_id) {
                 $f = \App\Models\User::find($user_id);
