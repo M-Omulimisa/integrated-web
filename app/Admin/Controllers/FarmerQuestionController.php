@@ -326,12 +326,15 @@ class FarmerQuestionController extends AdminController
         } else {
             $form->textarea('body', __('Body'))->readonly();
             $form->text('category', __('Category'))->readonly();
-            $form->mobile('phone', __('Phone'))->readonly();
+            $form->text('phone', __('Phone'));
             $form->text('sent_via', __('Sent via'))->readonly();
         }
         $form->textarea('answer_body', __('Answer'));
+        $form->radio('answered', __('Send SMS'))
+            ->options(['yes' => 'No', 'no' => 'Yes'])
+            ->default('no');
 
-/*         $form->file('audio', __('Audio'));
+        /*         $form->file('audio', __('Audio'));
         $form->image('photo', __('Photo')); */
 
         if (!$form->isCreating()) {

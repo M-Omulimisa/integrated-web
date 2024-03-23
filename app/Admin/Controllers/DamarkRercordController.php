@@ -113,15 +113,9 @@ class DamarkRercordController extends AdminController
 
         $form->text('sender', __('Sender'))->required();
         $form->textarea('message_body', __('Message Body'))->required();
-        $form->text('external_ref', __('External ref'));
-        $form->text('post_data', __('Post data'));
-        $form->text('get_data', __('Get data'));
-        $form->text('is_processed', __('Is processed'))->default('No');
-        $form->text('status', __('Status'))->default('Pending');
-        $form->text('error_message', __('Error message'));
-        $form->text('type', __('Type'));
-        $form->text('farmer_id', __('Farmer id'));
-        $form->text('question_id', __('Question id'));
+        $form->radio('is_processed', __('Is Processed'))
+            ->options(['Yes' => 'Yes', 'No' => 'No'])
+            ->default('No');
 
         return $form;
     }

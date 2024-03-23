@@ -288,7 +288,7 @@ class Utils
             $body = curl_exec($ch);
             curl_close($ch);
         } catch (\Throwable $th) {
-            throw $th;
+            //throw $th;
         }
 
         if ($body == null) {
