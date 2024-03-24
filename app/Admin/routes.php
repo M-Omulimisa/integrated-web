@@ -85,4 +85,8 @@ Route::group([
     $router->resource('weather-subscriptions', WeatherSubscriptionController::class);
     $router->resource('weather-sms-translations', WeatherSmsTranslationController::class);
     $router->resource('damark-rercords', DamarkRercordController::class);
+
+    $router->resource('translated-words', TranslatedWordController::class);
+    $router->resource('item-prices', ItemPriceController::class);
+    $router->resource('market-info-message-campaigns', MarketInfoMessageCampaignController::class);
 });

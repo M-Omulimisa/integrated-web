@@ -139,6 +139,8 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\IdValidations\PhoneValidationController;
 use App\Models\DistrictModel;
 use App\Models\Gen;
+use App\Models\Market\MarketOutbox;
+use App\Models\MarketInfoMessageCampaign;
 use App\Models\NotificationCampaign;
 use App\Models\NotificationMessage;
 use App\Models\OnlineCourse;
@@ -169,6 +171,36 @@ Route::get('/', function () {
 });
 */
 
+Route::get('market-info-message-campaigns-send-now', function () {
+    $campaign = MarketInfoMessageCampaign::find($_GET['id']);
+    if ($campaign == null) {
+        die("Campaign not found");
+    }
+    $outboxes = MarketOutbox::where('market_info_message_campaign_id', $campaign->id)->get();
+    if ($outboxes->count() == 0) {
+        die("No outboxes found");
+    }
+    $i = 0;
+    foreach ($outboxes as $outbox) {
+        $i++;
+        if ($outbox->status == 'Sent') {
+            echo "$i. Already sent to {$outbox->recipient} <br>";
+            continue;
+        }
+        $recipient = Utils::prepare_phone_number($outbox->recipient);
+        if (!Utils::phone_number_is_valid($recipient)) {
+            $outbox->status = 'Failed';
+            $outbox->failure_reason = "Invalid phone number";
+            $outbox->save();
+            echo "$i. Invalid phone number: $recipient <br>";
+            continue;
+        }
+        Utils::send_sms($recipient, $outbox->message);
+        $outbox->status = 'Sent';
+        $outbox->save();
+        echo "$i. Successfully sent to $recipient <br>";
+    }
+});
 Route::get('sync-data', function () {
     foreach (OnlineCourseStudent::all() as $key => $s) {
         if ($s->progress >= 99) {
