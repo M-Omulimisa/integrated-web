@@ -36,12 +36,20 @@ class MarketSubscriptionController extends AdminController
         $grid->column('subcounty_id', __('Subcounty id'));
         $grid->column('parish_id', __('Parish id')); */
 
-        $grid->column('phone', __('Phone'))->sortable();
+        $packages = [];
+        foreach (\App\Models\Market\MarketPackage::all() as $key => $package) {
+            $packages[$package->id] = $package->name;
+        }
+
+        $grid->column('phone', __('Phone'))
+            ->width(150)
+            ->filter('like')
+            ->sortable();
         $grid->column('first_name', __('name'))
             ->display(function ($first_name) {
                 return $first_name . ' ' . $this->last_name;
             })->sortable()
-            ->hide(); 
+            ->hide();
 
         $grid->column('package_id', __('Package'))
             ->display(function ($package_id) {
@@ -49,7 +57,9 @@ class MarketSubscriptionController extends AdminController
                     return '-';
                 }
                 return $this->package->name;
-            })->sortable();
+            })
+            ->filter($packages)->sortable()
+            ->width(150);
 
         $grid->column('frequency', __('Frequency'))->sortable();
         $grid->column('period_paid', __('Period'))->sortable();
