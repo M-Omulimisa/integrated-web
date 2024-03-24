@@ -64,6 +64,7 @@ class SeasonController extends Controller
             request()->validate([
                 'name' => 'required',
                 'start_date' => 'required',
+                'cut_off_date' => 'required',
                 'end_date' => 'required',
                 'country_id' => 'required'
             ]);
@@ -121,6 +122,7 @@ class SeasonController extends Controller
                 'name' => 'required',
                 'start_date' => 'required',
                 'end_date' => 'required',
+                'cut_off_date' => 'required',
                 'country_id' => 'required'
             ]);
         

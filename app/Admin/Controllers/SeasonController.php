@@ -31,6 +31,7 @@ class SeasonController extends AdminController
         $grid->column('name', __('Name'));
         $grid->column('start_date', __('Start date'));
         $grid->column('end_date', __('End date'));
+        $grid->column('cut_off_date', __('Cut Off date'));
         $grid->column('status', __('Status'));
         $grid->column('created_at', __('Created at'))->hide();
 
@@ -52,6 +53,7 @@ class SeasonController extends AdminController
         $show->field('name', __('Name'));
         $show->field('start_date', __('Start date'));
         $show->field('end_date', __('End date'));
+        $show->field('cut_off_date', __('Cut Off date'));
         $show->field('status', __('Status'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
@@ -73,6 +75,7 @@ class SeasonController extends AdminController
             ->rules('required');
         $form->text('name', __('Name'));
         $form->date('start_date', __('Start date'))->default(date('Y-m-d'));
+        $form->date('cut_off_date', __('Cut off date'))->default(date('Y-m-d'));
         $form->date('end_date', __('End date'))->default(date('Y-m-d'));
         $form->switch('status', __('Status'))->default(1);
 

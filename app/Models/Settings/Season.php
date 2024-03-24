@@ -12,7 +12,7 @@ class Season extends BaseModel
     use Uuid, SeasonRelationship;
   
     protected $fillable = [
-        'name', 'start_date', 'end_date', 'status', 'country_id'
+        'name', 'start_date','cut_off_date', 'end_date', 'status', 'country_id'
     ];
     
     /**

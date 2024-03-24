@@ -53,6 +53,13 @@
                             </div>
 
                             <div class="form-group mb-3">
+                                {!! Form::label('cut_off_date', 'Cut off date (required)', ['class' => 'col-sm-3 form-label']) !!}                
+                                <div class="col-sm-5">
+                                {!! Form::text('cut_off_date', old('cut_off_date'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}               
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
                                 {!! Form::label('end_date', 'End date (required)', ['class' => 'col-sm-3 form-label']) !!}                
                                 <div class="col-sm-5">
                                 {!! Form::text('end_date', old('end_date'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}               

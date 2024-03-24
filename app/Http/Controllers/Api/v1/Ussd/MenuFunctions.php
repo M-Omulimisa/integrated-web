@@ -693,7 +693,7 @@ class MenuFunctions
         $currentDate = now(); // Get the current date and time
 
         $seasons = Season::where('status', true)
-                        ->whereDate('end_date', '>=', $currentDate) // Filter by end date
+                        ->whereDate('cut_off_date', '>=', $currentDate) // Filter by end date
                         ->orderBy('start_date', 'ASC')
                         ->get();
 
@@ -836,7 +836,7 @@ class MenuFunctions
 
         $this->saveToField($sessionId, $phoneNumber, 'insurance_amount', $premium);
 
-        return "You are insuring ".$acerage." of ".$enterpriseName." for ".$phone." at  UGX".number_format($sum_insured).". You'll pay a premium of UGX".number_format(($premium));
+        return "You are insuring ".$acerage." of ".$enterpriseName." for ".$phone." for the sum insured of  UGX".number_format($sum_insured).". You'll pay a premium of UGX".number_format(($premium));
     }
 
     /**
