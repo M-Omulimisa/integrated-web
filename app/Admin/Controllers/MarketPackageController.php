@@ -36,7 +36,7 @@ class MarketPackageController extends AdminController
                 return "<span class='label label-success'>{$ent['name']}</span>";
             }, $ents);
             return join('&nbsp;', $ents);
-        }); 
+        });
 
 
         return $grid;

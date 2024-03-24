@@ -3,6 +3,8 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Market\MarketOutbox;
+use App\Models\MarketInfoMessageCampaign;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -15,7 +17,7 @@ class MarketOutboxController extends AdminController
      *
      * @var string
      */
-    protected $title = 'MarketOutbox';
+    protected $title = 'Market Outboxes';
 
     /**
      * Make a grid builder.
@@ -26,20 +28,58 @@ class MarketOutboxController extends AdminController
     {
         $grid = new Grid(new MarketOutbox());
 
-        $grid->column('id', __('Id'));
-        $grid->column('subscription_id', __('Subscription id'));
-        $grid->column('farmer_id', __('Farmer id'));
-        $grid->column('recipient', __('Recipient'));
-        $grid->column('message', __('Message'));
-        $grid->column('status', __('Status'));
-        $grid->column('failure_reason', __('Failure reason'));
-        $grid->column('processsed_at', __('Processsed at'));
-        $grid->column('sent_at', __('Sent at'));
-        $grid->column('failed_at', __('Failed at'));
-        $grid->column('statuses', __('Statuses'));
-        $grid->column('sent_via', __('Sent via'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
+        $campaigns = [];
+        foreach (MarketInfoMessageCampaign::where([])
+            ->orderBy('created_at', 'desc')->get()
+            as $campaign) {
+            $campaigns[$campaign->id] = Utils::my_date($campaign->created_at);
+        }
+
+        $grid->model()->orderBy('created_at', 'desc');
+        $grid->column('subscription_id', __('Subscription'))->hide();
+        $grid->column('farmer_id', __('Farmer id'))->hide();
+        $grid->column('recipient', __('Recipient'))
+            ->filter('like')
+            ->sortable()
+            ->width(120);
+        $grid->column('message', __('Message'))
+            ->filter('like')
+            ->sortable()
+            ->limit(60);
+        $grid->column('status', __('Status'))
+            ->width(80)
+            ->filter([
+                'Pending' => 'Pending',
+                'Sent' => 'Sent',
+                'Failed' => 'Failed',
+            ])
+            ->label([
+                'Pending' => 'info',
+                'Sent' => 'success',
+                'Failed' => 'danger',
+            ]);
+        $grid->column('failure_reason', __('Failure reason'))->hide();
+        $grid->column('processsed_at', __('Processsed at'))->hide();
+        $grid->column('sent_at', __('Sent at'))->hide();
+        $grid->column('failed_at', __('Failed at'))->hide();
+        $grid->column('statuses', __('Statuses'))->hide();
+        $grid->column('sent_via', __('Sent via'))->hide();
+        $grid->column('created_at', __('DATE'))
+            ->sortable()
+            ->width(100)
+            ->filter('range', 'date')
+            ->display(function ($created_at) {
+                return date('d-m-Y', strtotime($created_at));
+            });
+        $grid->column('market_info_message_campaign_id', __('Campaign'))
+            ->display(function () {
+                if ($this->campaign == null) {
+                    return '-';
+                }
+                return Utils::my_date($this->campaign->created_at);
+            })
+            ->filter($campaigns)
+            ->sortable();
 
         return $grid;
     }

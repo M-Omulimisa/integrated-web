@@ -74,6 +74,8 @@ class LanguageController extends AdminController
         $form = new Form(new Language());
 
         $form->text('name', __('Name'));
+        $form->text('slug', __('Slug'))->required()
+            ->rules('required|min:2');
         $form->text('sms_keyword', __('SMS Question Keyword'));
         $form->text('sms_registration_keyword', __('SMS Registation Keyword'));
         $form->hidden('country_id', __('Country id'))->default(1);
