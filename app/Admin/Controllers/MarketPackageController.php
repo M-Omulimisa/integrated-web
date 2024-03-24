@@ -38,6 +38,10 @@ class MarketPackageController extends AdminController
             return join('&nbsp;', $ents);
         });
 
+        //count subscriptions
+        $grid->column('subscriptions_count', __('Subscriptions'))->display(function () {
+            return $this->subscriptions()->count();
+        });
 
         return $grid;
     }
