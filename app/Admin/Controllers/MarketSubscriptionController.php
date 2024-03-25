@@ -71,7 +71,7 @@ class MarketSubscriptionController extends AdminController
             ->display(function ($start_date) {
                 return date('d-m-Y', strtotime($start_date));
             })->sortable();
-        $grid->column('status', __('Status'))
+        $grid->column('status', __('STATUS'))
             ->using(['1' => 'Active', '0' => 'Expired'])
             ->sortable()
             ->label([
