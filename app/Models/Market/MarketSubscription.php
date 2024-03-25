@@ -268,8 +268,8 @@ class MarketSubscription extends BaseModel
             }
         }
         if ($value == 1) {
-            return 'Active';
+            return 1;
         }
-        return 'Inactive';
+        return 0;
     }
 }
