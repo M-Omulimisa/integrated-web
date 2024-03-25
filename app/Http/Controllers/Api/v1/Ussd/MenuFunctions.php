@@ -37,6 +37,7 @@ use App\Models\Ussd\UssdEvaluationQuestionOption;
 
 use App\Models\Insurance\InsuranceSubscription;
 use App\Models\Insurance\InsurancePremiumOption;
+use App\Models\Insurance\Markup;
 
 use App\Models\Weather\WeatherSubscription;
 use App\Models\Payments\SubscriptionPayment;
@@ -786,6 +787,12 @@ class MenuFunctions
         return $enterprise->$param ?? null;
     }
 
+    public function getMarkup()
+    {
+        $markup = Markup::whereStatus(TRUE)->first();
+        return $markup->amount ?? 3000;
+    }
+    
     public function getPremiumOptionDetails($enterprise_id, $param)
     {
         $enterprise = InsurancePremiumOption::whereEnterpriseId($enterprise_id)->whereStatus(TRUE)->first();
@@ -819,7 +826,8 @@ class MenuFunctions
         $enterpriseName = $this->getEnterprise($enterprise_id, 'name');
 
         $phone          = $saved_data->insurance_subscriber;                
-        $sum_insured    = $saved_data->insurance_sum_insured;
+        $sum_insured    = $saved_data->insurance_sum_insured;            
+        $coverage    = $saved_data->insurance_coverage;
         $premium        = $saved_data->insurance_premium;
 
         if (count($saved_data->insurance_list) > 0) {
@@ -836,7 +844,7 @@ class MenuFunctions
 
         $this->saveToField($sessionId, $phoneNumber, 'insurance_amount', $premium);
 
-        return "You are insuring ".$acerage." of ".$enterpriseName." for ".$phone." for the sum insured of  UGX".number_format($sum_insured).". You'll pay a premium of UGX".number_format(($premium));
+        return "You are insuring ".$acerage." of ".$enterpriseName." at ".$coverage." coverage for ".$phone." for the sum insured of  UGX".number_format($sum_insured).". You'll pay a premium of UGX".number_format(($premium)).". Your insurance policy is held by MUA, powered by M Omulimisa. Comfirm?";
     }
 
     /**
@@ -862,7 +870,7 @@ class MenuFunctions
                 'account'   => $sessionData->insurance_subscriber,
                 'amount'    => $sessionData->insurance_amount,
                 'sms_api'   => $this->getServiceProvider($sessionData->insurance_subscriber, 'sms_api'),
-                'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' Insurance subscription',
+                'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' at '.$sessionData->insurance_coverage.' coverage  insurance subscription',
                 'reference_id' => $this->generateReference($api),
                 'payment_api'  => $api,
                 'status'       => 'INITIATED'

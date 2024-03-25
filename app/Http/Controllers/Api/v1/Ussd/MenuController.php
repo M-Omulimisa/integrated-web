@@ -54,7 +54,6 @@ class MenuController extends Controller
         $main_menu .= "3) Weather Information\n";
         $main_menu .= "4) Advisory";
 
-
         $advisory_option_menu = "Select option\n";
         $advisory_option_menu .= "1) Advisory Tips\n";
         $advisory_option_menu .= "2) Advisory Tip Evaluation";
@@ -246,6 +245,7 @@ class MenuController extends Controller
             $enterprise_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_enterprise_id');
             $selected_acreage  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_acreage');
             $sum_insured    = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'sum_insured_per_acre');
+            $markup    = $this->menu_helper->getMarkup($enterprise_id, 'markup');
             $premium        = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'premium_per_acre');
 
             if($input_text == 1){
@@ -254,7 +254,9 @@ class MenuController extends Controller
                 info(($sum_insured / 2) * $selected_acreage);
 
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_sum_insured', (($sum_insured / 2) * $selected_acreage));
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', (($premium / 2) * $selected_acreage));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', ((($premium / 2) * $selected_acreage) + $markup));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'markup',  $markup);
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_coverage', 'half');
 
                 $action='request';
                 $response = $this->menu_helper->getInsuranceConfirmation($sessionId, $phoneNumber);               
@@ -267,7 +269,9 @@ class MenuController extends Controller
 
             else if ($input_text == 2){
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_sum_insured', ($sum_insured * $selected_acreage));
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', ($premium * $selected_acreage));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', (($premium * $selected_acreage) + $markup));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_coverage', 'full');
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'markup',  $markup);
 
                 $action='request';
                 $response = $this->menu_helper->getInsuranceConfirmation($sessionId, $phoneNumber);               
