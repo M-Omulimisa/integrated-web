@@ -36,6 +36,7 @@ class MenuController extends Controller
         $sessionId          = $request->transactionId;
         $transactionTime    = $request->transactionTime;
         $phoneNumber        = $request->msisdn;
+        $insuree            = $phoneNumber;
         $serviceCode        = $request->ussdServiceCode;
         $ussdRequestString  = $request->ussdRequestString;
         $response           = $request->response;
@@ -53,7 +54,6 @@ class MenuController extends Controller
         $main_menu .= "3) Weather Information\n";
         $main_menu .= "4) Advisory";
 
-
         $advisory_option_menu = "Select option\n";
         $advisory_option_menu .= "1) Advisory Tips\n";
         $advisory_option_menu .= "2) Advisory Tip Evaluation";
@@ -70,20 +70,14 @@ class MenuController extends Controller
         $languages_menu .= "5) Runyakitara";
 
         $subscriber     = "Subscribe for\n";
-        $subscriber     .= "1) Self\n";
-        $subscriber     .= "2) Another";
+        $subscriber     .= "1) Myself\n";
+        $subscriber     .= "2) Another person";
 
         $enter_phone = "Enter phone e.g 07XXXXXXXX";
         $invalid_phone = "Invalid phone number";
 
         // "Enter no. of acres\n";
-        $acreage = "Acreage you want to insure\n";
-        $acreage .= "1) Half acre\n";
-        $acreage .= "2) 1 acre\n";
-        $acreage .= "3) 2 acre\n";
-        $acreage .= "4) 3 acre\n";
-        $acreage .= "5) 4 acre\n";
-        $acreage .= "6) 5 acre\n";
+        $acreage = "How many acres do you want to insure?\n";
 
         $weather_period = "Subscription Period\n";
         $weather_period .= "1) Weekly\n";
@@ -96,7 +90,6 @@ class MenuController extends Controller
 
         $sum_insured = 0;
         $premium = 0;
-
 
         $insurance_coverage = "Select insurance coverage\n";
         $insurance_coverage .= "1) Half coverage (45%)\n";
@@ -147,70 +140,69 @@ class MenuController extends Controller
         }
 
         /******************* START INSURANCE *******************/
-
+        //person choses 1 and its time to chose location
         elseif ($last_menu == "insurance_phone_option" && $input_text == '1' || $last_menu == "insurance_phone" || $last_menu == 'insurance_subcounty' && $input_text == '0') {
             $action         = "request";
 
+            //invalid phone number entered, yet yo ass chose to insure for another
             if ($last_menu == "insurance_phone" && ! $this->menu_helper->isLocalPhoneValid($input_text, '256')) {
                 $response       = $invalid_phone."\n";
                 $response       .= $enter_phone;
                 $current_menu   = "insurance_phone";
             }
             
+            //correct phone number. Time to get region
             else{
+                if ($last_menu != "insurance_phone") {
+                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_subscrption_for', 'self');
+                    $insuree = $this->menu_helper->formatPhoneNumbers($phoneNumber, '256', 'international');
+                }
+
+                else{
+                    $insuree = $this->menu_helper->formatPhoneNumbers($input_text, '256', 'international');
+                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_subscrption_for', 'another');
+                }
+
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_subscriber', $insuree);
 
                 $response       = "Select a region:\n";
                 $response       .= $this->menu_helper->getInsuranceRegionList();
                 $current_menu   = "insurance_region_list";
-
-                if ($last_menu != "insurance_phone") {
-                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_subscrption_for', 'self');
-                    $input_text = $phoneNumber;
-                }
-                else{
-                    $input_text = $this->menu_helper->formatPhoneNumbers($phoneNumber, '256', 'international');
-                }
-
-                if($input_text != '0') $field = 'insurance_subscriber';
-    
             }
         } 
-        elseif ($last_menu == "insurance_phone_option" && $input_text == '2') {
 
+        //enter another person's phone number
+        elseif ($last_menu == "insurance_phone_option" && $input_text == '2') {
             $action         = "request";
             $response       = "Enter phone e.g 07XXXXXXXX";
             $current_menu   = "insurance_phone";
             $field          = "insurance_subscrption_for";
-            $input_text     = "another";
-
         }
 
+        // invalid input
         elseif ($last_menu == "insurance_phone_option") {
-            
             $action         = "end";
             $response       = "Invalid input!\n";
             $current_menu   = "invalid_input"; 
         }
 
+        //chose crop
         else if($last_menu == "insurance_region_list"){
-
             $action         = "request";
-            $response       = "Crop you want to insure:\n";
+            $response       = "Which crop do you want to insure:\n";
             $response       .= $this->menu_helper->seasonItemList();
             $current_menu   = "insurance_item";
-
         }
 
-
+        //chose season
         else if($last_menu == "insurance_item"){
-
                 $action         = "request";
-                $response       = "Select season:\n";
+                $response       = "For which season:\n";
                 $response       .= $this->menu_helper->insuranceSeasonList();
                 $current_menu   = "insurance_season_list";
-
         }
         
+        //chose acreage
         elseif ($last_menu == "insurance_season_list") {
             $action         = "request";
             
@@ -226,7 +218,9 @@ class MenuController extends Controller
             //     $response       .= $this->menu_helper->seasonItemList($seasonId);
             //     $current_menu   = "insurance_item";
             // }
-        }   
+        }  
+
+        
         elseif ($last_menu == "insurance_acreage") {
             $action    = "request";
             if (is_numeric($input_text) && $input_text > 0) {
@@ -238,8 +232,6 @@ class MenuController extends Controller
                 $response       = $insurance_coverage;
                 $current_menu   = "insurance_coverage";
                 $field          = "insurance_acreage";
-                
-              
             }
             else{
                 $response       = "Wrong input!\n";
@@ -248,23 +240,23 @@ class MenuController extends Controller
             }
         }
 
+        //chose coverage
         else if($last_menu == 'insurance_coverage'){
-
-
             $enterprise_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_enterprise_id');
             $selected_acreage  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_acreage');
             $sum_insured    = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'sum_insured_per_acre');
+            $markup    = $this->menu_helper->getMarkup($enterprise_id, 'markup');
             $premium        = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'premium_per_acre');
 
-
             if($input_text == 1){
-
                 info($sum_insured);
                 info($selected_acreage);
                 info(($sum_insured / 2) * $selected_acreage);
 
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_sum_insured', (($sum_insured / 2) * $selected_acreage));
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', (($premium / 2) * $selected_acreage));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', ((($premium / 2) * $selected_acreage) + $markup));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'markup',  $markup);
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_coverage', 'half');
 
                 $action='request';
                 $response = $this->menu_helper->getInsuranceConfirmation($sessionId, $phoneNumber);               
@@ -273,12 +265,13 @@ class MenuController extends Controller
                 $response .= "\n1) Yes\n";
                 $response .= "2) No";
                 $current_menu   = "insurance_confirmation";
-
             }
+
             else if ($input_text == 2){
-
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_sum_insured', ($sum_insured * $selected_acreage));
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', ($premium * $selected_acreage));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', (($premium * $selected_acreage) + $markup));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_coverage', 'full');
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'markup',  $markup);
 
                 $action='request';
                 $response = $this->menu_helper->getInsuranceConfirmation($sessionId, $phoneNumber);               
@@ -288,28 +281,27 @@ class MenuController extends Controller
                 $response .= "2) No";
                 $current_menu   = "insurance_confirmation";
             }
+
             else{
                 $response       = "Wrong input!\n";
                 $response       .= $acreage;
                 $current_menu   = "insurance_acreage";
             }
-           
-
-          
-
         }
         
-       
-        
+        //finalizing insurance
         elseif ($last_menu == "insurance_confirmation") {
             $action         = "end";
             
+            //want to proceed
             if ($input_text == '1') {
+                //success
                 if ($this->menu_helper->completeInsuranceSubscription($sessionId, $phoneNumber)) {
                     $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_subscriber');
                     $response       = "Thank you for subscribing.\n";
                     $response       .= "Check ".$phone." to approve the payment\n";
                 }
+                //failed
                 else{
                     $response = "Subscription was unsuccessful. Please try again";
                 }
@@ -317,11 +309,15 @@ class MenuController extends Controller
                 $current_menu   = "insurance_confirmed";
                 $field          = "insurance_confirmation";
             }
+
+            //choses not to proceed
             elseif($input_text == '2') {
                 $response       = "Transaction has been cancelled";
                 $current_menu   = "insurance_cancelled";
                 // $input_text     = "CANCELLED";              
             }
+
+            //invalid entry
             else{
                 $action         = "request";
                 $response       = "Invalid input!\n";
@@ -333,7 +329,6 @@ class MenuController extends Controller
         } 
         
         /******************* START MARKET *******************/
-
         elseif ($last_menu == "market_phone_option" && $input_text == '1' || $last_menu == "market_phone") {
             
             $action         = "request";
@@ -382,7 +377,6 @@ class MenuController extends Controller
             $current_menu   = "market_phone_option"; 
         } 
         elseif ($last_menu == "market_region") {
-
             $region = $this->menu_helper->getSelectedRegion($input_text);
             $input_text = $region->name ?? null;
 
@@ -396,6 +390,7 @@ class MenuController extends Controller
                 $field = "market_region";
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_region_id', $region->id);
             }
+
             else{
                 $action         = "request";
                 $response       = "Wrong input!\n";
@@ -640,7 +635,6 @@ class MenuController extends Controller
         }  
         
         /******************* START WEATHER *******************/
-
         elseif ($last_menu == "weather_phone_option" && $input_text == '1' || $last_menu == "weather_phone") {
             $action         = "request";
 
@@ -835,6 +829,7 @@ class MenuController extends Controller
             }
         }
 
+        /******************* START ADVISORY SHIT *******************/
         elseif ($last_menu == "advisory_option_menu") {
 
             if($input_text == 1){
@@ -871,7 +866,6 @@ class MenuController extends Controller
                 $current_menu   = "advisory_option_menu";  
             }
         }
-
         elseif($last_menu == "tip_language_menu"){
 
             $menu_id = 4;
@@ -927,9 +921,6 @@ class MenuController extends Controller
 
            
         }
-
-        
-
         elseif ($last_menu == "advisory_menu") {
 
             $advisory_questions =   $this->menu_helper->getAdvisoryQuestions($input_text, $sessionId);
@@ -944,7 +935,6 @@ class MenuController extends Controller
             $current_menu   = "advisory_subtopic_menu";
            
         }
-
         elseif ($last_menu == "advisory_subtopic_menu") {
 
             dispatch(new SendUssdAdvisoryMessage($sessionId, $input_text));
@@ -976,7 +966,6 @@ class MenuController extends Controller
             $current_menu  = "Sending advisory";
            
         }
-
         elseif($last_menu == "evaluation_language_menu"){
 
             $menu_id = 4;
@@ -1012,9 +1001,7 @@ class MenuController extends Controller
             }
 
 
-        }
-
-        
+        } 
         elseif ($last_menu == "advisory_evaluation_two") {
 
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 1, $input_text);
@@ -1031,7 +1018,6 @@ class MenuController extends Controller
             $current_menu   = "advisory_evaluation_three";
            
         }
-
         elseif ($last_menu == "advisory_evaluation_three") {
 
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 2, $input_text);
@@ -1112,9 +1098,7 @@ class MenuController extends Controller
             $current_menu   = "advisory_evaluation_seven";
            
         }
-
         elseif ($last_menu == "advisory_evaluation_seven") {
-
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 6, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(7, $sessionId);
@@ -1138,15 +1122,6 @@ class MenuController extends Controller
             $current_menu  = "advisory_evaluation_end";
            
         }
-
-
-        
-
-        
-
-
-        
-
         else {
             $response  = "An Error occured. Contact M-Omulimisa team for help!";
             $current_menu = "system_error";
@@ -1167,5 +1142,4 @@ class MenuController extends Controller
         //logIt("Response sent: ".$response);
         print($response);
     } 
-
 }
