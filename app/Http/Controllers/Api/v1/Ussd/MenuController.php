@@ -435,16 +435,13 @@ class MenuController extends Controller
 
             if ($package) {
                 $response       = "Select language:\n";
-                $languages      = $this->menu_helper->getLanguages();
+                $languages      = $this->menu_helper->getLanguages("market");
                 foreach($languages as $language){
 
                     $response .= $language->position.") ".$language->name."\n";
 
                 }
-                $current_menu   = "market_languages";
-
-                
-                
+                $current_menu   = "market_languages";                
 
                 $input_text = $package->name;
                 // $field          = 'market_package';

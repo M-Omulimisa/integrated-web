@@ -214,7 +214,7 @@ class MenuFunctions
                                                     $query->select('id')->from(with(new MarketPackage)->getTable());
                                                 })
                                                 ->from(with(new MarketPackageMessage)->getTable());
-                                    })
+                                    })                                    
                                     ->orderBy('name', 'ASC')
                                     ->get();
 
@@ -228,8 +228,6 @@ class MenuFunctions
 
         return $list;
     }
-
-
 
     public function getSelectedRegionLaguage($language_menu_no, $region_id)
     {
@@ -535,7 +533,6 @@ class MenuFunctions
 
         return $list;
     }
-
 
     public function seasonItemList()
     {
@@ -927,16 +924,12 @@ class MenuFunctions
     }
 
     public function getLanguage($input_text){
-
         $language = UssdLanguage::select('language')->where('position', $input_text)->first();
-
         return $language;
     }
 
-    public function getLanguages(){
-
-        $languages = Language::whereNotNull('position')->select('id', 'name', 'position')->orderBy('position', 'asc')->get();
-
+    public function getLanguages($type){
+        $languages = Language::whereNotNull('position')->where($type, "Yes")->select('id', 'name', 'position')->orderBy('position', 'asc')->get();
         return $languages;
     }
 
