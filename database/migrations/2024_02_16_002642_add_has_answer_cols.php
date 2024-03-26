@@ -27,7 +27,7 @@ class AddHasAnswerCols extends Migration
     public function down()
     {
         Schema::table('online_course_lessons', function (Blueprint $table) {
-            //
+            
         });
     }
 }
