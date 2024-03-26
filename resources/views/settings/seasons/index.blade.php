@@ -33,6 +33,7 @@
                                         <th>Name</th>
                                         <th>Country</th>
                                         <th>Start date</th>
+                                        <th>Cut off date</th>
                                         <th>End date</th>
                                         <td>Status</td>
                                         <th>Action</th>

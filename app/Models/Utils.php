@@ -516,7 +516,7 @@ class Utils
         $data = null,
         $url = null,
         $buttons = null,
-        $schedule = null,
+        $schedule = null
     ) {
         try {
             $client = new OneSignalClient(

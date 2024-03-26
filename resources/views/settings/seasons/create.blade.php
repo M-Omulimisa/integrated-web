@@ -50,6 +50,13 @@
                             </div>
 
                             <div class="form-group mb-3">
+                                {!! Form::label('cut_off_date', 'Cut off Date (required)', ['class' => 'col-sm-3 form-label']) !!}                
+                                <div class="col-sm-5">
+                                {!! Form::text('cut_off_date', old('cut_off_date'), ['class' => 'form-control', 'placeholder' => '', 'required' => '', 'data-provider' => 'flatpickr', 'data-date-format' => 'Y-m-d']) !!}               
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
                                 {!! Form::label('end_date', 'End date (required)', ['class' => 'col-sm-3 form-label']) !!}                
                                 <div class="col-sm-5">
                                 {!! Form::text('end_date', old('end_date'), ['class' => 'form-control', 'placeholder' => '', 'required' => '', 'data-provider' => 'flatpickr', 'data-date-format' => 'Y-m-d']) !!}               

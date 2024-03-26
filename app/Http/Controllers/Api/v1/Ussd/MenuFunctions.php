@@ -37,6 +37,7 @@ use App\Models\Ussd\UssdEvaluationQuestionOption;
 
 use App\Models\Insurance\InsuranceSubscription;
 use App\Models\Insurance\InsurancePremiumOption;
+use App\Models\Insurance\Markup;
 
 use App\Models\Weather\WeatherSubscription;
 use App\Models\Payments\SubscriptionPayment;
@@ -536,6 +537,22 @@ class MenuFunctions
     }
 
 
+    public function seasonItemList()
+    {
+        $enterprises = InsurancePremiumOption::whereStatus(TRUE)->orderBy('menu', 'ASC')->get();
+
+        if (count($enterprises) > 0) {
+            $list = '';
+            foreach ($enterprises as $enterprise) {
+                $list .= $enterprise->menu.") ".$enterprise->enterprise->name."\n";
+            }
+            return $list;
+        }
+        else{
+            return null;
+        }
+    }
+
     public function getInsuranceRegionList()
     {
         $locations = RegionModel::orderBy('name', 'ASC')->get();
@@ -674,18 +691,22 @@ class MenuFunctions
 
     public function insuranceSeasonList()
     {
-        $seasons = Season::whereStatus(TRUE)->orderBy('start_date', 'ASC')->get();
+        $currentDate = now(); // Get the current date and time
 
-        if (count($seasons) > 0) {
+        $seasons = Season::where('status', true)
+                        ->whereDate('cut_off_date', '>=', $currentDate) // Filter by end date
+                        ->orderBy('start_date', 'ASC')
+                        ->get();
+
+        if ($seasons->isNotEmpty()) {
             $list = '';
             $count = 0;
             foreach ($seasons as $season) {
                 $list .= (++$count).") ".$season->name."\n";
             }
             return $list;
-        }
-        else{
-            return null;
+        } else {
+            return "No seasons added yet."; // Return message when no seasons found
         }
     }
 
@@ -741,30 +762,11 @@ class MenuFunctions
         return $season->$param ?? null;
     }
 
-    public function seasonItemList()
-    {
-        $enterprises = InsurancePremiumOption::whereStatus(TRUE)->orderBy('menu', 'ASC')->get();
-
-        if (count($enterprises) > 0) {
-            $list = '';
-            foreach ($enterprises as $enterprise) {
-                $list .= $enterprise->menu.") ".$enterprise->enterprise->name."\n";
-            }
-            return $list;
-        }
-        else{
-            return null;
-        }
-    }
-
     public function getAcerage($input_text)
     {
-        if($input_text=="1") return 0.5;
-        if($input_text=="2") return 1;
-        if($input_text=="3") return 2;
-        if($input_text=="4") return 3;
-        if($input_text=="5") return 4;
-        if($input_text=="6") return 5;
+        // Use PHP's built-in function intval() to convert the input text to an integer
+        // If the input text is "1", it will be converted to the integer 1
+        return intval($input_text);
     }
 
     public function getEnterprise($enterprise_id, $param)
@@ -785,6 +787,12 @@ class MenuFunctions
         return $enterprise->$param ?? null;
     }
 
+    public function getMarkup()
+    {
+        $markup = Markup::whereStatus(TRUE)->first();
+        return $markup->amount ?? 3000;
+    }
+    
     public function getPremiumOptionDetails($enterprise_id, $param)
     {
         $enterprise = InsurancePremiumOption::whereEnterpriseId($enterprise_id)->whereStatus(TRUE)->first();
@@ -811,15 +819,15 @@ class MenuFunctions
         $saved_data = UssdSessionData::whereSessionId($sessionId)
                                             ->wherePhoneNumber($phoneNumber)
                                             ->first();
-
-        $acerage     = $saved_data->insurance_acreage.'A';
-
+                                            
+        $acerage     = $saved_data->insurance_acreage.' acre(s)';
 
         $enterprise_id  = $saved_data->insurance_enterprise_id;
         $enterpriseName = $this->getEnterprise($enterprise_id, 'name');
 
         $phone          = $saved_data->insurance_subscriber;                
-        $sum_insured    = $saved_data->insurance_sum_insured;
+        $sum_insured    = $saved_data->insurance_sum_insured;            
+        $coverage    = $saved_data->insurance_coverage;
         $premium        = $saved_data->insurance_premium;
 
         if (count($saved_data->insurance_list) > 0) {
@@ -836,7 +844,7 @@ class MenuFunctions
 
         $this->saveToField($sessionId, $phoneNumber, 'insurance_amount', $premium);
 
-        return "Insuring ".$acerage." of ".$enterpriseName." for ".$phone." at ugx".number_format($sum_insured).". Pay premium of ugx".number_format(($premium));
+        return "You are insuring ".$acerage." of ".$enterpriseName." at ".$coverage." coverage for ".$phone." for the sum insured of  UGX".number_format($sum_insured).". You'll pay a premium of UGX".number_format(($premium)).". Your insurance policy is held by MUA, powered by M Omulimisa. Comfirm?";
     }
 
     /**
@@ -862,7 +870,7 @@ class MenuFunctions
                 'account'   => $sessionData->insurance_subscriber,
                 'amount'    => $sessionData->insurance_amount,
                 'sms_api'   => $this->getServiceProvider($sessionData->insurance_subscriber, 'sms_api'),
-                'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' Insurance subscription',
+                'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' at '.$sessionData->insurance_coverage.' coverage  insurance subscription',
                 'reference_id' => $this->generateReference($api),
                 'payment_api'  => $api,
                 'status'       => 'INITIATED'
