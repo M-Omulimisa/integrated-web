@@ -333,7 +333,7 @@ class ApiAuthController extends Controller
     /* 
             "id": 2,
             "": "ABEIBUTI",
-            "parish_id": 441,
+            "parish_id": 441, 
             "user_id": 0,
             "created": "0000-00-00 00:00:00",
             "changed": 0
