@@ -53,7 +53,7 @@ class MarketSubscription extends BaseModel
         parent::boot();
         self::creating(function (MarketSubscription $model) {
             $model->id = $model->generateUuid();
-            $model->created_at = date('Y-m-d H:i:s'); 
+            $model->created_at = date('Y-m-d H:i:s');
             return self::prepare($model);
         });
 
@@ -254,5 +254,22 @@ class MarketSubscription extends BaseModel
     public function package()
     {
         return $this->belongsTo(MarketPackage::class, 'package_id');
+    }
+
+    //getter for status
+    public function getStatusAttribute($value)
+    {
+        $now = Carbon::now();
+        $then = Carbon::parse($this->end_date);
+        if ($now->gt($then)) {
+            if ($value == 1) {
+                $this->status = 0;
+                $this->save();
+            }
+        }
+        if ($value == 1) {
+            return 1;
+        }
+        return 0;
     }
 }
