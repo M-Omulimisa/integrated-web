@@ -14,7 +14,7 @@ class Region extends BaseModel
     use SoftDeletes; // Add this if you want soft deletes
 
     protected $fillable = [
-        'name', 'capital','brief', 'area_km', 'area_mil', 'elevation', 'brief', 'menu_status', 'menu_name'
+        'name', 'menu_status'
     ];
 
     /**
