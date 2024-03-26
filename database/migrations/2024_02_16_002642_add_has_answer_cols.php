@@ -17,7 +17,7 @@ class AddHasAnswerCols extends Migration
             $table->string('has_answer')->default('No');
             $table->string('student_listened_to_answer')->default('No');
         });
-    }
+    } 
 
     /**
      * Reverse the migrations.
