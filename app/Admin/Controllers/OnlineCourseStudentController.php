@@ -33,10 +33,10 @@ class OnlineCourseStudentController extends AdminController
 
             $export->except(['has_listened_to_intro', 'position']);
             $export->originalValue(['status', 'completion_status', 'progress']);
-
+/* 
             $export->column('column_5', function ($value, $original) {
                 return $value;
-            });
+            }); */
         });
 
         $grid->filter(function ($filter) {
