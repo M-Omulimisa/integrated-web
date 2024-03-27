@@ -66,8 +66,11 @@ class OnlineCourseLesson extends Model
     public function getStatusAttribute($value)
     {
         if ($this->student_audio_question != null && strlen($this->student_audio_question) > 3) {
-            $this->status = 'Attended';
-            $this->save();
+            if($this->status != 'Attended'){
+                $this->status = 'Attended';
+                $this->save();
+            }
+            return 'Attended'; 
         }
         return $value; 
     }
