@@ -18,10 +18,6 @@ class UssdLanguage extends Model
     public $incrementing = false;
     
     protected $fillable = [
-
             'language', 'position', 'menu_id'
-
         ];
-
-
 }
