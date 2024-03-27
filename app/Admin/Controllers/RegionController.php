@@ -26,7 +26,7 @@ class RegionController extends AdminController
     {
         $grid = new Grid(new Region());
         $grid->column('id', __('Id'));
-        $grid->column('name', __('Name'));
+        $grid->column('name', __('Region Name'))->sortable();
         $grid->column('menu_status', __('Status'));
         $grid->column('created_at', __('Created At'))->hide();
         $grid->column('updated_at', __('Updated At'))->hide();
