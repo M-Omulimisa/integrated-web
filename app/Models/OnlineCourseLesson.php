@@ -62,16 +62,20 @@ class OnlineCourseLesson extends Model
         return $this->belongsTo(OnlineCourseTopic::class);
     }
 
-    //getter for status
-    public function getStatusAttribute($value)
+
+    //getter for student_audio_question
+    public function getStudentAudioQuestionAttribute($value)
     {
         if ($this->student_audio_question != null && strlen($this->student_audio_question) > 3) {
-            if($this->status != 'Attended'){
-                $this->status = 'Attended';
-                $this->save();
+            if ($this->status != 'Attended') {
+                try {
+                    $this->status = 'Attended';
+                    $this->save();
+                } catch (\Exception $e) {
+                    return $value;
+                }
             }
-            return 'Attended'; 
         }
-        return $value; 
+        return $value;
     }
 }
