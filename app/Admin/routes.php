@@ -33,6 +33,8 @@ Route::group([
     $router->resource('products', ProductController::class);
 
     $router->resource('farmer-questions', FarmerQuestionController::class);
+    $router->resource('farmer-questions-unanswered', FarmerQuestionController::class); // this is a custom route 
+    $router->resource('farmer-questions', FarmerQuestionController::class);
     $router->resource('farmer-question-answers', FarmerQuestionAnswerController::class);
     $router->resource('product-categories', ProductCategoryController::class);
     $router->resource('districts', DistrictModelController::class);
@@ -84,4 +86,9 @@ Route::group([
     $router->resource('online-course-menus', OnlineCourseMenuController::class);
     $router->resource('weather-subscriptions', WeatherSubscriptionController::class);
     $router->resource('weather-sms-translations', WeatherSmsTranslationController::class);
+    $router->resource('damark-rercords', DamarkRercordController::class);
+
+    $router->resource('translated-words', TranslatedWordController::class);
+    $router->resource('item-prices', ItemPriceController::class);
+    $router->resource('market-info-message-campaigns', MarketInfoMessageCampaignController::class);
 });

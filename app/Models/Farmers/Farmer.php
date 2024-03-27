@@ -11,6 +11,7 @@ use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\FarmerRelationship;
 use App\Models\User;
 use App\Models\Utils;
+use Illuminate\Support\Facades\DB;
 
 class Farmer extends BaseModel
 {
@@ -39,9 +40,25 @@ class Farmer extends BaseModel
         });
         self::updating(function (Farmer $model) {
             //$model->id = $model->generateUuid();
+            //prcess account
+        });
+
+        //udpated
+        self::updated(function (Farmer $model) {
+            try {
+                self::process($model);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
         });
 
         self::created(function (Farmer $model) {
+
+            try {
+                self::process($model);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
 
             $_phone = Utils::prepare_phone_number($model->phone);
             if (Utils::phone_number_is_valid($_phone)) {
@@ -57,21 +74,98 @@ class Farmer extends BaseModel
 
                 $email = $model->email;
 
-                $data['body'] = $this->body;
+                $data['body'] = $model->body;
                 //$data['view'] = 'mails/mail-1';
                 $data['data'] = $data['body'];
                 $data['name'] = $last_name;
                 $data['email'] = $email;
-                $data['subject'] = $this->title . ' - M-Omulimisa';
+                $data['subject'] = $model->title . ' - M-Omulimisa';
                 try {
                     Utils::mail_sender($data);
-                    $this->save();
+                    $model->save();
                 } catch (\Throwable $th) {
                 }
             }
         });
     }
 
+    //prcess
+    public static function process($m)
+    {
+        if ($m->is_processed == 'Yes') {
+            return;
+        }
+        $set = ' user_account_processed = "Yes" ';
+
+        $phone_number = $m->phone_number;
+        if (strlen($phone_number) < 6) {
+            $phone_number = $m->phone;
+        }
+
+        $phone_number = Utils::prepare_phone_number($phone_number);
+
+        if (!Utils::phone_number_is_valid($phone_number)) {
+            $set .= ', process_status = "Failed" ';
+            $set .= ', error_message = "Invalid phone number ' . $phone_number . '" ';
+            $sql = "UPDATE farmers SET $set WHERE id = $m->id";
+            DB::update($sql);
+            return;
+        }
+
+        //get user with same phone number
+        $user = User::where('phone_number', $phone_number)->first();
+        if ($user == null) {
+            $user = User::where('phone', $phone_number)->first();
+        }
+        if ($user) {
+            $set .= ', process_status = "Failed" ';
+            $set .= ', error_message = "User with phone number ' . $phone_number . ' already exists" ';
+            $sql = "UPDATE farmers SET $set WHERE id = $m->id";
+            DB::update($sql);
+            return;
+        }
+        $user = new User();
+        $user->name = $m->first_name . ' ' . $m->last_name;
+        $user->phone = $phone_number;
+        $user->username = $phone_number;
+        $user->phone_number = $phone_number;
+        if (Utils::email_is_valid($m->email)) {
+            $user->email = $m->email;
+        } else {
+            $user->email = $phone_number;
+        }
+        $user->password = password_hash('4321', PASSWORD_DEFAULT);
+        $user->created_by = 1;
+        $user->country_id = 1;
+        $user->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
+        $user->status = 'Active';
+        $user->verified = 1;
+        $user->email_verified_at = date('Y-m-d H:i:s');
+        $user->reg_date = date('Y-m-d H:i:s');
+        $user->first_name = $m->first_name;
+        $user->last_name = $m->last_name;
+        $user->sex = $m->sex;
+        $user->nin = $m->national_id_number;
+        $user->district_id = $m->district_id;
+        $user->subcounty_id = $m->subcounty_id;
+        $user->parish_id = $m->parish_id;
+        $user->village = $m->village;
+        $user->language_id = $m->language_id;
+
+        if (strlen(trim($user->name)) < 3) {
+            $user->name = $user->phone;
+        }
+
+        try {
+            $user->save();
+        } catch (\Throwable $th) {
+            $set .= ', process_status = "Failed" ';
+            $set .= ', error_message = "Unable to create user account because : " ';
+            $sql = "UPDATE farmers SET $set WHERE id = $m->id";
+            DB::update($sql);
+            return;
+        }
+    }
     /**
      * The "type" of the auto-incrementing ID.
      *

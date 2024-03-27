@@ -61,4 +61,4 @@ class OnlineCourseLesson extends Model
     {
         return $this->belongsTo(OnlineCourseTopic::class);
     }
-}
+} 

@@ -249,7 +249,7 @@ class MenuController extends Controller
                 $response       .= $acreage;
                 $current_menu   = "insurance_acreage";
             }
-        }
+        } 
 
         //chose coverage
         else if($last_menu == 'insurance_coverage'){

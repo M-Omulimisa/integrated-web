@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\v1\Ussd\MenuController;
 use App\Http\Controllers\Api\v1\ApiAuthController;
 use App\Http\Controllers\Api\v1\ApiShopController;
 use App\Http\Middleware\JwtMiddleware;
+use App\Models\Market\MarketPackagePricing;
 use App\Models\OnlineCourse;
 use App\Models\OnlineCourseAfricaTalkingCall;
 use App\Models\OnlineCourseLesson;
@@ -27,6 +28,22 @@ use Dflydev\DotAccessData\Util;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+//market-package-pricings
+Route::get('/market-package-pricings', function (Request $r) {
+    $pricings = [];
+    foreach (MarketPackagePricing::where([
+        'package_id' => $r->q
+    ])->get() as $key => $value) {
+        $pricings[] = [
+            'id' => $value->id,
+            'text' => $value->frequency . " - UGX " . $value->cost . ", (" . $value->frequency . ")"
+        ];
+    }
+    return [
+        'data' => $pricings
+    ];
+});
 
 
 Route::get('/user', function (Request $request) {
@@ -148,13 +165,14 @@ Route::post("upload-file", function (Request $r) {
     }
 });
 
+
 Route::group([
     'prefix' => '/v1'
 ], function () {
 
     //get all jea 
 
-
+    Route::match(['get', 'post'], "dmark-sms-webhook", [ApiShopController::class, "dmark_sms_webhook"]);
 
     Route::middleware([JwtMiddleware::class])->group(function () {
         /* ==============START OF SHOP API================== */

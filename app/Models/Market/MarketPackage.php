@@ -116,4 +116,10 @@ class MarketPackage extends BaseModel
         }
  
     }
+
+    //has many subcriptions
+    public function subscriptions()
+    {
+        return $this->hasMany(MarketSubscription::class, 'package_id');
+    } 
 }

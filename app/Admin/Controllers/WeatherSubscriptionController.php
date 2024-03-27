@@ -10,6 +10,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use \App\Models\Weather\WeatherSubscription;
+use Carbon\Carbon;
 
 class WeatherSubscriptionController extends AdminController
 {
@@ -83,19 +84,23 @@ class WeatherSubscriptionController extends AdminController
         $grid->column('start_date', __('Start Date'))->sortable();
         $grid->column('end_date', __('End date'))->sortable();
         $grid->column('status', __('Status'))
+            ->display(function ($status) {
+                $endDate = Carbon::parse($this->end_date);
+                $today = Carbon::now();
+                if ($endDate->lt($today)) {
+                    $this->status = 0;
+                    $this->save();
+                    return 'Expired';
+                }
+                return $status == 1 ? 'Active' : 'Expired';
+            })->sortable()
             ->using([
-                0 => 'Inactive',
+                0 => 'Expired',
                 1 => 'Active',
-                2 => 'Expired',
-                3 => 'Suspended',
-                4 => 'Cancelled',
             ])->sortable()
             ->filter([
-                0 => 'Inactive',
+                0 => 'Expired',
                 1 => 'Active',
-                2 => 'Expired',
-                3 => 'Suspended',
-                4 => 'Cancelled',
             ]);
         $grid->column('outbox_generation_status', __('Outbox generation status'))->hide();
         $grid->column('outbox_reset_status', __('Outbox reset status'))->hide();
@@ -190,7 +195,7 @@ class WeatherSubscriptionController extends AdminController
             ->rules('required');
         $form->radio('status', __('Status'))
             ->options([
-                0 => 'Inactive',
+                0 => 'Expired',
                 1 => 'Active',
             ])->rules('required');
         /*         $form->switch('outbox_generation_status', __('Outbox generation status'));

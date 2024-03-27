@@ -630,6 +630,25 @@ district_id
         $not->notification_seen_time = Carbon::now();
         $not->save();
     }
+    public function dmark_sms_webhook(Request $r)
+    {
+
+        $record = new \App\Models\DamarkRercord();
+
+        $record->external_ref = json_encode($r->all());
+        $record->sender = $r->sender;
+        $record->message_body = $r->body;
+        $record->get_data = json_encode($_GET);
+        $record->post_data = json_encode($_POST);
+        $record->is_processed = 'No';
+        $record->status = 'Pending';
+        $record->error_message = 'Pending';
+        $record->type = 'Other';
+        $record->farmer_id = '';
+        $record->question_id = '';
+        $record->save();
+        return $this->success(null, $message = "Success", 200);
+    }
     public function get_orders_notification_nessage(Request $r)
     {
 

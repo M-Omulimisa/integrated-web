@@ -36,8 +36,12 @@ class MarketPackageController extends AdminController
                 return "<span class='label label-success'>{$ent['name']}</span>";
             }, $ents);
             return join('&nbsp;', $ents);
-        }); 
+        });
 
+        //count subscriptions
+        $grid->column('subscriptions_count', __('Subscriptions'))->display(function () {
+            return $this->subscriptions()->count();
+        });
 
         return $grid;
     }

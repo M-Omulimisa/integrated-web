@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Schema;
 
 
- 
+
+
 /* 
 curl -X GET "https://api.app.outscraper.com/maps/search-v3?query=restaurants%2C%20Manhattan%2C%20NY%2C%20USA&limit=3&async=false" -H  "X-API-KEY: YOUR-API-KEY" 
 */
@@ -196,3 +197,4 @@ die();
      //throw $th;
      die($th->getMessage()); 
  } */
+Utils::system_boot();
