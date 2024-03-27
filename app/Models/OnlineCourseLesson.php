@@ -69,6 +69,6 @@ class OnlineCourseLesson extends Model
             $this->status = 'Attended';
             $this->save();
         }
-        return $this->status; 
+        return $value; 
     }
 }
