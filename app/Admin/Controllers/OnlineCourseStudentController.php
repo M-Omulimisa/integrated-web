@@ -27,6 +27,18 @@ class OnlineCourseStudentController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new OnlineCourseStudent());
+        $grid->export(function ($export) {
+
+            $export->filename('Students.csv');
+
+            $export->except(['has_listened_to_intro', 'position']);
+            $export->originalValue(['status', 'completion_status', 'progress']);
+/* 
+            $export->column('column_5', function ($value, $original) {
+                return $value;
+            }); */
+        });
+
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
 

@@ -28,14 +28,7 @@ class OnlineCourseLessonController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new OnlineCourseLesson());
-        foreach (OnlineCourseLesson::all() as $key => $val) {
-            if ($val->student_audio_question != null && strlen($val->student_audio_question) > 3) {
-                if ($val->status != 'Attended') {
-                    $val->status = 'Attended';
-                    $val->save();
-                }
-            }
-        }
+       
 
         //add on top of the grid html data
         /* $grid->header(function ($query) {
