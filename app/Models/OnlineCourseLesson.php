@@ -66,7 +66,8 @@ class OnlineCourseLesson extends Model
     //getter for student_audio_question
     public function getStudentAudioQuestionAttribute($value)
     {
-        if ($this->student_audio_question != null && strlen($this->student_audio_question) > 3) {
+        if ($value != null && strlen($value) > 3) {
+            dd($value);
             if ($this->status != 'Attended') {
                 try {
                     $this->status = 'Attended';
