@@ -130,7 +130,7 @@ class Utils
 
         $phone = "256783204665";
         $phone = "256706638494";
-        $amount = 500;
+        $amount = 1000;
         $narrative = "Test payment";
         $reference_id = "464988113";
         $response = $service->depositFunds(
@@ -183,7 +183,7 @@ class Utils
         $service->set_password();
 
         $narrative = "Omulimisa payment.";
-        $amount = 500;
+        //$amount = 1000;
         $response = null;
         try {
             $response = $service->depositFunds(
