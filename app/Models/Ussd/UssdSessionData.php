@@ -43,6 +43,7 @@ class UssdSessionData extends BaseModel
             'insurance_season_id',
             'insurance_enterprise_id',
             'insurance_acreage',
+            "insurance_region_id",
             'insurance_sum_insured',
             'insurance_premium',
             'insurance_coverage',

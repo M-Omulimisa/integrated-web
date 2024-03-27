@@ -104,6 +104,7 @@ class MenuController extends Controller
             $action = "request";
             $current_menu = "main_menu";
         }
+
         elseif ($last_menu == "main_menu") {            
             $action = "request";
 
@@ -112,6 +113,7 @@ class MenuController extends Controller
                 $current_menu   = "insurance_phone_option";
                 $module         = 'insurance';
             }
+
             elseif ($input_text == '2') {
                 $response       = $subscriber;
                 $current_menu   = "market_phone_option";
@@ -130,11 +132,13 @@ class MenuController extends Controller
                 $current_menu   = "advisory_option_menu";
                 $module         = 'advisory';
             }
+
             else {
                 $action         = "end";
                 $response       = "Invalid input!\n";
                 $current_menu   = "invalid_input"; 
             }
+
             //create record
             if(isset($module)) $this->menu_helper->startMenu($sessionId, $phoneNumber, $module);
         }
@@ -188,14 +192,20 @@ class MenuController extends Controller
 
         //chose crop
         else if($last_menu == "insurance_region_list"){
+            $field          = "insurance_region_id";
+            $input_text     = $this->menu_helper->getSelectedRegionID($input_text);
+
             $action         = "request";
             $response       = "Which crop do you want to insure:\n";
-            $response       .= $this->menu_helper->seasonItemList();
+            $response       .= $this->menu_helper->regionItemList($input_text);
             $current_menu   = "insurance_item";
         }
 
         //chose season
         else if($last_menu == "insurance_item"){
+                $field          = "insurance_enterprise_id";
+                $input_text     = $this->menu_helper->getSelectedItemID($phoneNumber, $sessionId, $input_text);
+
                 $action         = "request";
                 $response       = "For which season:\n";
                 $response       .= $this->menu_helper->insuranceSeasonList();
@@ -207,11 +217,12 @@ class MenuController extends Controller
             $action         = "request";
             
             //if ($this->menu_helper->checkIfSeasonItemIsValid($input_text)) {
+            $field          = "insurance_season_id";
+            $input_text     = $this->menu_helper->getSelectedSeasonID($input_text);
+
             $response       = $acreage;
             $current_menu   = "insurance_acreage";
-            $field          = "insurance_enterprise_id";
-            $input_text     = $this->menu_helper->getSeasonItemDetails($input_text, 'enterprise_id');
-           // }
+            // }
             // else{
             //     $response       = "Wrong Item!\n";
             //     $response       .= "Select item to insure:\n";
@@ -246,7 +257,11 @@ class MenuController extends Controller
             $selected_acreage  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'insurance_acreage');
             $sum_insured    = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'sum_insured_per_acre');
             $markup    = $this->menu_helper->getMarkup($enterprise_id, 'markup');
-            $premium        = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'premium_per_acre');
+            $premiumPercentage        = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'premium_per_acre');
+            print_r($premiumPercentage);
+
+            $premium        = (($premiumPercentage / 100) * $selected_acreage * $sum_insured);
+            print_r($premium);
 
             if($input_text == 1){
                 info($sum_insured);
@@ -254,7 +269,7 @@ class MenuController extends Controller
                 info(($sum_insured / 2) * $selected_acreage);
 
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_sum_insured', (($sum_insured / 2) * $selected_acreage));
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', ((($premium / 2) * $selected_acreage) + $markup));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', (($premium / 2) + $markup));
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'markup',  $markup);
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_coverage', 'half');
 
@@ -269,7 +284,7 @@ class MenuController extends Controller
 
             else if ($input_text == 2){
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_sum_insured', ($sum_insured * $selected_acreage));
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', (($premium * $selected_acreage) + $markup));
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_premium', ($premium  + $markup));
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_coverage', 'full');
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'markup',  $markup);
 
@@ -1124,6 +1139,10 @@ class MenuController extends Controller
             $current_menu = "system_error";
             $action         = "end";
         } 
+
+
+
+        //----------------HANDLE THE ACTUAL SENDING OF THE USSD CODE REQUEST--------------------------
 
         //save the last menu
         $this->menu_helper->saveLastMenu($sessionId, $phoneNumber, $current_menu);

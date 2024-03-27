@@ -32,6 +32,7 @@
                                 {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
                             </div>
                         </div>
+                        
                         <div class="form-buttons-w">
                             {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
                         </div>
