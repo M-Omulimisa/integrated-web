@@ -14,11 +14,11 @@ use App\Models\Settings\Season;
 use App\Models\Settings\Language;
 use App\Models\Settings\Country;
 use App\Models\Ussd\UssdSession;
-use App\Models\RegionModel;
 use App\Models\DistrictModel;
 use App\Models\SubcountyModel;
 use App\Models\ParishModel;
 use App\Models\Settings\Enterprise;
+use App\Models\Settings\Region;
 use App\Models\Ussd\UssdSessionData;
 use App\Models\Ussd\UssdInsuranceList;
 use App\Models\Settings\CountryProvider;
@@ -521,7 +521,7 @@ class MenuFunctions
 
     public function getRegionList()
     {
-        $locations = RegionModel::whereMenuStatus(TRUE)->orderBy('name', 'ASC')->get();
+        $locations = Region::whereMenuStatus(TRUE)->orderBy('name', 'ASC')->get();
 
         $list = '';
         if (count($locations) > 0) {
@@ -534,25 +534,62 @@ class MenuFunctions
         return $list;
     }
 
-    public function seasonItemList()
+    public function regionItemList($chosenRegion)
     {
-        $enterprises = InsurancePremiumOption::whereStatus(TRUE)->orderBy('menu', 'ASC')->get();
+    // Retrieve the region model based on the chosen region ID
+    $region = Region::find($chosenRegion);
 
-        if (count($enterprises) > 0) {
-            $list = '';
-            foreach ($enterprises as $enterprise) {
-                $list .= $enterprise->menu.") ".$enterprise->enterprise->name."\n";
-            }
-            return $list;
-        }
-        else{
-            return null;
-        }
+    // Check if the region exists
+    if (!$region) {
+        return "Invalid region.";
     }
+
+    // Get the enterprises associated with the chosen region
+    $enterprises = $region->enterprises()->orderBy('name', 'ASC')->get();
+
+    // Check if any enterprises exist for the region
+    if (count($enterprises) > 0) {
+        $list = '';
+        $count = 0;
+        foreach ($enterprises as $enterprise) {
+            $list .= (++$count) . ") " . $enterprise->name . "\n";
+        }
+        return $list;
+    } else {
+        return "No supported crops found for this region.";
+    }
+    }
+
+    public function getSelectedSeasonID($response)
+     {
+        $seasonList = $this->insuranceSeasonList();
+
+        if (is_string($seasonList)) {
+            // If $seasonList is a string, it means there are no seasons available
+            return $seasonList;
+        }
+    
+        return $seasonList[$userInput];
+     }
+
+     public function getSelectedRegionID($response)
+     {
+         $locations = Region::orderBy('name', 'ASC')->get();
+
+         // Validate user response
+         if (!is_numeric($response) || $response < 1 || $response > count($locations)) {
+             return "Invalid selection. Please choose a number between 1 and ".count($locations).".";
+         }
+
+         // Find the selected region
+         $selectedRegion = $locations[$response - 1];
+
+         return $selectedRegion->id;
+     }
 
     public function getInsuranceRegionList()
     {
-        $locations = RegionModel::orderBy('name', 'ASC')->get();
+        $locations = Region::orderBy('name', 'ASC')->get();
 
         $list = '';
         if (count($locations) > 0) {
@@ -564,7 +601,6 @@ class MenuFunctions
 
         return $list;
     }
-
 
     public function getMostSimilarDistrict($district_name, $country_name)
     {
@@ -633,7 +669,7 @@ class MenuFunctions
     {
         $menu = intval($region_menu_no);
 
-        $locations = RegionModel::whereMenuStatus(TRUE)->orderBy('name', 'ASC')->get();
+        $locations = Region::whereMenuStatus(TRUE)->orderBy('name', 'ASC')->get();
 
         if($menu!=0) $region = $locations->skip($menu-1)->take(1)->first();
 
@@ -664,7 +700,7 @@ class MenuFunctions
 
     public function checkIfRegionIsValid($region_name)
     {
-        $location = RegionModel::whereName($region_name)->first();
+        $location = Region::whereName($region_name)->first();
         return $location ? true : false;
     }
 
@@ -690,7 +726,7 @@ class MenuFunctions
     {
         $currentDate = now(); // Get the current date and time
 
-        $seasons = Season::where('status', true)
+        $seasons = Season::whereStatus(true)
                         ->whereDate('cut_off_date', '>=', $currentDate) // Filter by end date
                         ->orderBy('start_date', 'ASC')
                         ->get();
@@ -778,10 +814,21 @@ class MenuFunctions
         return $enterprise ? true : false;
     }
 
-    public function getSeasonItemDetails($item_menu, $param)
+    public function getSelectedItemID($phoneNumber, $sessionID, $enteredNumber)
     {
-        $enterprise = InsurancePremiumOption::whereMenu($item_menu)->whereStatus(TRUE)->first();
-        return $enterprise->$param ?? null;
+        $saved_data = UssdSessionData::whereSessionId($sessionID)
+                                            ->wherePhoneNumber($phoneNumber)
+                                            ->first();
+
+        $regionID     = $saved_data->insurance_region_id;
+        $region = Region::find($regionID);
+
+        // Validate user response
+        if (!is_numeric($enteredNumber) || $enteredNumber < 1 || $enteredNumber > count($region->enterprises()->get())) {
+            return "Invalid selection. Please choose a number between 1 and ".count($region->enterprises()->get()).".";
+        }
+
+        return $region->enterprises()->get()[$enteredNumber - 1]->id;
     }
 
     public function getMarkup()

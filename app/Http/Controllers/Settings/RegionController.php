@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
 use App\Models\Settings\Region;
+use App\Models\Settings\Enterprise;
 
 class RegionController extends Controller
 {
@@ -48,7 +49,8 @@ class RegionController extends Controller
      */
     public function create()
     {
-        return view($this->_dir.'.create');
+        $enterprises = Enterprise::all();
+        return view($this->_dir.'.create', compact('enterprises'));
     }
 
     /**
@@ -62,9 +64,11 @@ class RegionController extends Controller
         try {            
             request()->validate([
                 'name' => 'required',
+                'enterprises' => 'nullable|array',
             ]);
 
-            Region::create($request->all());
+            $region = Region::create($request->only('name'));
+            $region->enterprises()->attach($request->input('enterprises', []));
 
             return redirect()->route($this->_route.'.index')
                             ->with('success','Operation successfully.');
@@ -96,8 +100,9 @@ class RegionController extends Controller
      */
     public function edit(Region $region)
     {
-        try {            
-            return view($this->_dir.'.edit',compact('region'));
+        try {   
+            $enterprises = Enterprise::all();         
+            return view($this->_dir.'.edit', compact('region', 'enterprises'));
         } catch (\Throwable $r) {
             return redirect()->back()->withErrors($r->getMessage());
         }
@@ -115,9 +120,11 @@ class RegionController extends Controller
         try {            
              request()->validate([
                 'name' => 'required',
+                'enterprises' => 'nullable|array',
             ]);
 
-            $region->update($request->all());
+            $region->update($request->only('name'));
+            $region->enterprises()->sync($request->input('enterprises', []));
 
             return redirect()->route($this->_route.'.index')
                             ->with('success','Region updated successfully');
@@ -153,9 +160,10 @@ class RegionController extends Controller
     public function list(Request $request)
     {
         if ($request->ajax()) {
-
             DB::statement(DB::raw('set @DT_RowIndex=0'));
-            $data = Region::select(['*', DB::raw('@DT_RowIndex  := @DT_RowIndex  + 1 AS DT_RowIndex') ])->orderBy('name', 'ASC');
+            $data = Region::select(['*', DB::raw('@DT_RowIndex  := @DT_RowIndex  + 1 AS DT_RowIndex')])
+                ->with('enterprises')
+                ->orderBy('name', 'ASC');
             $datatables = app('datatables')->of($data);
 
             if ($search = $datatables->request->search['value']) {
@@ -164,16 +172,17 @@ class RegionController extends Controller
 
             return $datatables
                 ->addIndexColumn()
-                ->addColumn('action', function($data){
-                    $route   = $this->_route;
-                    $id      = $data->id;
-                    $manage  = 'manage_'.$this->_permission;
-                    // $delete  = 'delete_'.$this->_permission;
-                    // $view    = 'list_'.$this->_permission;
-
-                    return view('partials.actions', compact('route','id','manage'))->render();
+                ->addColumn('enterprises', function($data) {
+                    return $data->enterprises->pluck('name')->implode(', ');
                 })
-                ->rawColumns(['action'])
+                ->addColumn('action', function($data){
+                    $route = $this->_route;
+                    $id = $data->id;
+                    $manage = 'manage_'.$this->_permission;
+
+                    return view('partials.actions', compact('route', 'id', 'manage'))->render();
+                })
+                ->rawColumns(['action', 'enterprises'])
                 ->make(true);
         }
     }

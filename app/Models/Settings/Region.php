@@ -17,6 +17,21 @@ class Region extends BaseModel
         'name', 'menu_status'
     ];
 
+
+    public function enterprises()
+    {
+        return $this->belongsToMany(Enterprise::class);
+    }
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casted = [
+        'enterprises' => 'array',
+    ];
+
     /**
      * The "type" of the auto-incrementing ID.
      *

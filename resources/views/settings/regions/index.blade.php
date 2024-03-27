@@ -86,13 +86,7 @@
         columns: [
             {data: 'id', name: 'id'}, // Include all relevant fields here
             {data: 'name', name: 'name'},
-            {data: 'capital', name: 'capital'}, // Add more fields like this
-            {data: 'area_km', name: 'area_km'}, // Add more fields like this
-            {data: 'area_mil', name: 'area_mil'}, // Add more fields like this
-            {data: 'elevation', name: 'elevation'}, // Add more fields like this
-            {data: 'brief', name: 'brief'}, // Add more fields like this
             {data: 'menu_status', name: 'menu_status'}, // Add more fields like this
-            {data: 'menu_name', name: 'menu_name'}, // Add more fields like this
             {data: 'created_at', name: 'created_at'}, // Add more fields like this
             {data: 'updated_at', name: 'updated_at'}, // Add more fields like this
             {data: 'action', name: 'action'},

@@ -26,7 +26,7 @@ class InsurancePremiumOptionController extends AdminController
     {
         $grid = new Grid(new InsurancePremiumOption());
 
-        $grid->column('id', __('Id'));
+        $grid->column('id', __('Id'))->hide();
         $grid->column('country_id', __('Country'))->display(function ($country_data) {
             if ($this->country == 'null') {
 
@@ -45,10 +45,10 @@ class InsurancePremiumOptionController extends AdminController
             return $this->enterprise->name;
         });
         $grid->column('sum_insured_per_acre', __('Sum insured per acre'));
-        $grid->column('premium_per_acre', __('Premium per acre'));
-        $grid->column('menu', __('Position'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
+        $grid->column('premium_per_acre', __('Premium %age per acre'));
+        $grid->column('menu', __('Position'))->hide();
+        $grid->column('created_at', __('Created at'))->hide();
+        $grid->column('updated_at', __('Updated at'))->hide();
 
         return $grid;
     }
@@ -67,7 +67,7 @@ class InsurancePremiumOptionController extends AdminController
         $show->field('country_id', __('Country id'));
         $show->field('enterprise_id', __('Enterprise id'));
         $show->field('sum_insured_per_acre', __('Sum insured per acre'));
-        $show->field('premium_per_acre', __('Premium per acre'));
+        $show->field('premium_per_acre', __('Premium %age per acre'));
         $show->field('menu', __('Menu'));
         $show->field('status', __('Status'));
         $show->field('created_at', __('Created at'));
@@ -93,7 +93,7 @@ class InsurancePremiumOptionController extends AdminController
             ->options(\App\Models\Settings\Enterprise::all()->pluck('name', 'id'));
 
         $form->decimal('sum_insured_per_acre', __('Sum insured per acre'))->default(0.00);
-        $form->decimal('premium_per_acre', __('Premium per acre'))->default(0.00);
+        $form->decimal('premium_per_acre', __('Premium %age per acre'))->default(0.00);
         $form->text('menu', __('Position'));
         $form->switch('status', __('Status'))->default(1);
 

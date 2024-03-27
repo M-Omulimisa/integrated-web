@@ -46,25 +46,11 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                {!! Form::label('start_date', 'Start Date (required)', ['class' => 'col-sm-3 form-label']) !!}                
-                                <div class="col-sm-5">
-                                {!! Form::text('start_date', old('start_date'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}               
-                                </div>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                {!! Form::label('end_date', 'End date (required)', ['class' => 'col-sm-3 form-label']) !!}                
-                                <div class="col-sm-5">
-                                {!! Form::text('end_date', old('end_date'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}               
-                                </div>
-                            </div>
-
-                            <div class="form-group mb-3">
                                 {!! Form::label('status', 'Status (required)', ['class' => 'col-sm-3 form-label']) !!}                
                                 <div class="col-sm-5">
                                 {!! Form::text('status', old('status'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}               
                                 </div>
-                            </div>
+                            </div>                
 
                             <div class="form-buttons-w">
                             {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
