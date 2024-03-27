@@ -16,7 +16,7 @@ class OnlineCourseLesson extends Model
         static::updating(function ($model) {
             if ($model->status != 'Attended') {
                 $model->attended_at = null;
-            }else{
+            } else {
                 $model->attended_at = now();
             }
         });
@@ -60,5 +60,15 @@ class OnlineCourseLesson extends Model
     public function onlineCourseTopic()
     {
         return $this->belongsTo(OnlineCourseTopic::class);
+    }
+
+    //getter for status
+    public function getStatusAttribute($value)
+    {
+        if ($this->student_audio_question != null && strlen($this->student_audio_question) > 3) {
+            $this->status = 'Attended';
+            $this->save();
+        }
+        return $this->status; 
     }
 }
