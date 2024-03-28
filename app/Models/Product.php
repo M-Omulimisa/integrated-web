@@ -19,7 +19,7 @@ class Product extends Model
                 if ($m->phone == null || (strtr($m->phone) < 5)) {
                     $m->phone = $u->phone;
                     $m->phone = Utils::prepare_phone_number($m->phone);
-                    if ($m->phone == null || (strtr($m->phone) < 5)) {
+                    if ($m->phone == null || (strlen($m->phone) < 5)) {
                         $m->phone = $u->phone_number;
                     }
                 }
@@ -32,10 +32,10 @@ class Product extends Model
         self::updating(function ($m) {
             $u = User::find($m->supplier);
             if ($u != null) {
-                if ($m->phone == null || (strtr($m->phone) < 5)) {
+                if ($m->phone == null || (strlen($m->phone) < 5)) {
                     $m->phone = $u->phone;
                     $m->phone = Utils::prepare_phone_number($m->phone);
-                    if ($m->phone == null || (strtr($m->phone) < 5)) {
+                    if ($m->phone == null || (strlen($m->phone) < 5)) {
                         $m->phone = $u->phone_number;
                     }
                 }
