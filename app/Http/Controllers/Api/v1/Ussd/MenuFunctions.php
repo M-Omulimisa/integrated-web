@@ -534,30 +534,36 @@ class MenuFunctions
         return $list;
     }
 
-    public function regionItemList($chosenRegion)
+    public function regionItemList($session, $phone, $chosenRegion)
     {
-    // Retrieve the region model based on the chosen region ID
-    $region = Region::find($chosenRegion);
+        // Retrieve the region model based on the chosen region ID
+        $region = Region::find($chosenRegion);
+        $optionMappings = [];
 
-    // Check if the region exists
-    if (!$region) {
-        return "Invalid region.";
-    }
-
-    // Get the enterprises associated with the chosen region
-    $enterprises = $region->enterprises()->orderBy('name', 'ASC')->get();
-
-    // Check if any enterprises exist for the region
-    if (count($enterprises) > 0) {
-        $list = '';
-        $count = 0;
-        foreach ($enterprises as $enterprise) {
-            $list .= (++$count) . ") " . $enterprise->name . "\n";
+        // Check if the region exists
+        if (!$region) {
+            return "Invalid region.";
         }
-        return $list;
-    } else {
-        return "No supported crops found for this region.";
-    }
+
+        // Get the enterprises associated with the chosen region
+        $enterprises = $region->enterprises()->orderBy('name', 'ASC')->get();
+
+        // Check if any enterprises exist for the region
+        if (count($enterprises) > 0) {
+            $list = '';
+            $count = 0;
+
+            foreach ($enterprises as $enterprise) {
+                $list .= (++$count) . ") " . $enterprise->name . "\n";
+                $optionMappings[$count] = $enterprise->id;
+            }
+
+            $this->saveToField($session, $phone, "option_mappings", $optionMappings);
+
+            return $list;
+        } else {
+            return "No supported crops found for this region.";
+        }
     }
 
     public function getSelectedSeasonID($response)
@@ -572,32 +578,41 @@ class MenuFunctions
         return $seasonList[$userInput];
      }
 
-     public function getSelectedRegionID($response)
-     {
-         $locations = Region::orderBy('name', 'ASC')->get();
+    public function getSelectedRegionID($phone, $session, $response)
+    {
+        $saved_data = UssdSessionData::whereSessionId($session)
+                                            ->wherePhoneNumber($phone)
+                                            ->first();                                         
 
-         // Validate user response
-         if (!is_numeric($response) || $response < 1 || $response > count($locations)) {
-             return "Invalid selection. Please choose a number between 1 and ".count($locations).".";
-         }
+        $optionMappings = $saved_data->option_mappings;  
+        
+        $decodedOptionMappings = json_decode($optionMappings, true);
 
-         // Find the selected region
-         $selectedRegion = $locations[$response - 1];
+        // Validate user response
+        if (!is_numeric($response)) {
+            return "Invalid selection.";
+        }
 
-         return $selectedRegion->id;
+        return $decodedOptionMappings[$response];
      }
 
-    public function getInsuranceRegionList()
+    public function getInsuranceRegionList($session, $phone)
     {
         $locations = Region::orderBy('name', 'ASC')->get();
+
+        $optionMappings = [];
 
         $list = '';
         if (count($locations) > 0) {
             $count = 0;
+
             foreach ($locations as $region) {
                 $list .= (++$count).") ".ucwords(strtolower($region->name))."\n";
+                $optionMappings[$count] = $region->id;
             }
         }
+
+        $this->saveToField($session, $phone, "option_mappings", $optionMappings);
 
         return $list;
     }
@@ -814,21 +829,22 @@ class MenuFunctions
         return $enterprise ? true : false;
     }
 
-    public function getSelectedItemID($phoneNumber, $sessionID, $enteredNumber)
+    public function getSelectedItemID($phone, $session, $response)
     {
-        $saved_data = UssdSessionData::whereSessionId($sessionID)
-                                            ->wherePhoneNumber($phoneNumber)
-                                            ->first();
+        $saved_data = UssdSessionData::whereSessionId($session)
+                                            ->wherePhoneNumber($phone)
+                                            ->first();                                         
 
-        $regionID     = $saved_data->insurance_region_id;
-        $region = Region::find($regionID);
+        $optionMappings = $saved_data->option_mappings;  
+        
+        $decodedOptionMappings = json_decode($optionMappings, true);
 
         // Validate user response
-        if (!is_numeric($enteredNumber) || $enteredNumber < 1 || $enteredNumber > count($region->enterprises()->get())) {
-            return "Invalid selection. Please choose a number between 1 and ".count($region->enterprises()->get()).".";
+        if (!is_numeric($response)) {
+            return "Invalid selection.";
         }
 
-        return $region->enterprises()->get()[$enteredNumber - 1]->id;
+        return $decodedOptionMappings[$response];
     }
 
     public function getMarkup()

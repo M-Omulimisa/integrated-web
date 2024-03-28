@@ -170,7 +170,7 @@ class MenuController extends Controller
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'insurance_subscriber', $insuree);
 
                 $response       = "Select a region:\n";
-                $response       .= $this->menu_helper->getInsuranceRegionList();
+                $response       .= $this->menu_helper->getInsuranceRegionList($sessionId, $phoneNumber,);
                 $current_menu   = "insurance_region_list";
             }
         } 
@@ -193,11 +193,11 @@ class MenuController extends Controller
         //chose crop
         else if($last_menu == "insurance_region_list"){
             $field          = "insurance_region_id";
-            $input_text     = $this->menu_helper->getSelectedRegionID($input_text);
+            $input_text     = $this->menu_helper->getSelectedRegionID($phoneNumber, $sessionId, $input_text);
 
             $action         = "request";
             $response       = "Which crop do you want to insure:\n";
-            $response       .= $this->menu_helper->regionItemList($input_text);
+            $response       .= $this->menu_helper->regionItemList($sessionId, $phoneNumber, $input_text);
             $current_menu   = "insurance_item";
         }
 
@@ -258,10 +258,8 @@ class MenuController extends Controller
             $sum_insured    = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'sum_insured_per_acre');
             $markup    = $this->menu_helper->getMarkup($enterprise_id, 'markup');
             $premiumPercentage        = $this->menu_helper->getPremiumOptionDetails($enterprise_id, 'premium_per_acre');
-            print_r($premiumPercentage);
 
             $premium        = (($premiumPercentage / 100) * $selected_acreage * $sum_insured);
-            print_r($premium);
 
             if($input_text == 1){
                 info($sum_insured);
