@@ -60,7 +60,7 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                {!! Form::label('premium_per_acre', 'premium per acre (required)', ['class' => 'col-sm-3 form-label']) !!}                
+                                {!! Form::label('premium_per_acre', 'premium %age per acre (required)', ['class' => 'col-sm-3 form-label']) !!}                
                                 <div class="col-sm-5">
                                 {!! Form::text('premium_per_acre', old('premium_per_acre'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}               
                                 </div>
