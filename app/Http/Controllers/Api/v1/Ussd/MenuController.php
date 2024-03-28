@@ -196,7 +196,7 @@ class MenuController extends Controller
             $input_text     = $this->menu_helper->getSelectedRegionID($phoneNumber, $sessionId, $input_text);
 
             $action         = "request";
-            $response       = "Which crop do you want to insure:\n";
+            $response       = "Which crop do you want to insure?\n";
             $response       .= $this->menu_helper->regionItemList($sessionId, $phoneNumber, $input_text);
             $current_menu   = "insurance_item";
         }
