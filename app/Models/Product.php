@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Dflydev\DotAccessData\Util;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,6 +13,37 @@ class Product extends Model
     public static function boot()
     {
         parent::boot();
+        self::creating(function ($m) {
+            $u = User::find($m->supplier);
+            if ($u != null) {
+                if ($m->phone == null || (strtr($m->phone) < 5)) {
+                    $m->phone = $u->phone;
+                    $m->phone = Utils::prepare_phone_number($m->phone);
+                    if ($m->phone == null || (strtr($m->phone) < 5)) {
+                        $m->phone = $u->phone_number;
+                    }
+                }
+            }
+            $m->phone = Utils::prepare_phone_number($m->phone);
+            return true;
+        });
+
+        //updating 
+        self::updating(function ($m) {
+            $u = User::find($m->supplier);
+            if ($u != null) {
+                if ($m->phone == null || (strtr($m->phone) < 5)) {
+                    $m->phone = $u->phone;
+                    $m->phone = Utils::prepare_phone_number($m->phone);
+                    if ($m->phone == null || (strtr($m->phone) < 5)) {
+                        $m->phone = $u->phone_number;
+                    }
+                }
+            }
+            $m->phone = Utils::prepare_phone_number($m->phone);
+            return true;
+        });
+
         self::deleting(function ($m) {
             try {
                 $imgs = Image::where('parent_id', $m->id)->orwhere('product_id', $m->id)->get();
