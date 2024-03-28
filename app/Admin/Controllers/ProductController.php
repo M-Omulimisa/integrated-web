@@ -232,8 +232,8 @@ class ProductController extends AdminController
             $form->hidden('type')->default('Product');
         });
 
-        $form->hidden('in_house')->default('');
-        $form->hidden('phone')->default('');
+        $form->text('in_house')->default('');
+        $form->text('phone')->default('');
 
         /* 	
 	
