@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class FarmerQuestion extends Model
 {
@@ -16,7 +17,7 @@ class FarmerQuestion extends Model
             if ($m->body == null || $m->body == '') {
                 return false;
             }
-/*             $q = FarmerQuestion::where('body', $m->body)->first();
+            /*             $q = FarmerQuestion::where('body', $m->body)->first();
             if ($q != null) {
                 throw new \Exception('Question already asked by ' . $q->phone);
             } */
@@ -29,9 +30,23 @@ class FarmerQuestion extends Model
                     $m->district_model_id = $u->district_id;
                 }
             }
-            if($m->district_model_id ==  null || $m->district_model_id == ''){
+            if ($m->district_model_id ==  null || $m->district_model_id == '') {
                 $m->district_model_id = 0;
             }
+        });
+
+        //updated
+        self::updated(function ($m) {
+            if (strtolower($m->answered) == 'no') {
+                if (strlen($m->answer_body) > 3) {
+                    $sms = $m->answer_body;
+                    Utils::send_sms($m->phone, $sms);
+                }
+            }
+
+            //update answered by using sql
+            $sql = "UPDATE farmer_questions SET answered = 'Yes' WHERE id = " . $m->id . " ";
+            DB::update($sql);
         });
     }
 
@@ -65,6 +80,12 @@ class FarmerQuestion extends Model
         return $d->name;
     }
 
+    //getter for answered
+    public function getAnsweredAttribute($x)
+    {
+        return strtolower($x);
+    }
+
     public function getUserPhotoAttribute()
     {
         $u = User::find($this->user_id);
@@ -77,7 +98,7 @@ class FarmerQuestion extends Model
     {
         return $this->farmer_question_answers()->count();
     }
-    
+
     public $extends = [
         'user_text',
         'user_photo',

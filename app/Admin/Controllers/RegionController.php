@@ -27,13 +27,14 @@ class RegionController extends AdminController
     {
         $grid = new Grid(new Region());
         $grid->column('id', __('Id'))->hide();
-        $grid->column('name', __('Name'));
+        $grid->column('name', __('Region Name'))->sortable();
         $grid->column('enterprises', __('Enterprises'))->display(function ($ents) {
             $ents = array_map(function ($ent) {
                 return "<span class='label label-success'>{$ent['name']}</span>";
             }, $ents);
             return join('&nbsp;', $ents);
-        }); 
+        });
+       
         $grid->column('menu_status', __('Status'));
         $grid->column('created_at', __('Created At'))->hide();
         $grid->column('updated_at', __('Updated At'))->hide();

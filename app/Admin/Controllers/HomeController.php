@@ -4,13 +4,16 @@ namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminRoleUser;
+use App\Models\ItemPrice;
 use App\Models\OnlineCourse;
 use App\Models\Organisations\Organisation;
 use App\Models\Product;
+use App\Models\Settings\Enterprise;
 use App\Models\Training\Training;
 use App\Models\TrainingSession;
 use App\Models\User;
 use App\Models\Utils;
+use Carbon\Carbon;
 use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Column;
@@ -523,6 +526,40 @@ class HomeController extends Controller
                         ])
                             ->count(),
                     ];
+
+                    $ents = Enterprise::where([])
+                        ->limit(10)
+                        ->get();
+                    $max_days_ago = 30;
+                    $data = [];
+                    $now = Carbon::now();
+                    for ($i = 0; $i < $max_days_ago; $i++) {
+                        $start_date = $now->copy()->subDays($i);
+                        $end_date = $start_date->copy()->addDays(1);
+                        foreach ($ents as $key => $value) {
+                            //where due_to_date is between start_date and end_date
+                            $price = ItemPrice::where([
+                                'item_id' => $value->id
+                            ])
+                                ->whereBetween('created_at', [$start_date, $end_date])
+                                ->orderBy('id', 'desc')
+                                ->first();
+                            $price_text = 0;
+                            if ($price != null) {
+                                $price_text = $price->price;
+                            }
+                            $data[$value->id][] = $price_text;
+                        }
+                    }
+
+                    foreach ($ents as $key => $value) {
+                        $data[] = [
+                            'type' => 'line',
+                            'label' => $value->name,
+                            'data' => $value->value,
+                        ];
+                    }
+
                     $box = new Box(
                         'System Users',
                         view('admin.widgets.widget-graph-1', [

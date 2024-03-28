@@ -28,6 +28,7 @@ class OnlineCourseLessonController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new OnlineCourseLesson());
+       
 
         //add on top of the grid html data
         /* $grid->header(function ($query) {

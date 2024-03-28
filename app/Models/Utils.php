@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
 use App\Services\Payments\PaymentServiceFactory;
 use Carbon\Carbon;
@@ -14,6 +15,26 @@ class Utils
 {
 
 
+    public static function short($string, $length = 100)
+    {
+        if(strlen($string) > $length){
+            return substr($string, 0, $length) . '...';
+        }else{
+            return $string;
+        } 
+    }
+
+    public static function system_boot()
+    {
+        $farmers = Farmer::where('user_account_processed', '!=', 'Yes')->get();
+        foreach ($farmers as $key => $value) {
+            if ($key > 100) {
+                break;
+            }
+            Farmer::process($value);
+        }
+    }
+    
     public static function greet()
     {
         //according to the time of the day
@@ -109,7 +130,7 @@ class Utils
 
         $phone = "256783204665";
         $phone = "256706638494";
-        $amount = 500;
+        $amount = 1000;
         $narrative = "Test payment";
         $reference_id = "464988113";
         $response = $service->depositFunds(
@@ -162,7 +183,7 @@ class Utils
         $service->set_password();
 
         $narrative = "Omulimisa payment.";
-        $amount = 500;
+        //$amount = 1000;
         $response = null;
         try {
             $response = $service->depositFunds(
@@ -267,7 +288,7 @@ class Utils
             $body = curl_exec($ch);
             curl_close($ch);
         } catch (\Throwable $th) {
-            throw $th;
+            //throw $th;
         }
 
         if ($body == null) {
@@ -347,7 +368,7 @@ class Utils
         $groups = $data['data'];
         if ($groups == null) {
             return;
-        } 
+        }
         foreach ($groups as $key => $ext) {
             $old = FarmerGroup::where([
                 'external_id' => $ext['id']
@@ -433,7 +454,7 @@ class Utils
         $groups = $data['data'];
         if ($groups == null) {
             return;
-        } 
+        }
         foreach ($groups as $key => $ext) {
             $old = FarmerGroup::where([
                 'external_id' => $ext['id']

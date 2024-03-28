@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddHasAnswerCols extends Migration
+class AddSmsKeywordsToLanguages extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddHasAnswerCols extends Migration
      */
     public function up()
     {
-        Schema::table('online_course_lessons', function (Blueprint $table) {
-            $table->string('has_answer')->default('No');
-            $table->string('student_listened_to_answer')->default('No');
+        Schema::table('languages', function (Blueprint $table) {
+            $table->string('sms_keyword')->nullable();
         });
     }
 
@@ -26,8 +25,8 @@ class AddHasAnswerCols extends Migration
      */
     public function down()
     {
-        Schema::table('online_course_lessons', function (Blueprint $table) {
-            
+        Schema::table('languages', function (Blueprint $table) {
+            //
         });
     }
 }

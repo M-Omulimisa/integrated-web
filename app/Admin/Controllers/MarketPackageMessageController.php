@@ -15,7 +15,7 @@ class MarketPackageMessageController extends AdminController
      *
      * @var string
      */
-    protected $title = 'MarketPackageMessage';
+    protected $title = 'Market Package Messages';
 
     /**
      * Make a grid builder.

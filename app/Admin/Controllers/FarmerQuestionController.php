@@ -160,6 +160,18 @@ class FarmerQuestionController extends AdminController
 
  */
         $grid = new Grid(new FarmerQuestion());
+
+        //segments
+        $segs = request()->segments();
+        $grid->model()->where('answered', 'no');
+        if (isset($segs[0])) {
+            $text = $segs[0];
+            //if contains unanswered
+            if (strpos($text, 'unanswered') !== false) {
+                $grid->model()->where('answered', 'no');
+            }
+        }
+
         $grid->model()->orderBy('id', 'desc');
         $grid->disableBatchActions();
         $grid->quickSearch('body', 'phone', 'category')
@@ -179,7 +191,7 @@ class FarmerQuestionController extends AdminController
             })
             ->sortable();
 
-        $grid->column('category', __('Category'))
+        /*  $grid->column('category', __('Category'))
             ->label(
                 [
                     'crops' => 'primary',
@@ -215,9 +227,20 @@ class FarmerQuestionController extends AdminController
                     'training' => 'training',
                     'other' => 'other',
                 ]
-            );
+            ); */
         $grid->column('phone', __('Phone'));
-        $grid->column('sent_via', __('Sent Via'));
+        $grid->column('sent_via', __('Sent Via'))
+            ->display(function ($sent_via) {
+                if (strtolower($sent_via) == 'sms') {
+                    return 'SMS';
+                }
+                if ($this->sent_via != 'Mobile App') {
+                    $this->sent_via = 'Mobile App';
+                    $this->save();
+                }
+                return $this->sent_via;
+            })->sortable()
+            ->filter(['SMS' => 'SMS', 'Mobile App' => 'Mobile App']);
         $grid->column('answered', __('Answered'))
             ->filter(['yes' => 'yes', 'no' => 'no'])
             ->dot(['yes' => 'success', 'no' => 'danger'])
@@ -231,20 +254,24 @@ class FarmerQuestionController extends AdminController
                 if ($rec == null || strlen($rec) < 2) {
                     return "No Audio";
                 }
-                $link = url('storage/files/' . $rec);
-                return '<a target="_blank" href="' . $link . '">Play Audio</a>';
+                $link = url('storage/' . $rec);
+                //retun audio player
+                return '<audio controls>
+                <source src="' . $link . '" type="audio/mpeg">
+                Your browser does not support the audio element.
+                </audio>';
             })->sortable();
         $grid->column('photo', __('Photo'))
             ->display(function ($rec) {
                 if ($rec == null || strlen($rec) < 2) {
                     return "No Picture";
                 }
-                $link = url('storage/files/' . $rec);
-                return '<a target="_blank" href="' . $link . '">View Image</a>';
+                $link = url('storage/' . $rec);
+                //retun photo with link
+                return '<a href="' . $link . '" target="_blank"><img src="' . $link . '" style="max-width:100px;max-height:100px" /></a>';
             })->sortable();
         $grid->column('video', __('Video'))->hide();
         $grid->column('document', __('Document'))->hide();
-        $grid->column('views', __('Views'))->sortable();
         $grid->column('user_id', __('Farmer'))
             ->display(function ($user_id) {
                 $f = \App\Models\User::find($user_id);
@@ -326,12 +353,16 @@ class FarmerQuestionController extends AdminController
         } else {
             $form->textarea('body', __('Body'))->readonly();
             $form->text('category', __('Category'))->readonly();
-            $form->mobile('phone', __('Phone'))->readonly();
+            $form->text('phone', __('Phone'));
             $form->text('sent_via', __('Sent via'))->readonly();
         }
+        $form->textarea('answer_body', __('Answer'));
+        $form->radio('answered', __('Send SMS'))
+            ->options(['yes' => 'No', 'no' => 'Yes'])
+            ->default('no');
 
-        $form->file('audio', __('Audio'));
-        $form->image('photo', __('Photo'));
+        /*         $form->file('audio', __('Audio'));
+        $form->image('photo', __('Photo')); */
 
         if (!$form->isCreating()) {
             $form->hasMany('farmer_question_answers', __('Answers'), function (Form\NestedForm $form) {

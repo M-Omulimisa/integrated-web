@@ -27,6 +27,18 @@ class OnlineCourseStudentController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new OnlineCourseStudent());
+        $grid->export(function ($export) {
+
+            $export->filename('Students.csv');
+
+            $export->except(['has_listened_to_intro', 'position']);
+            $export->originalValue(['status', 'completion_status', 'progress']);
+/* 
+            $export->column('column_5', function ($value, $original) {
+                return $value;
+            }); */
+        });
+
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
 
@@ -36,22 +48,22 @@ class OnlineCourseStudentController extends AdminController
                 'active' => 'Active',
                 'inactive' => 'Inactive'
             ]);
-            $filter->equal('completion_status', 'Completion')->select([
+            /*             $filter->equal('completion_status', 'Completion')->select([
                 'completed' => 'Completed',
                 'incomplete' => 'Incomplete'
-            ]);
+            ]); */
         });
 
         $u = Admin::user();
         if ($u->isRole('instructor')) {
             $grid->disableCreateButton();
-            $myStudents = OnlineCourse::getMyStudents($u); 
+            $myStudents = OnlineCourse::getMyStudents($u);
             $ids = [];
             foreach ($myStudents as $student) {
                 $ids[] = $student['id'];
-            }  
+            }
             $grid->model()->whereIn('id', $ids);
-        } 
+        }
 
         $grid->quickSearch('name', 'phone')->placeholder('Search by name or phone number');
 
