@@ -567,7 +567,7 @@ class MenuFunctions
     }
 
     public function getSelectedSeasonID($response)
-     {
+    {
         $seasonList = $this->insuranceSeasonList();
 
         if (is_string($seasonList)) {
@@ -576,7 +576,7 @@ class MenuFunctions
         }
     
         return $seasonList[$userInput];
-     }
+    }
 
     public function getSelectedRegionID($phone, $session, $response)
     {
@@ -594,7 +594,7 @@ class MenuFunctions
         }
 
         return $decodedOptionMappings[$response];
-     }
+    }
 
     public function getInsuranceRegionList($session, $phone)
     {
@@ -1003,18 +1003,30 @@ class MenuFunctions
         return $languages;
     }
 
-    public function getSelectedLanguage($input_text){
+    public function getSelectedLanguage($response, $session, $phone){
+        $saved_data = UssdSessionData::whereSessionId($session)
+                                            ->wherePhoneNumber($phone)
+                                            ->first();                                         
 
-        $language = Language::select('id','name', 'position')->where('position', $input_text)->first();
+        $optionMappings = $saved_data->option_mappings;  
+        
+        $decodedOptionMappings = json_decode($optionMappings, true);
+
+        // Validate user response
+        if (!is_numeric($response)) {
+            return "Invalid selection.";
+        }
+
+        $languageID = $decodedOptionMappings[$response];
+
+        $language = Language::find($languageID);
 
         if($language === null){
-
             return false;
         }
         else{
             return $language;
         }
-
     }
 
     public function checkIfUssdLanguageIsValid($input_text){

@@ -24,6 +24,7 @@ class UssdSessionData extends BaseModel
             'market_region_id',
             'market_language',
             'market_language_id',
+            'weather_language_id',
             'market_frequency',
             'market_frequency_count',
             'market_confirmation',
