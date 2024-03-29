@@ -374,7 +374,8 @@ class MenuController extends Controller
 
                 $field          = 'market_subscriber';
             }
-        }  
+        }
+
         elseif ($last_menu == "market_phone_option" && $input_text == '2') {
             $action         = "request";
             $response       = $enter_phone;
@@ -383,12 +384,14 @@ class MenuController extends Controller
             $field          = 'market_subscrption_for';
             $input_text     = 'another';
         }
+
         elseif ($last_menu == "market_phone_option") {
             $action         = "request";
             $response       = "Invalid input!\n";
             $response       .= $subscriber;
             $current_menu   = "market_phone_option"; 
         } 
+
         elseif ($last_menu == "market_region") {
             $region = $this->menu_helper->getSelectedRegion($input_text);
             $input_text = $region->name ?? null;
@@ -413,11 +416,11 @@ class MenuController extends Controller
                 $current_menu   = "market_region";
             }
         }
-        elseif ($last_menu == "market_languages") {
 
+        elseif ($last_menu == "market_languages") {
             $region_id = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_region_id');
             $package_id   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
-            $language = $this->menu_helper->getSelectedLanguage($input_text);
+            $language = $this->menu_helper->getSelectedLanguage($input_text, $sessionId, $phoneNumber);
             $input_text = $language->name ?? null;
 
             if ($this->menu_helper->checkIfLanguageIsValid($input_text)) {
@@ -428,9 +431,7 @@ class MenuController extends Controller
                 $current_menu   = "market_frequency"; 
 
                 $field = "market_language";
-                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_language_id', $language->id);
-
-                
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_language_id', $language->id);     
             }
             else{
                 $action         = "request";
@@ -441,23 +442,28 @@ class MenuController extends Controller
                 $current_menu   = "market_languages";
             }
         }
+
         elseif ($last_menu == "market_package") {
             $action         = "request";
 
             $package = $this->menu_helper->getSelectedPackage($input_text);
+            $count = 0;
 
             if ($package) {
                 $response       = "Select language:\n";
                 $languages      = $this->menu_helper->getLanguages("market");
+                $optionMappings = [];
+
                 foreach($languages as $language){
-
-                    $response .= $language->position.") ".$language->name."\n";
-
+                    $response .= (++$count).") ".$language->name."\n";
+                    $optionMappings[$count] = $language->id;
                 }
+
                 $current_menu   = "market_languages";                
 
                 $input_text = $package->name;
                 // $field          = 'market_package';
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, "option_mappings", $optionMappings);
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'market_package_id', $package->id);
             }
             else{
@@ -465,14 +471,13 @@ class MenuController extends Controller
                 $packages = $this->menu_helper->getPackages();
 
                 foreach($packages as $package){
-
                     $response .= $package->menu.") ".$package->name."\n";
-
                 }
                 
                 $current_menu   = "market_package";
             }
-        }   
+        } 
+
         elseif ($last_menu == "market_frequency") {
             $action       = "request";
             $package_id   = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
@@ -483,18 +488,14 @@ class MenuController extends Controller
             if ($this->menu_helper->isPackageFrequencyValid($package_id, $id)) {
 
                 if (strcasecmp($input_text, "trial") == 0 ) {
-
                     $response = "You are subscribing for the trial pacakge lasting 14 days\n";
                     $response .= "1) Yes\n";
                     $response .= "2) Cancel\n";
                     $current_menu   = "market_period"; 
-                    
                 }
                 else{
-                   
                     $response       = "How many ".str_replace('ly', 's', $input_text)."?";
                     $current_menu   = "market_period";    
-                
                 }
                 
                 $field = 'market_frequency';
@@ -505,6 +506,7 @@ class MenuController extends Controller
                 $current_menu   = "market_frequency"; 
             }
         }  
+
         elseif ($last_menu == "market_period" || $last_menu == "market_confirmation" && $input_text != "1" && $input_text != "2") {
             $action    = "request";
             $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_frequency');
@@ -583,7 +585,8 @@ class MenuController extends Controller
                 }
             }
             
-        }  
+        }
+
         elseif ($last_menu == "market_confirmation") {
             // check if crop is valid
 
@@ -668,6 +671,7 @@ class MenuController extends Controller
                 if($input_text != '0') $field = 'weather_subscriber';
             }
         }
+
         elseif ($last_menu == "weather_phone_option" && $input_text == '2') {
             $action         = "request";
             $response       = "Enter phone e.g 07XXXXXXXX";
@@ -675,11 +679,13 @@ class MenuController extends Controller
             $field          = "weather_subscrption_for";
             $input_text     = "another";
         }
+
         elseif ($last_menu == "weather_phone_option") {
             $action         = "end";
             $response       = "Invalid input!\n";
             $current_menu   = "invalid_input"; 
         } 
+
         elseif ($last_menu == "weather_district") {
 
             $district = $this->menu_helper->getMostSimilarDistrict($input_text, "Uganda");
@@ -706,6 +712,7 @@ class MenuController extends Controller
                 $current_menu   = "weather_district";
             }
         } 
+
         elseif ($last_menu == "weather_subcounty") {
 
             $districtId = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_district_id');
@@ -731,7 +738,8 @@ class MenuController extends Controller
                 // $response       .= "0) Back\n";
                 $current_menu   = "weather_subcounty";
             }
-        } 
+        }
+
         elseif ($last_menu == "weather_parish") {
             // check if parish is valid
             $action         = "request";
@@ -746,7 +754,6 @@ class MenuController extends Controller
                 $action         = "request";
                 $response       = $input_text."\n";
                 $response       .= $weather_period;
-                // $response       .= "0) Back\n";
                 $current_menu   = "weather_period";
 
                 $field = "weather_parish";
@@ -761,6 +768,7 @@ class MenuController extends Controller
                 $current_menu   = "weather_parish";
             }
         } 
+
         elseif ($last_menu == "weather_period") {
             if ($input_text == "1" || $input_text == "2" || $input_text == "3") {
 
@@ -781,26 +789,30 @@ class MenuController extends Controller
                 $current_menu   = "weather_period";
             }
         }
+
         elseif ($last_menu == "weather_frequency") {
-            if (is_numeric($input_text) && $input_text > 0) {
-
-                $district = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_district');
-                $subcounty = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subcounty');
-                $parish = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_parish');
-
+            if(is_numeric($input_text) && $input_text > 0){
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_frequency_count', $input_text);
                 $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_frequency');
+
                 $details = $this->menu_helper->getWeatherPeriodDetails($frequency, $input_text);
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'weather_amount', $details->cost);
+                
+                $action         = "request";
+                $response       = "Which language would you prefer?\n";
+                $languages      = $this->menu_helper->getLanguages("weather");
+                $optionMappings = [];
 
-                $action    = "request";
-                $response  = "Subscribing for weather info in ".$parish.", ".$subcounty.", ".$district." for ".$input_text."".$details->period."s at ugx ".$details->cost.".\n";
-                $response .= "1) Confirm\n";
-                $response .= "2) Cancel";
-                $current_menu   = "weather_confirmation";
-                $field          = "weather_frequency_count";
-            }
-            else{
+                $count = 0;
 
+                foreach($languages as $language){
+                    $response .= (++$count).") ".$language->name."\n";
+                    $optionMappings[$count] = $language->id;
+                }
+
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, "option_mappings", $optionMappings);
+                $current_menu   = "weather_language";
+            }else{
                 $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_frequency');
                 $weather = $this->menu_helper->getWeatherPeriodDetails($frequency);
 
@@ -809,7 +821,51 @@ class MenuController extends Controller
                 $response       .= "How many ".$weather->period."s?";
                 $current_menu   = "weather_frequency";
             }
+        }
+
+        elseif ($last_menu == "weather_language") {
+            if (is_numeric($input_text) && $input_text > 0) {
+                $input_text  = $this->menu_helper->getSelectedRegionID($phoneNumber, $sessionId, $input_text);
+
+                $district = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_district');
+                $subcounty = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subcounty');
+                $parish = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_parish');
+                
+                $periodCount = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_frequency_count');
+
+                $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_frequency');
+                $details = $this->menu_helper->getWeatherPeriodDetails($frequency, $periodCount);
+
+                $action    = "request";
+                $response  = "Subscribing for weather info in ".$parish.", ".$subcounty.", ".$district." for ".$periodCount."".$details->period."s at ugx ".$details->cost.".\n";
+                $response .= "1) Confirm\n";
+                $response .= "2) Cancel";
+                $current_menu   = "weather_confirmation";
+                $field          = "weather_language_id";
+            }
+            else{
+                $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_frequency');
+                $weather = $this->menu_helper->getWeatherPeriodDetails($frequency);
+
+                $action         = "request";
+                $response       = "Wrong input!\n";
+                $response       .= "Chose a language please\n";
+                $languages      = $this->menu_helper->getLanguages("weather");
+                $optionMappings = [];
+
+                $count = 0;
+
+                foreach($languages as $language){
+                    $response .= (++$count).") ".$language->name."\n";
+                    $optionMappings[$count] = $language->id;
+                }
+
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, "option_mappings", $optionMappings);
+                
+                $current_menu   = "weather_language";
+            }
         }  
+
         elseif ($last_menu == "weather_confirmation") {
             // check if crop is valid
 
