@@ -4,10 +4,13 @@ namespace App\Models\Weather;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use App\Models\ParishModel;
+use App\Models\SubcountyModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\WeatherSubscriptionRelationship;
 use App\Models\User;
 use App\Models\Utils;
+use Carbon\Carbon;
 
 class WeatherSubscription extends BaseModel
 {
@@ -52,6 +55,28 @@ class WeatherSubscription extends BaseModel
         parent::boot();
         self::creating(function (WeatherSubscription $model) {
             $model->id = $model->generateUuid();
+            $parish_id = $model->parish_id;
+            $parish = ParishModel::find($parish_id);
+            if ($parish != null) {
+                $model->subcounty_id = $parish->subcounty_id;
+                $model->district_id = $parish->district_id;
+            }
+
+            //prepare
+            $m = self::prepare($model);
+        });
+
+        //updating
+        self::updating(function (WeatherSubscription $model) {
+            $parish_id = $model->parish_id;
+            $parish = ParishModel::find($parish_id);
+            if ($parish != null) {
+                $model->subcounty_id = $parish->subcounty_id;
+                $model->district_id = $parish->district_id;
+            }
+
+            //prepare
+            $m = self::prepare($model);
         });
 
         //created
@@ -85,6 +110,28 @@ class WeatherSubscription extends BaseModel
                 }
             }
         });
+    }
+
+    //prepare
+    public static function prepare($model)
+    {
+        //period_paid
+        $period_paid = $model->period_paid;
+        if ($period_paid == null) {
+            $period_paid = 0;
+        }
+        $model->period_paid = $period_paid;
+        $days = 0;
+        if ($model->frequency == 'daily') {
+            $days = 1;
+        } else if ($model->frequency == 'weekly') {
+            $days = 7;
+        } else if ($model->frequency == 'monthly') {
+            $days = 30;
+        }
+        $model->start_date = date('Y-m-d');
+        $model->end_date = date('Y-m-d', strtotime('+' . $days . ' days', strtotime($model->start_date)));
+        return $model;
     }
 
     /**
@@ -161,5 +208,27 @@ class WeatherSubscription extends BaseModel
         }
 
         return 'NOT PAID';
+    }
+
+    public function getStatusAttribute($value)
+    {
+        $now = Carbon::now();
+        $then = Carbon::parse($this->end_date);
+        if ($now->gt($then)) {
+            if ($value == 1) {
+                $this->status = 0;
+                $this->save();
+            }
+            return 0;
+        } else {
+            if ($value == 0) {
+                $this->status = 1;
+                $this->save();
+            }
+        }
+        if ($value == 1) {
+            return 1;
+        }
+        return 0;
     }
 }

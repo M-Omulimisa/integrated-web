@@ -27,4 +27,32 @@ class ParishModel extends Model
             }
         });
     }
+
+    //get name_text
+    protected $appends = ['name_text'];
+
+    //get name_text
+    public function getNameTextAttribute()
+    {
+        $subcounty = $this->subcounty;
+        if ($subcounty != null) {
+            return $this->attributes['name'] . " - " . $subcounty->name_text;
+        }
+        return $this->attributes['name'];
+    }
+
+    //select data
+    public static function selectData($subcounty_id = null)
+    {
+        $parishes = ParishModel::orderBy('name', 'asc');
+        if ($subcounty_id != null) {
+            $parishes = $parishes->where('subcounty_id', $subcounty_id);
+        }
+        $parishes = $parishes->get();
+        $data = [];
+        foreach ($parishes as $parish) {
+            $data[$parish->id] = $parish->name_text;
+        }
+        return $data;
+    }
 }

@@ -266,6 +266,12 @@ class MarketSubscription extends BaseModel
                 $this->status = 0;
                 $this->save();
             }
+            return 0;
+        }else{ 
+            if ($value == 0) {
+                $this->status = 1;
+                $this->save();
+            }
         }
         if ($value == 1) {
             return 1;
