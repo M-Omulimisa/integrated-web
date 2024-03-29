@@ -69,6 +69,14 @@ class OrderController extends AdminController
         $grid->column('customer_name', __('Customer name'));
         $grid->column('customer_phone_number_1', __('Customer Contact'))->hide();
         $grid->column('customer_address', __('Customer Address'));
+        $grid->column('get_items_1', __('Order items'))
+            ->display(function () {
+                $items = [];
+                foreach ($this->get_items() as $item) {
+                    $items[] = $item->product_name . ' (' . $item->product_quantity . ' x ' . number_format($item->product_price_1) . ')';
+                }
+                return implode(', ', $items);
+            });
         $grid->column('order_total', __('Order total'))->sortable();
         $grid->column('order_details', __('Order details'))->hide();
         $grid->column('get_items', __('Order Items'))->display(function () {
@@ -77,7 +85,7 @@ class OrderController extends AdminController
                 $items[] = $item->product_name . ' (' . $item->product_quantity . ' x ' . number_format($item->product_price_1) . ')';
             }
             return implode(', ', $items);
-        }); 
+        });
         return $grid;
     }
 
@@ -157,13 +165,14 @@ class OrderController extends AdminController
             ->options([
                 'Pending' => 'Pending',
                 'Processing' => 'Processing',
+                'Shipping' => 'Shipping',
                 'Completed' => 'Completed',
                 'Cancelled' => 'Cancelled',
             ])->default('Pending');
 
         $form->disableCreatingCheck();
-        $form->disableEditingCheck();   
-        $form->disableReset(); 
+        $form->disableEditingCheck();
+        $form->disableReset();
         $form->disableViewCheck();
         /* 
         $form->text('description', __('Order Notes'));

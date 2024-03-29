@@ -29,7 +29,7 @@ class WeatherSubscriptionController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new WeatherSubscription());
-        $grid->disableCreateButton();
+        // $grid->disableCreateButton();
         $grid->model()->orderBy('created_at', 'desc');
         $grid->quickSearch('first_name')->placeholder('Search first name...');
 
@@ -84,16 +84,6 @@ class WeatherSubscriptionController extends AdminController
         $grid->column('start_date', __('Start Date'))->sortable();
         $grid->column('end_date', __('End date'))->sortable();
         $grid->column('status', __('Status'))
-            ->display(function ($status) {
-                $endDate = Carbon::parse($this->end_date);
-                $today = Carbon::now();
-                if ($endDate->lt($today)) {
-                    $this->status = 0;
-                    $this->save();
-                    return 'Expired';
-                }
-                return $status == 1 ? 'Active' : 'Expired';
-            })->sortable()
             ->using([
                 0 => 'Expired',
                 1 => 'Active',
@@ -101,6 +91,9 @@ class WeatherSubscriptionController extends AdminController
             ->filter([
                 0 => 'Expired',
                 1 => 'Active',
+            ])->label([
+                0 => 'danger',
+                1 => 'success',
             ]);
         $grid->column('outbox_generation_status', __('Outbox generation status'))->hide();
         $grid->column('outbox_reset_status', __('Outbox reset status'))->hide();
@@ -175,16 +168,13 @@ class WeatherSubscriptionController extends AdminController
                         $form->text('subcounty_id', __('Subcounty id'));
         $form->text('parish_id', __('Parish id'))
                 $form->text('frequency', __('Frequency'));
-        $form->number('period_paid', __('Period paid'));
-      
-        $form->display('language_id', __('Language'))
-            ->with(function ($language_id) {
-                $lang = \App\Models\Settings\Language::find($language_id);
-                if ($lang == null) {
-                    return '-';
-                }
-                return $lang->name;
-            });  */
+        $form->number('period_paid', __('Period paid')); */
+
+
+        $langs = \App\Models\Settings\Language::all();
+        $form->select('language_id', __('Language'))
+            ->options($langs->pluck('name', 'id'))
+            ->rules('required');
         $form->text('first_name', __('First name'));
         $form->text('last_name', __('Last name'));
         $form->email('email', __('Email'));
@@ -193,11 +183,11 @@ class WeatherSubscriptionController extends AdminController
             ->rules('required');
         $form->date('end_date', __('End date'))
             ->rules('required');
-        $form->radio('status', __('Status'))
+    /*     $form->radio('status', __('Status'))
             ->options([
                 0 => 'Expired',
                 1 => 'Active',
-            ])->rules('required');
+            ])->rules('required'); */
         /*         $form->switch('outbox_generation_status', __('Outbox generation status'));
         $form->switch('outbox_reset_status', __('Outbox reset status'));
         $form->date('outbox_last_date', __('Outbox last date'))->default(date('Y-m-d'));
@@ -210,6 +200,18 @@ class WeatherSubscriptionController extends AdminController
         $form->text('phone', __('Phone number'))->rules('required');
         $form->disableCreatingCheck();
         /*         $form->text('payment_id', __('Payment id')); */
+
+        $form->select('parish_id', __('Parish'))
+            ->options(ParishModel::selectData())
+            ->rules('required');
+        $form->select('frequency', __('Frequency'))
+            ->options([
+                'daily' => 'Daily',
+                'weekly' => 'Weekly',
+                'monthly' => 'Monthly',
+            ])->rules('required');
+
+        $form->decimal('period_paid', __('Period Paid'))->rules('required');
 
         return $form;
     }

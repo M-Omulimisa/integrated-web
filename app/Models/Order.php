@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Dflydev\DotAccessData\Util;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,6 +26,22 @@ class Order extends Model
             ) {
                 if ($m->MNOTransactionReferenceId != null && strlen($m->MNOTransactionReferenceId) > 3) {
                     $m->payment_confirmation = 'PAID';
+                }
+            }
+
+            //check old order_state if is not the same as the new order_state
+            $order_state_1 = $m->getOriginal('order_state');
+            $order_state_2 = $m->order_state;
+            if ($order_state_1 != $order_state_2) {
+                //send notification
+                $msg = 'Your order #' . $m->id . ' status has been updated to ' . $order_state_2 . '.';
+                //thank you.
+                $msg .= ' Thank you for shopping with us.';
+                //send notification
+                try {
+                    Utils::send_sms($m->customer_phone_number_1, $msg);
+                } catch (\Throwable $th) {
+                    //throw $th;
                 }
             }
         });
