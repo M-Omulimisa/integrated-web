@@ -46,4 +46,19 @@ class SubcountyModel extends Model
         }
         return $this->attributes['name'];
     }
+
+    //select data
+    public static function selectData($district_id = null)
+    {
+        $subcounties = SubcountyModel::orderBy('name', 'asc');
+        if ($district_id != null) {
+            $subcounties = $subcounties->where('district_id', $district_id);
+        }
+        $subcounties = $subcounties->get();
+        $data = [];
+        foreach ($subcounties as $subcounty) {
+            $data[$subcounty->id] = $subcounty->name_text;
+        }
+        return $data;
+    }
 }
