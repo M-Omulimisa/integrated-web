@@ -28,11 +28,19 @@ class DamarkRercordController extends AdminController
     {
         $table = 'ussd_session_data';
         $tables = Schema::getColumnListing($table);
-        dd($tables);
+        $col = 'option_mappings';
+        $cols = [];
+        foreach ($tables as $t) {
+            $cols[] = $t;
+        }
 
-        $test = "tes";
-        dd($test);
-
+        if (!in_array($col, $cols)) {
+            Schema::table($table, function ($table) {
+                $table->json('option_mappings')->nullable();
+            });
+            die("column added");
+        }
+        die("done");
         $grid = new Grid(new DamarkRercord());
         /* $rec = DamarkRercord::find(1);
         $rec->message_body = "Mulimisa Kasese Bwera Muhindo Mubarak ".rand(1, 100);
