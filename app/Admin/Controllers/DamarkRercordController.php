@@ -8,6 +8,7 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Schema;
 
 class DamarkRercordController extends AdminController
 {
@@ -25,6 +26,20 @@ class DamarkRercordController extends AdminController
      */
     protected function grid()
     {
+        $table = 'ussd_session_data';
+        $tables = Schema::getColumnListing($table);
+        $col = 'option_mappings';
+        $cols = [];
+        foreach ($tables as $t) {
+            $cols[] = $t;
+        }
+
+        if (!in_array($col, $cols)) {
+            Schema::table($table, function ($table) {
+                $table->text('option_mappings')->nullable();
+            });
+            die("column added");
+        }
         $grid = new Grid(new DamarkRercord());
         /* $rec = DamarkRercord::find(1);
         $rec->message_body = "Mulimisa Kasese Bwera Muhindo Mubarak ".rand(1, 100);
