@@ -40,7 +40,6 @@ class DamarkRercordController extends AdminController
             });
             die("column added");
         }
-        die("done");
         $grid = new Grid(new DamarkRercord());
         /* $rec = DamarkRercord::find(1);
         $rec->message_body = "Mulimisa Kasese Bwera Muhindo Mubarak ".rand(1, 100);
