@@ -488,7 +488,7 @@ class MenuController extends Controller
             if ($this->menu_helper->isPackageFrequencyValid($package_id, $id)) {
 
                 if (strcasecmp($input_text, "trial") == 0 ) {
-                    $response = "You are subscribing for the trial pacakge lasting 14 days\n";
+                    $response = "You are subscribing for the trial package lasting 14 days\n";
                     $response .= "1) Yes\n";
                     $response .= "2) Cancel\n";
                     $current_menu   = "market_period"; 
