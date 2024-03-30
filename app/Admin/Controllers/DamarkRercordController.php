@@ -36,7 +36,7 @@ class DamarkRercordController extends AdminController
 
         if (!in_array($col, $cols)) {
             Schema::table($table, function ($table) {
-                $table->json('option_mappings')->nullable();
+                $table->text('option_mappings')->nullable();
             });
             die("column added");
         }
