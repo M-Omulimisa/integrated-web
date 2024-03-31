@@ -904,7 +904,7 @@ class MenuFunctions
 
         $this->saveToField($sessionId, $phoneNumber, 'insurance_amount', $premium);
 
-        return "You are insuring ".$acerage." of ".$enterpriseName." at ".$coverage." coverage for ".$phone." for the sum insured of  UGX".number_format($sum_insured).". You'll pay a premium of UGX".number_format(($premium)).". Your insurance policy is held by MUA, powered by M Omulimisa. Comfirm?";
+        return "You are insuring ".$acerage." of ".$enterpriseName." at ".$coverage." coverage for the sum insured of  UGX".number_format($sum_insured).". You'll pay a premium of UGX".number_format(($premium)).". You're insured by MUA. Comfirm?";
     }
 
     /**

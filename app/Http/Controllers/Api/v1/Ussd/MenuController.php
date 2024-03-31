@@ -229,8 +229,7 @@ class MenuController extends Controller
             //     $response       .= $this->menu_helper->seasonItemList($seasonId);
             //     $current_menu   = "insurance_item";
             // }
-        }  
-
+        }
         
         elseif ($last_menu == "insurance_acreage") {
             $action    = "request";
