@@ -158,6 +158,7 @@ die(); */
 use App\Models\CountyModel;
 use App\Models\SubcountyModel;
 use Encore\Admin\Facades\Admin;
+use Encore\Admin\Form\Tools;
 use PHPUnit\Framework\Constraint\Count;
 
 Encore\Admin\Form::forget(['map', 'editor']);
@@ -198,3 +199,14 @@ die();
      die($th->getMessage()); 
  } */
 Utils::system_boot();
+//disable delete from all forms
+Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
+    $form->tools(function (Tools $tools) {
+        $tools->disableDelete();
+    });
+});
+Encore\Admin\Show::init(function (Encore\Admin\Show $show) {
+    $show->panel()->tools(function ($tools) {
+        $tools->disableDelete();
+    });
+}); 
