@@ -139,6 +139,7 @@ class WeatherSubscription extends BaseModel
         } else {
             $created_date = Carbon::parse($model->created_at);
         }
+        $created_date = Carbon::parse($created_date);
         $model->start_date = $created_date;
 
         $model->end_date = $created_date->addDays($days * $period_paid);
@@ -153,8 +154,8 @@ class WeatherSubscription extends BaseModel
         }
 
         //format to date only
-        $model->end_date = date('Y-m-d', strtotime($model->end_date));
-        $model->start_date = date('Y-m-d', strtotime($model->start_date));
+        $model->start_date = Carbon::parse($model->start_date)->format('Y-m-d');
+        $model->end_date = Carbon::parse($model->end_date)->format('Y-m-d');
 
         return $model;
     }
