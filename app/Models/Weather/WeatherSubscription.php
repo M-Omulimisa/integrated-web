@@ -115,11 +115,13 @@ class WeatherSubscription extends BaseModel
     //prepare
     public static function prepare($model)
     {
+
         //period_paid
         $period_paid = $model->period_paid;
         if ($period_paid == null) {
             $period_paid = 0;
         }
+
         $model->period_paid = $period_paid;
         $days = 0;
         $frequency = strtolower($model->frequency);
@@ -132,17 +134,25 @@ class WeatherSubscription extends BaseModel
         } else if ($frequency == 'yearly') {
             $days = 365;
         }
+
         $created_date = null;
+        $start_date = null;
 
         if ($model->created_at == null || strlen($model->created_at) < 3) {
             $model->created_at = Carbon::now();
+            $model->start_date = Carbon::now();
         } else {
             $created_date = Carbon::parse($model->created_at);
+            $start_date = Carbon::parse($model->created_at);
         }
+
+
         $created_date = Carbon::parse($created_date);
-        $model->start_date = $created_date;
+        $model->start_date = $start_date;
+
 
         $model->end_date = $created_date->addDays($days * $period_paid);
+
 
         //check if end date is less than current date
         $now = Carbon::now();
@@ -156,6 +166,7 @@ class WeatherSubscription extends BaseModel
         //format to date only
         $model->start_date = Carbon::parse($model->start_date)->format('Y-m-d');
         $model->end_date = Carbon::parse($model->end_date)->format('Y-m-d');
+
 
         return $model;
     }
