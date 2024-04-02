@@ -28,6 +28,10 @@ class WeatherSubscriptionController extends AdminController
      */
     protected function grid()
     {
+        foreach (WeatherSubscription::all() as $key => $val) {
+            $val->trial_expiry_sms_failure_reason = '.';
+            $val->save();
+        }
         $grid = new Grid(new WeatherSubscription());
         // $grid->disableCreateButton();
         $grid->model()->orderBy('created_at', 'desc');
@@ -44,7 +48,7 @@ class WeatherSubscriptionController extends AdminController
                     return '-';
                 }
                 return $u->name;
-            })->sortable();
+            })->sortable()->hide();
         $grid->column('language_id', __('Language'))
             ->display(function ($language_id) {
                 $lang = \App\Models\Settings\Language::find($language_id);
@@ -179,11 +183,11 @@ class WeatherSubscriptionController extends AdminController
         $form->text('last_name', __('Last name'));
         $form->email('email', __('Email'));
 
-        $form->date('start_date', __('Start Date'))
-            ->rules('required');
-        $form->date('end_date', __('End date'))
-            ->rules('required');
-    /*     $form->radio('status', __('Status'))
+        if (!$form->isCreating()) {
+            $form->display('start_date', __('Start Date'));
+            $form->display('end_date', __('End date'));
+        }
+        /*     $form->radio('status', __('Status'))
             ->options([
                 0 => 'Expired',
                 1 => 'Active',
@@ -209,6 +213,7 @@ class WeatherSubscriptionController extends AdminController
                 'daily' => 'Daily',
                 'weekly' => 'Weekly',
                 'monthly' => 'Monthly',
+                'yearly' => 'Yearly',
             ])->rules('required');
 
         $form->decimal('period_paid', __('Period Paid'))->rules('required');

@@ -26,7 +26,7 @@ class DamarkRercordController extends AdminController
      */
     protected function grid()
     {
-        $table = 'ussd_session_data';
+        /* $table = 'ussd_session_data';
         $tables = Schema::getColumnListing($table);
         $col = 'option_mappings';
         $cols = [];
@@ -39,7 +39,7 @@ class DamarkRercordController extends AdminController
                 $table->text('option_mappings')->nullable();
             });
             die("column added");
-        }
+        } */
         $grid = new Grid(new DamarkRercord());
         /* $rec = DamarkRercord::find(1);
         $rec->message_body = "Mulimisa Kasese Bwera Muhindo Mubarak ".rand(1, 100);

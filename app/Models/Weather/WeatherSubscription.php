@@ -94,7 +94,7 @@ class WeatherSubscription extends BaseModel
             //welcome message for subscription to weather
             $msg = "Thank you for subscribing to our weather updates. You will receive weather updates every " . $model->frequency . " days. Thank you for subscribing.";
             try {
-                Utils::send_sms($phone, $msg);
+                //Utils::send_sms($phone, $msg);
             } catch (\Throwable $th) {
                 //throw $th; 
             }
@@ -122,15 +122,40 @@ class WeatherSubscription extends BaseModel
         }
         $model->period_paid = $period_paid;
         $days = 0;
-        if ($model->frequency == 'daily') {
+        $frequency = strtolower($model->frequency);
+        if ($frequency == 'daily') {
             $days = 1;
-        } else if ($model->frequency == 'weekly') {
+        } else if ($frequency == 'weekly') {
             $days = 7;
-        } else if ($model->frequency == 'monthly') {
+        } else if ($frequency == 'monthly') {
             $days = 30;
+        } else if ($frequency == 'yearly') {
+            $days = 365;
         }
         $model->start_date = date('Y-m-d');
-        $model->end_date = date('Y-m-d', strtotime('+' . $days . ' days', strtotime($model->start_date)));
+        $created_date = null;
+
+        if ($model->created_at == null || strlen($model->created_at) < 3) {
+            $model->created_at = Carbon::now();
+        } else {
+            $created_date = Carbon::parse($model->created_at);
+        }
+
+        $model->end_date = $created_date->addDays($days * $period_paid);
+
+        //check if end date is less than current date
+        $now = Carbon::now();
+        $end_date = Carbon::parse($model->end_date);
+        if ($now->gt($end_date)) {
+            $model->status = 0;
+        } else {
+            $model->status = 1;
+        }
+
+        //format to date only
+        $model->end_date = date('Y-m-d', strtotime($model->end_date));
+        $model->start_date = date('Y-m-d', strtotime($model->start_date));
+
         return $model;
     }
 
