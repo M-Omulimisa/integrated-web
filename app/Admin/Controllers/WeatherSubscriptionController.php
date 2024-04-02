@@ -29,7 +29,7 @@ class WeatherSubscriptionController extends AdminController
     protected function grid()
     {
         foreach (WeatherSubscription::all() as $key => $val) {
-            $val->trial_expiry_sms_failure_reason .= '.';
+            $val->trial_expiry_sms_failure_reason .= '..';
             $val->save();
         }
         $grid = new Grid(new WeatherSubscription());
