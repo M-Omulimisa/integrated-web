@@ -132,7 +132,6 @@ class WeatherSubscription extends BaseModel
         } else if ($frequency == 'yearly') {
             $days = 365;
         }
-        $model->start_date = date('Y-m-d');
         $created_date = null;
 
         if ($model->created_at == null || strlen($model->created_at) < 3) {
@@ -140,6 +139,7 @@ class WeatherSubscription extends BaseModel
         } else {
             $created_date = Carbon::parse($model->created_at);
         }
+        $model->start_date = $created_date;
 
         $model->end_date = $created_date->addDays($days * $period_paid);
 
