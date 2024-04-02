@@ -166,6 +166,7 @@ class WeatherSubscription extends BaseModel
         //format to date only
         $model->start_date = Carbon::parse($model->start_date)->format('Y-m-d');
         $model->end_date = Carbon::parse($model->end_date)->format('Y-m-d');
+        $model->phone = Utils::prepare_phone_number($model->phone);
 
 
         return $model;
