@@ -59,6 +59,9 @@ class ItemPriceController extends AdminController
             ->sortable()
             ->filter('range')
             ->display(function ($price) {
+                if ($this->price_type == 'Range') {
+                    return number_format($price) . ' - ' . number_format($this->price_1);
+                }
                 return number_format($price);
             });
         return $grid;
@@ -113,9 +116,22 @@ class ItemPriceController extends AdminController
         )->options($ents)
             ->rules('required')
             ->required();
-        $form->decimal('price', __('Price (UGX)'))
-            ->rules('required')
-            ->required();
+        $form->radio('price_type', __('Price Type'))
+            ->options(['Single' => 'Single', 'Range' => 'Range'])
+            ->default('Single')
+            ->when('Range', function (Form $form) {
+                $form->decimal('price', __('Price (UGX)'))
+                    ->rules('required')
+                    ->required();
+                $form->decimal('price_1', __('Price 1'))
+                    ->rules('required')
+                    ->required();
+            })->when('Single', function (Form $form) {
+                $form->decimal('price', __('Price (UGX)'))
+                    ->rules('required')
+                    ->required();
+            });
+
 
 
         return $form;

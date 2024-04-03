@@ -51,6 +51,7 @@ class Enterprise extends BaseModel
     //getter for name_text
     public function getNameTextAttribute($name)
     {
+        return $this->name;
         $unit = MeasureUnit::find($this->unit_id);
         if ($unit != null) {
             return $this->name . ' (' . $unit->slug . ')';
