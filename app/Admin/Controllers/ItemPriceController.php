@@ -129,28 +129,23 @@ class ItemPriceController extends AdminController
 
         $form->date('due_to_date', __('Due to date'))
             ->default(date('Y-m-d'))
-            ->rules('required')
-            ->required();
+            ->rules('required');
         $form->select(
             'item_id',
             __('Select Enterprise')
         )->options($ents)
-            ->rules('required')
-            ->required();
+            ->rules('required');
         $form->radio('price_type', __('Price Type'))
             ->options(['Single' => 'Single', 'Range' => 'Range'])
             ->default('Single')
             ->when('Range', function (Form $form) {
                 $form->decimal('price', __('Price (UGX)'))
-                    ->rules('required')
-                    ->required();
+                    ->rules('required');
                 $form->decimal('price_1', __('Price 1'))
-                    ->rules('required')
-                    ->required();
+                    ->rules('required');
             })->when('Single', function (Form $form) {
                 $form->decimal('price', __('Price (UGX)'))
-                    ->rules('required')
-                    ->required();
+                    ->rules('required');
             });
 
 
