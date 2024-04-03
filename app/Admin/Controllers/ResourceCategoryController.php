@@ -29,6 +29,9 @@ class ResourceCategoryController extends AdminController
         $grid->disableBatchActions();
         $grid->disableExport();
         $grid->quickSearch('name')->placeholder('Search by name...');
+        //thumbnail
+        $grid->column('thumbnail', __('Thumbnail'))
+            ->image('', 50, 50);
         $grid->model()->orderBy('name', 'asc');
         $grid->column('name', __('Name'))->sortable();
         $grid->column('type', __('Type'))->sortable();
@@ -72,7 +75,8 @@ class ResourceCategoryController extends AdminController
                 'Crops' => 'Crops',
                 'Livestock' => 'Livestock',
             ])->rules('required');
-        $form->image('thumbnail', __('Thumbnail'));
+        $form->image('thumbnail', __('Thumbnail'))
+            ->uniqueName();
         $form->textarea('details', __('Details'));
 
         return $form;
