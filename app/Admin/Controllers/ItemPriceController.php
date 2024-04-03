@@ -9,6 +9,7 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Schema;
 
 class ItemPriceController extends AdminController
 {
@@ -26,6 +27,26 @@ class ItemPriceController extends AdminController
      */
     protected function grid()
     {
+        $table = (new ItemPrice())->getTable();
+        $tables = Schema::getColumnListing($table);
+        $cols_to_add = ['price_type', 'price_1'];
+        $cols = [];
+        foreach ($tables as $t) {
+            $cols[] = $t;
+        }
+
+        foreach ($cols_to_add as $col) {
+            if (!in_array($col, $cols)) {
+                Schema::table($table, function ($table) use ($col) {
+                    if ($col == 'price_type') {
+                        $table->string('price_type')->nullable()->default('Single');
+                    } else {
+                        $table->bigInteger('price_1')->nullable();
+                    }
+                });
+            }
+        }
+
         $grid = new Grid(new ItemPrice());
         $ents = [];
         foreach (Enterprise::where([])

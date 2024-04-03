@@ -13,10 +13,10 @@ class AddInHouseItemPrices extends Migration
      */
     public function up()
     {
-        Schema::table('item_prices', function (Blueprint $table) {
+       /*  Schema::table('item_prices', function (Blueprint $table) {
             $table->string('price_type')->nullable()->default('Single');
             $table->bigInteger('price_1')->nullable();
-        });
+        }); */
     }
 
     /**
