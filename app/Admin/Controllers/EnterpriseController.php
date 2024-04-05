@@ -89,7 +89,7 @@ class EnterpriseController extends AdminController
 
         $form->text('name', __('Name'));
         $form->text('category', __('Category'));
-        $form->radio('include_in_insurance', __('Include in insurance'))->options(['Yes' => 'Yes', 'No' => 'No'])->default('Yes');
+        $form->radio('include_in_insurance', __('Include in insurance'))->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
         $form->textarea('description', __('Description'));
 
         return $form;
