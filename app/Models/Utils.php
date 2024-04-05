@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Zebra_Image;
 use Berkayk\OneSignal\OneSignalClient;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 
 class Utils
 {
@@ -1165,5 +1166,13 @@ class Utils
             <Say>We did not get your input number. Good bye</Say>
         </Response>';
         die();
+    }
+
+    public static function create_column($table,$col){
+        if (!Schema::hasColumn($table, $col)) {
+            Schema::table($table, function ($table) use ($col) {
+                $table->text($col)->nullable();
+            });
+        }
     }
 }

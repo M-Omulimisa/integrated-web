@@ -3,10 +3,12 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Settings\Enterprise;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Schema;
 
 class EnterpriseController extends AdminController
 {
@@ -24,12 +26,34 @@ class EnterpriseController extends AdminController
      */
     protected function grid()
     {
+
+        $table = (new Enterprise())->getTable();
+
+        Utils::create_column($table, 'include_in_insurance');
+        /* 
+        $tables = Schema::getColumnListing($table);
+        $cols_to_add = ['include_in_insurance'];
+        $cols = [];
+        foreach ($tables as $t) {
+            $cols[] = $t;
+        }
+
+        foreach ($cols_to_add as $col) {
+            if (!in_array($col, $cols)) {
+                Schema::table($table, function ($table) use ($col) {
+                    $table->string('include_in_insurance')->nullable()->default('Yes');
+                });
+            }
+        } */
+
+
         $grid = new Grid(new Enterprise());
 
-      
+
         $grid->column('name', __('Name'));
         $grid->column('category', __('Category'));
-    
+        $grid->column('include_in_insurance', __('Include in insurance'));
+
         return $grid;
     }
 
@@ -65,6 +89,7 @@ class EnterpriseController extends AdminController
 
         $form->text('name', __('Name'));
         $form->text('category', __('Category'));
+        $form->radio('include_in_insurance', __('Include in insurance'))->options(['Yes' => 'Yes', 'No' => 'No'])->default('Yes');
         $form->textarea('description', __('Description'));
 
         return $form;
