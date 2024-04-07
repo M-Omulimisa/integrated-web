@@ -155,6 +155,7 @@ use App\Models\Utils;
 use App\Traits\Notification;
 use Dflydev\DotAccessData\Util;
 use Encore\Admin\Facades\Admin;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -179,7 +180,7 @@ Route::get('auth/login', function () {
     // return view('welcome');
     //return redirect('/home');
 });
-Route::post('auth/login', function () {
+/* Route::post('auth/login', function () {
     $post = $_POST;
     $email = $post['email'];
     $password = $post['password'];
@@ -204,12 +205,24 @@ Route::post('auth/login', function () {
         die("Invalid password");
     }
 
+
+
+    if ($this->guard()->attempt([
+        'id' => $user->id,
+        'password' => $password,
+    ], true)) {
+        die("failed");
+    }
+
+    $u = Admin::user();
+    die("in as $u->name");
+    die("success");
     dd($post);
     die("Login");
     // return view('welcome');
     //return redirect('/home');
 });
-
+ */
 
 Route::get('market-info-message-campaigns-send-now', function () {
     $campaign = MarketInfoMessageCampaign::find($_GET['id']);

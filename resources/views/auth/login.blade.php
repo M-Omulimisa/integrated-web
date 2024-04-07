@@ -17,8 +17,8 @@
 
                             <div class="mb-3">
                                 <label for="username" class="form-label">Enter Email or Phone number</label>
-                                <input type="text" value="{{ old('email') }}"
-                                    class="form-control @error('email') is-invalid @enderror" id="username" name="email"
+                                <input type="text" value="{{ old('username') }}"
+                                    class="form-control @error('username') is-invalid @enderror" id="username" name="username"
                                     placeholder="Enter email">
 
                                 @if ($errors->has('email'))
