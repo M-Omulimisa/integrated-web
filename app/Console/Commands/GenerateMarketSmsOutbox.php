@@ -55,115 +55,111 @@ class GenerateMarketSmsOutbox extends Command
      */
     public function handle()
     {
+        return;
         if ($this->debug) Log::info(['Command' => 'Generating market info']);
 
-            $week = $this->getWeekStartAndEndDates(date('Y-m-d'));
+        $week = $this->getWeekStartAndEndDates(date('Y-m-d'));
 
-            MarketSubscription::where('end_date', '>', Carbon::now())
-                ->where(function ($query) {
-                    $query->whereOutboxGenerationStatus(false)
-                        ->whereOutboxResetStatus(false)
-                        ->whereNull('outbox_last_date')
-                        ->orWhere(function ($query) {
-                            $query->whereOutboxGenerationStatus(false)
-                                ->whereOutboxResetStatus(true)
-                                ->whereDate('outbox_last_date', '!=', Carbon::today());
-                        });
-                })
-                ->whereIn('language_id', function ($query) {
-                    $query->select('language_id')
-                        ->from(with(new MarketPackageMessage)->getTable());
-                })
-                
-                ->whereNotIn('id', function ($query) use ($week) {
-                    $query->select('subscription_id')
-                        ->where('sent_at', '>=', $week['start_date'])
-                        ->where('sent_at', '<=', $week['end_date'])
-                        ->from(with(new MarketOutbox)->getTable());
-                })
-                ->chunk(500, function ($subscriptions) {
+        MarketSubscription::where('end_date', '>', Carbon::now())
+            ->where(function ($query) {
+                $query->whereOutboxGenerationStatus(false)
+                    ->whereOutboxResetStatus(false)
+                    ->whereNull('outbox_last_date')
+                    ->orWhere(function ($query) {
+                        $query->whereOutboxGenerationStatus(false)
+                            ->whereOutboxResetStatus(true)
+                            ->whereDate('outbox_last_date', '!=', Carbon::today());
+                    });
+            })
+            ->whereIn('language_id', function ($query) {
+                $query->select('language_id')
+                    ->from(with(new MarketPackageMessage)->getTable());
+            })
 
-                    if ($this->debug) logger(count($subscriptions));
-                    if ($this->debug) echo count($subscriptions);                        
-                    if ($this->debug) logger([$subscriptions->pluck('id')->toArray()]);
+            ->whereNotIn('id', function ($query) use ($week) {
+                $query->select('subscription_id')
+                    ->where('sent_at', '>=', $week['start_date'])
+                    ->where('sent_at', '<=', $week['end_date'])
+                    ->from(with(new MarketOutbox)->getTable());
+            })
+            ->chunk(500, function ($subscriptions) {
 
-                    MarketSubscription::whereIn('id', $subscriptions->pluck('id')->toArray())->update(['outbox_generation_status' => 2]);
+                if ($this->debug) logger(count($subscriptions));
+                if ($this->debug) echo count($subscriptions);
+                if ($this->debug) logger([$subscriptions->pluck('id')->toArray()]);
 
-                    Log::info($subscriptions);
-                    foreach ($subscriptions as $subscription) {
+                MarketSubscription::whereIn('id', $subscriptions->pluck('id')->toArray())->update(['outbox_generation_status' => 2]);
 
-                        Log::info($subscription);
+                Log::info($subscriptions);
+                foreach ($subscriptions as $subscription) {
 
-                        $subscription->update(['outbox_generation_status' => 3]);
+                    Log::info($subscription);
 
-                        $pkgMessage = MarketPackageMessage::where('package_id', $subscription->package_id)->where('language_id', $subscription->language_id)->first();
+                    $subscription->update(['outbox_generation_status' => 3]);
 
-                        Log::info($pkgMessage);
-                        
-                        $sms = null;
+                    $pkgMessage = MarketPackageMessage::where('package_id', $subscription->package_id)->where('language_id', $subscription->language_id)->first();
 
-                        if ($pkgMessage) {
+                    Log::info($pkgMessage);
 
-                            if ($this->debug) echo $pkgMessage->message;
+                    $sms = null;
 
-                            // if last sent is greater than last update date of the msg
-                            // dont send, msg not yet updates
-                            if (!is_null($subscription->outbox_last_date) && $subscription->outbox_last_date > $pkgMessage->updated_at) {
-                                Log::error(['GenerateMarketSmsOutbox' => 'Language: '.$subscription->language->name.' has no new message to generate']);
-                                $subscription->update(['outbox_generation_status' => false]);
-                            }
-                            else{
+                    if ($pkgMessage) {
 
-                                // date('Y-m-d').' Market: '.
-                                // .' M-Omulimisa'
-                                $sms = $pkgMessage->message;
-                                Log::info($sms);
-                                        
-                                if($this->debug) logger($sms);
-                                if($this->debug) logger(strlen($sms));
+                        if ($this->debug) echo $pkgMessage->message;
 
-                                if ($sms !== '' && strlen($sms) > 10) {
-                                    $outbox_sms = [
-                                        'subscription_id' => $subscription->id,
-                                        // 'farmer_id'       => $subscription->farmer_id,
-                                        'recipient'       => $subscription->phone,
-                                        'message'         => $sms,
-                                        'status'          => 'PENDING'
-                                    ];
-                                    if (MarketOutbox::create($outbox_sms)) {
-                                        if($this->debug) logger('Outbox sms created');
+                        // if last sent is greater than last update date of the msg
+                        // dont send, msg not yet updates
+                        if (!is_null($subscription->outbox_last_date) && $subscription->outbox_last_date > $pkgMessage->updated_at) {
+                            Log::error(['GenerateMarketSmsOutbox' => 'Language: ' . $subscription->language->name . ' has no new message to generate']);
+                            $subscription->update(['outbox_generation_status' => false]);
+                        } else {
 
-                                        if ($subscription->update(['outbox_generation_status' => true])) {
-                                            if($this->debug) logger('Outbox sms updated');
-                                        }else{
-                                            if($this->debug) logger('Outbox sms for ID'.$subscription->id.' not updated');
-                                        }
+                            // date('Y-m-d').' Market: '.
+                            // .' M-Omulimisa'
+                            $sms = $pkgMessage->message;
+                            Log::info($sms);
 
-                                    }else{
-                                        if($this->debug) logger('Outbox sms for ID'.$subscription->id.' not created');
+                            if ($this->debug) logger($sms);
+                            if ($this->debug) logger(strlen($sms));
+
+                            if ($sms !== '' && strlen($sms) > 10) {
+                                $outbox_sms = [
+                                    'subscription_id' => $subscription->id,
+                                    // 'farmer_id'       => $subscription->farmer_id,
+                                    'recipient'       => $subscription->phone,
+                                    'message'         => $sms,
+                                    'status'          => 'PENDING'
+                                ];
+                                if (MarketOutbox::create($outbox_sms)) {
+                                    if ($this->debug) logger('Outbox sms created');
+
+                                    if ($subscription->update(['outbox_generation_status' => true])) {
+                                        if ($this->debug) logger('Outbox sms updated');
+                                    } else {
+                                        if ($this->debug) logger('Outbox sms for ID' . $subscription->id . ' not updated');
                                     }
-                                } // endif sms
-
-                            }
+                                } else {
+                                    if ($this->debug) logger('Outbox sms for ID' . $subscription->id . ' not created');
+                                }
+                            } // endif sms
 
                         }
-                        else{
-                            Log::error(['GenerateMarketSmsOutbox' => 'Language: '.$subscription->language->name.' has no package']);
-                        }
+                    } else {
+                        Log::error(['GenerateMarketSmsOutbox' => 'Language: ' . $subscription->language->name . ' has no package']);
                     }
-                });
+                }
+            });
 
 
-                
+
         try {
-            
+        } catch (\Throwable $r) {
+            Log::error(['GenerateMarketSmsOutbox' => $r->getMessage()]);
         }
-        catch (\Throwable $r) {
-            Log::error(['GenerateMarketSmsOutbox' => $r->getMessage()]);            
-        } 
     }
 
-    public function getWeekStartAndEndDates($inputDate) {
+    public function getWeekStartAndEndDates($inputDate)
+    {
         // Create a DateTime object from the input date
         $dateTime = new DateTime($inputDate);
 

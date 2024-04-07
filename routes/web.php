@@ -154,6 +154,7 @@ use App\Models\SubcountyModel;
 use App\Models\Utils;
 use App\Traits\Notification;
 use Dflydev\DotAccessData\Util;
+use Encore\Admin\Facades\Admin;
 
 /*
 |--------------------------------------------------------------------------
@@ -166,12 +167,49 @@ use Dflydev\DotAccessData\Util;
 |
 */
 
-/* 
-Route::get('/', function () {
+
+Route::get('auth/login', function () {
+    $u = Admin::user();
+    if ($u != null) {
+        die("in");
+        return redirect(url('/'));
+    }
+
+    return view('auth.login');
     // return view('welcome');
     //return redirect('/home');
 });
-*/
+Route::post('auth/login', function () {
+    $post = $_POST;
+    $email = $post['email'];
+    $password = $post['password'];
+    $user = \App\Models\User::where('email', $email)->first();
+    if ($user == null) {
+        $user = \App\Models\User::where('username', $email)->first();
+        if ($user == null) {
+            $phone = Utils::prepare_phone_number($email);
+            if (Utils::phone_number_is_valid($phone)) {
+                $user = \App\Models\User::where('phone', $phone)->first();
+            }
+        }
+    }
+
+    if ($user == null) {
+        return back()
+            ->withErrors(['email' => 'Invalid email or phone number'])
+            ->withInput();
+    }
+
+    if (!password_verify($password, $user->password)) {
+        die("Invalid password");
+    }
+
+    dd($post);
+    die("Login");
+    // return view('welcome');
+    //return redirect('/home');
+});
+
 
 Route::get('market-info-message-campaigns-send-now', function () {
     $campaign = MarketInfoMessageCampaign::find($_GET['id']);
