@@ -10,7 +10,7 @@ use App\Models\Utils;
                 <small class="text-muted mt-2">{{ Utils::my_time_ago($item->created_at) }}</small>
             </div>
             <p class="mb-1">{{ $item->frequency }} - ({{ $item->period_paid }})
-            </p>
+            </p> 
         </div>
     @endforeach
 </div>
