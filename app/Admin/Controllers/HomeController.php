@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\AdminRoleUser;
 use App\Models\ItemPrice;
+use App\Models\Market\MarketPackage;
 use App\Models\Market\MarketSubscription;
 use App\Models\OnlineCourse;
 use App\Models\Organisations\Organisation;
@@ -499,152 +500,152 @@ class HomeController extends Controller
                         ->collapsable()
                         ->removable();
                     $column->append($box);
-                }); 
+                });
             })
-            ->row(function (Row $row) {
-                $row->column(3, function (Column $column) {
-                    $data = [];
-                    $data[] = [
-                        'title' => 'Organisation',
-                        'detail' => Organisation::count(),
-                    ];
-                    $data[] = [
-                        'title' => 'Registered Users',
-                        'detail' => \App\Models\User::count(),
-                    ];
-                    $data[] = [
-                        'title' => 'Extension Officers',
-                        'detail' => AdminRoleUser::where([
-                            'role_id' => 2
-                        ])
-                            ->count(),
-                    ];
-
-                    $ents = Enterprise::where([])
-                        ->limit(10)
-                        ->get();
-                    $max_days_ago = 30;
-                    $data = [];
-                    $now = Carbon::now();
-                    for ($i = 0; $i < $max_days_ago; $i++) {
-                        $start_date = $now->copy()->subDays($i);
-                        $end_date = $start_date->copy()->addDays(1);
-                        foreach ($ents as $key => $value) {
-                            //where due_to_date is between start_date and end_date
-                            $price = ItemPrice::where([
-                                'item_id' => $value->id
-                            ])
-                                ->whereBetween('created_at', [$start_date, $end_date])
-                                ->orderBy('id', 'desc')
-                                ->first();
-                            $price_text = 0;
-                            if ($price != null) {
-                                $price_text = $price->price;
-                            }
-                            $data[$value->id][] = $price_text;
-                        }
-                    }
-
-                    foreach ($ents as $key => $value) {
+                ->row(function (Row $row) {
+                    $row->column(3, function (Column $column) {
+                        $data = [];
                         $data[] = [
-                            'type' => 'line',
-                            'label' => $value->name,
-                            'data' => $value->value,
+                            'title' => 'Organisation',
+                            'detail' => Organisation::count(),
                         ];
-                    }
-
-                    $recent_market_subscriptions = MarketSubscription::where([])
-                        ->orderBy('id', 'desc')
-                        ->limit(10)
-                        ->get();
-
-                    $box = new Box(
-                        'Market subscriptions',
-                        view('admin.widgets.home-market-subscriptions', [
-                            'data' => $recent_market_subscriptions,
-                            'url' => ('admin.farmers.index')
-                        ])
-                    );
-                    $link = '<a href="' . ('market-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
-                    $box->style('success')
-                        ->footer($link)
-                        ->solid()
-                        ->collapsable();
-                    $column->append($box);
-                });
-
-                $row->column(3, function (Column $column) {
-                    $data = [];
-                    $data[] = [
-                        'title' => 'Organisation',
-                        'detail' => Organisation::count(),
-                    ];
-                    $data[] = [
-                        'title' => 'Registered Users',
-                        'detail' => \App\Models\User::count(),
-                    ];
-                    $data[] = [
-                        'title' => 'Extension Officers',
-                        'detail' => AdminRoleUser::where([
-                            'role_id' => 2
-                        ])
-                            ->count(),
-                    ];
-
-                    $ents = Enterprise::where([])
-                        ->limit(10)
-                        ->get();
-                    $max_days_ago = 30;
-                    $data = [];
-                    $now = Carbon::now();
-                    for ($i = 0; $i < $max_days_ago; $i++) {
-                        $start_date = $now->copy()->subDays($i);
-                        $end_date = $start_date->copy()->addDays(1);
-                        foreach ($ents as $key => $value) {
-                            //where due_to_date is between start_date and end_date
-                            $price = ItemPrice::where([
-                                'item_id' => $value->id
-                            ])
-                                ->whereBetween('created_at', [$start_date, $end_date])
-                                ->orderBy('id', 'desc')
-                                ->first();
-                            $price_text = 0;
-                            if ($price != null) {
-                                $price_text = $price->price;
-                            }
-                            $data[$value->id][] = $price_text;
-                        }
-                    }
-
-                    foreach ($ents as $key => $value) {
                         $data[] = [
-                            'type' => 'line',
-                            'label' => $value->name,
-                            'data' => $value->value,
+                            'title' => 'Registered Users',
+                            'detail' => \App\Models\User::count(),
                         ];
-                    }
+                        $data[] = [
+                            'title' => 'Extension Officers',
+                            'detail' => AdminRoleUser::where([
+                                'role_id' => 2
+                            ])
+                                ->count(),
+                        ];
 
-                    $weather_subscriptions = WeatherSubscription::where([])
-                        ->orderBy('id', 'desc')
-                        ->limit(10)
-                        ->get(); 
+                        $ents = Enterprise::where([])
+                            ->limit(10)
+                            ->get();
+                        $max_days_ago = 30;
+                        $data = [];
+                        $now = Carbon::now();
+                        for ($i = 0; $i < $max_days_ago; $i++) {
+                            $start_date = $now->copy()->subDays($i);
+                            $end_date = $start_date->copy()->addDays(1);
+                            foreach ($ents as $key => $value) {
+                                //where due_to_date is between start_date and end_date
+                                $price = ItemPrice::where([
+                                    'item_id' => $value->id
+                                ])
+                                    ->whereBetween('created_at', [$start_date, $end_date])
+                                    ->orderBy('id', 'desc')
+                                    ->first();
+                                $price_text = 0;
+                                if ($price != null) {
+                                    $price_text = $price->price;
+                                }
+                                $data[$value->id][] = $price_text;
+                            }
+                        }
 
-                    $box = new Box(
-                        'Weather subscriptions',
-                        view('admin.widgets.home-market-subscriptions', [
-                            'data' => $weather_subscriptions,
-                            'url' => ('admin.farmers.index')
-                        ])
-                    );
-                    $link = '<a href="' . ('weather-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
-                    $box->style('success')
-                        ->footer($link)
-                        ->solid()
-                        ->collapsable();
-                    $column->append($box);
-                });
-                
-               /*  $row->column(3, function (Column $column) {
+                        foreach ($ents as $key => $value) {
+                            $data[] = [
+                                'type' => 'line',
+                                'label' => $value->name,
+                                'data' => $value->value,
+                            ];
+                        }
+
+                        $recent_market_subscriptions = MarketSubscription::where([])
+                            ->orderBy('id', 'desc')
+                            ->limit(10)
+                            ->get();
+
+                        $box = new Box(
+                            'Market subscriptions',
+                            view('admin.widgets.home-market-subscriptions', [
+                                'data' => $recent_market_subscriptions,
+                                'url' => ('admin.farmers.index')
+                            ])
+                        );
+                        $link = '<a href="' . ('market-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                        $box->style('success')
+                            ->footer($link)
+                            ->solid()
+                            ->collapsable();
+                        $column->append($box);
+                    });
+
+                    $row->column(3, function (Column $column) {
+                        $data = [];
+                        $data[] = [
+                            'title' => 'Organisation',
+                            'detail' => Organisation::count(),
+                        ];
+                        $data[] = [
+                            'title' => 'Registered Users',
+                            'detail' => \App\Models\User::count(),
+                        ];
+                        $data[] = [
+                            'title' => 'Extension Officers',
+                            'detail' => AdminRoleUser::where([
+                                'role_id' => 2
+                            ])
+                                ->count(),
+                        ];
+
+                        $ents = Enterprise::where([])
+                            ->limit(10)
+                            ->get();
+                        $max_days_ago = 30;
+                        $data = [];
+                        $now = Carbon::now();
+                        for ($i = 0; $i < $max_days_ago; $i++) {
+                            $start_date = $now->copy()->subDays($i);
+                            $end_date = $start_date->copy()->addDays(1);
+                            foreach ($ents as $key => $value) {
+                                //where due_to_date is between start_date and end_date
+                                $price = ItemPrice::where([
+                                    'item_id' => $value->id
+                                ])
+                                    ->whereBetween('created_at', [$start_date, $end_date])
+                                    ->orderBy('id', 'desc')
+                                    ->first();
+                                $price_text = 0;
+                                if ($price != null) {
+                                    $price_text = $price->price;
+                                }
+                                $data[$value->id][] = $price_text;
+                            }
+                        }
+
+                        foreach ($ents as $key => $value) {
+                            $data[] = [
+                                'type' => 'line',
+                                'label' => $value->name,
+                                'data' => $value->value,
+                            ];
+                        }
+
+                        $weather_subscriptions = WeatherSubscription::where([])
+                            ->orderBy('id', 'desc')
+                            ->limit(10)
+                            ->get();
+
+                        $box = new Box(
+                            'Weather subscriptions',
+                            view('admin.widgets.home-market-subscriptions', [
+                                'data' => $weather_subscriptions,
+                                'url' => ('admin.farmers.index')
+                            ])
+                        );
+                        $link = '<a href="' . ('weather-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                        $box->style('success')
+                            ->footer($link)
+                            ->solid()
+                            ->collapsable();
+                        $column->append($box);
+                    });
+
+                    /*  $row->column(3, function (Column $column) {
                     $data = [];
                     $data[] = [
                         'title' => 'Weather subscriptions',
@@ -711,43 +712,40 @@ class HomeController extends Controller
                     $column->append($box);
                 });
  */
-                $row->column(6, function (Column $column) {
-                    $data = [];
-                    $data[] = [
-                        'title' => 'Organisation',
-                        'detail' => Organisation::count(),
-                    ];
-                    $data[] = [
-                        'title' => 'Registered Users',
-                        'detail' => \App\Models\User::count(),
-                    ];
-                    $data[] = [
-                        'title' => 'Extension Officers',
-                        'detail' => AdminRoleUser::where([
-                            'role_id' => 2
-                        ])
-                            ->count(),
-                    ];
-                    $box = new Box(
-                        'System Users',
-                        view('admin.widgets.widget-graph-2', [
-                            'data' => $data,
-                            'url' => ('admin.farmers.index')
-                        ])
-                    );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
-                    $box->style('success')
-                        ->footer($link)
-                        ->solid()
-                        ->collapsable()
-                        ->removable();
-                    $column->append($box);
-                });
+                    $row->column(6, function (Column $column) {
+                        $lables = [];
+                        $data = [];
+
+                        //percentage of market subscriptions
+                        foreach (MarketPackage::all() as $key => $value) {
+                            $lables[] = $value->name;
+                            $data[] = MarketSubscription::where([
+                                'package_id' => $value->id,
+                                 'status' => 1
+                            ])
+                                ->count();
+                        } 
+                        $box = new Box(
+                            'Market Subscriptions',
+                            view('admin.widgets.widget-graph-2', [
+                                'lables' => $lables,
+                                'data' => $data,
+                                'url' => ('admin.farmers.index')
+                            ])
+                        );
+                        $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                        $box->style('success')
+                            ->footer($link)
+                            ->solid()
+                            ->collapsable()
+                            ->removable();
+                        $column->append($box);
+                    });
 
 
 
 
-                /*                
+                    /*                
 
                 $row->column(4, function (Column $column) {
                     $column->append(Dashboard::extensions());
@@ -756,7 +754,7 @@ class HomeController extends Controller
                 $row->column(4, function (Column $column) {
                     $column->append(Dashboard::dependencies());
                 }); */
-            });
+                });
         }
 
         return $content;
