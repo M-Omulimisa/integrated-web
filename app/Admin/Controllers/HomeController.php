@@ -562,6 +562,7 @@ class HomeController extends Controller
                     }
 
                     $recent_market_subscriptions = MarketSubscription::where([])
+                        ->orderBy('id', 'desc')
                         ->limit(10)
                         ->get();
 
