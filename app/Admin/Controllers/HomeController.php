@@ -730,10 +730,10 @@ class HomeController extends Controller
                             view('admin.widgets.widget-graph-2', [
                                 'lables' => $lables,
                                 'data' => $data,
-                                'url' => ('admin.farmers.index')
+                                'url' => ('orders')
                             ])
                         );
-                        $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                        $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                         $box->style('success')
                             ->footer($link)
                             ->solid()
