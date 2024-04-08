@@ -172,7 +172,6 @@ use Illuminate\Support\Facades\Auth;
 Route::get('auth/login', function () {
     $u = Admin::user();
     if ($u != null) {
-        die("in");
         return redirect(url('/'));
     }
 
