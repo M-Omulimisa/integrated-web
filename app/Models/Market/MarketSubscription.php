@@ -256,6 +256,15 @@ class MarketSubscription extends BaseModel
         return $this->belongsTo(MarketPackage::class, 'package_id');
     }
 
+    //name_text 
+    public function getNameTextAttribute($value)
+    {
+        if (strlen($this->first_name) < 1) {
+            return $this->phone;
+        }
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
     //getter for status
     public function getStatusAttribute($value)
     {
@@ -267,7 +276,7 @@ class MarketSubscription extends BaseModel
                 $this->save();
             }
             return 0;
-        }else{ 
+        } else {
             if ($value == 0) {
                 $this->status = 1;
                 $this->save();
