@@ -14,6 +14,7 @@ use App\Models\Training\Training;
 use App\Models\TrainingSession;
 use App\Models\User;
 use App\Models\Utils;
+use App\Models\Weather\WeatherSubscription;
 use Carbon\Carbon;
 use Encore\Admin\Controllers\Dashboard;
 use Encore\Admin\Facades\Admin;
@@ -498,18 +499,9 @@ class HomeController extends Controller
                         ->collapsable()
                         ->removable();
                     $column->append($box);
-                });
-
-
-                /*                
-                $row->column(4, function (Column $column) {
-                    $column->append(Dashboard::extensions());
-                });
-
-                $row->column(4, function (Column $column) {
-                    $column->append(Dashboard::dependencies());
-                }); */
-            })->row(function (Row $row) {
+                }); 
+            })
+            ->row(function (Row $row) {
                 $row->column(3, function (Column $column) {
                     $data = [];
                     $data[] = [
@@ -577,14 +569,85 @@ class HomeController extends Controller
                     $box->style('success')
                         ->footer($link)
                         ->solid()
-                        ->collapsable()
-                        ->removable();
+                        ->collapsable();
                     $column->append($box);
                 });
+
                 $row->column(3, function (Column $column) {
                     $data = [];
                     $data[] = [
                         'title' => 'Organisation',
+                        'detail' => Organisation::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Registered Users',
+                        'detail' => \App\Models\User::count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Extension Officers',
+                        'detail' => AdminRoleUser::where([
+                            'role_id' => 2
+                        ])
+                            ->count(),
+                    ];
+
+                    $ents = Enterprise::where([])
+                        ->limit(10)
+                        ->get();
+                    $max_days_ago = 30;
+                    $data = [];
+                    $now = Carbon::now();
+                    for ($i = 0; $i < $max_days_ago; $i++) {
+                        $start_date = $now->copy()->subDays($i);
+                        $end_date = $start_date->copy()->addDays(1);
+                        foreach ($ents as $key => $value) {
+                            //where due_to_date is between start_date and end_date
+                            $price = ItemPrice::where([
+                                'item_id' => $value->id
+                            ])
+                                ->whereBetween('created_at', [$start_date, $end_date])
+                                ->orderBy('id', 'desc')
+                                ->first();
+                            $price_text = 0;
+                            if ($price != null) {
+                                $price_text = $price->price;
+                            }
+                            $data[$value->id][] = $price_text;
+                        }
+                    }
+
+                    foreach ($ents as $key => $value) {
+                        $data[] = [
+                            'type' => 'line',
+                            'label' => $value->name,
+                            'data' => $value->value,
+                        ];
+                    }
+
+                    $weather_subscriptions = WeatherSubscription::where([])
+                        ->orderBy('id', 'desc')
+                        ->limit(10)
+                        ->get(); 
+
+                    $box = new Box(
+                        'Weather subscriptions',
+                        view('admin.widgets.home-market-subscriptions', [
+                            'data' => $weather_subscriptions,
+                            'url' => ('admin.farmers.index')
+                        ])
+                    );
+                    $link = '<a href="' . ('weather-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable();
+                    $column->append($box);
+                });
+                
+               /*  $row->column(3, function (Column $column) {
+                    $data = [];
+                    $data[] = [
+                        'title' => 'Weather subscriptions',
                         'detail' => Organisation::count(),
                     ];
                     $data[] = [
@@ -647,7 +710,7 @@ class HomeController extends Controller
                         ->removable();
                     $column->append($box);
                 });
-
+ */
                 $row->column(6, function (Column $column) {
                     $data = [];
                     $data[] = [

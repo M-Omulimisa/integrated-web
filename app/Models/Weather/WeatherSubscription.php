@@ -269,4 +269,13 @@ class WeatherSubscription extends BaseModel
         }
         return 0;
     }
+
+    //name_text 
+    public function getNameTextAttribute($value)
+    {
+        if (strlen($this->first_name) < 1) {
+            return $this->phone;
+        }
+        return $this->first_name . ' ' . $this->last_name;
+    }
 }
