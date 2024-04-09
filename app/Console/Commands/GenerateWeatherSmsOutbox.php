@@ -81,11 +81,11 @@ class GenerateWeatherSmsOutbox extends Command
                             ->whereRaw('LENGTH(lng) > 0')
                             ->from(with(new ParishModel)->getTable());
                     })
-                    ->limit(200)->get();
+                    ->limit(150)->get();
 
                     if (count($subscriptions) > 0) {
 
-                        $recordsPerSecond = 5;
+                        $recordsPerSecond = 3;
                         $delayInSeconds = 1 / $recordsPerSecond;
                         
                         if ($this->debug) logger(count($subscriptions));
