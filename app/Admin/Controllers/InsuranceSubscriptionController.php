@@ -6,6 +6,9 @@ use App\Models\Farmers\Farmer;
 use App\Models\insurance\InsuranceSubscription;
 use App\Models\User;
 use Encore\Admin\Controllers\AdminController;
+use App\Models\Settings\Enterprise;
+use App\Models\Settings\Season;
+use App\Models\Settings\Region;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -39,23 +42,38 @@ class InsuranceSubscriptionController extends AdminController
             })->sortable();
         $grid->column('agent_phone', __('Agent phone'));
         $grid->column('farmer_id', __('Farmer id'));
-        $grid->column('location_id', __('Location id'));
-        $grid->column('district_id', __('District id'));
-        $grid->column('subcounty_id', __('Subcounty id'));
-        $grid->column('parish_id', __('Parish id'));
         $grid->column('first_name', __('First name'));
         $grid->column('last_name', __('Last name'));
-        $grid->column('phone', __('Phone'));
         $grid->column('email', __('Email'));
-        $grid->column('calculator_values_id', __('Calculator values id'));
-        $grid->column('season_id', __('Season id'));
-        $grid->column('enterprise_id', __('Enterprise id'));
-        $grid->column('acreage', __('Acreage'));
+        $grid->column('phone', __('Phone'));
+        $grid->column('insurance_subscriber', __('Subscriber'));
+        $grid->column('insurance_subscrption_for', __('Insuring for'));
+        $grid->column('insurance_season_id', __('Season'))
+            ->display(function ($agent_id) {
+                $agent = Season::find($agent_id);
+                if($agent == null)
+                    return "N/A";
+                return $agent->name;
+            })->sortable();
+        $grid->column('enterprise_id', __('Enterprise'))
+            ->display(function ($agent_id) {
+                $agent = Enterprise::find($agent_id);
+                if($agent == null)
+                    return "N/A";
+                return $agent->name;
+            })->sortable();
+        $grid->column('insurance_region_id', __('Region'))
+            ->display(function ($agent_id) {
+                $agent = Region::find($agent_id);
+                if($agent == null)
+                    return "N/A";
+                return $agent->name;
+            })->sortable();
+        $grid->column('insurance_acreage', __('Acreage'));
         $grid->column('sum_insured', __('Sum insured'));
         $grid->column('premium', __('Premium'));
         $grid->column('status', __('Status'));
-        $grid->column('user_id', __('User id'));
-        $grid->column('organisation_id', __('Organisation id'));
+        $grid->column('insurance_confirmation', __('Confirmation'));
         $grid->column('seen_by_admin', __('Seen by admin'));
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));

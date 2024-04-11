@@ -223,18 +223,25 @@ class ApiAuthController extends Controller
     {
         return $this->success(DistrictModel::where([])->get(), "Success");
     }
+
     public function crops()
     {
         return $this->success(Crop::where([])->get(), "Success");
     }
+    
     public function resource_categories()
     {
         return $this->success(ResourceCategory::where([])->get(), "Success");
-    }
+    } 
 
     public function regions()
     {
         return $this->success(RegionModel::where([])->get(), "Success");
+    }
+
+    public function subscribers()
+    {
+        return $this->success(InsuranceSubscriptionController::where([])->get(), "Success");
     }
     public function subcounties()
     {
