@@ -1361,11 +1361,8 @@ district_id
         }
     }
 
-
-
     public function upload_media(Request $request)
     {
-
         $administrator_id = Utils::get_user_id($request);
         $u = Administrator::find($administrator_id);
         if ($u == null) {

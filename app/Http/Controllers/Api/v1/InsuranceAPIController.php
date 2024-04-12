@@ -25,7 +25,7 @@ class ImsuranceAPIController extends Controller
 
     public function get_region_supported_crops(Request $r)
     {
-        $region = \App\Models\Settings\Region::find($r);
+        $region = \App\Models\Settings\Region::find($r->id);
         $optionMappings = [];
 
         // Check if the region exists

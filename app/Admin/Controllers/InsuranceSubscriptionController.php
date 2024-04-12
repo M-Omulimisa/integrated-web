@@ -41,10 +41,8 @@ class InsuranceSubscriptionController extends AdminController
                 return $agent->name;
             })->sortable();
         $grid->column('agent_phone', __('Agent phone'));
-        $grid->column('farmer_id', __('Farmer id'));
         $grid->column('first_name', __('First name'));
         $grid->column('last_name', __('Last name'));
-        $grid->column('email', __('Email'));
         $grid->column('phone', __('Phone'));
         $grid->column('insurance_subscriber', __('Subscriber'));
         $grid->column('insurance_subscrption_for', __('Insuring for'));
@@ -72,9 +70,6 @@ class InsuranceSubscriptionController extends AdminController
         $grid->column('insurance_acreage', __('Acreage'));
         $grid->column('sum_insured', __('Sum insured'));
         $grid->column('premium', __('Premium'));
-        $grid->column('status', __('Status'));
-        $grid->column('insurance_confirmation', __('Confirmation'));
-        $grid->column('seen_by_admin', __('Seen by admin'));
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
         $grid->column('payment_id', __('Payment id'));
