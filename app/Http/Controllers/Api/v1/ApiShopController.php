@@ -37,7 +37,6 @@ use Illuminate\Http\Request;
 
 class ApiShopController extends Controller
 {
-
     use ApiResponser;
 
     public function languages()
@@ -187,9 +186,6 @@ class ApiShopController extends Controller
         }
         return $this->success($sub, 'Success');
     }
-
-
-
 
     public function weather_packages_subscribe(Request $r)
     {
@@ -367,6 +363,7 @@ district_id
         }
         return $this->success($packages, 'Success');
     }
+
     public function market_subscriptions(Request $r)
     {
         $u = auth('api')->user();
@@ -382,6 +379,7 @@ district_id
         ])->get();
         return $this->success($subs, 'Success');
     }
+
     public function weather_subscriptions(Request $r)
     {
         $u = auth('api')->user();
@@ -389,6 +387,7 @@ district_id
             $administrator_id = Utils::get_user_id($r);
             $u = User::find($administrator_id);
         }
+        
         if ($u == null) {
             return $this->error('User not found.');
         }

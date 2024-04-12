@@ -208,6 +208,14 @@ Route::group([
         Route::get("languages", [ApiShopController::class, "languages"]);
         /*==============END OF Market Information Endpoints==============*/
 
+        /*==============START OF Insurance Endpoints==============*/
+        Route::get("regions", [ImsuranceAPIController::class, "regions"]);
+        Route::post("get_region_supported_crops", [ImsuranceAPIController::class, "get_region_supported_crops"]);
+        Route::get("seasons", [ImsuranceAPIController::class, "seasons"]);
+        Route::get("premium_options", [ImsuranceAPIController::class, "premium_options"]);
+        Route::get("get_markup", [ImsuranceAPIController::class, "get_markup"]);
+        /*==============END OF Insurance Endpoints==============*/
+
         // Authentication
         Route::post("request-otp-sms", [ApiAuthController::class, "request_otp_sms"]);
         Route::POST('login', [ApiAuthController::class, 'login']);

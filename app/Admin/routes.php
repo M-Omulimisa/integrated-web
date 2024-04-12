@@ -48,7 +48,6 @@ Route::group([
     $router->resource('insurance-subscriptions', InsuranceSubscriptionController::class);
     $router->resource('insurance-premium-options', InsurancePremiumOptionController::class);
     $router->resource('orders', OrderController::class);
-
     $router->resource('market-packages', MarketPackageController::class);
     $router->resource('market-package-messages', MartketPackageMessageController::class);
     $router->resource('enterprises', EnterpriseController::class);

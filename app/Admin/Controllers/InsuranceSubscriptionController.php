@@ -3,7 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Farmers\Farmer;
-use App\Models\insurance\InsuranceSubscription;
+use App\Models\Insurance\InsuranceSubscription;
 use App\Models\User;
 use Encore\Admin\Controllers\AdminController;
 use App\Models\Settings\Enterprise;
