@@ -523,7 +523,7 @@ class HomeController extends Controller
                         //get beginning and end of month
                         $min = $min->startOfMonth();
                         $max = $max->endOfMonth();
-                        $lables[] = $min->monthName;
+                        $lables[] = substr($min->monthName,0,3)." - ".$min->year;
                         //formar Y-m-d
                         $min = $min->format('Y-m-d');
                         $max = $max->format('Y-m-d');
@@ -532,6 +532,13 @@ class HomeController extends Controller
                         $data_market[] = MarketSubscription::whereBetween('start_date', [$min, $max])->count();
                         $data_weather[] = WeatherSubscription::whereBetween('start_date', [$min, $max])->count();
                     }
+                    //reverse the arrays
+                    $lables = array_reverse($lables);
+                    $data = array_reverse($data);
+                    $data_market = array_reverse($data_market);
+                    $data_weather = array_reverse($data_weather);
+                    $data_insurance = array_reverse($data_insurance);
+                    
 
                     $box = new Box(
                         'Market Subscriptions',
