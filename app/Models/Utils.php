@@ -434,8 +434,7 @@ class Utils
             throw $th;
             return;
         }
-
-        dd($response);
+ 
         if ($response == null) {
             throw new \Exception("Failed to get response");
             return;

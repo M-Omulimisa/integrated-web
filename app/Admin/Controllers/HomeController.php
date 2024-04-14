@@ -58,10 +58,10 @@ class HomeController extends Controller
                         'Courses',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -91,10 +91,10 @@ class HomeController extends Controller
                         'Recent Calls',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -127,10 +127,10 @@ class HomeController extends Controller
                         'Students',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -159,10 +159,10 @@ class HomeController extends Controller
                         'Best performers',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -203,10 +203,10 @@ class HomeController extends Controller
                         'System Users',
                         view('admin.widgets.widget-graph-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -236,10 +236,10 @@ class HomeController extends Controller
                         'System Users',
                         view('admin.widgets.widget-graph-2', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -343,10 +343,10 @@ class HomeController extends Controller
                         'My Students',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -393,10 +393,10 @@ class HomeController extends Controller
                         'System Users',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -426,10 +426,10 @@ class HomeController extends Controller
                         'Famers registered',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -462,10 +462,10 @@ class HomeController extends Controller
                         'Marketplace',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/products')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/products') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -494,10 +494,10 @@ class HomeController extends Controller
                         'Trainings',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -538,7 +538,7 @@ class HomeController extends Controller
                     $data_market = array_reverse($data_market);
                     $data_weather = array_reverse($data_weather);
                     $data_insurance = array_reverse($data_insurance);
-                    
+
 
                     $box = new Box(
                         'Market Subscriptions',
@@ -652,7 +652,7 @@ class HomeController extends Controller
                             'Market subscriptions',
                             view('admin.widgets.home-market-subscriptions', [
                                 'data' => $recent_market_subscriptions,
-                                'url' => ('admin.farmers.index')
+                                'url' => ('/')
                             ])
                         );
                         $link = '<a href="' . ('market-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
@@ -723,7 +723,7 @@ class HomeController extends Controller
                             'Weather subscriptions',
                             view('admin.widgets.home-market-subscriptions', [
                                 'data' => $weather_subscriptions,
-                                'url' => ('admin.farmers.index')
+                                'url' => ('/')
                             ])
                         );
                         $link = '<a href="' . ('weather-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
@@ -789,10 +789,10 @@ class HomeController extends Controller
                         'System Users',
                         view('admin.widgets.widget-graph-1', [
                             'data' => $data,
-                            'url' => ('admin.farmers.index')
+                            'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('admin.farmers.index') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()

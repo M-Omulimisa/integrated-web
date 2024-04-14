@@ -269,7 +269,7 @@ Route::get('sync-data', function () {
     }
 
     Utils::syncGroups();
-    //Utils::syncFarmers();
+    Utils::syncFarmers();
 });
 
 Route::get('send-notification-campaigns', function () {
