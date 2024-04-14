@@ -1,19 +1,19 @@
 <?php
 
 namespace App\Models\Market;
-  
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use App\Models\MarketInfoMessageCampaign;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\MarketOutboxRelationship;
-  
+
 class MarketOutbox extends BaseModel
 {
     use Uuid, MarketOutboxRelationship;
 
     protected $table = 'market_outbox';
-  
+
     protected $fillable = [
         'subscription_id',
         'farmer_id',
@@ -39,6 +39,16 @@ class MarketOutbox extends BaseModel
     {
         parent::boot();
         self::creating(function (MarketOutbox $model) {
+            $sub = MarketSubscription::where([
+                'id' => $model->subscription_id
+            ])->first();
+            if ($sub == null) {
+                return false;
+            }
+            if ($sub->status != 1) {
+                return false;
+            }
+
             $model->id = $model->generateUuid();
         });
     }
@@ -61,5 +71,5 @@ class MarketOutbox extends BaseModel
     public function campaign()
     {
         return $this->belongsTo(MarketInfoMessageCampaign::class, 'market_info_message_campaign_id');
-    } 
+    }
 }

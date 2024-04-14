@@ -31,7 +31,7 @@ class MarketInfoMessageCampaignController extends AdminController
         $grid->column('created_at', __('Date Created'))
             ->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
-            });
+            })->sortable();
         $grid->column('packages', __('Packages'))
             ->display(function ($packages) {
                 $data = "";
@@ -51,6 +51,14 @@ class MarketInfoMessageCampaignController extends AdminController
             ->display(function () {
                 return $this->messages()->count();
             });
+        $grid->column('message_sent', __('Message Sent'))
+            ->display(function ($message_sent) {
+                if ($message_sent == 'Yes') {
+                    return 'Sent';
+                }
+                return 'Not Sent';
+                return $message_sent;
+            })->sortable();
 
         //outboxes count
         $grid->column('outboxes_count', __('Outboxes'))
@@ -60,6 +68,9 @@ class MarketInfoMessageCampaignController extends AdminController
         //send now button
         $grid->column('send_now', __('Send Now'))
             ->display(function ($send_now) {
+                if ($this->message_sent == 'Yes') {
+                    return "<a href='javascript:;' class='btn btn-xs btn-secondary'>Send Now</a>";
+                }
                 if ($send_now == 'Yes') {
                     $link = url('market-info-message-campaigns-send-now?id=' . $this->id);
                     return "<a target='_blank' href='{$link}' class='btn btn-xs btn-success'>Send Now</a>";
@@ -118,6 +129,15 @@ class MarketInfoMessageCampaignController extends AdminController
                     ->default('No');
             })
             ->required();
+
+        if ($form->isEditing()) {
+            $form->radio('message_sent', __('Re-send Messages'))
+                ->options(['No' => 'Re-Send', 'Yes' => 'DO NOT SEND']);
+        } else {
+            $form->hidden('message_sent', __('Re-send Messages'))->default('No')->value('No');
+        }
+
+
 
         return $form;
     }

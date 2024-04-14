@@ -18,11 +18,11 @@ class Utils
 
     public static function short($string, $length = 100)
     {
-        if(strlen($string) > $length){
+        if (strlen($string) > $length) {
             return substr($string, 0, $length) . '...';
-        }else{
+        } else {
             return $string;
-        } 
+        }
     }
 
     public static function system_boot()
@@ -35,7 +35,7 @@ class Utils
             Farmer::process($value);
         }
     }
-    
+
     public static function greet()
     {
         //according to the time of the day
@@ -265,6 +265,9 @@ class Utils
     public static  function send_sms($phone, $sms)
     {
 
+        if (Utils::isLocalhost()) {
+            return true;
+        }
         $phone = Utils::prepare_phone_number($phone);
         if (Utils::phone_number_is_valid($phone) == false) {
             return 'Invalid phone number';
@@ -1168,7 +1171,8 @@ class Utils
         die();
     }
 
-    public static function create_column($table,$col){
+    public static function create_column($table, $col)
+    {
         if (!Schema::hasColumn($table, $col)) {
             Schema::table($table, function ($table) use ($col) {
                 $table->text($col)->nullable();

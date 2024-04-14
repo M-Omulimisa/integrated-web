@@ -224,9 +224,13 @@ Route::get('auth/login', function () {
  */
 
 Route::get('market-info-message-campaigns-send-now', function () {
+
     $campaign = MarketInfoMessageCampaign::find($_GET['id']);
     if ($campaign == null) {
         die("Campaign not found");
+    }
+    if ($campaign->message_sent == 'Yes') {
+        die("Messages already.");
     }
     $outboxes = MarketOutbox::where('market_info_message_campaign_id', $campaign->id)->get();
     if ($outboxes->count() == 0) {
@@ -252,6 +256,9 @@ Route::get('market-info-message-campaigns-send-now', function () {
         $outbox->save();
         echo "$i. Successfully sent to $recipient <br>";
     }
+    $campaign->message_sent = "Yes";
+    $campaign->save();
+    die("<br>MESSAGES");
 });
 Route::get('sync-data', function () {
     foreach (OnlineCourseStudent::all() as $key => $s) {

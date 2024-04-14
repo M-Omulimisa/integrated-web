@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminRoleUser;
+use App\Models\Insurance\InsuranceSubscription;
 use App\Models\ItemPrice;
 use App\Models\Market\MarketPackage;
 use App\Models\Market\MarketSubscription;
@@ -367,7 +368,10 @@ class HomeController extends Controller
         }
 
         if ($u->isRole('administrator')) {
+
+
             $content->row(function (Row $row) {
+
                 $row->column(3, function (Column $column) {
                     $data = [];
                     $data[] = [
@@ -501,6 +505,84 @@ class HomeController extends Controller
                         ->removable();
                     $column->append($box);
                 });
+
+
+
+                $row->column(6, function (Column $column) {
+                    $lables = [];
+                    $data = [];
+                    $data_market = [];
+                    $data_weather = [];
+                    $data_insurance = [];
+                    for ($i = 0; $i < 12; $i++) {
+                        $min = new Carbon();
+                        $max = new Carbon();
+                        $max->subMonths($i);
+                        $min->subMonths(($i));
+
+                        //get beginning and end of month
+                        $min = $min->startOfMonth();
+                        $max = $max->endOfMonth();
+                        $lables[] = $min->monthName;
+                        //formar Y-m-d
+                        $min = $min->format('Y-m-d');
+                        $max = $max->format('Y-m-d');
+
+                        $data_insurance[] = InsuranceSubscription::whereBetween('created_at', [$min, $max])->count();
+                        $data_market[] = MarketSubscription::whereBetween('start_date', [$min, $max])->count();
+                        $data_weather[] = WeatherSubscription::whereBetween('start_date', [$min, $max])->count();
+                    }
+
+                    $box = new Box(
+                        'Market Subscriptions',
+                        view('admin.widgets.widget-graph-3', [
+                            'lables' => $lables,
+                            'data' => $data,
+                            'data_market' => $data_market,
+                            'data_weather' => $data_weather,
+                            'data_insurance' => $data_insurance,
+                            'url' => ('orders'),
+                        ])
+                    );
+                    $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+
+                $row->column(6, function (Column $column) {
+                    $lables = [];
+                    $data = [];
+
+                    //percentage of market subscriptions
+                    foreach (MarketPackage::all() as $key => $value) {
+                        $lables[] = $value->name;
+                        $data[] = MarketSubscription::where([
+                            'package_id' => $value->id,
+                            'status' => 1
+                        ])
+                            ->count();
+                    }
+                    $box = new Box(
+                        'Market Subscriptions',
+                        view('admin.widgets.widget-graph-2', [
+                            'lables' => $lables,
+                            'data' => $data,
+                            'url' => ('orders')
+                        ])
+                    );
+                    $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
             })
                 ->row(function (Row $row) {
                     $row->column(3, function (Column $column) {
@@ -536,7 +618,7 @@ class HomeController extends Controller
                                     'item_id' => $value->id
                                 ])
                                     ->whereBetween('created_at', [$start_date, $end_date])
-                                    ->orderBy('id', 'desc')
+                                    ->orderBy('created_at', 'desc')
                                     ->first();
                                 $price_text = 0;
                                 if ($price != null) {
@@ -555,7 +637,7 @@ class HomeController extends Controller
                         }
 
                         $recent_market_subscriptions = MarketSubscription::where([])
-                            ->orderBy('id', 'desc')
+                            ->orderBy('created_at', 'desc')
                             ->limit(10)
                             ->get();
 
@@ -607,7 +689,7 @@ class HomeController extends Controller
                                     'item_id' => $value->id
                                 ])
                                     ->whereBetween('created_at', [$start_date, $end_date])
-                                    ->orderBy('id', 'desc')
+                                    ->orderBy('created_at', 'desc')
                                     ->first();
                                 $price_text = 0;
                                 if ($price != null) {
@@ -626,7 +708,7 @@ class HomeController extends Controller
                         }
 
                         $weather_subscriptions = WeatherSubscription::where([])
-                            ->orderBy('id', 'desc')
+                            ->orderBy('created_at', 'desc')
                             ->limit(10)
                             ->get();
 
@@ -678,7 +760,7 @@ class HomeController extends Controller
                                 'item_id' => $value->id
                             ])
                                 ->whereBetween('created_at', [$start_date, $end_date])
-                                ->orderBy('id', 'desc')
+                                ->orderBy('created_at', 'desc')
                                 ->first();
                             $price_text = 0;
                             if ($price != null) {
@@ -712,35 +794,6 @@ class HomeController extends Controller
                     $column->append($box);
                 });
  */
-                    $row->column(6, function (Column $column) {
-                        $lables = [];
-                        $data = [];
-
-                        //percentage of market subscriptions
-                        foreach (MarketPackage::all() as $key => $value) {
-                            $lables[] = $value->name;
-                            $data[] = MarketSubscription::where([
-                                'package_id' => $value->id,
-                                 'status' => 1
-                            ])
-                                ->count();
-                        } 
-                        $box = new Box(
-                            'Market Subscriptions',
-                            view('admin.widgets.widget-graph-2', [
-                                'lables' => $lables,
-                                'data' => $data,
-                                'url' => ('orders')
-                            ])
-                        );
-                        $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
-                        $box->style('success')
-                            ->footer($link)
-                            ->solid()
-                            ->collapsable()
-                            ->removable();
-                        $column->append($box);
-                    });
 
 
 
