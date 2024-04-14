@@ -18,10 +18,18 @@ class MarketInfoMessageCampaign extends Model
     {
         parent::boot();
         static::created(function ($model) {
-            self::prepareMessages($model);
+            try {
+                self::prepareMessages($model);
+            } catch (\Exception $e) {
+                //dd($e);
+            }
         });
         static::updated(function ($model) {
-            self::prepareMessages($model);
+            try {
+                self::prepareMessages($model);
+            } catch (\Exception $e) {
+                //dd($e);
+            }
         });
     }
 
@@ -79,7 +87,12 @@ class MarketInfoMessageCampaign extends Model
                 }
                 $message_text .= ".";
                 $message->message = $message_text;
-                $message->save();
+                try {
+                    $message->save();
+                } catch (\Exception $e) {
+                    $error_message = $e->getMessage();
+                    $has_error = true;
+                }
             }
         }
     }
@@ -93,5 +106,5 @@ class MarketInfoMessageCampaign extends Model
     public function outboxes()
     {
         return $this->hasMany(MarketOutbox::class, 'market_info_message_campaign_id');
-    } 
+    }
 }
