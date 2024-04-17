@@ -213,6 +213,7 @@ Route::group([
         /*==============START OF Insurance Endpoints==============*/
         Route::get("insurance_regions", [InsuranceAPIController::class, "regions"]);
         Route::post("get_region_supported_crops", [InsuranceAPIController::class, "get_region_supported_crops"]);
+        Route::get("get_premium_option_details", [InsuranceAPIController::class, "get_premium_option_details"]);
         Route::get("seasons", [InsuranceAPIController::class, "seasons"]);
         Route::get("premium_options", [InsuranceAPIController::class, "premium_options"]);
         Route::get("get_markup", [InsuranceAPIController::class, "get_markup"]);

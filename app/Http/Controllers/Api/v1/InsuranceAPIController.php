@@ -17,6 +17,13 @@ class InsuranceAPIController extends Controller
 {
     use ApiResponser;
 
+    public function get_premium_option_details(Request $r)
+    {
+        $enterprise = InsurancePremiumOption::whereEnterpriseId($r->id)->whereStatus(TRUE)->first();
+
+        return $this->success($enterprise, 'Success');
+    }
+
     public function regions() 
     {
         $items = \App\Models\Settings\Region::where([
@@ -44,7 +51,13 @@ class InsuranceAPIController extends Controller
 
     public function seasons()
     {
-        $items = \App\Models\Settings\Season::where([])->get();
+        $currentDate = now(); // Get the current date and time
+
+        $items = \App\Models\Settings\Season::whereStatus(true)
+                        ->whereDate('cut_off_date', '>=', $currentDate) // Filter by end date
+                        ->orderBy('start_date', 'ASC')
+                        ->get();
+
         return $this->success($items, 'Success');
     }
 
