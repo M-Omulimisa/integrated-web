@@ -249,8 +249,6 @@ class ApiShopController extends Controller
             return $this->error('User not found.');
         }
 
-
-
         $existing_subs = \App\Models\Market\MarketSubscription::where([
             'farmer_id' => $r->subscriber_id,
         ])->get();
