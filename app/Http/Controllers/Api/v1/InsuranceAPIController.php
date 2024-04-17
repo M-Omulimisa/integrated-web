@@ -13,13 +13,16 @@ use Encore\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
 
-class ImsuranceAPIController extends Controller
+class InsuranceAPIController extends Controller
 {
     use ApiResponser;
 
-    public function regions()
+    public function regions() 
     {
-        $items = \App\Models\Settings\Region::orderBy('name', 'ASC')->get();
+        $items = \App\Models\Settings\Region::where([
+            "menu_status" => 1
+        ])->orderBy('name', 'ASC')->get();
+
         return $this->success($items, 'Success');
     }
 
