@@ -203,7 +203,7 @@ class HomeController extends Controller
                         'System Users',
                         view('admin.widgets.widget-graph-1', [
                             'data' => $data,
-                            'url' => ('/')
+                            'url' => ('/users')
                         ])
                     );
                     $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';

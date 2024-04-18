@@ -65,7 +65,7 @@ class Farmer extends BaseModel
                 $model->phone = $_phone;
                 $last_name = $model->last_name;
 
-                $msg = "Dear " . $last_name . ",\nWelcome to the Molimisa App. Your account has been created successfully. You can now access the app using your phone number and password: 4321. Thank you for choosing us.";
+                $msg = "Dear " . $last_name . ",\nWelcome to the M-Omlimisa App. Your account has been created successfully. You can now access the app using your phone number and password: 4321. Thank you for choosing us.";
                 try {
                     Utils::send_sms($_phone, $msg);
                 } catch (\Throwable $th) {
