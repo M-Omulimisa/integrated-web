@@ -336,8 +336,8 @@ class Utils
             $now = Carbon::now();
             $last = Carbon::parse($lastGroup->created_at);
             $diff = $now->diffInMinutes($last);
-            if ($diff < 5) {
-                return;
+            if ($diff < 2) {
+               // return;
             }
         }
 
@@ -348,8 +348,10 @@ class Utils
         try {
             $response = $client->request('GET', "https://me.agrinetug.net/api/export_groups/{$external_id}?token=*psP@3ksMMw7");
         } catch (\Throwable $th) {
+            throw $th;
             return;
         }
+
 
         if ($response == null) {
             return;
@@ -373,13 +375,19 @@ class Utils
         if ($groups == null) {
             return;
         }
+        if (isset($groups['data'])) {
+            $groups = $groups['data'];
+        }
         foreach ($groups as $key => $ext) {
+
             $old = FarmerGroup::where([
                 'external_id' => $ext['id']
             ])->first();
             if ($old != null) {
+                echo "old" . $ext['farmer_group'] . " - " . $ext['id'] . "<br>";
                 continue;
             }
+
             try {
                 $new = new FarmerGroup();
                 $new->external_id = $ext['id'];
@@ -396,7 +404,7 @@ class Utils
                 $new->status = 'Active';
                 $new->id_photo_front = 'External';
                 $new->save();
-                //echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
+                echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
             } catch (\Throwable $th) {
                 echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
                 continue;
@@ -407,6 +415,7 @@ class Utils
 
     static function syncFarmers()
     {
+        return;
         $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();
         $external_id = 0;
         if ($lastGroup != null) {
@@ -420,7 +429,7 @@ class Utils
             $last = Carbon::parse($lastGroup->created_at);
             $diff = $now->diffInMinutes($last);
             if ($diff < 5) {
-                return;
+                // return;
             }
         }
 
@@ -434,7 +443,7 @@ class Utils
             throw $th;
             return;
         }
- 
+
         if ($response == null) {
             throw new \Exception("Failed to get response");
             return;
@@ -458,13 +467,18 @@ class Utils
         if ($groups == null) {
             return;
         }
+        if (isset($groups['data'])) {
+            $groups = $groups['data'];
+        }
         foreach ($groups as $key => $ext) {
             $old = FarmerGroup::where([
                 'external_id' => $ext['id']
             ])->first();
             if ($old != null) {
+                dd("old" . $ext['farmer_group'] . " - " . $ext['id']);
                 continue;
             }
+            dd($ext);
             try {
                 $new = new FarmerGroup();
                 $new->external_id = $ext['id'];

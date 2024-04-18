@@ -512,6 +512,50 @@ class HomeController extends Controller
                     $lables = [];
                     $data = [];
                     $data_market = [];
+                    for ($i = 0; $i < 12; $i++) {
+                        $min = new Carbon();
+                        $max = new Carbon();
+                        $max->subMonths($i);
+                        $min->subMonths(($i));
+
+                        //get beginning and end of month
+                        $min = $min->startOfMonth();
+                        $max = $max->endOfMonth();
+                        $lables[] = substr($min->monthName, 0, 3) . " - " . $min->year;
+                        //formar Y-m-d
+                        $min = $min->format('Y-m-d');
+                        $max = $max->format('Y-m-d');
+
+                        $data_market[] = MarketSubscription::whereBetween('start_date', [$min, $max])->count();
+                    }
+                    //reverse the arrays
+                    $lables = array_reverse($lables);
+                    $data = array_reverse($data);
+                    $data_market = array_reverse($data_market); 
+                    $box = new Box(
+                        'Market Info Subscriptions',
+                        view('admin.widgets.widget-graph-3', [
+                            'lables' => $lables,
+                            'data' => $data,
+                            'data_market' => $data_market, 
+                            'url' => ('orders'),
+                        ])
+                    );
+                    $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More<i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+
+
+                $row->column(6, function (Column $column) {
+                    $lables = [];
+                    $data = [];
+                    $data_market = [];
                     $data_weather = [];
                     $data_insurance = [];
                     for ($i = 0; $i < 12; $i++) {
@@ -523,26 +567,64 @@ class HomeController extends Controller
                         //get beginning and end of month
                         $min = $min->startOfMonth();
                         $max = $max->endOfMonth();
-                        $lables[] = substr($min->monthName,0,3)." - ".$min->year;
+                        $lables[] = substr($min->monthName, 0, 3) . " - " . $min->year;
+                        //formar Y-m-d
+                        $min = $min->format('Y-m-d');
+                        $max = $max->format('Y-m-d');
+                        $data_weather[] = WeatherSubscription::whereBetween('start_date', [$min, $max])->count();
+                    }
+                    //reverse the arrays
+                    $lables = array_reverse($lables);
+                    $data_weather = array_reverse($data_weather);  
+                    $box = new Box(
+                        'Weather Subscriptions',
+                        view('admin.widgets.widget-graph-5', [
+                            'lables' => $lables,
+                            'data' => $data,
+                            'data_weather' => $data_weather,
+                            'url' => ('orders'),
+                        ])
+                    );
+                    $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+
+
+                $row->column(6, function (Column $column) {
+                    $lables = [];
+                    $data = [];
+                    $data_market = [];
+                    $data_weather = [];
+                    $data_insurance = [];
+                    for ($i = 0; $i < 12; $i++) {
+                        $min = new Carbon();
+                        $max = new Carbon();
+                        $max->subMonths($i);
+                        $min->subMonths(($i));
+
+                        //get beginning and end of month
+                        $min = $min->startOfMonth();
+                        $max = $max->endOfMonth();
+                        $lables[] = substr($min->monthName, 0, 3) . " - " . $min->year;
                         //formar Y-m-d
                         $min = $min->format('Y-m-d');
                         $max = $max->format('Y-m-d');
 
                         $data_insurance[] = InsuranceSubscription::whereBetween('created_at', [$min, $max])->count();
-                        $data_market[] = MarketSubscription::whereBetween('start_date', [$min, $max])->count();
-                        $data_weather[] = WeatherSubscription::whereBetween('start_date', [$min, $max])->count();
                     }
                     //reverse the arrays
                     $lables = array_reverse($lables);
-                    $data = array_reverse($data);
-                    $data_market = array_reverse($data_market);
-                    $data_weather = array_reverse($data_weather);
+                    $data = array_reverse($data); 
                     $data_insurance = array_reverse($data_insurance);
-
-
                     $box = new Box(
-                        'Market Subscriptions',
-                        view('admin.widgets.widget-graph-3', [
+                        'Insurance Subscriptions',
+                        view('admin.widgets.widget-graph-4', [
                             'lables' => $lables,
                             'data' => $data,
                             'data_market' => $data_market,
