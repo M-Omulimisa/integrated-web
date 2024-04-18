@@ -341,12 +341,20 @@ class Utils
             }
         }
 
+        //last farmer
+        $page = 0;
+        $last = Farmer::orderBy('created_at', 'desc')->first();
+        if ($last != null) {
+            $page = ((int)($last->sheep_count));
+        }
+        $page = $page + 1;
+
 
         //http grt request to url using guzzlehttp 
         $client = new \GuzzleHttp\Client();
         $response = null;
         try {
-            $response = $client->request('GET', "https://me.agrinetug.net/api/export_groups/{$external_id}?token=*psP@3ksMMw7");
+            $response = $client->request('GET', "https://me.agrinetug.net/api/export_groups/{$external_id}?token=*psP@3ksMMw7&page={$page}");
         } catch (\Throwable $th) {
             throw $th;
             return;
@@ -375,6 +383,7 @@ class Utils
         if ($groups == null) {
             return;
         }
+        dd($groups['current_page']);
         if (isset($groups['data'])) {
             $groups = $groups['data'];
         }
