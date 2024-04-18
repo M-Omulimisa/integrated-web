@@ -337,7 +337,7 @@ class Utils
             $last = Carbon::parse($lastGroup->created_at);
             $diff = $now->diffInMinutes($last);
             if ($diff < 2) {
-               // return;
+                // return;
             }
         }
 
@@ -415,7 +415,6 @@ class Utils
 
     static function syncFarmers()
     {
-        return;
         $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();
         $external_id = 0;
         if ($lastGroup != null) {
@@ -471,31 +470,43 @@ class Utils
             $groups = $groups['data'];
         }
         foreach ($groups as $key => $ext) {
-            $old = FarmerGroup::where([
-                'external_id' => $ext['id']
+            $old = Farmer::where([
+                'user_id' => $ext['id']
             ])->first();
             if ($old != null) {
-                dd("old" . $ext['farmer_group'] . " - " . $ext['id']);
+                echo "Done with " . $ext['farmer_group'] . " - " . $ext['id'] . "<br>";
+                //dd("old" . $ext['farmer_group'] . " - " . $ext['id']);
                 continue;
             }
-            dd($ext);
+            $phone = $ext['participant_contact'];
+            $phone = Utils::prepare_phone_number($phone);
+            if (Utils::phone_number_is_valid($phone) == false) {
+                echo 'already saved ' . $phone . "<br>";
+                continue;
+            }
             try {
-                $new = new FarmerGroup();
-                $new->external_id = $ext['id'];
-                $new->name = $ext['farmer_group'];
-                $new->country_id = '3578d4de-da91-43f2-b630-35b3017b67ec';
-                $new->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
-                $new->code = $ext['farmer_group_code'];
-                $new->address = $ext['email_address'];
-                $new->group_leader = $ext['group_representative_first_name'] . " " . $ext['group_representative_last_name'];
-                $new->group_leader_contact = $ext['group_representative_contact'];
-                $new->establishment_year = $ext['establishment_year'];
-                $new->registration_year = $ext['establishment_year'];
-                $new->location_id = $ext['village_id'];
+                $new = new Farmer();
+                $new->user_id = $ext['id'];
+                $new->first_name = $ext['first_name'];
+                $new->last_name = $ext['last_name'] . " " . $ext['other_name'];
+                $group = FarmerGroup::where('external_id', $ext['farmer_group_id'])->first();
+                if ($group != null) {
+                    $new->farmer_group_id = $group->id;
+                    $new->organisation_id =  0;
+                } else {
+                    $new->farmer_group_id = 0;
+                    $new->organisation_id = $ext['farmer_group_id'];
+                }
+                $new->village = $ext['village_id'];
+                $new->house_number = $ext['household_size'];
+                $new->gender = $ext['gender'];
+                $new->phone = $phone;
+                $new->phone_number = $phone;
+
                 $new->status = 'Active';
-                $new->id_photo_front = 'External';
+                $new->process_status = 'No';
                 $new->save();
-                //echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
+                echo ("<hr> SAVED " . $ext['first_name'] . " " . $ext['last_name'] . " " . $ext['other_name']);
             } catch (\Throwable $th) {
                 echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
                 continue;
