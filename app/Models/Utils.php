@@ -341,11 +341,10 @@ class Utils
             }
         }
 
-        //last farmer
         $page = 0;
-        $last = Farmer::orderBy('created_at', 'desc')->first();
+        $last = FarmerGroup::orderBy('created_at', 'desc')->first();
         if ($last != null) {
-            $page = ((int)($last->sheep_count));
+            $page = ((int)($last->id_photo_back));
         }
         $page = $page + 1;
 
@@ -383,7 +382,6 @@ class Utils
         if ($groups == null) {
             return;
         }
-        dd($groups['current_page']);
         if (isset($groups['data'])) {
             $groups = $groups['data'];
         }
@@ -412,8 +410,9 @@ class Utils
                 $new->location_id = $ext['village_id'];
                 $new->status = 'Active';
                 $new->id_photo_front = 'External';
+                $new->id_photo_back = $page;
                 $new->save();
-                echo $new->id . ". SAVED " . $new->first_name . " " . $new->last_name . " " . $new->other_name . "<br>";
+                echo $new->id . ". SAVED " . $new->farmer_group . "<br>";
             } catch (\Throwable $th) {
                 echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
                 continue;
@@ -441,12 +440,19 @@ class Utils
             }
         }
 
+        $page = 0;
+        $last = Farmer::orderBy('created_at', 'desc')->first();
+        if ($last != null) {
+            $page = ((int)($last->sheep_count));
+        }
+        $page = $page + 1;
+
 
         //http grt request to url using guzzlehttp 
         $client = new \GuzzleHttp\Client();
         $response = null;
         try {
-            $response = $client->request('GET', "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7");
+            $response = $client->request('GET', "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}");
         } catch (\Throwable $th) {
             throw $th;
             return;
@@ -511,13 +517,13 @@ class Utils
                 $new->gender = $ext['gender'];
                 $new->phone = $phone;
                 $new->phone_number = $phone;
-
                 $new->status = 'Active';
                 $new->process_status = 'No';
+                $new->sheep_count = $page;
                 $new->save();
-                echo ("<hr> SAVED " . $ext['first_name'] . " " . $ext['last_name'] . " " . $ext['other_name']);
+                echo ("<hr> SAVED " . $new->first_name." ".$new->last_name . ". PAGE: " . $page . "<br>");
             } catch (\Throwable $th) {
-                echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
+                echo 'FAILED: SAVE FARMER BECAUSE => ' . $th->getMessage() . "<br>";
                 continue;
             }
         }
