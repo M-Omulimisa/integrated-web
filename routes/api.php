@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\Ussd\MenuController;
 use App\Http\Controllers\Api\v1\ApiAuthController;
 use App\Http\Controllers\Api\v1\ApiShopController;
+use App\Http\Controllers\Api\v1\InsuranceAPIController;
+
 use App\Http\Middleware\JwtMiddleware;
 use App\Models\Market\MarketPackagePricing;
 use App\Models\OnlineCourse;
@@ -207,13 +209,14 @@ Route::group([
         Route::post("weather-packages-subscribe", [ApiShopController::class, "weather_packages_subscribe"]);
         Route::get("languages", [ApiShopController::class, "languages"]);
         /*==============END OF Market Information Endpoints==============*/
-
+ 
         /*==============START OF Insurance Endpoints==============*/
-        Route::get("regions", [ImsuranceAPIController::class, "regions"]);
-        Route::post("get_region_supported_crops", [ImsuranceAPIController::class, "get_region_supported_crops"]);
-        Route::get("seasons", [ImsuranceAPIController::class, "seasons"]);
-        Route::get("premium_options", [ImsuranceAPIController::class, "premium_options"]);
-        Route::get("get_markup", [ImsuranceAPIController::class, "get_markup"]);
+        Route::get("insurance_regions", [InsuranceAPIController::class, "regions"]);
+        Route::post("get_region_supported_crops", [InsuranceAPIController::class, "get_region_supported_crops"]);
+        Route::get("get_premium_option_details", [InsuranceAPIController::class, "get_premium_option_details"]);
+        Route::get("seasons", [InsuranceAPIController::class, "seasons"]);
+        Route::get("premium_options", [InsuranceAPIController::class, "premium_options"]);
+        Route::post("insurance-subscribe", [InsuranceAPIController::class, "submitSubscriptionRequest"]);
         /*==============END OF Insurance Endpoints==============*/
 
         // Authentication

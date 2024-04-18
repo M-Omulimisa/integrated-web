@@ -598,7 +598,9 @@ class MenuFunctions
 
     public function getInsuranceRegionList($session, $phone)
     {
-        $locations = Region::orderBy('name', 'ASC')->get();
+        $locations = Region::where([
+            "menu_status" => 1
+        ])->orderBy('name', 'ASC')->get();
 
         $optionMappings = [];
 
