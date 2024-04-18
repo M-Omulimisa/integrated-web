@@ -337,7 +337,7 @@ class Utils
             $last = Carbon::parse($lastGroup->created_at);
             $diff = $now->diffInMinutes($last);
             if ($diff < 5) {
-                return;
+                // return;
             }
         }
 
@@ -404,7 +404,7 @@ class Utils
                 $new->status = 'Active';
                 $new->id_photo_front = 'External';
                 $new->save();
-                echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
+                echo $new->id . ". SAVED " . $new->first_name . " " . $new->last_name . " " . $new->other_name . "<br>";
             } catch (\Throwable $th) {
                 echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
                 continue;
