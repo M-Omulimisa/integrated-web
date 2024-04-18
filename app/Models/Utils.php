@@ -474,7 +474,7 @@ class Utils
                 'user_id' => $ext['id']
             ])->first();
             if ($old != null) {
-                echo "Done with " . $ext['farmer_group'] . " - " . $ext['id'] . "<br>";
+                echo "Done with " . $ext['id'] . "<br>";
                 //dd("old" . $ext['farmer_group'] . " - " . $ext['id']);
                 continue;
             }
