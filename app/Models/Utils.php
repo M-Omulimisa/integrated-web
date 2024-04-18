@@ -324,7 +324,7 @@ class Utils
 
     static function syncGroups()
     {
-        return; 
+        return;
         $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();
         $external_id = 0;
         if ($lastGroup != null) {
@@ -445,6 +445,9 @@ class Utils
         $last = Farmer::orderBy('created_at', 'desc')->first();
         if ($last != null) {
             $page = ((int)($last->sheep_count));
+            if($page == 0){
+                $page = 1;
+            } 
         }
         $page = $page + 1;
 
@@ -490,7 +493,7 @@ class Utils
                 'user_id' => $ext['id']
             ])->first();
             if ($old != null) {
-                echo "Done with " . $ext['id'] . "<br>";
+                echo "Done with " . $old->first_name . " " . $old->last_name . " PAGE: " . $page . "<br>";
                 //dd("old" . $ext['farmer_group'] . " - " . $ext['id']);
                 continue;
             }
@@ -522,7 +525,7 @@ class Utils
                 $new->process_status = 'No';
                 $new->sheep_count = $page;
                 $new->save();
-                echo ("<hr> SAVED " . $new->first_name." ".$new->last_name . ". PAGE: " . $page . "<br>");
+                echo ("<hr> SAVED " . $new->first_name . " " . $new->last_name . ". PAGE: " . $page . "<br>");
             } catch (\Throwable $th) {
                 echo 'FAILED: SAVE FARMER BECAUSE => ' . $th->getMessage() . "<br>";
                 continue;
