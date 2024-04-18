@@ -336,8 +336,8 @@ class Utils
             $now = Carbon::now();
             $last = Carbon::parse($lastGroup->created_at);
             $diff = $now->diffInMinutes($last);
-            if ($diff < 2) {
-                // return;
+            if ($diff < 5) {
+                return;
             }
         }
 
