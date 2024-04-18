@@ -324,6 +324,7 @@ class Utils
 
     static function syncGroups()
     {
+        return;
         $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();
         $external_id = 0;
         if ($lastGroup != null) {
@@ -337,19 +338,28 @@ class Utils
             $last = Carbon::parse($lastGroup->created_at);
             $diff = $now->diffInMinutes($last);
             if ($diff < 5) {
-                return;
+                // return;
             }
         }
+
+        $page = 0;
+        $last = FarmerGroup::orderBy('created_at', 'desc')->first();
+        if ($last != null) {
+            $page = ((int)($last->id_photo_back));
+        }
+        $page = $page + 1;
 
 
         //http grt request to url using guzzlehttp 
         $client = new \GuzzleHttp\Client();
         $response = null;
         try {
-            $response = $client->request('GET', "https://me.agrinetug.net/api/export_groups/{$external_id}?token=*psP@3ksMMw7");
+            $response = $client->request('GET', "https://me.agrinetug.net/api/export_groups/{$external_id}?token=*psP@3ksMMw7&page={$page}");
         } catch (\Throwable $th) {
+            throw $th;
             return;
         }
+
 
         if ($response == null) {
             return;
@@ -373,13 +383,19 @@ class Utils
         if ($groups == null) {
             return;
         }
+        if (isset($groups['data'])) {
+            $groups = $groups['data'];
+        }
         foreach ($groups as $key => $ext) {
+
             $old = FarmerGroup::where([
                 'external_id' => $ext['id']
             ])->first();
             if ($old != null) {
+                echo "old" . $ext['farmer_group'] . " - " . $ext['id'] . "<br>";
                 continue;
             }
+
             try {
                 $new = new FarmerGroup();
                 $new->external_id = $ext['id'];
@@ -395,8 +411,9 @@ class Utils
                 $new->location_id = $ext['village_id'];
                 $new->status = 'Active';
                 $new->id_photo_front = 'External';
+                $new->id_photo_back = $page;
                 $new->save();
-                //echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
+                echo $new->id . ". SAVED " . $new->farmer_group . "<br>";
             } catch (\Throwable $th) {
                 echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
                 continue;
@@ -407,7 +424,7 @@ class Utils
 
     static function syncFarmers()
     {
-        $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();
+        $lastGroup = Farmer::orderBy('user_id', 'desc')->first();
         $external_id = 0;
         if ($lastGroup != null) {
             if ($lastGroup->external_id != null) {
@@ -420,21 +437,31 @@ class Utils
             $last = Carbon::parse($lastGroup->created_at);
             $diff = $now->diffInMinutes($last);
             if ($diff < 5) {
-                return;
+                // return;
             }
         }
+
+        $page = 0;
+        $last = Farmer::orderBy('created_at', 'desc')->first();
+        if ($last != null) {
+            $page = ((int)($last->sheep_count));
+            if($page == 0){
+                $page = 1;
+            } 
+        }
+        $page = $page + 1;
 
 
         //http grt request to url using guzzlehttp 
         $client = new \GuzzleHttp\Client();
         $response = null;
         try {
-            $response = $client->request('GET', "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7");
+            $response = $client->request('GET', "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}");
         } catch (\Throwable $th) {
             throw $th;
             return;
         }
- 
+
         if ($response == null) {
             throw new \Exception("Failed to get response");
             return;
@@ -458,32 +485,49 @@ class Utils
         if ($groups == null) {
             return;
         }
+        if (isset($groups['data'])) {
+            $groups = $groups['data'];
+        }
         foreach ($groups as $key => $ext) {
-            $old = FarmerGroup::where([
-                'external_id' => $ext['id']
+            $old = Farmer::where([
+                'user_id' => $ext['id']
             ])->first();
             if ($old != null) {
+                echo "Done with " . $old->first_name . " " . $old->last_name . " PAGE: " . $page . "<br>";
+                //dd("old" . $ext['farmer_group'] . " - " . $ext['id']);
+                continue;
+            }
+            $phone = $ext['participant_contact'];
+            $phone = Utils::prepare_phone_number($phone);
+            if (Utils::phone_number_is_valid($phone) == false) {
+                echo 'already saved ' . $phone . "<br>";
                 continue;
             }
             try {
-                $new = new FarmerGroup();
-                $new->external_id = $ext['id'];
-                $new->name = $ext['farmer_group'];
-                $new->country_id = '3578d4de-da91-43f2-b630-35b3017b67ec';
-                $new->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
-                $new->code = $ext['farmer_group_code'];
-                $new->address = $ext['email_address'];
-                $new->group_leader = $ext['group_representative_first_name'] . " " . $ext['group_representative_last_name'];
-                $new->group_leader_contact = $ext['group_representative_contact'];
-                $new->establishment_year = $ext['establishment_year'];
-                $new->registration_year = $ext['establishment_year'];
-                $new->location_id = $ext['village_id'];
+                $new = new Farmer();
+                $new->user_id = $ext['id'];
+                $new->first_name = $ext['first_name'];
+                $new->last_name = $ext['last_name'] . " " . $ext['other_name'];
+                $group = FarmerGroup::where('external_id', $ext['farmer_group_id'])->first();
+                if ($group != null) {
+                    $new->farmer_group_id = $group->id;
+                    $new->organisation_id =  0;
+                } else {
+                    $new->farmer_group_id = 0;
+                    $new->organisation_id = $ext['farmer_group_id'];
+                }
+                $new->village = $ext['village_id'];
+                $new->house_number = $ext['household_size'];
+                $new->gender = $ext['gender'];
+                $new->phone = $phone;
+                $new->phone_number = $phone;
                 $new->status = 'Active';
-                $new->id_photo_front = 'External';
+                $new->process_status = 'No';
+                $new->sheep_count = $page;
                 $new->save();
-                //echo $new->id . ". SAVED " . $ext['farmer_group'] . "<br>";
+                echo ("<hr> SAVED " . $new->first_name . " " . $new->last_name . ". PAGE: " . $page . "<br>");
             } catch (\Throwable $th) {
-                echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
+                echo 'FAILED: SAVE FARMER BECAUSE => ' . $th->getMessage() . "<br>";
                 continue;
             }
         }
