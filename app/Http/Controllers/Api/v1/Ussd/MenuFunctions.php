@@ -881,7 +881,7 @@ class MenuFunctions
         $saved_data = UssdSessionData::whereSessionId($sessionId)
                                             ->wherePhoneNumber($phoneNumber)
                                             ->first();
-                                            
+                                             
         $acerage     = $saved_data->insurance_acreage.' acre(s)';
 
         $enterprise_id  = $saved_data->insurance_enterprise_id;

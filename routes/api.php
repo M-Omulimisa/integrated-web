@@ -216,6 +216,7 @@ Route::group([
         Route::get("get_premium_option_details", [InsuranceAPIController::class, "get_premium_option_details"]);
         Route::get("seasons", [InsuranceAPIController::class, "seasons"]);
         Route::get("premium_options", [InsuranceAPIController::class, "premium_options"]);
+        Route::get("get_markup", [InsuranceAPIController::class, "getMarkup"]);
         Route::post("insurance-subscribe", [InsuranceAPIController::class, "submitSubscriptionRequest"]);
         /*==============END OF Insurance Endpoints==============*/
 

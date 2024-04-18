@@ -28,7 +28,8 @@ class InsuranceAPIController extends Controller
     public function getMarkup()
     {
         $markup = \App\Models\Insurance\Markup::whereStatus(TRUE)->first();
-        return $markup->amount ?? 3000;
+
+        return $this->success($markup->amount, 'Success');
     }
 
     public function generateReference($api){
@@ -41,8 +42,6 @@ class InsuranceAPIController extends Controller
 
     public function submitSubscriptionRequest(Request $r)
     {
-        $markup    = $this->getMarkup($r->enterprise, 'markup');
-
         try {
             \App\Models\Ussd\UssdSessionData::create([
                 'session_id'                => $r->sessionID,
@@ -55,48 +54,48 @@ class InsuranceAPIController extends Controller
                 "insurance_acreage"         => $r->acreage,
                 "insurance_sum_insured"     => $r->sumInsured,
                 "insurance_premium"         => $r->premium,
-                "markup"                    => $markup,
+                "markup"                    => $r->markup,
                 "insurance_coverage"        => $r->coverage,
                 "confirmation_message"      => 1,
                 "insurance_region_id"       => $r->regionID,
             ]);
 
             // Retrieve the session data for the given session ID and phone number.
-        $sessionData = \App\Models\Ussd\UssdSessionData::whereSessionId($r->sessionId)->wherePhoneNumber($r->phoneNumber)->first();
+            $sessionData = \App\Models\Ussd\UssdSessionData::whereSessionId($r->sessionID)->wherePhoneNumber($r->phoneNumber)->first();
 
-        // Create a new Subscription record using the subscription_data array and assign it to $subscription variable.
-        if ($sessionData) {
+            // Create a new Subscription record using the subscription_data array and assign it to $subscription variable.
+            if ($sessionData != null) {
 
-            // Get the payment API for the subscriber's phone number.
-            $api = $this->getServiceProvider($sessionData->insurance_subscriber, 'payment_api');
+                // Get the payment API for the subscriber's phone number.
+                $api = $this->getServiceProvider($sessionData->insurance_subscriber, 'payment_api');
 
-            // Create an array containing the data for the new SubscriptionPayment record.
-            $payment = [
-                'tool' => 'USSD',
-                'insurance_session_id' => $sessionData->id,
-                'method'    => 'MM',
-                'provider'  => $this->getServiceProvider($sessionData->insurance_subscriber, 'name'),
-                'account'   => $sessionData->insurance_subscriber,
-                'amount'    => $sessionData->insurance_amount,
-                'sms_api'   => $this->getServiceProvider($sessionData->insurance_subscriber, 'sms_api'),
-                'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' at '.$sessionData->insurance_coverage.' coverage  insurance subscription',
-                'reference_id' => $this->generateReference($api),
-                'payment_api'  => $api,
-                'status'       => 'INITIATED'
-            ];
+                // Create an array containing the data for the new SubscriptionPayment record.
+                $payment = [
+                    'tool' => 'USSD',
+                    'insurance_session_id' => $sessionData->id,
+                    'method'    => 'MM',
+                    'provider'  => $this->getServiceProvider($sessionData->insurance_subscriber, 'name'),
+                    'account'   => $sessionData->insurance_subscriber,
+                    'amount'    => $sessionData->insurance_amount,
+                    'sms_api'   => $this->getServiceProvider($sessionData->insurance_subscriber, 'sms_api'),
+                    'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' at '.$sessionData->insurance_coverage.' coverage  insurance subscription',
+                    'reference_id' => $this->generateReference($api),
+                    'payment_api'  => $api,
+                    'status'       => 'INITIATED'
+                ];
 
-            // Create a new SubscriptionPayment record using the payment array and return true if successful.
-            if(\App\Models\Payments\SubscriptionPayment::create($payment))  {
-                return $this->success("all good", 'Success');
+                // Create a new SubscriptionPayment record using the payment array and return true if successful.
+                if(\App\Models\Payments\SubscriptionPayment::create($payment))  {
+                    return $this->success("all good", 'Success');
+                }else{
+                    return $this->error("Something went wrong. Please contact system admins.");  
+                }
             }else{
-                return $this->error("Something went wrong. Please contact system admins.");  
+                return $this->error("Error saving session data");
             }
-        }else{
-            return $this->error("Error saving session data");
-        }
-        } catch (\Throwable $th) {
-            return $this->error($th->getMessage());
-        }
+            } catch (\Throwable $th) {
+                return $this->error($th->getMessage());
+            }
     }
 
     public function get_premium_option_details(Request $r)

@@ -261,7 +261,7 @@ class MenuController extends Controller
             $premium        = (($premiumPercentage / 100) * $selected_acreage * $sum_insured);
 
             if($input_text == 1){
-                info($sum_insured);
+                info($sum_insured); 
                 info($selected_acreage);
                 info(($sum_insured / 2) * $selected_acreage);
 
