@@ -324,6 +324,7 @@ class Utils
 
     static function syncGroups()
     {
+        return; 
         $lastGroup = FarmerGroup::orderBy('external_id', 'desc')->first();
         $external_id = 0;
         if ($lastGroup != null) {
