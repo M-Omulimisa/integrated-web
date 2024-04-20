@@ -65,8 +65,6 @@ class ResetFailedWeatherSmsOutbox extends Command
                 // Processing for more that one hour
                 $failed_sms = WeatherSubscription::where('end_date', '>', Carbon::now())->where('outbox_generation_status', 2)->whereRaw('TIMESTAMPDIFF(HOUR, updated_at, NOW()) > ?', [1])->orWhere('end_date', '>', Carbon::now())->where('outbox_generation_status', 3)->whereRaw('TIMESTAMPDIFF(HOUR, updated_at, NOW()) > ?', [1])->limit(100)->get();
 
-                echo count($failed_sms);
-
                 if (count($failed_sms) > 0) {
                     
                     foreach ($failed_sms as $subscription) {
