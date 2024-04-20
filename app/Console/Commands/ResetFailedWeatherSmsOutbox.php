@@ -15,7 +15,7 @@ class ResetFailedWeatherSmsOutbox extends Command
      *
      * @var string
      */
-    protected $signature = 'unified:reset-failed-weather-sms-outbox';
+    protected $signature = 'unified:reset-failed-weather-sms-outbox {start_time} {start_meridiem} {end_time} {end_meridiem}';
 
     /**
      * The console command description.
@@ -48,9 +48,14 @@ class ResetFailedWeatherSmsOutbox extends Command
      */
     public function handle()
     {
+        $start_time     = $this->argument('start_time');
+        $start_meridiem = $this->argument('start_meridiem');
+        $end_time       = $this->argument('end_time');
+        $end_meridiem   = $this->argument('end_meridiem');
+
         if ($this->debug) Log::info(['Command' => 'Reseting weather info']);
 
-        if (time() > strtotime('12 am') && time() < strtotime('5 pm')) {
+        if (time() > strtotime($start_time.' '.$start_meridiem) && time() < strtotime($end_time.' '.$end_meridiem)) {
 
             if ($this->debug) Log::info(['Command' => 'Past 12am']);
 
