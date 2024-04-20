@@ -103,7 +103,7 @@ class GenerateWeatherSmsOutbox extends Command
 
                             $subscription->update(['outbox_generation_status' => 3]);
 
-                            logger('Start('.$subscription->id.'): '. Carbon::now());
+                            // logger('Start('.$subscription->id.'): '. Carbon::now());
 
                             $weatherApi = new TomorrowApi;
                             $weatherApi->set_URL(config('tomorrow.host'));
@@ -156,7 +156,7 @@ class GenerateWeatherSmsOutbox extends Command
                                     if ($this->debug) logger('Missing table weather conditions');
                                 }
 
-                                logger('End('.$subscription->id.'): '. Carbon::now());
+                                // logger('End('.$subscription->id.'): '. Carbon::now());
 
                                 $codeDescription = isset($codeDescription) ? $codeDescription.'. ' : '';
 
