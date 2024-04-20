@@ -23,7 +23,7 @@ class GenerateWeatherSmsOutbox extends Command
      *
      * @var string
      */
-    protected $signature = 'unified:generate-weather-sms-outbox';
+    protected $signature = 'unified:generate-weather-sms-outbox {start_time} {start_meridiem} {end_time} {end_meridiem}';
 
     /**
      * The console command description.
@@ -56,9 +56,14 @@ class GenerateWeatherSmsOutbox extends Command
      */
     public function handle()
     {
+        $start_time     = $this->argument('start_time');
+        $start_meridiem = $this->argument('start_meridiem');
+        $end_time       = $this->argument('end_time');
+        $end_meridiem   = $this->argument('end_meridiem');
+        
         if ($this->debug) Log::info(['Command' => 'Generating weather info']);
 
-        if (time() > strtotime('12 am') && time() < strtotime('6 am')) {
+        if (time() > strtotime($start_time.' '.$start_meridiem) && time() < strtotime($end_time.' '.$end_meridiem)) {
 
             if ($this->debug) Log::info(['Command' => 'Past 12am']);
 
@@ -97,6 +102,8 @@ class GenerateWeatherSmsOutbox extends Command
                         foreach ($subscriptions as $subscription) {
 
                             $subscription->update(['outbox_generation_status' => 3]);
+
+                            logger('Start('.$subscription->id.'): '. Carbon::now());
 
                             $weatherApi = new TomorrowApi;
                             $weatherApi->set_URL(config('tomorrow.host'));
@@ -148,6 +155,8 @@ class GenerateWeatherSmsOutbox extends Command
                                 else{
                                     if ($this->debug) logger('Missing table weather conditions');
                                 }
+
+                                logger('End('.$subscription->id.'): '. Carbon::now());
 
                                 $codeDescription = isset($codeDescription) ? $codeDescription.'. ' : '';
 
