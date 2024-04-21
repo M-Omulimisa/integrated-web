@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Models\DistrictModel;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -32,6 +33,26 @@ class WeatherSubscriptionController extends AdminController
             $val->trial_expiry_sms_failure_reason .= '..';
             $val->save();
         } */
+
+        Utils::create_column(
+            (new WeatherSubscription())->getTable(),
+            [
+                [
+                    'name' => 'renew_message_sent',
+                    'type' => 'String',
+                    'default' => 'No',
+                ],
+                [
+                    'name' => 'renew_message_sent_at',
+                    'type' => 'DateTime',
+                ],
+                [
+                    'name' => 'renew_message_sent_details',
+                    'type' => 'Text',
+                ],
+            ]
+        );
+
         $grid = new Grid(new WeatherSubscription());
         // $grid->disableCreateButton();
         $grid->model()->orderBy('created_at', 'desc');

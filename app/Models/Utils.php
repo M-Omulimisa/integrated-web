@@ -1232,37 +1232,29 @@ class Utils
 
     public static function create_column($table, $new_cols)
     {
-        $colls_of_table = Schema::getColumnListing($table);
-        foreach ($new_cols as $new_col) {
-            if (!isset($new_col['name'])) {
-                continue;
+        try {
+            $colls_of_table = Schema::getColumnListing($table);
+            foreach ($new_cols as $new_col) {
+                if (!isset($new_col['name'])) {
+                    continue;
+                }
+                if (!isset($new_col['type'])) {
+                    continue;
+                }
+                if (!in_array($new_col['name'], $colls_of_table)) {
+                    Schema::table($table, function (Blueprint $t) use ($new_col) {
+                        $name = $new_col['name'];
+                        $type = $new_col['type'];
+                        $default = null;
+                        if (isset($new_col['default'])) {
+                            $default = $new_col['default'];
+                        }
+                        $t->$type($name)->default($default)->nullable();
+                    });
+                }
             }
-            if (!isset($new_col['type'])) {
-                continue;
-            }
-            if (!in_array($new_col['name'], $colls_of_table)) {
-                Schema::table($table, function (Blueprint $t) use ($new_col) {
-                    $name = $new_col['name'];
-                    $type = $new_col['type'];
-                    $default = null;
-                    if (isset($new_col['default'])) {
-                        $default = $new_col['default'];
-                    }
-                    $t->$type($name)->default($default)->nullable();
-                });
-            }
+        } catch (\Throwable $th) {
+            throw $th->getMessage();
         }
-    }
-
-
-    //column creator
-    public static function column_creator($table, $columns)
-    {
-        Schema::table($table, function (Blueprint $table) use ($columns) {
-            die("romina");
-            foreach ($columns as $key => $value) {
-                $table->string($value);
-            }
-        });
     }
 }
