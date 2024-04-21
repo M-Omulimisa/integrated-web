@@ -91,7 +91,6 @@ class MarketSubscriptionController extends AdminController
             ->display(function ($start_date) {
                 return date('d-m-Y', strtotime($start_date));
             })->sortable();
-        $grid->column('is_paid', __('is_paid'));
         $grid->column('status', __('STATUS'))
             ->using(['1' => 'Active', '0' => 'Expired'])
             ->sortable()
@@ -146,6 +145,13 @@ class MarketSubscriptionController extends AdminController
                 return date('d-m-Y', strtotime($created_at));
             })->hide();
 
+        $grid->column('is_paid', __('Payment Status'))
+            ->sortable()
+            ->label([
+                'PAID' => 'success',
+                'NOT PAID' => 'danger'
+            ])
+            ->filter(['PAID' => 'PAID', 'NOT PAID' => 'NOT PAID']);
         return $grid;
     }
 
@@ -271,15 +277,21 @@ class MarketSubscriptionController extends AdminController
         }
         $form->hidden('location_id', __('Region'))
             ->default($default_location);
-        if(!$form->isCreating()){
+        if (!$form->isCreating()) {
             $form->radio('renew_message_sent', __('Renew alert sent'))
-            ->options([
-                'Yes' => 'Yes',
-                'Skipped' => 'Skipped',
-                'No' => 'No',
-                'Failed' => 'Failed'
-            ]);
+                ->options([
+                    'Yes' => 'Yes',
+                    'Skipped' => 'Skipped',
+                    'No' => 'No',
+                    'Failed' => 'Failed'
+                ]);
         }
+        $form->radio('is_paid', __('Payment Status'))
+            ->options([
+                'PAID' => 'PAID',
+                'NOT PAID' => 'NOT PAID',
+            ]);
+
         /* 
             "id" => "579d65cc-368e-48cd-bc8b-ae07c49ded51"
     "name" => "Luganda"
