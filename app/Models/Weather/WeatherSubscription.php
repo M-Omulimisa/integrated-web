@@ -11,6 +11,7 @@ use App\Models\Traits\Relationships\WeatherSubscriptionRelationship;
 use App\Models\User;
 use App\Models\Utils;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class WeatherSubscription extends BaseModel
 {
@@ -262,6 +263,13 @@ class WeatherSubscription extends BaseModel
             if ($value == 0) {
                 $this->status = 1;
                 $this->save();
+            }
+        }
+
+        if ($value == 1) {
+            if ($this->is_paid != 'PAID') {
+                $sql = "UPDATE weather_subscriptions SET status = 0 WHERE id = '$this->id'";
+                DB::update($sql); 
             }
         }
 
