@@ -71,7 +71,7 @@ Grid::init(function (Grid $grid) {
     $grid->disableRowSelector();
     //$grid->disableExport();
     $grid->actions(function (Grid\Displayers\Actions $actions) {
-        $actions->disableDelete();
+        //$actions->disableDelete();
     });
 });
 
