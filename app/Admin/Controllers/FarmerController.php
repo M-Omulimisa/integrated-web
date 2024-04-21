@@ -33,7 +33,7 @@ class FarmerController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Farmer());
-
+        $grid->column('sheep_count', __('Page'))->sortable();
         $grid->column('first_name', __('Name'))
             ->display(function ($name) {
                 return $this->first_name . ' ' . $this->last_name;
@@ -43,7 +43,7 @@ class FarmerController extends AdminController
             ->display(function ($gender) {
                 if ($gender != 'Male' && $gender != 'Female') return 'Unknown';
                 return $gender;
-            })->sortable(); 
+            })->sortable();
         $grid->column('education_level', __('Education level'));
         $grid->column('phone', __('Phone'));
         $grid->column('email', __('Email'));
