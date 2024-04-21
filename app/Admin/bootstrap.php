@@ -114,7 +114,8 @@ foreach ($parishes as $parish) {
  */
 
 
-/* function get_gps($keyword)
+/* 
+function get_gps($keyword)
 {
     $keyword = urlencode('ndere center');
     $googleAPiKey = 'AIzaSyBlJdnkYKX-flnDzdOJn6NrQnCmR6TqqSc';

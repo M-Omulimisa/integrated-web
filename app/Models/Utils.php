@@ -528,7 +528,7 @@ class Utils
                     'phone' => $phone
                 ])->first();
                 if ($old != null) {
-                    echo $page . '. already saved => ' . $phone . ", name: " . $old->first_name . " " . $old->last_name . "<br>";
+                    echo $old->id.", PAGE: ".$page . '. already saved => ' . $phone . ", name: " . $old->first_name . " " . $old->last_name . "<br>";
                     $old->sheep_count = $page;
                     $old->save(); 
                     continue;
