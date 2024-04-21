@@ -1254,7 +1254,7 @@ class Utils
                 }
             }
         } catch (\Throwable $th) {
-            throw $th->getMessage();
+            //throw $th->getMessage();
         }
     }
 }
