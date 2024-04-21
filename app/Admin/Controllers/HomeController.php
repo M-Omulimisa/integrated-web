@@ -739,7 +739,7 @@ class HomeController extends Controller
                             ->get();
 
                         $box = new Box(
-                            'Market subscriptions',
+                            'Active Market subscriptions',
                             view('admin.widgets.home-market-subscriptions', [
                                 'data' => $recent_market_subscriptions,
                                 'url' => ('/')
