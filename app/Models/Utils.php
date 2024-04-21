@@ -466,7 +466,7 @@ class Utils
         }
 
         $page = 0;
-        $last = Farmer::orderBy('created_at', 'desc')->first();
+        $last = Farmer::orderBy('id', 'desc')->first();
         if ($last != null) {
             $page = ((int)($last->sheep_count));
             if ($page == 0) {
@@ -526,7 +526,7 @@ class Utils
             if (Utils::phone_number_is_valid($phone) == false) {
                 $old = Farmer::where([
                     'phone' => $phone
-                ])->first();
+                ])->orderBy('created_at', 'desc')->first();
                 if ($old != null) {
                     echo $old->id.", PAGE: ".$page . '. already saved => ' . $phone . ", name: " . $old->first_name . " " . $old->last_name . "<br>";
                     $old->sheep_count = $page;
