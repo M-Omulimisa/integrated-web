@@ -44,6 +44,7 @@ class Utils
 
     public static function renew_messages()
     {
+        die("time to send");
         foreach (MarketSubscription::where(['renew_message_sent' => 'No', 'status' => 0])
             ->orderBy('created_at', 'desc')
             ->get() as $key => $value) {

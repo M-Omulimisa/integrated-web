@@ -169,6 +169,10 @@ use Illuminate\Support\Facades\Auth;
 */
 
 
+Route::get('test', function () {
+    Utils::renew_messages();
+});
+
 Route::get('auth/login', function () {
     $u = Admin::user();
     if ($u != null) {
