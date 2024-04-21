@@ -523,7 +523,7 @@ class Utils
             }
             $phone = $ext['participant_contact'];
             $phone = Utils::prepare_phone_number($phone);
-            if (Utils::phone_number_is_valid($phone) == false) {
+            if (Utils::phone_number_is_valid($phone)) {
                 $old = Farmer::where([
                     'phone' => $phone
                 ])->orderBy('created_at', 'desc')->first();
