@@ -152,6 +152,16 @@ class MarketSubscriptionController extends AdminController
                 'NOT PAID' => 'danger'
             ])
             ->filter(['PAID' => 'PAID', 'NOT PAID' => 'NOT PAID']);
+        $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide();
+        $grid->column('payment_reference_id', __('Payment Reference ID'))->hide();
+        $grid->column('TransactionStatus', __('Transaction Status'))->hide();
+        $grid->column('TransactionAmount', __('Transaction Amount'))->hide();
+        $grid->column('total_price', __('Total Amount'))->hide();
+        $grid->column('TransactionCurrencyCode', __('Transaction Currency Code'))->hide();
+        $grid->column('TransactionReference', __('Transaction Reference'))->hide();
+        $grid->column('TransactionInitiationDate', __('Transaction Initiation Date'))->hide();
+        $grid->column('TransactionCompletionDate', __('Transaction Completion Date'))->hide();
+
         return $grid;
     }
 
@@ -290,66 +300,19 @@ class MarketSubscriptionController extends AdminController
             ->options([
                 'PAID' => 'PAID',
                 'NOT PAID' => 'NOT PAID',
-            ]);
+            ])
+            ->when('PAID', function (Form $form) {
+                $form->text('MNOTransactionReferenceId', __('MNO Transaction Reference ID'));
+                $form->text('payment_reference_id', __('Payment Reference ID'));
+                $form->text('TransactionStatus', __('Transaction Status'));
+                $form->decimal('TransactionAmount', __('Transaction Amount'));
+                $form->decimal('total_price', __('Total Amount'));
+                $form->text('TransactionCurrencyCode', __('Transaction Currency Code'));
+                $form->text('TransactionReference', __('Transaction Reference'));
+                $form->datetime('TransactionInitiationDate', __('Transaction Initiation Date'));
+                $form->datetime('TransactionCompletionDate', __('Transaction Completion Date'));
+            });
 
-        /* 
-            "id" => "579d65cc-368e-48cd-bc8b-ae07c49ded51"
-    "name" => "Luganda"
-    "country_id" => "1eb0bc53-d0ee-49ad-827f-98b862d90ee8"
-    "created_at" => "2022-07-09 11:38:57"
-    "updated_at" => "2024-03-20 13:46:20"
-    "position" => 1
-    "weather" => "Yes" 
-    "insurance" => "Yes"
-    "sms_keyword" => "manya"
-    "sms_registration_keyword" => "mulimisa"
-        */
-        //language_id
-
-
-        /*	
-farmer_id	
-language_id	
-location_id	
-district_id	
-subcounty_id	
-parish_id	
-first_name	
-last_name	
-email	
-frequency	
-period_paid	
-start_date	
-end_date	
-status	
-user_id	
-outbox_generation_status	
-outbox_reset_status	
-outbox_last_date	
-seen_by_admin	
-trial_expiry_sms_sent_at	
-trial_expiry_sms_failure_reason	
-renewal_id	
-organisation_id	
-package_id	
-created_at	
-updated_at	
-phone	
-region_id	
-payment_id	
-outbox_count	
-MNOTransactionReferenceId	
-payment_reference_id	
-TransactionStatus	
-TransactionAmount	
-TransactionCurrencyCode	
-TransactionReference	
-TransactionInitiationDate	
-TransactionCompletionDate	
-is_paid	
-total_price	
- 
-*/
         $form->disableCreatingCheck();
         return $form;
     }

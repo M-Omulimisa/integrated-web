@@ -282,6 +282,14 @@ class MarketSubscription extends BaseModel
                 $this->save();
             }
         }
+
+        if ($this->status == 1) {
+            if ($this->is_paid != 'PAID') {
+                $this->status = 0;
+                $this->save();
+            }
+        }
+
         if ($value == 1) {
             return 1;
         }
