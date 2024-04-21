@@ -172,24 +172,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('test', function () {
-    Utils::create_column(
-        (new MarketSubscription())->getTable(),
-        [
-            [
-                'name' => 'renew_message_sent',
-                'type' => 'String',
-                'default' => 'No',
-            ],
-            [
-                'name' => 'renew_message_sent_at',
-                'type' => 'DateTime',
-            ],
-            [
-                'name' => 'renew_message_sent_details',
-                'type' => 'Text',
-            ],
-        ]
-    );
+    Utils::renew_messages(); 
 });
 
 Route::get('auth/login', function () {
