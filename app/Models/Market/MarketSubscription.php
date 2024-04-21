@@ -9,6 +9,7 @@ use App\Models\Traits\Relationships\MarketSubscriptionRelationship;
 use App\Models\User;
 use App\Models\Utils;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class MarketSubscription extends BaseModel
 {
@@ -283,10 +284,10 @@ class MarketSubscription extends BaseModel
             }
         }
 
-        if ($this->status == 1) {
+        if ($value == 1) {
             if ($this->is_paid != 'PAID') {
-                $this->status = 0;
-                $this->save();
+                $sql = "UPDATE market_subscriptions SET status = 0 WHERE id = '$this->id'";
+                DB::update($sql);
             }
         }
 
