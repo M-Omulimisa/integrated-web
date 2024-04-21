@@ -161,7 +161,11 @@ class WeatherSubscriptionController extends AdminController
 
 
         $grid->column('is_paid', __('Payment Status'))
-            ->sortable() 
+            ->sortable()
+            ->using([
+                'PAID' => 'PAID',
+                'No' => 'NOT PAID',
+            ], 'NOT PAID')
             ->label([
                 'PAID' => 'success',
                 'NOT PAID' => 'danger'
