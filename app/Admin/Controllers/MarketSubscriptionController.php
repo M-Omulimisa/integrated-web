@@ -312,6 +312,11 @@ class MarketSubscriptionController extends AdminController
                 $form->datetime('TransactionInitiationDate', __('Transaction Initiation Date'));
                 $form->datetime('TransactionCompletionDate', __('Transaction Completion Date'));
             });
+        $form->radio('status', __('Status'))
+            ->options([
+                1 => 'Active',
+                0 => 'Not Active',
+            ]);
 
         $form->disableCreatingCheck();
         return $form;

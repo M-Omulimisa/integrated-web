@@ -159,6 +159,25 @@ class WeatherSubscriptionController extends AdminController
                 return date('d-m-Y', strtotime($created_at));
             })->hide();
 
+
+        $grid->column('is_paid', __('Payment Status'))
+            ->sortable()
+            ->label([
+                'PAID' => 'success',
+                'NOT PAID' => 'danger'
+            ])
+            ->filter(['PAID' => 'PAID', 'NOT PAID' => 'NOT PAID']);
+        $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide();
+        $grid->column('payment_reference_id', __('Payment Reference ID'))->hide();
+        $grid->column('TransactionStatus', __('Transaction Status'))->hide();
+        $grid->column('TransactionAmount', __('Transaction Amount'))->hide();
+        $grid->column('total_price', __('Total Amount'))->hide();
+        $grid->column('TransactionCurrencyCode', __('Transaction Currency Code'))->hide();
+        $grid->column('TransactionReference', __('Transaction Reference'))->hide();
+        $grid->column('TransactionInitiationDate', __('Transaction Initiation Date'))->hide();
+        $grid->column('TransactionCompletionDate', __('Transaction Completion Date'))->hide();
+
+
         return $grid;
     }
 
@@ -264,6 +283,28 @@ class WeatherSubscriptionController extends AdminController
             ])->rules('required');
 
         $form->decimal('period_paid', __('Period Paid'))->rules('required');
+
+        $form->radio('is_paid', __('Payment Status'))
+            ->options([
+                'PAID' => 'PAID',
+                'NOT PAID' => 'NOT PAID',
+            ])
+            ->when('PAID', function (Form $form) {
+                $form->text('MNOTransactionReferenceId', __('MNO Transaction Reference ID'));
+                $form->text('payment_reference_id', __('Payment Reference ID'));
+                $form->text('TransactionStatus', __('Transaction Status'));
+                $form->decimal('TransactionAmount', __('Transaction Amount'));
+                $form->decimal('total_price', __('Total Amount'));
+                $form->text('TransactionCurrencyCode', __('Transaction Currency Code'));
+                $form->text('TransactionReference', __('Transaction Reference'));
+                $form->datetime('TransactionInitiationDate', __('Transaction Initiation Date'));
+                $form->datetime('TransactionCompletionDate', __('Transaction Completion Date'));
+            });
+        $form->radio('status', __('Status'))
+            ->options([
+                1 => 'Active',
+                0 => 'Not Active',
+            ]);
 
         return $form;
     }
