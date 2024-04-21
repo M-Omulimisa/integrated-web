@@ -38,7 +38,7 @@ class Utils
             Farmer::process($value);
         }
 
-        self::renew_messages();
+        //self::renew_messages();
     }
 
     public static function renew_messages()
