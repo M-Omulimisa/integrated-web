@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminRoleUser;
 use App\Models\Insurance\InsuranceSubscription;
 use App\Models\ItemPrice;
+use App\Models\Market\Market;
 use App\Models\Market\MarketPackage;
 use App\Models\Market\MarketSubscription;
 use App\Models\OnlineCourse;
@@ -393,10 +394,10 @@ class HomeController extends Controller
                         'System Users',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('/')
+                            'url' => ('/users')
                         ])
                     );
-                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/users') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -429,7 +430,7 @@ class HomeController extends Controller
                             'url' => ('/')
                         ])
                     );
-                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/farmers') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -477,27 +478,34 @@ class HomeController extends Controller
                 $row->column(3, function (Column $column) {
                     $data = [];
                     $data[] = [
-                        'title' => 'Upcoming Trainings',
-                        'detail' => Training::count(),
-                    ];
-                    $data[] = [
-                        'title' => 'Conducted Trainings',
-                        'detail' => TrainingSession::where([])
+                        'title' => 'Market Subscriptions',
+                        'detail' => MarketSubscription::where([
+                            'status' => 1
+                        ])
                             ->count(),
                     ];
                     $data[] = [
-                        'title' => 'Attendance',
-                        'detail' => TrainingSession::where([])
+                        'title' => 'Weather Subscriptions',
+                        'detail' => WeatherSubscription::where([
+                            'status' => 1
+                        ])
+                            ->count(),
+                    ];
+                    $data[] = [
+                        'title' => 'Insurance Subscriptions',
+                        'detail' => InsuranceSubscription::where([
+                            'status' => 1
+                        ])
                             ->count(),
                     ];
                     $box = new Box(
-                        'Trainings',
+                        'Active Subscriptions',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
-                            'url' => ('/')
+                            'url' => ('/market-subscriptions')
                         ])
                     );
-                    $link = '<a href="' . ('/') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . ('/market-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -531,17 +539,17 @@ class HomeController extends Controller
                     //reverse the arrays
                     $lables = array_reverse($lables);
                     $data = array_reverse($data);
-                    $data_market = array_reverse($data_market); 
+                    $data_market = array_reverse($data_market);
                     $box = new Box(
                         'Market Info Subscriptions',
                         view('admin.widgets.widget-graph-3', [
                             'lables' => $lables,
                             'data' => $data,
-                            'data_market' => $data_market, 
+                            'data_market' => $data_market,
                             'url' => ('orders'),
                         ])
                     );
-                    $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More<i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . admin_url('/market-subscriptions') . '" class="small-box-footer text-success">View More<i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -575,7 +583,7 @@ class HomeController extends Controller
                     }
                     //reverse the arrays
                     $lables = array_reverse($lables);
-                    $data_weather = array_reverse($data_weather);  
+                    $data_weather = array_reverse($data_weather);
                     $box = new Box(
                         'Weather Subscriptions',
                         view('admin.widgets.widget-graph-5', [
@@ -585,7 +593,7 @@ class HomeController extends Controller
                             'url' => ('orders'),
                         ])
                     );
-                    $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . admin_url('weather-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -620,7 +628,7 @@ class HomeController extends Controller
                     }
                     //reverse the arrays
                     $lables = array_reverse($lables);
-                    $data = array_reverse($data); 
+                    $data = array_reverse($data);
                     $data_insurance = array_reverse($data_insurance);
                     $box = new Box(
                         'Insurance Subscriptions',
@@ -633,7 +641,7 @@ class HomeController extends Controller
                             'url' => ('orders'),
                         ])
                     );
-                    $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . admin_url('insurance-subscriptions') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()
@@ -657,14 +665,14 @@ class HomeController extends Controller
                             ->count();
                     }
                     $box = new Box(
-                        'Market Subscriptions',
+                        'Market Subscriptions - By Packages',
                         view('admin.widgets.widget-graph-2', [
                             'lables' => $lables,
                             'data' => $data,
                             'url' => ('orders')
                         ])
                     );
-                    $link = '<a href="' . ('orders') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $link = '<a href="' . admin_url('market-packages') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
                     $box->style('success')
                         ->footer($link)
                         ->solid()

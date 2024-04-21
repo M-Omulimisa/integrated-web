@@ -8,7 +8,7 @@
                 labels: @json($lables),
                 datasets: [
                     {
-                        label: 'Weather Conditions',
+                        label: 'Weather Subscriptions',
                         type: 'bar',
                         data: <?php echo json_encode($data_weather); ?>,
                         borderColor: "#34495E",
