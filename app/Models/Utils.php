@@ -439,7 +439,7 @@ class Utils
                 $new->save();
                 echo $new->id . ". SAVED " . $new->farmer_group . "<br>";
             } catch (\Throwable $th) {
-                echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br>";
+                echo 'FAILED: ' . $ext['farmer_group'] . " - " . $th->getMessage() . "<br><hr>";
                 continue;
             }
         }
