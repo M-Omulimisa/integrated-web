@@ -38,8 +38,7 @@ class Farmer extends BaseModel
                     throw new \Exception("Farmer with phone number " . $phone_number . " already exists. Please use a different phone number.");
                 }
             }
-
-            return false;
+ 
             //get last id
             $f = Farmer::orderBy('id', 'desc')->first();
             if ($f) {
