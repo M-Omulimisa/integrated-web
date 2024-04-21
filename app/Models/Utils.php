@@ -4,11 +4,14 @@ namespace App\Models;
 
 use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
+use App\Models\Market\Market;
+use App\Models\Market\MarketSubscription;
 use App\Services\Payments\PaymentServiceFactory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Zebra_Image;
 use Berkayk\OneSignal\OneSignalClient;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 
@@ -34,8 +37,21 @@ class Utils
             }
             Farmer::process($value);
         }
+
+        self::renew_messages();
     }
 
+    public static function renew_messages()
+    {
+        foreach (MarketSubscription::where(['renew_message_sent' => 'No', 'status' => 0])
+            ->orderBy('created_at', 'desc')
+            ->get() as $key => $value) {
+            if ($key > 100) {
+                break;
+            }
+            $value->send_renew_message();
+        }
+    }
     public static function greet()
     {
         //according to the time of the day
@@ -445,9 +461,9 @@ class Utils
         $last = Farmer::orderBy('created_at', 'desc')->first();
         if ($last != null) {
             $page = ((int)($last->sheep_count));
-            if($page == 0){
+            if ($page == 0) {
                 $page = 1;
-            } 
+            }
         }
         $page = $page + 1;
 
@@ -1214,12 +1230,39 @@ class Utils
         die();
     }
 
-    public static function create_column($table, $col)
+    public static function create_column($table, $new_cols)
     {
-        if (!Schema::hasColumn($table, $col)) {
-            Schema::table($table, function ($table) use ($col) {
-                $table->text($col)->nullable();
-            });
+        $colls_of_table = Schema::getColumnListing($table);
+        foreach ($new_cols as $new_col) {
+            if (!isset($new_col['name'])) {
+                continue;
+            }
+            if (!isset($new_col['type'])) {
+                continue;
+            }
+            if (!in_array($new_col['name'], $colls_of_table)) {
+                Schema::table($table, function (Blueprint $t) use ($new_col) {
+                    $name = $new_col['name'];
+                    $type = $new_col['type'];
+                    $default = null;
+                    if (isset($new_col['default'])) {
+                        $default = $new_col['default'];
+                    }
+                    $t->$type($name)->default($default)->nullable();
+                });
+            }
         }
+    }
+
+
+    //column creator
+    public static function column_creator($table, $columns)
+    {
+        Schema::table($table, function (Blueprint $table) use ($columns) {
+            die("romina");
+            foreach ($columns as $key => $value) {
+                $table->string($value);
+            }
+        });
     }
 }

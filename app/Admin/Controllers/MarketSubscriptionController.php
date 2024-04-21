@@ -5,6 +5,8 @@ namespace App\Admin\Controllers;
 use App\Models\Market\MarketPackagePricing;
 use App\Models\Market\MarketSubscription;
 use App\Models\Settings\Location;
+use App\Models\Utils;
+use Dflydev\DotAccessData\Util;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
@@ -27,6 +29,24 @@ class MarketSubscriptionController extends AdminController
      */
     protected function grid()
     {
+        Utils::create_column(
+            (new MarketSubscription())->getTable(),
+            [
+                [
+                    'name' => 'renew_message_sent',
+                    'type' => 'String',
+                    'default' => 'No',
+                ],
+                [
+                    'name' => 'renew_message_sent_at',
+                    'type' => 'DateTime',
+                ],
+                [
+                    'name' => 'renew_message_sent_details',
+                    'type' => 'Text',
+                ],
+            ]
+        );
         $grid = new Grid(new MarketSubscription());
         $grid->model()->orderBy('created_at', 'desc');
         $grid->quickSearch('phone')->placeholder('Search first name...');
@@ -79,6 +99,15 @@ class MarketSubscriptionController extends AdminController
                 '0' => 'danger'
             ])
             ->filter(['1' => 'Active', '0' => 'Expired']);
+        $grid->column('renew_message_sent', __('Renew alert sent'))
+            ->sortable()
+            ->dot([
+                'Yes' => 'success',
+                'Skipped' => 'warning',
+                'No' => 'info',
+                'Failed' => 'danger'
+            ])
+            ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No']);
 
         /*         $grid->column('outbox_generation_status', __('Outbox generation status'));
         $grid->column('outbox_reset_status', __('Outbox reset status'));
@@ -97,6 +126,20 @@ class MarketSubscriptionController extends AdminController
         $grid->column('outbox_count', __('Outbox count')); */
 
 
+        $grid->column('renew_message_sent_at', __('Renew Alert sent at'))->sortable()
+            ->display(function ($created_at) {
+                if ($created_at == null) {
+                    return '-';
+                }
+                return Utils::my_date($created_at);
+            });
+        $grid->column('renew_message_sent_details', __('Renew Alert Sent Details'))->sortable()
+            ->display(function ($created_at) {
+                if ($created_at == null) {
+                    return '-';
+                }
+                return ($created_at);
+            })->limit(20);
         $grid->column('created_at', __('Created'))->sortable()
             ->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
@@ -219,12 +262,23 @@ class MarketSubscriptionController extends AdminController
             ->options($langs)
             ->rules('required');
         $locations = [];
+        $default_location = 1;
         foreach (Location::all() as $key => $location) {
             $locations[$location->id] = $location->name;
+            $default_location = $location->id;
+            break;
         }
-        $form->select('location_id', __('Region'))
-            ->options($locations)
-            ->rules('required');
+        $form->hidden('location_id', __('Region'))
+            ->default($default_location);
+        if(!$form->isCreating()){
+            $form->radio('renew_message_sent', __('Renew alert sent'))
+            ->options([
+                'Yes' => 'Yes',
+                'Skipped' => 'Skipped',
+                'No' => 'No',
+                'Failed' => 'Failed'
+            ]);
+        }
         /* 
             "id" => "579d65cc-368e-48cd-bc8b-ae07c49ded51"
     "name" => "Luganda"

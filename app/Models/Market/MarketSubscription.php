@@ -287,4 +287,53 @@ class MarketSubscription extends BaseModel
         }
         return 0;
     }
+
+
+    public function send_renew_message()
+    {
+        if ($this->status != 0) {
+            return;
+        }
+        $phone = Utils::prepare_phone_number($this->phone);
+        //last subscription
+        $last_subscription = MarketSubscription::where([
+            'phone' => $phone,
+            'renew_message_sent' => 'Yes'
+        ])->orderBy('created_at', 'desc')->first();
+        if ($last_subscription != null) {
+            if ($last_subscription->renew_message_sent_at != null) {
+                $t = null;
+                try {
+                    $t = Carbon::parse($last_subscription->renew_message_sent_at);
+                } catch (\Throwable $th) {
+                    $t = null;
+                }
+                if ($t != null) {
+                    $now = Carbon::now();
+                    $diff = $now->diffInDays($t);
+                    if ($diff < 1) {
+                        $this->renew_message_sent = 'Skipped';
+                        $this->renew_message_sent_at = $now;
+                        $this->renew_message_sent_details = 'Already sent a message to this number: ' . $phone . ' within 24 hours. Ref: ' . $last_subscription->id;
+                        $this->save();
+                        return;
+                    }
+                }
+            }
+        }
+
+        $msg = "Dear " . $this->first_name . ", your subscription to the market information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+        try {
+            Utils::send_sms($phone, $msg);
+            $this->renew_message_sent = 'Yes';
+            $this->renew_message_sent_at = Carbon::now();
+            $this->renew_message_sent_details = 'Message sent to ' . $phone;
+            $this->save();
+        } catch (\Throwable $th) {
+            $this->renew_message_sent = 'Failed';
+            $this->renew_message_sent_at = Carbon::now();
+            $this->renew_message_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+            $this->save();
+        }
+    }
 }
