@@ -322,7 +322,7 @@ class MarketSubscription extends BaseModel
             }
         }
 
-        $msg = "Dear " . $this->first_name . ", your subscription to the market information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+        $msg = "Your M-Omulimisa subscription to the market information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
         try {
             Utils::send_sms($phone, $msg);
             $this->renew_message_sent = 'Yes';
