@@ -524,7 +524,7 @@ class Utils
             $phone = $ext['participant_contact'];
             $phone = Utils::prepare_phone_number($phone);
             if (Utils::phone_number_is_valid($phone) == false) {
-                echo 'already saved ' . $phone . "<br>";
+                echo $page.'. already saved => ' . $phone . "<br>";
                 continue;
             }
             try {
