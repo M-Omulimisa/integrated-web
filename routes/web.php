@@ -142,6 +142,7 @@ use App\Http\Controllers\IdValidations\PhoneValidationController;
 use App\Models\DistrictModel;
 use App\Models\Gen;
 use App\Models\Market\MarketOutbox;
+use App\Models\Market\MarketSubscription;
 use App\Models\MarketInfoMessageCampaign;
 use App\Models\NotificationCampaign;
 use App\Models\NotificationMessage;
@@ -172,7 +173,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('test', function () {
     Utils::create_column(
-        (new WeatherSubscription())->getTable(),
+        (new MarketSubscription())->getTable(),
         [
             [
                 'name' => 'renew_message_sent',
