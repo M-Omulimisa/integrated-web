@@ -127,11 +127,37 @@ class WeatherSubscriptionController extends AdminController
         $grid->column('seen_by_admin', __('Seen by admin'))->hide();
         $grid->column('trial_expiry_sms_sent_at', __('Trial expiry sms sent at'))->hide();
         $grid->column('trial_expiry_sms_failure_reason', __('Trial expiry sms failure reason'))->hide();
-        $grid->column('created_at', __('Created'))
-            ->display(function ($created_at) {
-                return date('Y-m-d', strtotime($created_at));
-            })->sortable();
         $grid->column('phone', __('Phone'))->sortable();
+
+
+
+        $grid->column('renew_message_sent', __('Renew alert sent'))
+            ->sortable()
+            ->dot([
+                'Yes' => 'success',
+                'Skipped' => 'warning',
+                'No' => 'danger',
+                'Failed' => 'danger'
+            ])
+            ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No']);
+        $grid->column('renew_message_sent_at', __('Renew Alert sent at'))->sortable()
+            ->display(function ($created_at) {
+                if ($created_at == null) {
+                    return '-';
+                }
+                return Utils::my_date($created_at);
+            });
+        $grid->column('renew_message_sent_details', __('Renew Alert Sent Details'))->sortable()
+            ->display(function ($created_at) {
+                if ($created_at == null) {
+                    return '-';
+                }
+                return ($created_at);
+            })->limit(20);
+        $grid->column('created_at', __('Created'))->sortable()
+            ->display(function ($created_at) {
+                return date('d-m-Y', strtotime($created_at));
+            })->hide();
 
         return $grid;
     }

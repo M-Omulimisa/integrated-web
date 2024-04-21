@@ -6,6 +6,7 @@ use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
 use App\Models\Market\Market;
 use App\Models\Market\MarketSubscription;
+use App\Models\Weather\WeatherSubscription;
 use App\Services\Payments\PaymentServiceFactory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -51,6 +52,15 @@ class Utils
             }
             $value->send_renew_message();
         }
+        foreach (WeatherSubscription::where(['renew_message_sent' => 'No', 'status' => 0])
+            ->orderBy('created_at', 'desc')
+            ->get() as $key => $value) {
+            if ($key > 100) {
+                break;
+            }
+            $value->send_renew_message();
+        }
+
     }
     public static function greet()
     {
@@ -1234,6 +1244,7 @@ class Utils
     {
         try {
             $colls_of_table = Schema::getColumnListing($table);
+
             foreach ($new_cols as $new_col) {
                 if (!isset($new_col['name'])) {
                     continue;

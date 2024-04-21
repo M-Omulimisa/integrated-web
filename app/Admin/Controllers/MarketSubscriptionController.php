@@ -104,7 +104,7 @@ class MarketSubscriptionController extends AdminController
             ->dot([
                 'Yes' => 'success',
                 'Skipped' => 'warning',
-                'No' => 'info',
+                'No' => 'danger',
                 'Failed' => 'danger'
             ])
             ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No']);
