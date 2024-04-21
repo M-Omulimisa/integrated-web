@@ -168,7 +168,9 @@ class WeatherSubscriptionController extends AdminController
             ], 'NOT PAID')
             ->label([
                 'PAID' => 'success',
-                'NOT PAID' => 'danger'
+                'NOT PAID' => 'danger',
+                'No' => 'danger',
+                'NO' => 'danger',
             ], 'danger')
             ->filter(['PAID' => 'PAID', 'NOT PAID' => 'NOT PAID']);
         $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide();

@@ -265,7 +265,7 @@ class WeatherSubscription extends BaseModel
             }
         }
 
-        
+
         if ($value == 1) {
             return 1;
         }
@@ -328,4 +328,5 @@ class WeatherSubscription extends BaseModel
             $this->save();
         }
     }
+    
 }
