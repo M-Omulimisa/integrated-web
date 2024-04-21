@@ -73,8 +73,9 @@ class Farmer extends BaseModel
             if (Utils::phone_number_is_valid($_phone)) {
                 $model->phone = $_phone;
                 $last_name = $model->last_name;
+                $app_download_link = 'bit.ly/4aM24Ea'; 
 
-                $msg = "Dear " . $last_name . ",\nWelcome to the M-Omulimisa App. Your account has been created successfully. You can now access the app using your phone number and password: 4321. Thank you for choosing us.";
+                $msg = "Hello, your M-Omulimisa account has been created successfully! Download the app from this link $app_download_link and login using your phone number and password 4321. Thank you!";                
                 try {
                     Utils::send_sms($_phone, $msg);
                 } catch (\Throwable $th) {
