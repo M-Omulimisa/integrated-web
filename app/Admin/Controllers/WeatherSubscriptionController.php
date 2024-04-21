@@ -162,10 +162,15 @@ class WeatherSubscriptionController extends AdminController
 
         $grid->column('is_paid', __('Payment Status'))
             ->sortable()
+            ->using([
+                'PAID' => 'PAID',
+                'NOT PAID' => 'NOT PAID',
+                'NO' => 'NOT PAID',
+            ]) 
             ->label([
                 'PAID' => 'success',
                 'NOT PAID' => 'danger'
-            ])
+            ], 'danger')
             ->filter(['PAID' => 'PAID', 'NOT PAID' => 'NOT PAID']);
         $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide();
         $grid->column('payment_reference_id', __('Payment Reference ID'))->hide();
