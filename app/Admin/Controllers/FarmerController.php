@@ -33,6 +33,7 @@ class FarmerController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Farmer());
+        $grid->column('id', __('ID'))->sortable();
         $grid->column('sheep_count', __('Page'))->sortable();
         $grid->column('first_name', __('Name'))
             ->display(function ($name) {
