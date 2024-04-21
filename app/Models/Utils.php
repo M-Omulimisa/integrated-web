@@ -60,7 +60,6 @@ class Utils
             }
             $value->send_renew_message();
         }
-
     }
     public static function greet()
     {
@@ -1219,7 +1218,6 @@ class Utils
                     }
                 }
 
-
                 echo
                 '<Response>
                 ' . $prefixContent . '
@@ -1231,22 +1229,12 @@ class Utils
                 die();
             }
         }
-        echo     '<Response>
-        <GetDigits timeout="40" >
-            <Say voice="en-US-Standard-C" playBeep="false" >' . $data . '</Say>
-            </GetDigits>
-            <Say>We did not get your input number. Good bye</Say>
-        </Response>';
-        die();
     }
 
     public static function create_column($table, $new_cols)
     {
         try {
             $colls_of_table = Schema::getColumnListing($table);
-            echo "<pre>BEFORE</br>";
-            print_r($colls_of_table);
-            echo "<hr>";
             foreach ($new_cols as $new_col) {
                 if (!isset($new_col['name'])) {
                     continue;
@@ -1266,11 +1254,6 @@ class Utils
                     });
                 }
             }
-            $colls_of_table = Schema::getColumnListing($table);
-            echo "<pre>AFTER</br>";
-            print_r($colls_of_table);
-            echo "<hr>";
-            die();
         } catch (\Throwable $th) {
             //throw $th->getMessage();
         }
