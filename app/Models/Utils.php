@@ -524,8 +524,15 @@ class Utils
             $phone = $ext['participant_contact'];
             $phone = Utils::prepare_phone_number($phone);
             if (Utils::phone_number_is_valid($phone) == false) {
-                echo $page.'. already saved => ' . $phone . "<br>";
-                continue;
+                $old = Farmer::where([
+                    'phone' => $phone
+                ])->first();
+                if ($old != null) {
+                    echo $page . '. already saved => ' . $phone . ", name: " . $old->first_name . " " . $old->last_name . "<br>";
+                    $old->sheep_count = $page;
+                    $old->save(); 
+                    continue;
+                }
             }
             try {
                 $new = new Farmer();
