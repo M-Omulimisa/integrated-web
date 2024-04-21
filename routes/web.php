@@ -152,6 +152,7 @@ use App\Models\OnlineCourseStudentBatchImporter;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
 use App\Models\Utils;
+use App\Models\Weather\WeatherSubscription;
 use App\Traits\Notification;
 use Dflydev\DotAccessData\Util;
 use Encore\Admin\Facades\Admin;
@@ -170,7 +171,24 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('test', function () {
-    Utils::renew_messages();
+    Utils::create_column(
+        (new WeatherSubscription())->getTable(),
+        [
+            [
+                'name' => 'renew_message_sent',
+                'type' => 'String',
+                'default' => 'No',
+            ],
+            [
+                'name' => 'renew_message_sent_at',
+                'type' => 'DateTime',
+            ],
+            [
+                'name' => 'renew_message_sent_details',
+                'type' => 'Text',
+            ],
+        ]
+    );
 });
 
 Route::get('auth/login', function () {

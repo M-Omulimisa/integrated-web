@@ -44,7 +44,6 @@ class Utils
 
     public static function renew_messages()
     {
-        die("time to send");
         foreach (MarketSubscription::where(['renew_message_sent' => 'No', 'status' => 0])
             ->orderBy('created_at', 'desc')
             ->get() as $key => $value) {
@@ -1245,7 +1244,9 @@ class Utils
     {
         try {
             $colls_of_table = Schema::getColumnListing($table);
-
+            echo "<pre>BEFORE</br>";
+            print_r($colls_of_table);
+            echo "<hr>";
             foreach ($new_cols as $new_col) {
                 if (!isset($new_col['name'])) {
                     continue;
@@ -1265,6 +1266,11 @@ class Utils
                     });
                 }
             }
+            $colls_of_table = Schema::getColumnListing($table);
+            echo "<pre>AFTER</br>";
+            print_r($colls_of_table);
+            echo "<hr>";
+            die();
         } catch (\Throwable $th) {
             //throw $th->getMessage();
         }
