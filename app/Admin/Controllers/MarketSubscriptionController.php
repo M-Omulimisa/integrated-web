@@ -81,7 +81,14 @@ class MarketSubscriptionController extends AdminController
             ->filter($packages)->sortable()
             ->width(150);
 
-        $grid->column('frequency', __('Frequency'))->sortable();
+        $grid->column('frequency', __('Frequency'))
+            ->using([
+                'trial' => 'Trial (Free)',
+                'weekly' => 'Weekly',
+                'monthly' => 'Monthly',
+                'yearly' => 'Yearly'
+            ])
+            ->sortable();
         $grid->column('period_paid', __('Period'))->sortable();
         $grid->column('start_date', __('Start date'))
             ->display(function ($start_date) {

@@ -653,7 +653,7 @@ class HomeController extends Controller
                             ->count();
                     }
                     $box = new Box(
-                        'Weather Subscriptions - By Frequency',
+                        'Active Weather Subscriptions - By Frequency',
                         view('admin.widgets.widget-graph-6', [
                             'lables' => $lables,
                             'data' => $data,
