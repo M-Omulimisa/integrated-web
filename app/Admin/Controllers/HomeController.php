@@ -637,8 +637,8 @@ class HomeController extends Controller
                     $data = [];
 
                     $freq = [
-                        'trial' => 'Trial',
-                        'weekly' => 'Weekly',
+/*                         'trial' => 'Trial',
+ */                        'weekly' => 'Weekly',
                         'monthly' => 'Monthly',
                         'yearly' => 'Yearly',
                     ];
@@ -647,7 +647,8 @@ class HomeController extends Controller
                     foreach ($freq as $key => $value) {
                         $lables[] = $value;
                         $data[] = WeatherSubscription::where([
-                            'frequency' => $key
+                            'frequency' => $key,
+                            'status' => 1
                         ])
                             ->count();
                     }
