@@ -501,16 +501,9 @@ class ApiAuthController extends Controller
         if ($r->size == null) {
             return $this->error("Size is required.");
         }
-        if ($r->crop_id == null) {
-            return $this->error("Crop is required.");
-        }
-        if ($r->created_at == null) {
-            return $this->error("Planting date is required.");
-        }
 
         $garden = new GardenModel();
         $garden->user_id = $r->user_id;
-        $garden->created_at = Carbon::parse($r->created_at);
         $garden->district_id = $r->district_id;
         $garden->subcounty_id = $r->subcounty_id;
         $garden->parish_id = $r->parish_id;
