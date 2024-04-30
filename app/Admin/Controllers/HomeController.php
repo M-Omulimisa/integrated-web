@@ -637,7 +637,7 @@ class HomeController extends Controller
                     $data = [];
 
                     $freq = [
-                        'daily' => 'Daily',
+                        'trial' => 'Trial',
                         'weekly' => 'Weekly',
                         'monthly' => 'Monthly',
                         'yearly' => 'Yearly',
