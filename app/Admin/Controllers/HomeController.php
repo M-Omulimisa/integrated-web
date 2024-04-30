@@ -559,6 +559,36 @@ class HomeController extends Controller
                 });
 
 
+                $row->column(6, function (Column $column) {
+                    $lables = [];
+                    $data = [];
+
+                    //percentage of market subscriptions
+                    foreach (MarketPackage::all() as $key => $value) {
+                        $lables[] = $value->name;
+                        $data[] = MarketSubscription::where([
+                            'package_id' => $value->id,
+                            'status' => 1
+                        ])
+                            ->count();
+                    }
+                    $box = new Box(
+                        'Market Subscriptions - By Packages',
+                        view('admin.widgets.widget-graph-2', [
+                            'lables' => $lables,
+                            'data' => $data,
+                            'url' => ('orders')
+                        ])
+                    );
+                    $link = '<a href="' . admin_url('market-packages') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+                
 
                 $row->column(6, function (Column $column) {
                     $lables = [];
@@ -602,9 +632,44 @@ class HomeController extends Controller
                     $column->append($box);
                 });
 
-
-
                 $row->column(6, function (Column $column) {
+                    $lables = [];
+                    $data = [];
+
+                    $freq = [
+                        'daily' => 'Daily',
+                        'weekly' => 'Weekly',
+                        'monthly' => 'Monthly',
+                        'yearly' => 'Yearly',
+                    ];
+
+                    //percentage of market subscriptions
+                    foreach ($freq as $key => $value) {
+                        $lables[] = $value;
+                        $data[] = WeatherSubscription::where([
+                            'frequency' => $key
+                        ])
+                            ->count();
+                    }
+                    $box = new Box(
+                        'Weather Subscriptions - By Frequency',
+                        view('admin.widgets.widget-graph-6', [
+                            'lables' => $lables,
+                            'data' => $data,
+                            'url' => ('orders')
+                        ])
+                    );
+                    $link = '<a href="' . admin_url('market-packages') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
+                    $box->style('success')
+                        ->footer($link)
+                        ->solid()
+                        ->collapsable()
+                        ->removable();
+                    $column->append($box);
+                });
+
+
+             /*    $row->column(6, function (Column $column) {
                     $lables = [];
                     $data = [];
                     $data_market = [];
@@ -648,38 +713,10 @@ class HomeController extends Controller
                         ->collapsable()
                         ->removable();
                     $column->append($box);
-                });
+                }); */
 
 
-                $row->column(6, function (Column $column) {
-                    $lables = [];
-                    $data = [];
-
-                    //percentage of market subscriptions
-                    foreach (MarketPackage::all() as $key => $value) {
-                        $lables[] = $value->name;
-                        $data[] = MarketSubscription::where([
-                            'package_id' => $value->id,
-                            'status' => 1
-                        ])
-                            ->count();
-                    }
-                    $box = new Box(
-                        'Market Subscriptions - By Packages',
-                        view('admin.widgets.widget-graph-2', [
-                            'lables' => $lables,
-                            'data' => $data,
-                            'url' => ('orders')
-                        ])
-                    );
-                    $link = '<a href="' . admin_url('market-packages') . '" class="small-box-footer text-success">View More <i class="fa fa-arrow-circle-right"></i></a>';
-                    $box->style('success')
-                        ->footer($link)
-                        ->solid()
-                        ->collapsable()
-                        ->removable();
-                    $column->append($box);
-                });
+               
             })
                 ->row(function (Row $row) {
                     $row->column(3, function (Column $column) {
