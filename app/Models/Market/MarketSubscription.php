@@ -267,19 +267,30 @@ class MarketSubscription extends BaseModel
         return $this->first_name . ' ' . $this->last_name;
     }
 
-    //getter for status
     public function getStatusAttribute($value)
     {
+        if ($this->is_paid == 'PAID') {
+            return 1;
+        }
         if ($this->MNOTransactionReferenceId == null || strlen($this->MNOTransactionReferenceId) < 3) {
             $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
             if ($rec != null) {
-                dd($rec);
-                $this->TransactionReference = $rec->reference_id;
+                if ($rec->status == 'SUCCESSFUL') {
+                    $this->is_paid = 'PAID';
+                } else {
+                    $this->is_paid = 'NOT PAID';
+                }
+                $this->MNOTransactionReferenceId = $rec->reference_id;
+                $this->TransactionReference = $rec->reference;
                 $this->payment_reference_id = $rec->id;
+                $this->TransactionStatus = $rec->status;
+                $this->TransactionAmount = $rec->amount;
+                $this->TransactionCurrencyCode = 'UGX';
+                $this->TransactionInitiationDate = $rec->created_at;
+                $this->TransactionCompletionDate = $rec->updated_at;
+                $this->total_price = $rec->amount;
                 $this->save();
             }
-
-            return 'NOT PAID';
         }
 
         $now = Carbon::now();
