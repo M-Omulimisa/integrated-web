@@ -269,9 +269,7 @@ class MarketSubscription extends BaseModel
 
     public function getStatusAttribute($value)
     {
-        if ($this->is_paid == 'PAID') {
-            return 1;
-        }
+        
         if ($this->MNOTransactionReferenceId == null || strlen($this->MNOTransactionReferenceId) < 3) {
             $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
             if ($rec != null) {
@@ -290,7 +288,7 @@ class MarketSubscription extends BaseModel
                 $this->TransactionCompletionDate = $rec->updated_at;
                 $this->total_price = $rec->amount;
                 $this->save();
-            }
+            } 
         }
 
         $now = Carbon::now();
@@ -317,7 +315,7 @@ class MarketSubscription extends BaseModel
 
         if ($value == 1) {
             return 1;
-        }
+        } 
         return 0;
     }
 
