@@ -159,7 +159,7 @@ class MarketSubscriptionController extends AdminController
                 'NOT PAID' => 'danger'
             ])
             ->filter(['PAID' => 'PAID', 'NOT PAID' => 'NOT PAID']);
-        $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide();
+        $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide()->sortable();
         $grid->column('payment_reference_id', __('Payment Reference ID'))->hide();
         $grid->column('TransactionStatus', __('Transaction Status'))->hide();
         $grid->column('TransactionAmount', __('Transaction Amount'))->hide();
