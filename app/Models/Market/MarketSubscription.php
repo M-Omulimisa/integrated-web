@@ -273,7 +273,7 @@ class MarketSubscription extends BaseModel
         if ($this->MNOTransactionReferenceId == null || strlen($this->MNOTransactionReferenceId) < 3) {
             $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
             if ($rec != null) {
-                dd($this);
+                dd($rec);
                 $this->TransactionReference = $rec->reference_id;
                 $this->payment_reference_id = $rec->id;
                 $this->save();
