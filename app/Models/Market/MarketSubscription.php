@@ -4,6 +4,7 @@ namespace App\Models\Market;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use App\Models\Payments\SubscriptionPayment;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\MarketSubscriptionRelationship;
 use App\Models\User;
@@ -192,6 +193,14 @@ class MarketSubscription extends BaseModel
     public function check_payment_status()
     {
         if ($this->TransactionReference == null) {
+            $rec = SubscriptionPayment::where('market_subscription_id', $this->id)->orderBy('created_at', 'desc')->first();
+            if ($rec != null) {
+                dd($rec);
+                $this->TransactionReference = $rec->reference_id;
+                $this->payment_reference_id = $rec->id;
+                $this->save();
+            }
+
             return 'NOT PAID';
         }
         if (strlen($this->TransactionReference) < 3) {

@@ -528,11 +528,11 @@ class Utils
                     'phone' => $phone
                 ])->orderBy('created_at', 'desc')->first();
                 if ($old != null) {
-                    echo $old->id.", PAGE: ".$page . '. already saved => ' . $phone . ", name: " . $old->first_name . " " . $old->last_name . "<br>";
+                    echo $old->id . ", PAGE: " . $page . '. already saved => ' . $phone . ", name: " . $old->first_name . " " . $old->last_name . "<br>";
                     $old->sheep_count = $page;
-                    $old->save(); 
-                    if(strlen($old->first_name) < 2){
-                        $old->delete(); 
+                    $old->save();
+                    if (strlen($old->first_name) < 2) {
+                        $old->delete();
                     }
                     continue;
                 }
@@ -1267,4 +1267,6 @@ class Utils
             //throw $th->getMessage();
         }
     }
+
+   
 }
