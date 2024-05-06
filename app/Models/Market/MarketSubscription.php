@@ -192,7 +192,7 @@ class MarketSubscription extends BaseModel
     //check payment status
     public function check_payment_status()
     {
-        if ($this->TransactionReference == null) {
+        if ($this->TransactionReference == null || strlen($this->TransactionReference) < 3) {
             $rec = SubscriptionPayment::where('market_subscription_id', $this->id)->orderBy('created_at', 'desc')->first();
             if ($rec != null) {
                 dd($rec);
