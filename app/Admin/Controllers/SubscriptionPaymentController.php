@@ -25,8 +25,24 @@ class SubscriptionPaymentController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new SubscriptionPayment());
+        $grid->model()->orderBy('updated_at', 'desc');
+        $grid->quickSearch(
+            'account',
+            'reference_id',
+            'reference',
+            'narrative',
+            'details',
+            'error_message',
+            'weather_subscription_id',
+            'market_subscription_id',
+            'insurance_subscription_id',
+            'weather_session_id',
+            'market_session_id',
+            'insurance_session_id'
 
-        $grid->column('id', __('Id'));
+        )
+            ->placeholder('Search by account, reference id, reference, narrative, details, error message');
+        $grid->column('id', __('Id'))->sortable();
         $grid->column('weather_subscription_id', __('Weather subscription id'));
         $grid->column('market_subscription_id', __('Market subscription id'));
         $grid->column('insurance_subscription_id', __('Insurance subscription id'));
@@ -36,8 +52,8 @@ class SubscriptionPaymentController extends AdminController
         $grid->column('reference_id', __('Reference id'));
         $grid->column('reference', __('Reference'));
         $grid->column('narrative', __('Narrative'));
-        $grid->column('payment_api', __('Payment api'));
-        $grid->column('sms_api', __('Sms api'));
+        $grid->column('payment_api', __('Payment api'))->hide();
+        $grid->column('sms_api', __('Sms api'))->hide();
         $grid->column('amount', __('Amount'));
         $grid->column('status', __('Status'));
         $grid->column('details', __('Details'));
