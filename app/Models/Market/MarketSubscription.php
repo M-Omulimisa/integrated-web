@@ -271,7 +271,7 @@ class MarketSubscription extends BaseModel
     public function getStatusAttribute($value)
     {
         if ($this->MNOTransactionReferenceId == null || strlen($this->MNOTransactionReferenceId) < 3) {
-            $rec = SubscriptionPayment::where('market_subscription_id', $this->id)->orderBy('created_at', 'desc')->first();
+            $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
             if ($rec != null) {
                 dd($this);
                 $this->TransactionReference = $rec->reference_id;
