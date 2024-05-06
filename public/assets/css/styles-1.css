@@ -19,3 +19,7 @@
     color: black;
 }
 
+.navbar {
+    height: 50px !important;
+    display: block!important;
+}
