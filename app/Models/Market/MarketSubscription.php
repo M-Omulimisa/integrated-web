@@ -192,15 +192,7 @@ class MarketSubscription extends BaseModel
     //check payment status
     public function check_payment_status()
     {
-        if ($this->TransactionReference == null || strlen($this->TransactionReference) < 3) {
-            $rec = SubscriptionPayment::where('market_subscription_id', $this->id)->orderBy('created_at', 'desc')->first();
-            if ($rec != null) {
-                dd($rec);
-                $this->TransactionReference = $rec->reference_id;
-                $this->payment_reference_id = $rec->id;
-                $this->save();
-            }
-
+        if ($this->TransactionReference == null) {
             return 'NOT PAID';
         }
         if (strlen($this->TransactionReference) < 3) {
@@ -278,6 +270,18 @@ class MarketSubscription extends BaseModel
     //getter for status
     public function getStatusAttribute($value)
     {
+        if ($this->TransactionReference == null || strlen($this->TransactionReference) < 3) {
+            $rec = SubscriptionPayment::where('market_subscription_id', $this->id)->orderBy('created_at', 'desc')->first();
+            if ($rec != null) {
+                dd($rec);
+                $this->TransactionReference = $rec->reference_id;
+                $this->payment_reference_id = $rec->id;
+                $this->save();
+            }
+
+            return 'NOT PAID';
+        }
+
         $now = Carbon::now();
         $then = Carbon::parse($this->end_date);
         if ($now->gt($then)) {
