@@ -226,3 +226,6 @@ Encore\Admin\Show::init(function (Encore\Admin\Show $show) {
         $tools->disableDelete();
     });
 });
+
+//styles.css
+/* Admin::css(url('/assets/css/styles.css')); */
