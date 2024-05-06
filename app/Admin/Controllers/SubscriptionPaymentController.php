@@ -55,7 +55,12 @@ class SubscriptionPaymentController extends AdminController
         $grid->column('payment_api', __('Payment api'))->hide();
         $grid->column('sms_api', __('Sms api'))->hide();
         $grid->column('amount', __('Amount'));
-        $grid->column('status', __('Status'));
+        $grid->column('status', __('Status'))
+        ->filter([
+            'SUCCESSFUL' => 'SUCCESSFUL',
+            'INDETERMINATE' => 'INDETERMINATE',
+            'FAILED' => 'FAILED',
+        ])->sortable();
         $grid->column('details', __('Details'));
         $grid->column('error_message', __('Error message'));
         $grid->column('created_at', __('Created at'));
