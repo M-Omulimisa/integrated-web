@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\User;
+use App\Models\Utils;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
@@ -28,6 +29,27 @@ class UserController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new User());
+
+        Utils::create_column(
+            (new User())->getTable(),
+            [
+                [
+                    'name' => 'has_changed_password',
+                    'type' => 'String',
+                    'default' => 'No',
+                ],
+                [
+                    'name' => 'raw_password',
+                    'type' => 'String',
+                ],
+                [
+                    'name' => 'reset_password_token',
+                    'type' => 'String',
+                    'default' => 'No',
+                ],
+            ]
+        );
+
 
         //photo
         $grid->column('photo', __('Photo'))

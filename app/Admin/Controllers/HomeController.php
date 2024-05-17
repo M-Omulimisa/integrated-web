@@ -26,6 +26,7 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Layout\Row;
 use Encore\Admin\Widgets\Box;
 use Faker\Provider\ar_JO\Company;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
@@ -266,6 +267,19 @@ class HomeController extends Controller
 
     public function index(Content $content)
     {
+        $u = Admin::user();
+        if ($u != 'Yes') {
+            if ($u->has_changed_password != 'Yes') {
+                $token = Str::random(60);
+                $u->reset_password_token = $token;
+                $u->save();
+                //set token in session
+                session(['reset_password_token' => $token]); 
+                Admin::script('window.location.replace("' . url('auth/password-reset-form') . '");');
+                return $content;
+            }
+        }
+
 
         $u = Admin::user();
         Admin::js('/vendor/chartjs/dist/Chart.min.js');
@@ -588,7 +602,7 @@ class HomeController extends Controller
                         ->removable();
                     $column->append($box);
                 });
-                
+
 
                 $row->column(6, function (Column $column) {
                     $lables = [];
@@ -637,8 +651,9 @@ class HomeController extends Controller
                     $data = [];
 
                     $freq = [
-/*                         'trial' => 'Trial',
- */                        'weekly' => 'Weekly',
+                        /*                         'trial' => 'Trial',
+ */
+                        'weekly' => 'Weekly',
                         'monthly' => 'Monthly',
                         'yearly' => 'Yearly',
                     ];
@@ -670,7 +685,7 @@ class HomeController extends Controller
                 });
 
 
-             /*    $row->column(6, function (Column $column) {
+                /*    $row->column(6, function (Column $column) {
                     $lables = [];
                     $data = [];
                     $data_market = [];
@@ -715,9 +730,6 @@ class HomeController extends Controller
                         ->removable();
                     $column->append($box);
                 }); */
-
-
-               
             })
                 ->row(function (Row $row) {
                     $row->column(3, function (Column $column) {

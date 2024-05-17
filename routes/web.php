@@ -157,6 +157,7 @@ use App\Models\Weather\WeatherSubscription;
 use App\Traits\Notification;
 use Dflydev\DotAccessData\Util;
 use Encore\Admin\Facades\Admin;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -184,6 +185,38 @@ Route::get('auth/login', function () {
     return view('auth.login');
     // return view('welcome');
     //return redirect('/home');
+});
+
+Route::post('auth/password-reset-form', function (Request $r) {
+    $password = trim($r->password);
+    $password_1 = trim($r->password_1);
+    dd($password_1);
+    dd($_POST);    
+});
+
+Route::get('auth/password-reset-form', function () {
+    //get reset_password_token from session
+    $reset_password_token = session('reset_password_token');
+    if ($reset_password_token == null || strlen($reset_password_token) < 3) {
+        $message = "Invalid reset password token";
+        die($message);
+    }
+    $acc = \App\Models\User::where('reset_password_token', $reset_password_token)->first();
+    if ($acc == null) {
+        $message = "Invalid reset password token";
+        die($message);
+    }
+    $username = $acc->username;
+    if ($username == null || strlen($username) < 2) {
+        $username = $acc->phone;
+    }
+    if ($username == null || strlen($username) < 2) {
+        $username = $acc->email;
+    }
+    return view('auth.password-reset-form', [
+        'acc' => $acc,
+        'username' => $username
+    ]);
 });
 /* Route::post('auth/login', function () {
     $post = $_POST;
