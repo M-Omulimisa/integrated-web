@@ -270,7 +270,7 @@ class HomeController extends Controller
         $u = Admin::user();
         if ($u != 'Yes') {
             if ($u->has_changed_password != 'Yes') {
-                $token = rand(100000, 999999); 
+                $token = rand(100000, 999999);
                 $u->reset_password_token = $token;
                 $u->save();
                 //set token in session
