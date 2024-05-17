@@ -260,6 +260,11 @@ class Utils
             return false;
         }
 
+        //check if contains numbers only
+        if (!ctype_digit(substr($phone_number, 1, strlen($phone_number)))) {
+            return false;
+        } 
+
         if (strlen($phone_number) != 13) {
             return false;
         }

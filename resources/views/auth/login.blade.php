@@ -18,8 +18,8 @@
                             <div class="mb-3">
                                 <label for="username" class="form-label">Enter Email or Phone number</label>
                                 <input type="text" value="{{ old('username') }}"
-                                    class="form-control @error('username') is-invalid @enderror" id="username" name="username"
-                                    placeholder="Enter email">
+                                    class="form-control @error('username') is-invalid @enderror" id="username"
+                                    name="username" placeholder="Enter email">
 
                                 @if ($errors->has('email'))
                                     @foreach ($errors->get('email') as $message)
@@ -59,6 +59,15 @@
                                 </div>
                             </div>
 
+                            {{-- did you forget password? --}}
+                            <div class="d-flex justify-content-between">
+                                <div></div>
+                                <div>
+                                    <a href="{{ url('password-request') }}" class="text-muted">Forgot password?</a>
+                                </div>
+                            </div>
+
+
                             <div class="mt-4">
                                 <button class="btn btn-success w-100" type="submit">{{ __('Login') }}</button>
                             </div>
@@ -70,8 +79,7 @@
             <!-- end card -->
 
             <div class="mt-4 text-center">
-                <p class="mb-0">Download Agrihub App!<a 
-                        target="_blank"
+                <p class="mb-0">Download Agrihub App!<a target="_blank"
                         href="https://play.google.com/store/apps/details?id=m.omulimisa.uganda"
                         class="fw-semibold text-primary text-decoration-underline"> Now on Playstore </a> </p>
             </div>

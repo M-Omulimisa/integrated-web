@@ -16,8 +16,9 @@
                             @csrf
 
                             <div class="mb-3">
-                                <label for="username" class="form-label">Account Username</label>
-                                <input type="text" value="{{ $username }}" class="form-control" readonly disabled>
+                                <label for="token" class="form-label">Token</label>
+                                <input type="text" name="token" value="{{ $token }}" class="form-control"
+                                    required>
                             </div>
 
                             <div class="mb-3">
@@ -61,7 +62,6 @@
                                     @endif
                                 </div>
                             </div>
-
                             <div class="mt-4">
                                 <button class="btn btn-success w-100" type="submit">{{ __('Login') }}</button>
                             </div>

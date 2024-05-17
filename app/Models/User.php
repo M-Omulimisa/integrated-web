@@ -17,7 +17,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Administrator implements      AuthenticatableContract, JWTSubject
+class User extends Administrator implements AuthenticatableContract, JWTSubject
 {
     use HasFactory, Notifiable, HasRoles, UserRelationship, HasApiTokens;
 
@@ -147,14 +147,14 @@ class User extends Administrator implements      AuthenticatableContract, JWTSub
                 //check if phone number is already registered
                 $user = User::where('phone', $model->phone)->first();
                 if ($user != null && $user->id != $model->id) {
-                    throw new \Exception("Phone number already registered.", 1);
+                    //throw new \Exception("Phone number already registered.", 1);
                 }
             }
             //if email not empty and not null set username to email
             if ($model->email != null && strlen($model->email) > 3) {
                 $model->username = $model->email;
-            } 
-        }); 
+            }
+        });
     }
 
     /**
@@ -218,16 +218,78 @@ class User extends Administrator implements      AuthenticatableContract, JWTSub
     }
 
     //get dropdown list of users
-    public static function getDropDownList($conds){
+    public static function getDropDownList($conds)
+    {
         $users = User::where($conds)->get();
         $list = [];
         foreach ($users as $user) {
             $list[$user->id] = $user->name;
             //check if phone number is set
-            if($user->phone != null && strlen($user->phone) > 3){
+            if ($user->phone != null && strlen($user->phone) > 3) {
                 $list[$user->id] .= " (" . $user->phone . ")";
-            } 
+            }
         }
         return $list;
+    }
+
+    //send password reset link
+    public function sendPasswordReset()
+    {
+
+
+        $email = $this->email;
+        //check if mail is not valid using filter
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $email = $this->username;
+        }
+
+        $token = rand(100000, 999999);
+        $this->reset_password_token = $token;
+        $this->save();
+
+        $phone_num = $this->phone;
+        //prepare
+        $phone_num = Utils::prepare_phone_number($phone_num);
+        //validate
+        if (!Utils::phone_number_is_valid($phone_num)) {
+            $phone_num = $this->phone_number;
+            //prepare
+            $phone_num = Utils::prepare_phone_number($phone_num);
+            //validate
+            if (!Utils::phone_number_is_valid($phone_num)) {
+                $phone_num = null;
+            }
+        }
+
+        if (Utils::phone_number_is_valid($phone_num)) {
+            $sms_message = "Dear {$this->name}, You have requested to reset your password. Please use the TOKEN below to reset your password. {$token}";
+            try {
+                Utils::send_sms($phone_num, $sms_message);
+            } catch (\Throwable $th) {
+            }
+        }
+
+        $link = url('password-reset-link?tok=' . $token);
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $mail_message = <<<EOT
+            <p>Dear {$this->name},</p>
+            <p>You have requested to reset your password. Please use the TOKEN below to reset your password.</p>
+            <p><strong>{$token}</strong></p>
+            <p>Alternatively, you can click on the link below to reset your password.</p>
+            <p><a href="{$link}">{$link}</a></p>
+            <p>Thank you.</p>
+            EOT;
+
+            $data['body'] = $mail_message;
+            //$data['view'] = 'mails/mail-1';
+            $data['data'] = $data['body'];
+            $data['name'] = $this->name;
+            $data['email'] = $email;
+            $data['subject'] = 'Password Reset ' . ' - M-Omulimisa';
+            try {
+                Utils::mail_sender($data);
+            } catch (\Throwable $th) {
+            }
+        }
     }
 }

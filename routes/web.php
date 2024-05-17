@@ -152,6 +152,7 @@ use App\Models\OnlineCourseStudent;
 use App\Models\OnlineCourseStudentBatchImporter;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
+use App\Models\User;
 use App\Models\Utils;
 use App\Models\Weather\WeatherSubscription;
 use App\Traits\Notification;
@@ -190,14 +191,66 @@ Route::get('auth/login', function () {
 Route::post('auth/password-reset-form', function (Request $r) {
     $password = trim($r->password);
     $password_1 = trim($r->password_1);
-    dd($password_1);
-    dd($_POST);    
+
+    //check if passwords match
+    if ($password != $password_1) {
+        return back()
+            ->withErrors(['password' => 'Passwords do not match'])
+            ->withInput();
+    }
+
+    //get reset_password_token from session
+    $reset_password_token = $r->token;
+     //get account
+     $acc = \App\Models\User::where('reset_password_token', $reset_password_token)->first();
+     if ($acc == null) {
+         $message = "Invalid reset password token";
+         return back()->withErrors(['token' => 'Invalid reset password token'])->withInput(); 
+     }
+  
+    if ($reset_password_token == null || strlen($reset_password_token) < 3) {
+        $message = "Invalid reset password token";
+        return back()->withErrors(['password' => 'Invalid reset password token'])->withInput();
+    }
+    //check if password contains a letter and a number
+    if (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+        return back()
+            ->withErrors(['password' => 'Password must contain a letter and a number'])
+            ->withInput();
+    }
+
+    //check if password is at least 5 characters long
+    if (strlen($password) < 5) {
+        return back()
+            ->withErrors(['password' => 'Password must be at least 5 characters long'])
+            ->withInput();
+    }
+
+    //get account
+    $acc = \App\Models\User::where('reset_password_token', $reset_password_token)->first();
+    if ($acc == null) {
+        $message = "Invalid reset password token";
+        die($message);
+    }
+
+    //update password
+    $acc->password = bcrypt($password);
+    $acc->reset_password_token = null;
+    $acc->has_changed_password = 'Yes';
+    $acc->save();
+    //success message in session
+    session()->flash('success', 'Password updated successfully.');
+
+    //login user
+    Auth::login($acc, true);
+    return redirect(url('/'));
 });
+
 
 Route::get('auth/password-reset-form', function () {
     //get reset_password_token from session
     $reset_password_token = session('reset_password_token');
-    if ($reset_password_token == null || strlen($reset_password_token) < 3) {
+    /* if ($reset_password_token == null || strlen($reset_password_token) < 3) {
         $message = "Invalid reset password token";
         die($message);
     }
@@ -212,10 +265,9 @@ Route::get('auth/password-reset-form', function () {
     }
     if ($username == null || strlen($username) < 2) {
         $username = $acc->email;
-    }
+    } */
     return view('auth.password-reset-form', [
-        'acc' => $acc,
-        'username' => $username
+        'token' => $reset_password_token
     ]);
 });
 /* Route::post('auth/login', function () {
@@ -1002,4 +1054,65 @@ Route::group(['middleware' => ['auth', 'otp_verification']], function () {
 
     Route::get('get_dialing_code_by_country', [CountryController::class, 'autoPickDialingCode']);
     Route::get('get-period-by-frequency', [InformationController::class, 'getFrequencyPeriod']);
+});
+
+Route::get('password/reset', function () {
+    return view('auth.password-reset-email-form');
+});
+Route::get('password-request', function () {
+    return view('auth.password-reset-email-form');
+});
+Route::post('password-request', function (Request $r) {
+    $username = trim($r->input('username'));
+
+    $isEmail = filter_var($username, FILTER_VALIDATE_EMAIL);
+    $isPhone = false;
+    $phone = null;
+
+    if (!$isEmail) {
+        $phone = Utils::prepare_phone_number($username);
+        //validate phone
+        $isPhone = Utils::phone_number_is_valid($phone);
+        if (!$isPhone) {
+            return back()
+                ->withErrors(['username' => 'Invalid email or phone number'])
+                ->withInput();
+        }
+    }
+
+    $acc = null;
+    $username = null;
+    if ($isEmail) {
+        $username = trim($r->input('username'));
+    } else {
+        $username = $phone;
+    }
+
+    $acc = User::where('email', $username)->first();
+    if ($acc == null) {
+        $acc = User::where('phone', $username)->first();
+        if ($acc == null) {
+            $acc = User::where('email', $username)->first();
+            if ($acc == null) {
+                $acc = User::where('username', $username)->first();
+            }
+        }
+    }
+    if ($acc == null) {
+        return back()
+            ->withErrors(['username' => 'User not found. Please check your email or phone number.'])
+            ->withInput();
+    }
+
+    $acc->sendPasswordReset();
+    $success = "Password reset link has been sent to your email address. Please check your email.";
+    //session success alert
+    session([
+        'reset_password_token' => $acc->reset_password_token,
+        'success' => $success
+    ]);
+
+    $url = url('auth/password-reset-form');
+    //redirect to auth/password-reset-form
+    return redirect($url);
 });
