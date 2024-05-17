@@ -177,7 +177,7 @@ Route::get('test', function () {
     Utils::renew_messages();
 });
 
-Route::get('password-reset-link', function (Request $r) {
+Route::get('password-reset-link', function (Request $r) { 
     $token = $r->tok;
     session([
         'reset_password_token' => $token,
