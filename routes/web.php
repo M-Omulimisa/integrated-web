@@ -177,6 +177,15 @@ Route::get('test', function () {
     Utils::renew_messages();
 });
 
+Route::get('password-reset-link', function (Request $r) {
+    $token = $r->tok;
+    session([
+        'reset_password_token' => $token,
+    ]);
+    $url = url('auth/password-reset-form');
+    return redirect($url); 
+});
+
 Route::get('auth/login', function () {
     $u = Admin::user();
     if ($u != null) {
@@ -201,13 +210,13 @@ Route::post('auth/password-reset-form', function (Request $r) {
 
     //get reset_password_token from session
     $reset_password_token = $r->token;
-     //get account
-     $acc = \App\Models\User::where('reset_password_token', $reset_password_token)->first();
-     if ($acc == null) {
-         $message = "Invalid reset password token";
-         return back()->withErrors(['token' => 'Invalid reset password token'])->withInput(); 
-     }
-  
+    //get account
+    $acc = \App\Models\User::where('reset_password_token', $reset_password_token)->first();
+    if ($acc == null) {
+        $message = "Invalid reset password token";
+        return back()->withErrors(['token' => 'Invalid reset password token'])->withInput();
+    }
+
     if ($reset_password_token == null || strlen($reset_password_token) < 3) {
         $message = "Invalid reset password token";
         return back()->withErrors(['password' => 'Invalid reset password token'])->withInput();
