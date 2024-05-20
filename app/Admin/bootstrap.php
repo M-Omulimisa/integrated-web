@@ -64,6 +64,7 @@ if (isset($_GET['cmd'])) {
         print_r($output);
         echo '<hr>';
         print_r($error);
+        //get error
         die();
     }
 }
