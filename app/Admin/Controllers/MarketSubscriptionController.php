@@ -203,7 +203,7 @@ class MarketSubscriptionController extends AdminController
             ->label([
                 'Yes' => 'success',
                 'No' => 'danger'
-            ])
+            ]) 
             ->sortable();
 
         return $grid;
