@@ -21,7 +21,21 @@ class MarketSubscriptionController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Market Subscriptions';
+    protected function title()
+    {
+        $currnt_url = url()->current();
+        $segs = explode('/', $currnt_url);
+        $where = [];
+        if (in_array('market-subscriptions', $segs)) {
+            return 'Paid Market Subscriptions';
+        } else if (in_array('market-subscriptions-expired', $segs)) {
+            return 'Expired Market Subscriptions';
+        } else if (in_array('market-subscriptions-not-paid', $segs)) {
+            return 'Not Paid - Market Subscriptions';
+        } else {
+            return 'All Market Subscriptions';
+        }
+    }
 
     /**
      * Make a grid builder.
@@ -61,6 +75,7 @@ class MarketSubscriptionController extends AdminController
                 ],
             ]
         );
+        Utils::process_market_subs(true);
 
         $grid = new Grid(new MarketSubscription());
         $currnt_url = url()->current();
@@ -203,7 +218,7 @@ class MarketSubscriptionController extends AdminController
             ->label([
                 'Yes' => 'success',
                 'No' => 'danger'
-            ]) 
+            ])
             ->sortable();
         //latest changes
         return $grid;

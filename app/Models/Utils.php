@@ -31,6 +31,7 @@ class Utils
 
     public static function system_boot()
     {
+        self::process_market_subs(false);
         $farmers = Farmer::where('user_account_processed', '!=', 'Yes')->get();
         foreach ($farmers as $key => $value) {
             if ($key > 100) {
@@ -263,7 +264,7 @@ class Utils
         //check if contains numbers only
         if (!ctype_digit(substr($phone_number, 1, strlen($phone_number)))) {
             return false;
-        } 
+        }
 
         if (strlen($phone_number) != 13) {
             return false;
@@ -1273,5 +1274,17 @@ class Utils
         }
     }
 
-   
+    public static function process_market_subs($process_all)
+    {
+        $subs = [];
+        if($process_all){
+            MarketSubscription::where([])->get();
+        }else{
+            MarketSubscription::where('is_processed', '!=', 'Yes')->get();
+        }
+        $data = [];
+        foreach ($subs as $key => $sub) {
+            $sub->process_subscription();
+        }
+    }
 }

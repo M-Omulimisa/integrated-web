@@ -269,7 +269,7 @@ class MarketSubscription extends BaseModel
 
     public function getStatusAttribute($value)
     {
-        
+
         if ($this->MNOTransactionReferenceId == null || strlen($this->MNOTransactionReferenceId) < 3) {
             $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
             if ($rec != null) {
@@ -288,7 +288,7 @@ class MarketSubscription extends BaseModel
                 $this->TransactionCompletionDate = $rec->updated_at;
                 $this->total_price = $rec->amount;
                 $this->save();
-            } 
+            }
         }
 
         $now = Carbon::now();
@@ -315,7 +315,7 @@ class MarketSubscription extends BaseModel
 
         if ($value == 1) {
             return 1;
-        } 
+        }
         return 0;
     }
 
@@ -366,5 +366,54 @@ class MarketSubscription extends BaseModel
             $this->renew_message_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
             $this->save();
         }
+    }
+
+    public function process_subscription()
+    {
+        $has_paid = false;
+        if ($this->is_paid != 'PAID') {
+            if (strtoupper($this->TransactionStatus) != 'SUCCEEDED') {
+                if ($this->MNOTransactionReferenceId != null) {
+                    if (strlen($this->MNOTransactionReferenceId) > 3) {
+                        $has_paid = true;
+                    }
+                }
+            }
+            if (strtoupper($this->TransactionStatus) != 'SUCCEEDED') {
+                $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
+                if ($rec != null) {
+                    if ($rec->status == 'SUCCESSFUL') {
+                        $this->is_paid = 'PAID';
+                    } else {
+                        $this->is_paid = 'NOT PAID';
+                    }
+                    $this->MNOTransactionReferenceId = $rec->reference_id;
+                    $this->TransactionReference = $rec->reference;
+                    $this->payment_reference_id = $rec->id;
+                    $this->TransactionStatus = $rec->status;
+                    $this->TransactionAmount = $rec->amount;
+                    $this->TransactionCurrencyCode = 'UGX';
+                    $this->TransactionInitiationDate = $rec->created_at;
+                    $this->TransactionCompletionDate = $rec->updated_at;
+                    $this->total_price = $rec->amount;
+                    $has_paid = true;
+                }
+            }
+        }
+
+
+        if ($has_paid) {
+            $this->is_paid = 'PAID';
+        }
+        $created_time = Carbon::parse($this->created_at);
+        $this->start_date = $created_time;
+        $now = Carbon::now();
+        if ($now->gt($this->end_date)) {
+            $this->status = 0;
+        } else {
+            $this->status = 1;
+        }
+        $this->is_processed = 'Yes';
+        $this->save();
     }
 }
