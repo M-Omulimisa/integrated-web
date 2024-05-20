@@ -52,6 +52,9 @@ Route::group([
     $router->resource('market-package-messages', MartketPackageMessageController::class);
     $router->resource('enterprises', EnterpriseController::class);
     $router->resource('market-subscriptions', MarketSubscriptionController::class);
+    $router->resource('market-subscriptions-expired', MarketSubscriptionController::class);
+    $router->resource('market-subscriptions-not-paid', MarketSubscriptionController::class);
+    $router->resource('market-subscriptions-all', MarketSubscriptionController::class);
     $router->resource('market-outboxes', MarketOutboxController::class);
     $router->resource('subscription-payments', SubscriptionPaymentController::class);
     $router->resource('weather-conditions', WeatherConditionController::class);

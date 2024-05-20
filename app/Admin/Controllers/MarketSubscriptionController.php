@@ -12,6 +12,7 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Schema;
 
 class MarketSubscriptionController extends AdminController
 {
@@ -29,6 +30,8 @@ class MarketSubscriptionController extends AdminController
      */
     protected function grid()
     {
+        //$colls_of_table = Schema::getColumnListing((new MarketSubscription())->getTable());
+        //dd($colls_of_table);
         Utils::create_column(
             (new MarketSubscription())->getTable(),
             [
@@ -47,8 +50,35 @@ class MarketSubscriptionController extends AdminController
                 ],
             ]
         );
+
+        Utils::create_column(
+            (new MarketSubscription())->getTable(),
+            [
+                [
+                    'name' => 'is_processed',
+                    'type' => 'String',
+                    'default' => 'No',
+                ],
+            ]
+        );
+
         $grid = new Grid(new MarketSubscription());
-        $grid->model()->orderBy('created_at', 'desc');
+        $currnt_url = url()->current();
+        $segs = explode('/', $currnt_url);
+        $where = [];
+        if (in_array('market-subscriptions', $segs)) {
+            $where['is_paid'] = 'PAID';
+            $where['status'] = 1;
+        } else if (in_array('market-subscriptions-expired', $segs)) {
+            $where['is_paid'] = 'PAID';
+            $where['status'] = 0;
+        } else if (in_array('market-subscriptions-not-paid', $segs)) {
+            $where['is_paid'] = 'NOT PAID';
+            $where['status'] = 0;
+        }
+        $grid->model()
+            ->where($where)
+            ->orderBy('created_at', 'desc');
         $grid->quickSearch('phone')->placeholder('Search first name...');
         /*         $grid->column('language_id', __('Language id'));
         $grid->column('location_id', __('Location id'));
@@ -319,10 +349,15 @@ class MarketSubscriptionController extends AdminController
                 $form->datetime('TransactionInitiationDate', __('Transaction Initiation Date'));
                 $form->datetime('TransactionCompletionDate', __('Transaction Completion Date'));
             });
-        $form->radio('status', __('Status'))
+        /* $form->radio('status', __('Status'))
             ->options([
                 1 => 'Active',
                 0 => 'Not Active',
+            ]); */
+        $form->radio('is_processed', __('Record is processed'))
+            ->options([
+                'Yes' => 'Yes',
+                'No' => 'No',
             ]);
 
         $form->disableCreatingCheck();
