@@ -198,6 +198,13 @@ class MarketSubscriptionController extends AdminController
         $grid->column('TransactionReference', __('Transaction Reference'))->hide();
         $grid->column('TransactionInitiationDate', __('Transaction Initiation Date'))->hide();
         $grid->column('TransactionCompletionDate', __('Transaction Completion Date'))->hide();
+        $grid->column('is_processed', __('Is Processed'))
+            ->hide()
+            ->label([
+                'Yes' => 'success',
+                'No' => 'danger'
+            ])
+            ->sortable();
 
         return $grid;
     }
