@@ -156,6 +156,7 @@ use App\Models\User;
 use App\Models\Utils;
 use App\Models\Weather\WeatherSubscription;
 use App\Traits\Notification;
+use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
@@ -359,8 +360,12 @@ Route::get('market-info-message-campaigns-send-now', function () {
             echo "$i. Invalid phone number: $recipient <br>";
             continue;
         }
+        if ($outbox->status == 'Sent') {
+            continue;
+        }
         Utils::send_sms($recipient, $outbox->message);
         $outbox->status = 'Sent';
+        $outbox->sent_at = Carbon::now(); 
         $outbox->save();
         echo "$i. Successfully sent to $recipient <br>";
     }

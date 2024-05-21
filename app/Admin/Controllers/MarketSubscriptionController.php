@@ -238,7 +238,7 @@ class MarketSubscriptionController extends AdminController
             });
         $grid->column('pre_renew_message_sent_details', __('Pre-Renew Alert Sent Details'))->sortable()
             ->limit(20);
- 
+
         return $grid;
     }
 
@@ -389,7 +389,7 @@ class MarketSubscriptionController extends AdminController
                 'No' => 'No',
             ])
             ->when('Yes', function ($form) {
-                $form->divider();
+                $form->divider('Test Record');
                 $form->radio('status', __('Status'))
                     ->options([
                         1 => 'Active',
@@ -411,8 +411,8 @@ class MarketSubscriptionController extends AdminController
                     ]);
                 $form->date('pre_renew_message_sent_at', __('Pre renew message sent at'));
                 $form->text('pre_renew_message_sent_details', __('Pre renew message_sent details'));
-                $form->divider();
 
+                $form->divider('Renewal Message');
                 $form->radio('renew_message_sent', __('Renew message sent'))
                     ->options([
                         'Yes' => 'Yes',
@@ -420,6 +420,14 @@ class MarketSubscriptionController extends AdminController
                     ]);
                 $form->date('renew_message_sent_at', __('renew message sent at'));
                 $form->text('renew_message_sent_details', __('Renew message_sent details'));
+                $form->divider('Welcome Message');
+                $form->radio('welcome_msg_sent', __('Welcome message sent'))
+                    ->options([
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                    ]);
+                $form->date('welcome_msg_sent_at', __('Welcome message sent at'));
+                $form->text('welcome_msg_sent_details', __('Welcome message_sent details'));
             })->rules();
         /* 
   0 => "id"

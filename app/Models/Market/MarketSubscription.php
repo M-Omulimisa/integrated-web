@@ -358,58 +358,73 @@ class MarketSubscription extends BaseModel
 
 
         $now = Carbon::now();
-
-        if (!$now->gt($end_date)) {
-            return;
+        $end_date = Carbon::parse($this->end_date);
+        if ($this->is_paid == 'PAID' && ($now->lt($end_date)) && $this->renew_message_sent != 'Yes') {
+            $phone = Utils::prepare_phone_number($this->phone);
+            $msg = "Your M-Omulimisa market information subscription for the package: {$this->package->name} information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+            try {
+                Utils::send_sms($phone, $msg);
+                $this->renew_message_sent = 'Yes';
+                $this->renew_message_sent_at = Carbon::now();
+                $this->renew_message_sent_details = 'Message sent to ' . $phone;
+                $this->save();
+            } catch (\Throwable $th) {
+                $this->renew_message_sent = 'Failed';
+                $this->renew_message_sent_at = Carbon::now();
+                $this->renew_message_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+                $this->save();
+            }
         }
+        $created_date = Carbon::parse($this->created_at);
 
-        if ($this->is_paid != 'PAID') {
-            return;
-        }
 
-        $phone = Utils::prepare_phone_number($this->phone);
-        //last subscription
-        $last_subscription = MarketSubscription::where([
-            'phone' => $phone,
-            'renew_message_sent' => 'Yes'
-        ])->orderBy('created_at', 'desc')->first();
+        //welcome_msg_sent
+        if ($now->lt($end_date) && $now->gt($created_date) && $this->is_paid == 'PAID') {
 
-        /* if ($last_subscription != null) {
-            if ($last_subscription->renew_message_sent_at != null) {
-                $t = null;
-                try {
-                    $t = Carbon::parse($last_subscription->renew_message_sent_at);
-                } catch (\Throwable $th) {
-                    $t = null;
-                }
-                if ($t != null) {
-                    $now = Carbon::now();
-                    $diff = $now->diffInDays($t);
-                    if ($diff < 1) {
-                        $this->renew_message_sent = 'Skipped';
-                        $this->renew_message_sent_at = $now;
-                        $this->renew_message_sent_details = 'Already sent a message to this number: ' . $phone . ' within 24 hours. Ref: ' . $last_subscription->id;
-                        $this->save();
-                        return;
+
+            $diff = $now->diffInDays($created_date);
+            $diff = abs($diff);
+            if ($diff > 3) {
+                $this->welcome_msg_sent = 'Skipped';
+                $this->welcome_msg_sent_at = Carbon::now();
+                $this->welcome_msg_sent_details = 'Skipped because the subscription is older than 3 days. (Days: ' . $diff . ')';
+                $this->save();
+            } else {
+                if ($this->welcome_msg_sent != 'Yes' && $this->welcome_msg_sent != 'Skipped') {
+                    $this->welcome_msg_sent = 'Yes';
+                    $this->welcome_msg_sent_at = Carbon::now();
+                    $this->welcome_msg_sent_details = 'Message sent to ' . $this->phone;
+                    $this->save();
+                    self::send_weldome_message($this);
+
+                    $msg = MarketPackageMessage::where([
+                        'package_id' => $this->package_id,
+                    ])
+                        ->orderBy('created_at', 'desc')
+                        ->first();
+                    if ($msg != null) {
+                        MarketPackageMessage::prepareMessages($msg);
+                        $outbox = MarketOutbox::where([
+                            'subscription_id' => $this->id,
+                        ])
+                            ->orderBy('created_at', 'desc')
+                            ->first();
+                        if ($outbox != null) {
+                            $recipient = Utils::prepare_phone_number($outbox->recipient);
+                            if (!Utils::phone_number_is_valid($recipient)) {
+                                $outbox->status = 'Failed';
+                                $outbox->failure_reason = "Invalid phone number";
+                                $outbox->save();
+                            } else {
+                                $outbox->status = 'Sent';
+                                Utils::send_sms($recipient, $outbox->message);
+                                $outbox->sent_at = Carbon::now();
+                                $outbox->save();
+                            }
+                        }
                     }
                 }
             }
-        } */
-        if ($this->renew_message_sent == 'Yes') {
-            return;
-        }
-        $msg = "Your M-Omulimisa market information subscription for the package: {$this->package->name} information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
-        try {
-            Utils::send_sms($phone, $msg);
-            $this->renew_message_sent = 'Yes';
-            $this->renew_message_sent_at = Carbon::now();
-            $this->renew_message_sent_details = 'Message sent to ' . $phone;
-            $this->save();
-        } catch (\Throwable $th) {
-            $this->renew_message_sent = 'Failed';
-            $this->renew_message_sent_at = Carbon::now();
-            $this->renew_message_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
-            $this->save();
         }
     }
 
