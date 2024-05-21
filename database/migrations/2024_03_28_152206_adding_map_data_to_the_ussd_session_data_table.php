@@ -14,7 +14,7 @@ class AddingMapDataToTheUssdSessionDataTable extends Migration
     public function up()
     {
         Schema::table('ussd_session_data', function (Blueprint $table) {
-            $table->json('option_mappings')->nullable();
+            $table->text('option_mappings')->nullable();
         });
     }
 
