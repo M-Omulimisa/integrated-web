@@ -177,6 +177,10 @@ Route::get('test', function () {
     Utils::renew_messages();
 });
 Route::get('boot-system', function () {
+    $m = MarketSubscription::find('82b28464-c790-41ed-b652-25ee7617350f');
+    $m->send_renew_message();
+    die();
+    Utils::renew_messages(true);
     Utils::process_market_subs(true);
     die("done processing");
 });
@@ -1121,7 +1125,7 @@ Route::post('password-request', function (Request $r) {
     $success = "Password reset link has been sent to your email address. Please check your email.";
     //session success alert
     session([
-        'reset_password_token' => $acc->reset_password_token,
+        'reset_password_token' => null,
         'success' => $success
     ]);
 

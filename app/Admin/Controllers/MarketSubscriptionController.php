@@ -186,12 +186,7 @@ class MarketSubscriptionController extends AdminController
                 return Utils::my_date($created_at);
             });
         $grid->column('renew_message_sent_details', __('Renew Alert Sent Details'))->sortable()
-            ->display(function ($created_at) {
-                if ($created_at == null) {
-                    return '-';
-                }
-                return ($created_at);
-            })->limit(20);
+            ->limit(20);
         $grid->column('created_at', __('Created'))->sortable()
             ->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
@@ -220,7 +215,30 @@ class MarketSubscriptionController extends AdminController
                 'No' => 'danger'
             ])
             ->sortable();
-        //latest changes
+
+
+        $grid->column('pre_renew_message_sent', __('PRE-Renew alert sent'))
+            ->sortable()
+            ->dot([
+                'Yes' => 'success',
+                'Skipped' => 'warning',
+                'No' => 'danger',
+                'Failed' => 'danger'
+            ])
+            ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No']);
+
+
+
+        $grid->column('pre_renew_message_sent_at', __('Pre-Renew Alert sent at'))->sortable()
+            ->display(function ($created_at) {
+                if ($created_at == null) {
+                    return '-';
+                }
+                return Utils::my_date($created_at);
+            });
+        $grid->column('pre_renew_message_sent_details', __('Pre-Renew Alert Sent Details'))->sortable()
+            ->limit(20);
+ 
         return $grid;
     }
 
@@ -310,14 +328,7 @@ class MarketSubscriptionController extends AdminController
             ->rules('required');
         $form->decimal('period_paid', __('Period Paid'))->rules('required');
 
-        if ($form->isEditing()) {
-            $form->date('start_date', __('Start date'))
-                ->readonly();
-            $form->date('end_date', __('End date'))
-                ->readonly();
-            $form->hidden('status', __('Status'))
-                ->default(1);
-        }
+
         $u = Admin::user();
         $form->hidden('farmer_id', __('Farmer_id'))
             ->rules('required')
@@ -371,16 +382,92 @@ class MarketSubscriptionController extends AdminController
                 $form->datetime('TransactionInitiationDate', __('Transaction Initiation Date'));
                 $form->datetime('TransactionCompletionDate', __('Transaction Completion Date'));
             });
-        /* $form->radio('status', __('Status'))
-            ->options([
-                1 => 'Active',
-                0 => 'Not Active',
-            ]); */
-        $form->radio('is_processed', __('Record is processed'))
+
+        $form->radio('is_test', __('IS TEST RECORD'))
             ->options([
                 'Yes' => 'Yes',
                 'No' => 'No',
-            ]);
+            ])
+            ->when('Yes', function ($form) {
+                $form->divider();
+                $form->radio('status', __('Status'))
+                    ->options([
+                        1 => 'Active',
+                        0 => 'Not Active',
+                    ]);
+                $form->radio('is_processed', __('Record is processed'))
+                    ->options([
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                    ]);
+
+                $form->date('start_date', __('Start date'));
+                $form->date('end_date', __('End date'));
+                $form->divider();
+                $form->radio('pre_renew_message_sent', __('Pre-renew message sent'))
+                    ->options([
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                    ]);
+                $form->date('pre_renew_message_sent_at', __('Pre renew message sent at'));
+                $form->text('pre_renew_message_sent_details', __('Pre renew message_sent details'));
+                $form->divider();
+
+                $form->radio('renew_message_sent', __('Renew message sent'))
+                    ->options([
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                    ]);
+                $form->date('renew_message_sent_at', __('renew message sent at'));
+                $form->text('renew_message_sent_details', __('Renew message_sent details'));
+            })->rules();
+        /* 
+  0 => "id"
+  1 => "farmer_id"
+  2 => "language_id"
+  3 => "location_id"
+  4 => "district_id"
+  5 => "subcounty_id"
+  6 => "parish_id"
+  7 => "first_name"
+  8 => "last_name"
+  9 => "email"
+  10 => "frequency"
+  11 => "period_paid"
+  12 => "start_date"
+  13 => "end_date"
+  14 => "status"
+  15 => "user_id"
+  16 => "outbox_generation_status"
+  17 => "outbox_reset_status"
+  18 => "outbox_last_date"
+  19 => "seen_by_admin"
+  20 => "trial_expiry_sms_sent_at"
+  21 => "trial_expiry_sms_failure_reason"
+  22 => "renewal_id"
+  23 => "organisation_id"
+  24 => "package_id"
+  25 => "created_at"
+  26 => "updated_at"
+  27 => "phone"
+  28 => "region_id"
+  29 => "payment_id"
+  30 => "outbox_count"
+  31 => "MNOTransactionReferenceId"
+  32 => "payment_reference_id"
+  33 => "TransactionStatus"
+  34 => "TransactionAmount"
+  35 => "TransactionCurrencyCode"
+  36 => "TransactionReference"
+  37 => "TransactionInitiationDate"
+  38 => "TransactionCompletionDate"
+  39 => "is_paid"
+  40 => "total_price"
+
+  44 => "is_processed"
+  45 => "is_test"
+
+*/
 
         $form->disableCreatingCheck();
         return $form;

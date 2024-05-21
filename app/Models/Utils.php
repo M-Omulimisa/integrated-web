@@ -32,6 +32,7 @@ class Utils
     public static function system_boot()
     {
         self::process_market_subs(false);
+        self::renew_messages();
         $farmers = Farmer::where('user_account_processed', '!=', 'Yes')->get();
         foreach ($farmers as $key => $value) {
             if ($key > 100) {
@@ -39,26 +40,26 @@ class Utils
             }
             Farmer::process($value);
         }
-        self::renew_messages();
     }
 
     public static function renew_messages()
     {
-        foreach (MarketSubscription::where(['renew_message_sent' => 'No', 'status' => 0])
+        foreach (MarketSubscription::where([/* 'renew_message_sent' => 'No' */])
             ->orderBy('created_at', 'desc')
             ->get() as $key => $value) {
-            if ($key > 100) {
+            if ($key > 1000) {
                 break;
             }
             $value->send_renew_message();
         }
-        foreach (WeatherSubscription::where(['renew_message_sent' => 'No', 'status' => 0])
+
+        foreach (WeatherSubscription::where(['renew_message_sent' => 'No'])
             ->orderBy('created_at', 'desc')
             ->get() as $key => $value) {
-            if ($key > 100) {
+            if ($key > 1000) {
                 break;
             }
-            $value->send_renew_message();
+            //$value->send_renew_message();
         }
     }
     public static function greet()
@@ -1277,9 +1278,9 @@ class Utils
     public static function process_market_subs($process_all)
     {
         $subs = [];
-        if($process_all){
+        if ($process_all) {
             MarketSubscription::where([])->get();
-        }else{
+        } else {
             MarketSubscription::where('is_processed', '!=', 'Yes')->get();
         }
         $data = [];

@@ -63,43 +63,45 @@ class MarketSubscription extends BaseModel
         self::updating(function (MarketSubscription $model) {
             return self::prepare($model);
         });
-
-        //created
-        self::created(function (MarketSubscription $model) {
-            $u = User::find($model->farmer_id);
-            if ($u == null) {
-                $u = User::find($model->user_id);
-            }
-            $name = $model->first_name;
-            $phone = $model->phone;
-            if ($u != null) {
-                $name = $u->name;
-            }
-
-            //welcome message for subscription to market
-            $msg = "You have successfully subscribed to the market. You will now receive market updates. Thank you for subscribing.";
-            try {
-                Utils::send_sms($phone, $msg);
-            } catch (\Throwable $th) {
-                //throw $th;
-            }
-            if ($u != null) {
-                try {
-                    Utils::sendNotification2([
-                        'msg' => $msg,
-                        'headings' => 'Market Subscription',
-                        'receiver' => $u->id,
-                        'type' => 'text',
-                    ]);
-                } catch (\Throwable $th) {
-                }
-            }
-        });
     }
 
     //prepre
+    public static  function send_weldome_message($model)
+    {
+        $u = User::find($model->farmer_id);
+        if ($u == null) {
+            $u = User::find($model->user_id);
+        }
+        $name = $model->first_name;
+        $phone = $model->phone;
+        if ($u != null) {
+            $name = $u->name;
+        }
+
+        //welcome message for subscription to market
+        $msg = "You have successfully subscribed to the market. You will now receive market updates. Thank you for subscribing.";
+        try {
+            Utils::send_sms($phone, $msg);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+        if ($u != null) {
+            try {
+                Utils::sendNotification2([
+                    'msg' => $msg,
+                    'headings' => 'Market Subscription',
+                    'receiver' => $u->id,
+                    'type' => 'text',
+                ]);
+            } catch (\Throwable $th) {
+            }
+        }
+    }
     public static function prepare($m)
     {
+        if ($m->is_test == 'Yes') {
+            return;
+        }
         $frequencies =  ['trial' => 'trial', 'daily' => 'daily', 'weekly' => 'weekly', 'monthly' => 'monthly', 'yearly' => 'yearly'];
         $frequency_text = "";
         $frequency = null;
@@ -322,16 +324,57 @@ class MarketSubscription extends BaseModel
 
     public function send_renew_message()
     {
-        if ($this->status != 0) {
+        if ($this->end_date == null || strlen($this->end_date) < 4) {
             return;
         }
+        $end_date = Carbon::parse($this->end_date);
+        if ($this->status == 1) {
+            $now = Carbon::now();
+            if ($now->lt($end_date)) {
+                $diff = $now->diffInDays($end_date);
+                $diff = abs($diff);
+                if ($diff < 4) {
+                    if ($this->is_paid == 'PAID') {
+                        if ($this->pre_renew_message_sent != 'Yes') {
+                            $msg = "Your M-Omulimiasa market information subscription for package: {$this->package->name} will expire in next $diff days, Please renew now to avoid disconnection.";
+                            $phone = Utils::prepare_phone_number($this->phone);
+                            try {
+                                Utils::send_sms($phone, $msg);
+                                $this->pre_renew_message_sent = 'Yes';
+                                $this->pre_renew_message_sent_at = Carbon::now();
+                                $this->pre_renew_message_sent_details = $msg . ' - Message sent to ' . $phone;
+                                $this->save();
+                            } catch (\Throwable $th) {
+                                $this->pre_renew_message_sent = 'Failed';
+                                $this->pre_renew_message_sent_at = Carbon::now();
+                                $this->pre_renew_message_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+                                $this->save();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        $now = Carbon::now();
+
+        if (!$now->gt($end_date)) {
+            return;
+        }
+
+        if ($this->is_paid != 'PAID') {
+            return;
+        }
+
         $phone = Utils::prepare_phone_number($this->phone);
         //last subscription
         $last_subscription = MarketSubscription::where([
             'phone' => $phone,
             'renew_message_sent' => 'Yes'
         ])->orderBy('created_at', 'desc')->first();
-        if ($last_subscription != null) {
+
+        /* if ($last_subscription != null) {
             if ($last_subscription->renew_message_sent_at != null) {
                 $t = null;
                 try {
@@ -351,9 +394,11 @@ class MarketSubscription extends BaseModel
                     }
                 }
             }
+        } */
+        if ($this->renew_message_sent == 'Yes') {
+            return;
         }
-
-        $msg = "Your M-Omulimisa subscription to the market information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+        $msg = "Your M-Omulimisa market information subscription for the package: {$this->package->name} information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
         try {
             Utils::send_sms($phone, $msg);
             $this->renew_message_sent = 'Yes';
