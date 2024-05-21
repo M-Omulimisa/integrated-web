@@ -15,7 +15,7 @@ class AddLanguageIdToUssdSessionsTable extends Migration
     {
         Schema::table('ussd_sessions', function (Blueprint $table) {
             
-            $table->json('data')->nullable()->after('last_menu');
+            $table->text('data')->nullable()->after('last_menu');
         });
     }
 
