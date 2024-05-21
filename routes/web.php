@@ -178,9 +178,8 @@ Route::get('test', function () {
     Utils::renew_messages();
 });
 Route::get('boot-system', function () {
-    $m = MarketSubscription::find('82b28464-c790-41ed-b652-25ee7617350f');
-    $m->send_renew_message();
-    die();
+    //$m = MarketSubscription::find('82b28464-c790-41ed-b652-25ee7617350f');
+    //$m->send_renew_message();
     Utils::renew_messages(true);
     Utils::process_market_subs(true);
     die("done processing");
