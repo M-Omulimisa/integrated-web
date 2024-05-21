@@ -183,7 +183,7 @@ Route::get('boot-system', function () {
     Utils::renew_messages(true);
     Utils::process_market_subs(true);
     Utils::system_boot(); 
-    die("done processing");
+    die("done processing.");
 });
 
 Route::get('password-reset-link', function (Request $r) {
