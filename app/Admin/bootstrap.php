@@ -216,7 +216,7 @@ die();
      //throw $th;
      die($th->getMessage()); 
  } */
-Utils::system_boot();
+//Utils::system_boot();
 //disable delete from all forms
 Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
     $form->tools(function (Tools $tools) {
