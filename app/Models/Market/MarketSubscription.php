@@ -336,7 +336,7 @@ class MarketSubscription extends BaseModel
                 if ($diff < 4) {
                     if ($this->is_paid == 'PAID') {
                         if ($this->pre_renew_message_sent != 'Yes') {
-                            $msg = "Your M-Omulimiasa market information subscription for package: {$this->package->name} will expire in next $diff days, Please renew now to avoid disconnection.";
+                            $msg = "Your M-Omulimiasa market information subscription for {$this->package->name} will expire in next $diff days, Please renew now to avoid disconnection.";
                             $phone = Utils::prepare_phone_number($this->phone);
                             try {
                                 Utils::send_sms($phone, $msg);
@@ -361,7 +361,7 @@ class MarketSubscription extends BaseModel
         $end_date = Carbon::parse($this->end_date);
         if ($this->is_paid == 'PAID' && ($now->lt($end_date)) && $this->renew_message_sent != 'Yes') {
             $phone = Utils::prepare_phone_number($this->phone);
-            $msg = "Your M-Omulimisa market information subscription for the package: {$this->package->name} information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+            $msg = "Your M-Omulimisa market information subscription for the {$this->package->name} information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
             try {
                 Utils::send_sms($phone, $msg);
                 $this->renew_message_sent = 'Yes';

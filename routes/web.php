@@ -182,6 +182,7 @@ Route::get('boot-system', function () {
     //$m->send_renew_message();
     Utils::renew_messages(true);
     Utils::process_market_subs(true);
+    Utils::system_boot(); 
     die("done processing");
 });
 
