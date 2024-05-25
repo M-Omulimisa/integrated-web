@@ -47,18 +47,18 @@ class ProcessMarketSubscriptionPayment extends Command
     public function handle()
     {
         $payments = SubscriptionPayment::whereStatus('INITIATED')
-                                        ->whereNotNull('market_session_id')
-                                        ->whereNotNull('payment_api')
-                                        ->whereNotNull('reference_id')
-                                        ->whereIn('provider',function($query) {
-                                            $query->select('name')->from(with(new CountryProvider)->getTable());
-                                        })
-                                        ->orWhere('status', 'PENDING')
-                                        ->whereNotNull('market_session_id')
-                                        ->whereNotNull('reference')
-                                        ->get();
+            ->whereNotNull('market_session_id')
+            ->whereNotNull('payment_api')
+            ->whereNotNull('reference_id')
+            ->whereIn('provider', function ($query) {
+                $query->select('name')->from(with(new CountryProvider)->getTable());
+            })
+            ->orWhere('status', 'PENDING')
+            ->whereNotNull('market_session_id')
+            ->whereNotNull('reference')
+            ->get();
 
-        if ($this->debug) logger('count: '.count($payments));
+        if ($this->debug) logger('count: ' . count($payments));
 
         if (count($payments) > 0) {
 
@@ -76,22 +76,21 @@ class ProcessMarketSubscriptionPayment extends Command
                     $service->set_username();
                     $service->set_password();
 
-                    if ($initial_status=="INITIATED") {
+                    if ($initial_status == "INITIATED") {
                         $response = $service->depositFunds($payment->account, $payment->amount, $payment->narrative, $payment->reference_id);
-                    }
-                    elseif ($initial_status=="PENDING") {
+                    } elseif ($initial_status == "PENDING") {
                         $response = $service->getTransactionStatus($payment->reference);
                     }
 
-                    if(isset($response) && $response->Status=='OK'){
+                    if (isset($response) && $response->Status == 'OK') {
                         $new_status = $response->TransactionStatus === "SUCCEEDED" ? 'SUCCESSFUL' : $response->TransactionStatus;
                         $update = $payment->update(['status' => $new_status]);
 
-                        if(is_null($payment->reference)) $payment->update(['reference' => $response->TransactionReference]);
+                        if (is_null($payment->reference)) $payment->update(['reference' => $response->TransactionReference]);
 
                         if ($response->TransactionStatus === "SUCCEEDED" || $response->TransactionStatus === "SUCCESSFUL") {
 
-                            if ($payment->tool=="USSD") {
+                            if ($payment->tool == "USSD") {
                                 if ($session = UssdSessionData::whereId($payment->market_session_id)->first()) {
 
                                     $data = [
@@ -111,50 +110,41 @@ class ProcessMarketSubscriptionPayment extends Command
 
                             // TODO for App & Web
 
-                            if (isset($data) && $data) {                               
+                            if (isset($data) && $data) {
 
                                 // Subscription already exists -- Payment has been reset
                                 if ($subscription = MarketSubscription::wherePaymentId($payment->id)->first()) {
                                     $subscription->update($data);
-                                }
-                                else{
-                                    $subscription = MarketSubscription::create($data);                                    
+                                } else {
+                                    $subscription = MarketSubscription::create($data);
                                 }
 
                                 if ($subscription) {
-                                    $message = "Hello, your market info subscription worth UGX ".number_format($payment->amount).", ".$subscription->frequency."(".$subscription->period_paid.") was successful. Thank you. M-Omulimisa";  
-                                    $recipient = $subscription->phone;                                  
                                 }
+                            } else {
+                                logger(['ProcessMarketSubscriptionPayment' => 'No session found for TxnID: ' . $payment->id]);
                             }
-                            else{
-                                logger(['ProcessMarketSubscriptionPayment' => 'No session found for TxnID: '.$payment->id]);
-                            }
+                        } elseif ($response->TransactionStatus === "FAILED") {
                         }
-                        elseif ($response->TransactionStatus === "FAILED") {
-                            $message = "Hello, your market info subscription worth UGX ".number_format($payment->amount)." failed. Please try again. M-Omulimisa";
-                            $recipient = $payment->account;
-                        }
-                        
-                        if (!$update) logger(['ProcessMarketSubscriptionPayment' => 'Not updating for TxnID: '.$payment->id]);
-                    }
-                    elseif(isset($response)) {
-                        $new_status = isset($response->TransactionStatus) && $response->TransactionStatus!='' ? $response->TransactionStatus : 'FAILED';
+
+                        if (!$update) logger(['ProcessMarketSubscriptionPayment' => 'Not updating for TxnID: ' . $payment->id]);
+                    } elseif (isset($response)) {
+                        $new_status = isset($response->TransactionStatus) && $response->TransactionStatus != '' ? $response->TransactionStatus : 'FAILED';
 
                         $payment->update([
-                            'status'        => $new_status, 
+                            'status'        => $new_status,
                             'error_message' => $response->StatusMessage
                         ]);
 
                         if ($this->debug) logger($response->StatusMessage);
 
                         if ($new_status === "FAILED") {
-                            $message = "Hello, your market info subscription worth UGX ".number_format($payment->amount)." failed. Please try again. M-Omulimisa";
+                            $message = "Hello, your market info subscription worth UGX " . number_format($payment->amount) . " failed. Please try again. M-Omulimisa";
                             $recipient = $payment->account;
-                            logger(['UpdateMarketSubscriptionPayment' => 'Payment failed for TxnID: '.$payment->id]);
+                            logger(['UpdateMarketSubscriptionPayment' => 'Payment failed for TxnID: ' . $payment->id]);
                         }
-                    }
-                    else{
-                        logger(['UpdateMarketSubscriptionPayment' => 'NULL response for TxnID: '.$payment->id]);
+                    } else {
+                        logger(['UpdateMarketSubscriptionPayment' => 'NULL response for TxnID: ' . $payment->id]);
                     }
 
                     if (isset($message)) {

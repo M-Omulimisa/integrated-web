@@ -100,11 +100,18 @@ class MarketSubscriptionController extends AdminController
         $grid->column('district_id', __('District id'));
         $grid->column('subcounty_id', __('Subcounty id'));
         $grid->column('parish_id', __('Parish id')); */
+        $url_process = url('boot-system');
+        $html = '<a target="_blank" href="' . $url_process . '" class="btn btn-sm btn-success">Process Market Subscriptions</a>';
+        $grid->header(function ($query) use ($html) {
+            return $html;
+        });
 
         $packages = [];
         foreach (\App\Models\Market\MarketPackage::all() as $key => $package) {
             $packages[$package->id] = $package->name;
         }
+
+
 
         $grid->column('phone', __('Phone'))
             ->width(150)
@@ -159,7 +166,8 @@ class MarketSubscriptionController extends AdminController
                 'No' => 'danger',
                 'Failed' => 'danger'
             ])
-            ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No']);
+            ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No'])
+            ->hide();
 
         /*         $grid->column('outbox_generation_status', __('Outbox generation status'));
         $grid->column('outbox_reset_status', __('Outbox reset status'));
@@ -184,9 +192,9 @@ class MarketSubscriptionController extends AdminController
                     return '-';
                 }
                 return Utils::my_date($created_at);
-            });
+            })->hide();
         $grid->column('renew_message_sent_details', __('Renew Alert Sent Details'))->sortable()
-            ->limit(20);
+            ->limit(20)->hide();
         $grid->column('created_at', __('Created'))->sortable()
             ->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
@@ -225,7 +233,7 @@ class MarketSubscriptionController extends AdminController
                 'No' => 'danger',
                 'Failed' => 'danger'
             ])
-            ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No']);
+            ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No'])->hide();
 
 
 
@@ -235,9 +243,27 @@ class MarketSubscriptionController extends AdminController
                     return '-';
                 }
                 return Utils::my_date($created_at);
-            });
+            })->hide();
         $grid->column('pre_renew_message_sent_details', __('Pre-Renew Alert Sent Details'))->sortable()
-            ->limit(20);
+            ->limit(20)->hide();
+
+        $grid->column('show_details', __('Details'))
+            ->display(function () {
+                return "Quick View";
+            })
+            ->expand(function ($data) {
+                $my_data = [];
+                $my_data['Is Welcome Message Sent?'] = $data->welcome_msg_sent;
+                $my_data['Welcome Message Sent At'] = $data->welcome_msg_sent_at;
+                $my_data['Welcome Message Sent Details'] = $data->welcome_msg_sent_details;
+                $my_data['Is Pre-Renew Message Sent?'] = $data->pre_renew_message_sent;
+                $my_data['Pre-Renew Message Sent At'] = $data->pre_renew_message_sent_at;
+                $my_data['Pre-Renew Message Sent Details'] = $data->pre_renew_message_sent_details;
+                $my_data['Is Expiry Message Sent?'] = $data->renew_message_sent;
+                $my_data['Expiry Message Sent At'] = $data->renew_message_sent_at;
+                $my_data['Expiry Message Sent Details'] = $data->renew_message_sent_details;
+                return new \Encore\Admin\Widgets\Table([], $my_data);
+            });
 
         return $grid;
     }

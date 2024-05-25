@@ -60,9 +60,11 @@ class MarketPackageMessage extends BaseModel
             'package_id' => $item->package_id,
             'language_id' => $item->language_id,
         ])
-            ->get();
-
+            ->get(); 
         foreach ($subScribers as $sub) {
+            if($sub->status != 1){
+                continue;
+            }
             $outbox = MarketOutbox::where([
                 'subscription_id' => $sub->id,
                 'market_package_message_id' => $item->id,
