@@ -339,7 +339,7 @@ class MarketSubscription extends BaseModel
                             if($diff < 1){
                                 $diff = 1;
                             }
-                            $msg = "Your M-Omulimiasa market information subscription for {$this->package->name} will expire in next $diff days, Please renew now to avoid disconnection.";
+                            $msg = "Your M-Omulimisa market information subscription for {$this->package->name} will expire in next $diff days, Please renew now to avoid disconnection.";
                             $phone = Utils::prepare_phone_number($this->phone);
                             try {
                                 Utils::send_sms($phone, $msg);
