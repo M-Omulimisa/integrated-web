@@ -455,53 +455,7 @@ class MarketSubscriptionController extends AdminController
                 $form->date('welcome_msg_sent_at', __('Welcome message sent at'));
                 $form->text('welcome_msg_sent_details', __('Welcome message_sent details'));
             })->rules();
-        /* 
-  0 => "id"
-  1 => "farmer_id"
-  2 => "language_id"
-  3 => "location_id"
-  4 => "district_id"
-  5 => "subcounty_id"
-  6 => "parish_id"
-  7 => "first_name"
-  8 => "last_name"
-  9 => "email"
-  10 => "frequency"
-  11 => "period_paid"
-  12 => "start_date"
-  13 => "end_date"
-  14 => "status"
-  15 => "user_id"
-  16 => "outbox_generation_status"
-  17 => "outbox_reset_status"
-  18 => "outbox_last_date"
-  19 => "seen_by_admin"
-  20 => "trial_expiry_sms_sent_at"
-  21 => "trial_expiry_sms_failure_reason"
-  22 => "renewal_id"
-  23 => "organisation_id"
-  24 => "package_id"
-  25 => "created_at"
-  26 => "updated_at"
-  27 => "phone"
-  28 => "region_id"
-  29 => "payment_id"
-  30 => "outbox_count"
-  31 => "MNOTransactionReferenceId"
-  32 => "payment_reference_id"
-  33 => "TransactionStatus"
-  34 => "TransactionAmount"
-  35 => "TransactionCurrencyCode"
-  36 => "TransactionReference"
-  37 => "TransactionInitiationDate"
-  38 => "TransactionCompletionDate"
-  39 => "is_paid"
-  40 => "total_price"
-
-  44 => "is_processed"
-  45 => "is_test"
-
-*/
+        
 
         $form->disableCreatingCheck();
         return $form;

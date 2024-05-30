@@ -5,7 +5,8 @@ namespace App\Models;
 use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
 use App\Models\Market\Market;
-use App\Models\Market\MarketSubscription; 
+use App\Models\Market\MarketSubscription;
+use App\Models\Weather\WeatherSubscription;
 use App\Services\Payments\PaymentServiceFactory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -1297,9 +1298,7 @@ class Utils
         $subs = \App\Models\Weather\WeatherSubscription::where([])->orderBy('created_at', 'desc')->limit(1000)->get();
         $data = [];
         foreach ($subs as $key => $sub) {
-            $sub->process_subscription();
-            dd($sub);
-        }
-        die("done");
+            $sub->process_subscription(); 
+        } 
     }
 }

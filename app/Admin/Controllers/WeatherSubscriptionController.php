@@ -54,6 +54,11 @@ class WeatherSubscriptionController extends AdminController
         );
 
         $grid = new Grid(new WeatherSubscription());
+        $url_process = url('boot-system');
+        $html = '<a target="_blank" href="' . $url_process . '" class="btn btn-sm btn-success">Process Market Subscriptions</a>';
+        $grid->header(function ($query) use ($html) {
+            return $html;
+        });
         // $grid->disableCreateButton();
         $grid->model()->orderBy('created_at', 'desc');
         $grid->quickSearch('first_name')->placeholder('Search first name...');
@@ -311,6 +316,52 @@ class WeatherSubscriptionController extends AdminController
                 1 => 'Active',
                 0 => 'Not Active',
             ]);
+
+        $form->radio('is_test', __('IS TEST RECORD'))
+            ->options([
+                'Yes' => 'Yes',
+                'No' => 'No',
+            ])
+            ->when('Yes', function ($form) {
+                $form->divider('Test Record');
+                
+                $form->radio('is_processed', __('Record is processed'))
+                    ->options([
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                    ]);
+
+                $form->date('start_date', __('Start date'));
+                $form->date('end_date', __('End date'));
+                $form->divider();
+                $form->radio('pre_renew_message_sent', __('Pre-renew message sent'))
+                    ->options([
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                    ]);
+                $form->date('pre_renew_message_sent_at', __('Pre renew message sent at'));
+                $form->text('pre_renew_message_sent_details', __('Pre renew message_sent details'));
+
+                $form->divider('Renewal Message');
+                $form->radio('renew_message_sent', __('Renew message sent'))
+                    ->options([
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                    ]);
+                $form->date('renew_message_sent_at', __('renew message sent at'));
+                $form->text('renew_message_sent_details', __('Renew message_sent details'));
+                $form->divider('Welcome Message');
+                $form->radio('welcome_msg_sent', __('Welcome message sent'))
+                    ->options([
+                        'Yes' => 'Yes',
+                        'No' => 'No',
+                    ]);
+                $form->date('welcome_msg_sent_at', __('Welcome message sent at'));
+                $form->text('welcome_msg_sent_details', __('Welcome message_sent details'));
+            })->rules();
+
+
+        $form->disableCreatingCheck();
 
         return $form;
     }

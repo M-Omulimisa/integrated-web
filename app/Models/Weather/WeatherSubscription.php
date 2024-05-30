@@ -362,7 +362,7 @@ class WeatherSubscription extends BaseModel
             Utils::send_sms($phone, $msg);
             $this->renew_message_sent = 'Yes';
             $this->renew_message_sent_at = Carbon::now();
-            $this->renew_message_sent_details = 'Message sent to ' . $phone;
+            $this->renew_message_sent_details = $msg . ', Message sent to ' . $phone;
             $this->save();
         } catch (\Throwable $th) {
             $this->renew_message_sent = 'Failed';
@@ -415,15 +415,17 @@ class WeatherSubscription extends BaseModel
         if ($now->gt($end_date)) {
             $this->status = 0;
             $this->save();
+        } else {
+            $this->status = 1;
+            $this->save();
         }
-
-
+        $phone = Utils::prepare_phone_number($this->phone);
         if ($this->status == 1) {
             $now = Carbon::now();
             if ($now->lt($end_date)) {
                 $diff = $now->diffInDays($end_date);
                 $diff = abs($diff);
-                if ($diff < 4) {
+                if ($diff < 10) {
                     if ($this->is_paid == 'PAID') {
                         if ($this->pre_renew_message_sent != 'Yes') {
                             if ($diff < 1) {
@@ -435,7 +437,7 @@ class WeatherSubscription extends BaseModel
                                 $sub_text = $subcount->name_text;
                             }
                             $msg = "Your M-Omulimisa weather information update  for {$sub_text} will expire in next $diff days, Please renew now to avoid disconnection.";
-                            $phone = Utils::prepare_phone_number($this->phone);
+
                             try {
                                 Utils::send_sms($phone, $msg);
                                 $this->pre_renew_message_sent = 'Yes';
@@ -459,6 +461,7 @@ class WeatherSubscription extends BaseModel
             //check expiry
             $now = Carbon::now();
             $end_date = Carbon::parse($this->end_date);
+
             if ($now->gt($end_date)) {
                 $diff_in_days = $now->diffInDays($end_date);
                 if ($diff_in_days < 4) {
@@ -476,7 +479,7 @@ class WeatherSubscription extends BaseModel
                             Utils::send_sms($phone, $msg);
                             $this->renew_message_sent = 'Yes';
                             $this->renew_message_sent_at = Carbon::now();
-                            $this->renew_message_sent_details = 'Message sent to ' . $phone;
+                            $this->renew_message_sent_details = $msg.', Message sent to ' . $phone;
                             $this->save();
                         } catch (\Throwable $th) {
                             $this->renew_message_sent = 'Failed';
