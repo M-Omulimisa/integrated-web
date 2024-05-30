@@ -180,8 +180,9 @@ Route::get('test', function () {
 Route::get('boot-system', function () {
     //$m = MarketSubscription::find('82b28464-c790-41ed-b652-25ee7617350f');
     //$m->send_renew_message();
-    Utils::renew_messages(true);
+    Utils::process_weather_subs(true);
     Utils::process_market_subs(true);
+    Utils::renew_messages(true);
     Utils::system_boot(); 
     die("done processing.");
 });

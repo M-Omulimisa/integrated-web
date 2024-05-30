@@ -5,6 +5,7 @@ namespace App\Models\Weather;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use App\Models\ParishModel;
+use App\Models\Payments\SubscriptionPayment;
 use App\Models\SubcountyModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\WeatherSubscriptionRelationship;
@@ -64,7 +65,8 @@ class WeatherSubscription extends BaseModel
             }
 
             //prepare
-            $m = self::prepare($model);
+            $mmodel = self::prepare($model);
+            return true;
         });
 
         //updating
@@ -77,7 +79,8 @@ class WeatherSubscription extends BaseModel
             }
 
             //prepare
-            $m = self::prepare($model);
+            $mmodel = self::prepare($model);
+            return true;
         });
 
         //created
@@ -116,6 +119,10 @@ class WeatherSubscription extends BaseModel
     //prepare
     public static function prepare($model)
     {
+
+        if ($model->is_test == 'Yes') {
+            return;
+        }
 
         //period_paid
         $period_paid = $model->period_paid;
@@ -189,64 +196,92 @@ class WeatherSubscription extends BaseModel
 
     public function check_payment_status()
     {
-        if ($this->TransactionReference == null) {
+
+        /* if (strlen($this->TransactionReference) < 3) {
             return 'NOT PAID';
+        } */
+        if ($this->is_paid == 'PAID') {
+            return 'PAID';
         }
-        if (strlen($this->TransactionReference) < 3) {
-            return 'NOT PAID';
-        }
+
         $resp = null;
         try {
-            $resp = Utils::payment_status_check($this->TransactionReference, $this->payment_reference_id);
+            if ($this->TransactionReference != null && strlen($this->TransactionReference) > 3) {
+                $resp = Utils::payment_status_check($this->TransactionReference, $this->payment_reference_id);
+            }
         } catch (\Throwable $th) {
-            return 'NOT PAID';
         }
-        if ($resp == null) {
-            return 'NOT PAID';
-        }
-        if ($resp->Status == 'OK') {
-            if ($resp->TransactionStatus == 'PENDING') {
-                $this->TransactionStatus = 'PENDING';
-                if (isset($resp->Amount) && $resp->Amount != null) {
-                    $this->TransactionAmount = $resp->Amount;
+
+        if ($resp != null) {
+            if ($resp->Status == 'OK') {
+                if ($resp->TransactionStatus == 'PENDING') {
+                    $this->TransactionStatus = 'PENDING';
+                    if (isset($resp->Amount) && $resp->Amount != null) {
+                        $this->TransactionAmount = $resp->Amount;
+                    }
+                    if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
+                        $this->TransactionCurrencyCode = $resp->CurrencyCode;
+                    }
+                    if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
+                        $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
+                    }
+                    if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
+                        $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
+                    }
+                    $this->save();
+                } else if (
+                    $resp->TransactionStatus == 'SUCCEEDED' ||
+                    $resp->TransactionStatus == 'SUCCESSFUL'
+                ) {
+                    $this->TransactionStatus = 'SUCCEEDED';
+                    if (isset($resp->Amount) && $resp->Amount != null) {
+                        $this->TransactionAmount = $resp->Amount;
+                    }
+                    if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
+                        $this->TransactionCurrencyCode = $resp->CurrencyCode;
+                    }
+                    if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
+                        $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
+                    }
+                    if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
+                        $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
+                    }
+                    //MNOTransactionReferenceId
+                    if (isset($resp->MNOTransactionReferenceId) && $resp->MNOTransactionReferenceId != null) {
+                        $this->MNOTransactionReferenceId = $resp->MNOTransactionReferenceId;
+                    }
+                    $this->is_paid = 'PAID';
+                    $this->save();
                 }
-                if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
-                    $this->TransactionCurrencyCode = $resp->CurrencyCode;
-                }
-                if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
-                    $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
-                }
-                if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
-                    $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
-                }
-                $this->save();
-            } else if (
-                $resp->TransactionStatus == 'SUCCEEDED' ||
-                $resp->TransactionStatus == 'SUCCESSFUL'
-            ) {
-                $this->TransactionStatus = 'SUCCEEDED';
-                if (isset($resp->Amount) && $resp->Amount != null) {
-                    $this->TransactionAmount = $resp->Amount;
-                }
-                if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
-                    $this->TransactionCurrencyCode = $resp->CurrencyCode;
-                }
-                if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
-                    $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
-                }
-                if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
-                    $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
-                }
-                //MNOTransactionReferenceId
-                if (isset($resp->MNOTransactionReferenceId) && $resp->MNOTransactionReferenceId != null) {
-                    $this->MNOTransactionReferenceId = $resp->MNOTransactionReferenceId;
-                }
-                $this->is_paid = 'PAID';
-                $this->save();
             }
         }
 
-        return 'NOT PAID';
+        //if not paid
+        if ($this->is_paid != 'PAID') {
+            $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
+            if ($rec == null) {
+                $rec = SubscriptionPayment::where('weather_subscription_id', $this->id)->orderBy('created_at', 'desc')->first();
+            }
+            if ($rec != null) {
+                if ($rec->status == 'SUCCESSFUL') {
+                    $this->is_paid = 'PAID';
+                } else {
+                    $this->is_paid = 'NOT PAID';
+                }
+                $this->MNOTransactionReferenceId = $rec->reference_id;
+                $this->TransactionReference = $rec->reference;
+                $this->payment_reference_id = $rec->id;
+                $this->payment_id = $rec->id;
+                $this->TransactionStatus = $rec->status;
+                $this->TransactionAmount = $rec->amount;
+                $this->TransactionCurrencyCode = 'UGX';
+                $this->TransactionInitiationDate = $rec->created_at;
+                $this->TransactionCompletionDate = $rec->updated_at;
+                $this->total_price = $rec->amount;
+                $has_paid = true;
+                $this->save();
+            }
+        }
     }
 
     public function getStatusAttribute($value)
@@ -269,7 +304,7 @@ class WeatherSubscription extends BaseModel
         if ($value == 1) {
             if ($this->is_paid != 'PAID') {
                 $sql = "UPDATE weather_subscriptions SET status = 0 WHERE id = '$this->id'";
-                DB::update($sql); 
+                DB::update($sql);
             }
         }
 
@@ -291,8 +326,8 @@ class WeatherSubscription extends BaseModel
 
     public function send_renew_message()
     {
+        return;
         if ($this->status != 0) {
-            return;
         }
         $phone = Utils::prepare_phone_number($this->phone);
         //last subscription
@@ -336,5 +371,170 @@ class WeatherSubscription extends BaseModel
             $this->save();
         }
     }
-    
+
+    public function process_subscription()
+    {
+
+        //if not paid, check_payment_status
+        if ($this->is_paid != 'PAID') {
+            $this->check_payment_status();
+        }
+
+        if ($this->is_paid == 'PAID') {
+            $now = Carbon::now();
+            //end date
+            $end_date = Carbon::parse($this->end_date);
+            if ($now->gt($end_date)) {
+                $this->status = 0;
+                $this->save();
+            } else {
+                $this->status = 1;
+                $this->save();
+            }
+        }
+
+        if ($this->is_paid == 'PAID' && $this->status == 1) {
+            if ($this->welcome_msg_sent != 'Yes' && $this->welcome_msg_sent != 'Skipped') {
+                $this->welcome_msg_sent = 'Yes';
+                $this->welcome_msg_sent_at = Carbon::now();
+                $msg = "You have subscribed to M-Omulimisa weather information updates. You will now receive updates everyday. Thank you for subscribing.";
+                $this->welcome_msg_sent_details = $msg;
+                try {
+                    Utils::send_sms($this->phone, $msg);
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+                $this->save();
+            }
+        }
+
+
+        $end_date = Carbon::parse($this->end_date);
+        //check for expiry $end_date
+        $now = Carbon::now();
+        if ($now->gt($end_date)) {
+            $this->status = 0;
+            $this->save();
+        }
+
+
+        if ($this->status == 1) {
+            $now = Carbon::now();
+            if ($now->lt($end_date)) {
+                $diff = $now->diffInDays($end_date);
+                $diff = abs($diff);
+                if ($diff < 4) {
+                    if ($this->is_paid == 'PAID') {
+                        if ($this->pre_renew_message_sent != 'Yes') {
+                            if ($diff < 1) {
+                                $diff = 1;
+                            }
+                            $subcount = SubcountyModel::find($this->subcounty_id);
+                            $sub_text = '';
+                            if ($subcount != null) {
+                                $sub_text = $subcount->name_text;
+                            }
+                            $msg = "Your M-Omulimisa weather information update  for {$sub_text} will expire in next $diff days, Please renew now to avoid disconnection.";
+                            $phone = Utils::prepare_phone_number($this->phone);
+                            try {
+                                Utils::send_sms($phone, $msg);
+                                $this->pre_renew_message_sent = 'Yes';
+                                $this->pre_renew_message_sent_at = Carbon::now();
+                                $this->pre_renew_message_sent_details = $msg . ' - Message sent to ' . $phone;
+                                $this->save();
+                            } catch (\Throwable $th) {
+                                $this->pre_renew_message_sent = 'Failed';
+                                $this->pre_renew_message_sent_at = Carbon::now();
+                                $this->pre_renew_message_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+                                $this->save();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //if status is 0, send renewal message
+        if ($this->status == 0 && $this->is_paid == 'PAID') {
+            //check expiry
+            $now = Carbon::now();
+            $end_date = Carbon::parse($this->end_date);
+            if ($now->gt($end_date)) {
+                $diff_in_days = $now->diffInDays($end_date);
+                if ($diff_in_days < 4) {
+                    if ($this->renew_message_sent_at != null) {
+                        $t = null;
+
+                        $subcount = SubcountyModel::find($this->subcounty_id);
+                        $sub_text = '';
+                        if ($subcount != null) {
+                            $sub_text = $subcount->name_text;
+                        }
+
+                        $msg = "Your M-Omulimisa weather subscription updates for $sub_text has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+                        try {
+                            Utils::send_sms($phone, $msg);
+                            $this->renew_message_sent = 'Yes';
+                            $this->renew_message_sent_at = Carbon::now();
+                            $this->renew_message_sent_details = 'Message sent to ' . $phone;
+                            $this->save();
+                        } catch (\Throwable $th) {
+                            $this->renew_message_sent = 'Failed';
+                            $this->renew_message_sent_at = Carbon::now();
+                            $this->renew_message_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+                            $this->save();
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        return $this;
+        //is_test
+        die('Processing subscription');
+        //sync-data
+        $phone = Utils::prepare_phone_number($this->phone);
+        //last subscription
+        $last_subscription = WeatherSubscription::where([
+            'phone' => $phone,
+            'is_processed' => 'Yes'
+        ])->orderBy('created_at', 'desc')->first();
+        if ($last_subscription != null) {
+            if ($last_subscription->is_processed_at != null) {
+                $t = null;
+                try {
+                    $t = Carbon::parse($last_subscription->is_processed_at);
+                } catch (\Throwable $th) {
+                    $t = null;
+                }
+                if ($t != null) {
+                    $now = Carbon::now();
+                    $diff = $now->diffInDays($t);
+                    if ($diff < 1) {
+                        $this->is_processed = 'Skipped';
+                        $this->is_processed_at = $now;
+                        $this->is_processed_details = 'Already processed this number: ' . $phone . ' within 24 hours. Ref: ' . $last_subscription->id;
+                        $this->save();
+                        return;
+                    }
+                }
+            }
+        }
+
+        $msg = "Thank you for subscribing to our weather updates. You will receive weather updates every " . $this->frequency . " days. Thank you for subscribing.";
+        try {
+            Utils::send_sms($phone, $msg);
+            $this->is_processed = 'Yes';
+            $this->is_processed_at = Carbon::now();
+            $this->is_processed_details = 'Message sent to ' . $phone;
+            $this->save();
+        } catch (\Throwable $th) {
+            $this->is_processed = 'Failed';
+            $this->is_processed_at = Carbon::now();
+            $this->is_processed_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+            $this->save();
+        }
+    }
 }

@@ -271,7 +271,7 @@ class MarketSubscription extends BaseModel
 
     public function getStatusAttribute($value)
     {
-
+        return $value;
         if ($this->MNOTransactionReferenceId == null || strlen($this->MNOTransactionReferenceId) < 3) {
             $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
             if ($rec != null) {
@@ -336,7 +336,7 @@ class MarketSubscription extends BaseModel
                 if ($diff < 4) {
                     if ($this->is_paid == 'PAID') {
                         if ($this->pre_renew_message_sent != 'Yes') {
-                            if($diff < 1){
+                            if ($diff < 1) {
                                 $diff = 1;
                             }
                             $msg = "Your M-Omulimisa market information subscription for {$this->package->name} will expire in next $diff days, Please renew now to avoid disconnection.";
@@ -369,7 +369,7 @@ class MarketSubscription extends BaseModel
                     Utils::send_sms($phone, $msg);
                     $this->renew_message_sent = 'Yes';
                     $this->renew_message_sent_at = Carbon::now();
-                    $this->renew_message_sent_details = $msg. ' - Message sent to ' . $phone;
+                    $this->renew_message_sent_details = $msg . ' - Message sent to ' . $phone;
                     $this->save();
                 } catch (\Throwable $th) {
                     $this->renew_message_sent = 'Failed';
@@ -451,6 +451,12 @@ class MarketSubscription extends BaseModel
             }
             if (strtoupper($this->TransactionStatus) != 'SUCCEEDED') {
                 $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
+                if ($rec == null) {
+                    $rec = SubscriptionPayment::where('market_subscription_id', $this->id)->orderBy('created_at', 'desc')->first();
+                }
+                if ($rec == null) {
+                    $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
+                }
                 if ($rec != null) {
                     if ($rec->status == 'SUCCESSFUL') {
                         $this->is_paid = 'PAID';
@@ -460,30 +466,19 @@ class MarketSubscription extends BaseModel
                     $this->MNOTransactionReferenceId = $rec->reference_id;
                     $this->TransactionReference = $rec->reference;
                     $this->payment_reference_id = $rec->id;
+                    $this->payment_id = $rec->id;
                     $this->TransactionStatus = $rec->status;
                     $this->TransactionAmount = $rec->amount;
                     $this->TransactionCurrencyCode = 'UGX';
                     $this->TransactionInitiationDate = $rec->created_at;
                     $this->TransactionCompletionDate = $rec->updated_at;
                     $this->total_price = $rec->amount;
+                    $this->save();
                     $has_paid = true;
                 }
             }
         }
-
-
-        if ($has_paid) {
-            $this->is_paid = 'PAID';
-        }
-        $created_time = Carbon::parse($this->created_at);
-        $this->start_date = $created_time;
-        $now = Carbon::now();
-        if ($now->gt($this->end_date)) {
-            $this->status = 0;
-        } else {
-            $this->status = 1;
-        }
-        $this->is_processed = 'Yes';
         $this->save();
+        return $this->is_paid;
     }
 }
