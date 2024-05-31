@@ -33,27 +33,67 @@ class FarmerController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Farmer());
-        $grid->column('id', __('ID'))->sortable();
-        $grid->column('sheep_count', __('Page'))->sortable();
+        $grid->model()->orderBy('created_at', 'desc');
+        $grid->quickSearch('phone', 'first_name', 'last_name', 'email', 'national_id_number')
+            ->placeholder('Search by phone, name, email, or NIN');
         $grid->column('first_name', __('Name'))
             ->display(function ($name) {
-                return $this->first_name . ' ' . $this->last_name;
+                $name = $this->first_name . ' ' . $this->last_name;
+                $name = trim($name);
+                if (strlen($name) < 3) {
+                    $name = trim($this->name);
+                }
+                if (strlen($name) < 3) {
+                    $name = trim($this->phone);
+                }
+                $name = trim($name);
+                return $name;
             })->sortable();
-        $grid->column('national_id_number', __('NIN'));
         $grid->column('gender', __('Gender'))
             ->display(function ($gender) {
                 if ($gender != 'Male' && $gender != 'Female') return 'Unknown';
                 return $gender;
             })->sortable();
-        $grid->column('education_level', __('Education level'));
-        $grid->column('phone', __('Phone'));
-        $grid->column('email', __('Email'));
+        $grid->column('national_id_number', __('NIN'))
+            ->display(function ($nin) {
+                if ($nin == null) return '-';
+                return $nin;
+            })->sortable();
+        $grid->column('education_level', __('Education Level'))
+            ->display(function ($education_level) {
+                if ($education_level == null) return '-';
+                return $education_level;
+            })->sortable()->hide();
+        $grid->column('phone', __('Phone'))->sortable();
+        $grid->column('email', __('Email'))->display(function ($email) {
+            if ($email == null) return '-';
+            return $email;
+        })->sortable()->hide();
+        $grid->column('year_of_birth', __('D.O.B'))->hide();
 
-        $grid->column('year_of_birth', __('Year of birth'));
-        $grid->column('is_your_phone', __('Is your phone'));
-        $grid->column('is_mm_registered', __('Is mm registered'));
-        $grid->column('other_economic_activity', __('Other economic activity'));
-        $grid->column('location_id', __('Location id'));
+        $grid->column('is_your_phone', __('Is your phone'))->hide();
+        $grid->column('is_mm_registered', __('Is mm registered'))->hide();
+        $grid->column('village', __('Village'))->display(function ($village) {
+            $location = SubcountyModel::find($village);
+            if ($location != null) {
+                return $location->name_text;
+            }
+            return '-';
+        })->sortable();
+        $grid->column('house_number', __('House Hold'))
+            ->display(function ($house_number) {
+                if ($house_number == null || strlen($house_number) < 1) return '-';
+                return $house_number;
+            })->sortable();
+
+        $grid->column('created_at', __('Registered'))
+            ->display(function ($created_at) {
+                return date('d-m-Y', strtotime($created_at));
+            })->sortable();
+        return $grid;
+
+
+        $grid->column('location_id', __('Location id'))->sortable();
         $grid->column('address', __('Address'));
         $grid->column('latitude', __('Latitude'));
         $grid->column('longitude', __('Longitude'));
@@ -67,8 +107,7 @@ class FarmerController extends AdminController
         $grid->column('created_by_user_id', __('Created by user id'));
         $grid->column('created_by_agent_id', __('Created by agent id'));
         $grid->column('agent_id', __('Agent id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
+
         $grid->column('poverty_level', __('Poverty level'));
         $grid->column('food_security_level', __('Food security level'));
         $grid->column('marital_status', __('Marital status'));
@@ -84,7 +123,7 @@ class FarmerController extends AdminController
         $grid->column('preferred_info_type', __('Preferred info type'));
         $grid->column('home_gps_latitude', __('Home gps latitude'));
         $grid->column('home_gps_longitude', __('Home gps longitude'));
-        $grid->column('village', __('Village'));
+
         $grid->column('street', __('Street'));
         $grid->column('house_number', __('House number'));
         $grid->column('land_registration_numbers', __('Land registration numbers'));
