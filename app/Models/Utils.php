@@ -481,7 +481,9 @@ class Utils
             }
         }
         $page = $page + 1;
-
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
 
         //http grt request to url using guzzlehttp 
         $client = new \GuzzleHttp\Client();
@@ -1287,18 +1289,17 @@ class Utils
         $data = [];
         foreach ($subs as $key => $sub) {
             $sub->process_subscription();
-
         }
     }
 
 
     public static function process_weather_subs($process_all)
     {
-     
+
         $subs = \App\Models\Weather\WeatherSubscription::where([])->orderBy('created_at', 'desc')->limit(1000)->get();
         $data = [];
         foreach ($subs as $key => $sub) {
-            $sub->process_subscription(); 
-        } 
+            $sub->process_subscription();
+        }
     }
 }
