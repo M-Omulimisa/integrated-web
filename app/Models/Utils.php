@@ -209,7 +209,7 @@ class Utils
         $service->set_username();
         $service->set_password();
 
-        $narrative = "Omulimisa payment.";
+        $narrative = "M-Omulimisa payment.";
         //$amount = 1000;
         $response = null;
         try {
@@ -609,7 +609,7 @@ class Utils
     public static function sendNotification(
         $msg,
         $receiver,
-        $headings = 'M-OMULIMISA',
+        $headings = 'M-Omulimisa',
         $data = null,
         $url = null,
         $buttons = null,

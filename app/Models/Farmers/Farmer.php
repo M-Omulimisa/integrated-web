@@ -63,7 +63,7 @@ class Farmer extends BaseModel
         });
 
         self::created(function (Farmer $model) {
-
+            return true; 
             try {
                 self::process($model);
             } catch (\Throwable $th) {
