@@ -473,7 +473,7 @@ class Utils
         }
 
         $page = 0;
-        $last = Farmer::orderBy('id', 'desc')->first();
+        $last = Farmer::orderBy('created_at', 'desc')->first();
         if ($last != null) {
             $page = ((int)($last->sheep_count));
             if ($page == 0) {
@@ -481,6 +481,13 @@ class Utils
             }
         }
         $page = $page + 1;
+        if ($page > 300) {
+            $page = 300;
+            if ($last != null) {
+                $last->sheep_count = 300;
+                $last->save();
+            }
+        }
         if (isset($_GET['page'])) {
             $page = $_GET['page'];
         }

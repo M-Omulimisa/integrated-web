@@ -333,7 +333,7 @@ class MarketSubscription extends BaseModel
             if ($now->lt($end_date)) {
                 $diff = $now->diffInDays($end_date);
                 $diff = abs($diff);
-                if ($diff < 4) {
+                if ($diff < 2) {
                     if ($this->is_paid == 'PAID') {
                         if ($this->pre_renew_message_sent != 'Yes') {
                             if ($diff < 1) {

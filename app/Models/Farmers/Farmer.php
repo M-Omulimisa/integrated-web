@@ -47,10 +47,10 @@ class Farmer extends BaseModel
                 $model->id = 1;
             } 
         });
-        self::updating(function (Farmer $model) {
+     /*    self::updating(function (Farmer $model) {
             //$model->id = $model->generateUuid();
             //prcess account
-        });
+        }); */
 
         //udpated
         self::updated(function (Farmer $model) {

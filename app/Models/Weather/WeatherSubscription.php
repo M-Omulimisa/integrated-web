@@ -464,7 +464,7 @@ class WeatherSubscription extends BaseModel
 
             if ($now->gt($end_date)) {
                 $diff_in_days = $now->diffInDays($end_date);
-                if ($diff_in_days < 4) {
+                if ($diff_in_days < 2) {
                     if ($this->renew_message_sent_at != null) {
                         $t = null;
 
@@ -474,12 +474,12 @@ class WeatherSubscription extends BaseModel
                             $sub_text = $subcount->name_text;
                         }
 
-                        $msg = "Your M-Omulimisa weather subscription updates for $sub_text has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+                        $msg = "Your M-Omulimisa weather subscription for $sub_text has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
                         try {
                             Utils::send_sms($phone, $msg);
                             $this->renew_message_sent = 'Yes';
                             $this->renew_message_sent_at = Carbon::now();
-                            $this->renew_message_sent_details = $msg.', Message sent to ' . $phone;
+                            $this->renew_message_sent_details = $msg . ', Message sent to ' . $phone;
                             $this->save();
                         } catch (\Throwable $th) {
                             $this->renew_message_sent = 'Failed';
@@ -526,7 +526,7 @@ class WeatherSubscription extends BaseModel
             }
         }
 
-        $msg = "Thank you for subscribing to our weather updates. You will receive weather updates every " . $this->frequency . " days. Thank you for subscribing.";
+        $msg = "Thank you for subscribing to M-Omulimisa weather information service. You will be receiving weather updates daily.";
         try {
             Utils::send_sms($phone, $msg);
             $this->is_processed = 'Yes';

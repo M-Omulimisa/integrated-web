@@ -55,7 +55,7 @@ class WeatherSubscriptionController extends AdminController
 
         $grid = new Grid(new WeatherSubscription());
         $url_process = url('boot-system');
-        $html = '<a target="_blank" href="' . $url_process . '" class="btn btn-sm btn-success">Process Market Subscriptions</a>';
+        $html = '<a target="_blank" href="' . $url_process . '" class="btn btn-sm btn-success">Process Weather Subscriptions</a>';
         $grid->header(function ($query) use ($html) {
             return $html;
         });
@@ -187,6 +187,24 @@ class WeatherSubscriptionController extends AdminController
         $grid->column('TransactionReference', __('Transaction Reference'))->hide();
         $grid->column('TransactionInitiationDate', __('Transaction Initiation Date'))->hide();
         $grid->column('TransactionCompletionDate', __('Transaction Completion Date'))->hide();
+
+        $grid->column('show_details', __('Details'))
+            ->display(function () {
+                return "Quick View";
+            })
+            ->expand(function ($data) {
+                $my_data = [];
+                $my_data['Is Welcome Message Sent?'] = $data->welcome_msg_sent;
+                $my_data['Welcome Message Sent At'] = $data->welcome_msg_sent_at;
+                $my_data['Welcome Message Sent Details'] = $data->welcome_msg_sent_details;
+                $my_data['Is Pre-Renew Message Sent?'] = $data->pre_renew_message_sent;
+                $my_data['Pre-Renew Message Sent At'] = $data->pre_renew_message_sent_at;
+                $my_data['Pre-Renew Message Sent Details'] = $data->pre_renew_message_sent_details;
+                $my_data['Is Expiry Message Sent?'] = $data->renew_message_sent;
+                $my_data['Expiry Message Sent At'] = $data->renew_message_sent_at;
+                $my_data['Expiry Message Sent Details'] = $data->renew_message_sent_details;
+                return new \Encore\Admin\Widgets\Table([], $my_data);
+            });
 
 
         return $grid;
@@ -324,7 +342,7 @@ class WeatherSubscriptionController extends AdminController
             ])
             ->when('Yes', function ($form) {
                 $form->divider('Test Record');
-                
+
                 $form->radio('is_processed', __('Record is processed'))
                     ->options([
                         'Yes' => 'Yes',
