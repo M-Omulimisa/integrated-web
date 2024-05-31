@@ -54,6 +54,7 @@ class Farmer extends BaseModel
 
         //udpated
         self::updated(function (Farmer $model) {
+            return;
             try {
                 self::process($model);
             } catch (\Throwable $th) {
