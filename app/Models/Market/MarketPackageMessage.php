@@ -7,6 +7,7 @@ use App\Models\BaseModel;
 use App\Models\MarketInfoMessageCampaign;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\MarketPackageLanguageRelationship;
+use Carbon\Carbon;
 
 class MarketPackageMessage extends BaseModel
 {
@@ -60,11 +61,26 @@ class MarketPackageMessage extends BaseModel
             'package_id' => $item->package_id,
             'language_id' => $item->language_id,
         ])
-            ->get(); 
+            ->get();
         foreach ($subScribers as $sub) {
-            if($sub->status != 1){
+            if ($sub->status != 1) {
                 continue;
             }
+            if ($sub->is_paid != 'PAID') {
+                continue;
+            }
+
+            if ($sub->end_date == null || strlen($sub->end_date) < 3) {
+                continue;
+            }
+
+            //check expiry 
+            $now = now();
+            $expiry = Carbon::parse($sub->end_date);
+            if ($now->gt($expiry)) {
+                continue;
+            }
+
             $outbox = MarketOutbox::where([
                 'subscription_id' => $sub->id,
                 'market_package_message_id' => $item->id,
