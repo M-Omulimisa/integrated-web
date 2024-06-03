@@ -85,34 +85,6 @@ class WeatherSubscription extends BaseModel
 
         //created
         self::created(function (WeatherSubscription $model) {
-            $u = User::find($model->farmer_id);
-            if ($u == null) {
-                $u = User::find($model->user_id);
-            }
-            $name = $model->first_name;
-            $phone = $model->phone;
-            if ($u != null) {
-                $name = $u->name;
-            }
-
-            //welcome message for subscription to weather
-            $msg = "Thank you for subscribing to our weather updates. You will receive weather updates every " . $model->frequency . " days. Thank you for subscribing.";
-            try {
-                //Utils::send_sms($phone, $msg);
-            } catch (\Throwable $th) {
-                //throw $th; 
-            }
-            if ($u != null) {
-                try {
-                    Utils::sendNotification2([
-                        'msg' => $msg,
-                        'headings' => 'Weather Subscription',
-                        'receiver' => $u->id,
-                        'type' => 'text',
-                    ]);
-                } catch (\Throwable $th) {
-                }
-            }
         });
     }
 
@@ -399,6 +371,20 @@ class WeatherSubscription extends BaseModel
                 $this->welcome_msg_sent_at = Carbon::now();
                 $msg = "You have subscribed to M-Omulimisa weather information updates. You will now receive updates everyday. Thank you for subscribing.";
                 $this->welcome_msg_sent_details = $msg;
+
+
+                $phone = Utils::prepare_phone_number($this->phone);
+                if (Utils::phone_number_is_valid($phone)) {
+                    $outbox = new WeatherOutbox();
+                    /* 
+            				status	statuses	failure_reason	processsed_at	sent_at	failed_at	sent_via	created_at	updated_at	
+                */
+                    $outbox->subscription_id = $this->id;
+                    $outbox->farmer_id = $this->farmer_id;
+                    $outbox->recipient = $phone;
+                    //$message 
+                }
+
                 try {
                     Utils::send_sms($this->phone, $msg);
                 } catch (\Throwable $th) {
@@ -539,5 +525,11 @@ class WeatherSubscription extends BaseModel
             $this->is_processed_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
             $this->save();
         }
+    }
+
+    //belongs to parish_id
+    public function parish()
+    {
+        return $this->belongsTo(ParishModel::class, 'parish_id', 'id');
     }
 }

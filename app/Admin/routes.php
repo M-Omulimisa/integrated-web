@@ -94,4 +94,5 @@ Route::group([
     $router->resource('translated-words', TranslatedWordController::class);
     $router->resource('item-prices', ItemPriceController::class);
     $router->resource('market-info-message-campaigns', MarketInfoMessageCampaignController::class);
+    $router->resource('weather-outboxes', WeatherOutboxController::class);
 });
