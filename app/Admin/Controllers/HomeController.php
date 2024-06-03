@@ -274,7 +274,7 @@ class HomeController extends Controller
                 $u->reset_password_token = $token;
                 $u->save();
                 //set token in session
-                session(['reset_password_token' => $token]); 
+                session(['reset_password_token' => $token]);
                 Admin::script('window.location.replace("' . url('auth/password-reset-form') . '");');
                 return $content;
             }
@@ -494,14 +494,16 @@ class HomeController extends Controller
                     $data[] = [
                         'title' => 'Market Subscriptions',
                         'detail' => MarketSubscription::where([
-                            'status' => 1
+                            'status' => 1,
+                            'is_paid' => 'PAID'
                         ])
                             ->count(),
                     ];
                     $data[] = [
                         'title' => 'Weather Subscriptions',
                         'detail' => WeatherSubscription::where([
-                            'status' => 1
+                            'status' => 1,
+                            'is_paid' => 'PAID'
                         ])
                             ->count(),
                     ];
