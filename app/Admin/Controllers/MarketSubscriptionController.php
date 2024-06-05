@@ -78,6 +78,20 @@ class MarketSubscriptionController extends AdminController
         Utils::process_market_subs(true);
 
         $grid = new Grid(new MarketSubscription());
+        $grid->export(function ($export) {            $export->filename('market_subscriptions_' . date('Y-m-d'));
+            $export->column('status', function ($value, $original) {
+                return $value == 1 ? 'Active' : 'Expired';
+            });
+
+            $export->column('is_paid', function ($value) {
+                if ($value == 'PAID') {
+                    return 'PAID';
+                }
+                return 'NOT PAID';
+            });
+        });
+
+
         $currnt_url = url()->current();
         $segs = explode('/', $currnt_url);
         $where = [];
@@ -120,9 +134,7 @@ class MarketSubscriptionController extends AdminController
         $grid->column('first_name', __('name'))
             ->display(function ($first_name) {
                 return $first_name . ' ' . $this->last_name;
-            })->sortable()
-            ->hide();
-
+            })->sortable();
         $grid->column('package_id', __('Package'))
             ->display(function ($package_id) {
                 if ($this->package == null) {
@@ -132,6 +144,14 @@ class MarketSubscriptionController extends AdminController
             })
             ->filter($packages)->sortable()
             ->width(150);
+        //language_id
+        $grid->column('language_id', __('Language'))
+            ->display(function ($language_id) {
+                if ($this->language == null) {
+                    return '-';
+                }
+                return $this->language->name;
+            })->sortable();
 
         $grid->column('frequency', __('Frequency'))
             ->using([
@@ -455,7 +475,7 @@ class MarketSubscriptionController extends AdminController
                 $form->date('welcome_msg_sent_at', __('Welcome message sent at'));
                 $form->text('welcome_msg_sent_details', __('Welcome message_sent details'));
             })->rules();
-        
+
 
         $form->disableCreatingCheck();
         return $form;

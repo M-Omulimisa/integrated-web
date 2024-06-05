@@ -54,6 +54,17 @@ class WeatherSubscriptionController extends AdminController
         );
 
         $grid = new Grid(new WeatherSubscription());
+        $grid->export(function ($export) {
+            $export->filename('weather_subscriptions_' . Carbon::now()->format('Y-m-d'));
+            //orginal [is_paid]
+            //when exporting is_paid
+            $export->column('is_paid', function ($value) {
+                if ($value == 'PAID') {
+                    return 'PAID';
+                }
+                return 'NOT PAID';
+            });
+        });
         $url_process = url('boot-system');
         $html = '<a target="_blank" href="' . $url_process . '" class="btn btn-sm btn-success">Process Weather Subscriptions</a>';
         $grid->header(function ($query) use ($html) {
@@ -65,8 +76,48 @@ class WeatherSubscriptionController extends AdminController
 
         $grid->column('first_name', __('Name'))
             ->display(function ($first_name) {
-                return $first_name . ' ' . $this->last_name;
+                $name = $first_name . ' ' . $this->last_name;
+                $name = trim($name);
+                if (strlen($name) == 0) {
+                    $name = $this->phone;
+                }
+                $name = trim($name);
+                if (strlen($name) == 0) {
+                    $name = '-';
+                }
+                return $name;
             })->sortable();
+
+        $grid->column('district_id', __('District'))
+            ->display(function ($district_id) {
+                $d = DistrictModel::find($district_id);
+                if ($d == null) {
+                    return '-';
+                }
+                return $d->name;
+            })->sortable();
+
+        $grid->column('subcounty_id', __('Subcounty'))
+            ->display(function ($subcounty_id) {
+                $s = SubcountyModel::find($subcounty_id);
+                if ($s == null) {
+                    return '-';
+                }
+                return $s->name;
+            })->sortable();
+
+        $grid->column('parish_id', __('Parish'))
+            ->display(function ($parish_id) {
+                $p = ParishModel::find($parish_id);
+                if ($p == null) {
+                    return '-';
+                }
+                return $p->name;
+            })->sortable();
+        $grid->column('frequency', __('Frequency'))->sortable();
+
+
+
         $grid->column('farmer_id', __('Farmer'))
             ->display(function ($farmer_id) {
                 $u = \App\Models\User::find($farmer_id);
@@ -83,56 +134,40 @@ class WeatherSubscriptionController extends AdminController
                 }
                 return $lang->name;
             })->sortable();
-        $grid->column('location_id', __('Location id'))->hide();
-        $grid->column('district_id', __('District'))
-            ->display(function ($district_id) {
-                $d = DistrictModel::find($district_id);
-                if ($d == null) {
-                    return '-';
-                }
-                return $d->name;
-            })->sortable();
-        $grid->column('subcounty_id', __('Subcounty'))
-            ->display(function ($subcounty_id) {
-                $s = SubcountyModel::find($subcounty_id);
-                if ($s == null) {
-                    return '-';
-                }
-                return $s->name;
-            })->sortable();
-        $grid->column('parish_id', __('Parish'))
-            ->display(function ($parish_id) {
-                $p = ParishModel::find($parish_id);
-                if ($p == null) {
-                    return '-';
-                }
-                return $p->name;
-            })->sortable();
-        $grid->column('email', __('Email'))->hide();
-        $grid->column('frequency', __('Frequency'))->sortable();
-        $grid->column('period_paid', __('Period Paid'))->sortable();
-        $grid->column('start_date', __('Start Date'))->sortable();
-        $grid->column('end_date', __('End date'))->sortable();
-        $grid->column('status', __('Status'))
+
+        $grid->column('is_paid', __('Payment Status'))
+            ->sortable()
             ->using([
-                0 => 'Expired',
-                1 => 'Active',
-            ])->sortable()
-            ->filter([
-                0 => 'Expired',
-                1 => 'Active',
-            ])->label([
-                0 => 'danger',
-                1 => 'success',
-            ]);
-        $grid->column('outbox_generation_status', __('Outbox generation status'))->hide();
+                'PAID' => 'PAID',
+                'No' => 'NOT PAID',
+            ], 'NOT PAID')
+            ->label([
+                'PAID' => 'success',
+                'NOT PAID' => 'danger',
+                'No' => 'danger',
+                'NO' => 'danger',
+            ], 'danger')
+            ->filter(['PAID' => 'PAID', 'NO' => 'NOT PAID']);
+        $grid->column('location_id', __('Location id'))->hide();
+
+        //start_date
+
+
+
+
+        $grid->column('email', __('Email'))->hide();
+
+
+        /*         $grid->column('outbox_generation_status', __('Outbox generation status'))->hide();
         $grid->column('outbox_reset_status', __('Outbox reset status'))->hide();
         $grid->column('outbox_last_date', __('Outbox last date'))->hide();
         $grid->column('awhere_field_id', __('Awhere field id'))->hide();
         $grid->column('seen_by_admin', __('Seen by admin'))->hide();
         $grid->column('trial_expiry_sms_sent_at', __('Trial expiry sms sent at'))->hide();
-        $grid->column('trial_expiry_sms_failure_reason', __('Trial expiry sms failure reason'))->hide();
+        $grid->column('trial_expiry_sms_failure_reason', __('Trial expiry sms failure reason'))->hide(); */
         $grid->column('phone', __('Phone'))->sortable();
+        $grid->column('start_date', __('Start Date'))->sortable();
+        $grid->column('end_date', __('End Date'))->sortable();
 
 
 
@@ -158,26 +193,15 @@ class WeatherSubscriptionController extends AdminController
                     return '-';
                 }
                 return ($created_at);
-            })->limit(20);
+            })->limit(20)
+            ->hide();
         $grid->column('created_at', __('Created'))->sortable()
             ->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
             })->hide();
 
 
-        $grid->column('is_paid', __('Payment Status'))
-            ->sortable()
-            ->using([
-                'PAID' => 'PAID',
-                'No' => 'NOT PAID',
-            ], 'NOT PAID')
-            ->label([
-                'PAID' => 'success',
-                'NOT PAID' => 'danger',
-                'No' => 'danger',
-                'NO' => 'danger',
-            ], 'danger')
-            ->filter(['PAID' => 'PAID', 'NO' => 'NOT PAID']);
+
         $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide();
         $grid->column('payment_reference_id', __('Payment Reference ID'))->hide();
         $grid->column('TransactionStatus', __('Transaction Status'))->hide();
