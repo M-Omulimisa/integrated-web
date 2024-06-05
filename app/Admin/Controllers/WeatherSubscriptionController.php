@@ -148,15 +148,15 @@ class WeatherSubscriptionController extends AdminController
                 'NO' => 'danger',
             ], 'danger')
             ->filter(['PAID' => 'PAID', 'NO' => 'NOT PAID']);
-        $grid->column('location_id', __('Location id'))->hide();
+/*         $grid->column('location_id', __('Location id'))->hide(); */
 
         //start_date
 
 
 
 
-        $grid->column('email', __('Email'))->hide();
-
+        /*         $grid->column('email', __('Email'))->hide();
+ */
 
         /*         $grid->column('outbox_generation_status', __('Outbox generation status'))->hide();
         $grid->column('outbox_reset_status', __('Outbox reset status'))->hide();
@@ -201,7 +201,7 @@ class WeatherSubscriptionController extends AdminController
             })->hide();
 
 
-
+        /* 
         $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide();
         $grid->column('payment_reference_id', __('Payment Reference ID'))->hide();
         $grid->column('TransactionStatus', __('Transaction Status'))->hide();
@@ -210,7 +210,7 @@ class WeatherSubscriptionController extends AdminController
         $grid->column('TransactionCurrencyCode', __('Transaction Currency Code'))->hide();
         $grid->column('TransactionReference', __('Transaction Reference'))->hide();
         $grid->column('TransactionInitiationDate', __('Transaction Initiation Date'))->hide();
-        $grid->column('TransactionCompletionDate', __('Transaction Completion Date'))->hide();
+        $grid->column('TransactionCompletionDate', __('Transaction Completion Date'))->hide(); */
 
         $grid->column('show_details', __('Details'))
             ->display(function () {

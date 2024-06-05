@@ -228,7 +228,7 @@ class MarketSubscriptionController extends AdminController
                 'NOT PAID' => 'danger'
             ])
             ->filter(['PAID' => 'PAID', 'NOT PAID' => 'NOT PAID']);
-        $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide()->sortable();
+   /*      $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide()->sortable();
         $grid->column('payment_reference_id', __('Payment Reference ID'))->hide();
         $grid->column('TransactionStatus', __('Transaction Status'))->hide();
         $grid->column('TransactionAmount', __('Transaction Amount'))->hide();
@@ -236,7 +236,7 @@ class MarketSubscriptionController extends AdminController
         $grid->column('TransactionCurrencyCode', __('Transaction Currency Code'))->hide();
         $grid->column('TransactionReference', __('Transaction Reference'))->hide();
         $grid->column('TransactionInitiationDate', __('Transaction Initiation Date'))->hide();
-        $grid->column('TransactionCompletionDate', __('Transaction Completion Date'))->hide();
+        $grid->column('TransactionCompletionDate', __('Transaction Completion Date'))->hide(); */
         $grid->column('is_processed', __('Is Processed'))
             ->hide()
             ->label([
