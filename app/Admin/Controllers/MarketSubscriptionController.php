@@ -78,7 +78,8 @@ class MarketSubscriptionController extends AdminController
         Utils::process_market_subs(true);
 
         $grid = new Grid(new MarketSubscription());
-        $grid->export(function ($export) {            $export->filename('market_subscriptions_' . date('Y-m-d'));
+        $grid->export(function ($export) {
+            $export->filename('market_subscriptions_' . date('Y-m-d'));
             $export->column('status', function ($value, $original) {
                 return $value == 1 ? 'Active' : 'Expired';
             });
