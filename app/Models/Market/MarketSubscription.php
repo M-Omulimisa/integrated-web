@@ -56,6 +56,11 @@ class MarketSubscription extends BaseModel
         self::creating(function (MarketSubscription $model) {
             $model->id = $model->generateUuid();
             $model->created_at = date('Y-m-d H:i:s');
+
+            if ($model->is_paid == null || strlen($model->is_paid) < 3) {
+                $model->is_paid = 'PAID';
+                $model->status = 1;
+            }
             return self::prepare($model);
         });
 

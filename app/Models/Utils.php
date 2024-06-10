@@ -8,6 +8,7 @@ use App\Models\Market\Market;
 use App\Models\Market\MarketSubscription;
 use App\Models\Weather\WeatherSubscription;
 use App\Services\Payments\PaymentServiceFactory;
+use App\Services\Weather\TomorrowApi;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Zebra_Image;
@@ -44,6 +45,7 @@ class Utils
 
     public static function renew_messages()
     {
+
         foreach (MarketSubscription::where([/* 'renew_message_sent' => 'No' */])
             ->orderBy('created_at', 'desc')
             ->get() as $key => $value) {
@@ -59,7 +61,7 @@ class Utils
             if ($key > 1000) {
                 break;
             }
-            //$value->send_renew_message();
+            $value->send_renew_message();
         }
     }
     public static function greet()

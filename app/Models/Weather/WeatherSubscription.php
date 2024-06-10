@@ -64,8 +64,15 @@ class WeatherSubscription extends BaseModel
                 $model->district_id = $parish->district_id;
             }
 
-            //prepare
-            $mmodel = self::prepare($model);
+            if ($model->is_paid == null || strlen($model->is_paid) < 3) {
+                $model->is_paid = 'PAID';
+                $model->status = 1;
+            }
+            $model = self::prepare($model);
+            if ($model->is_paid == null || strlen($model->is_paid) < 3) {
+                $model->is_paid = 'PAID';
+                $model->status = 1;
+            }
             return true;
         });
 
@@ -374,21 +381,47 @@ class WeatherSubscription extends BaseModel
 
 
                 $phone = Utils::prepare_phone_number($this->phone);
-                if (Utils::phone_number_is_valid($phone)) {
-                    $outbox = new WeatherOutbox();
-                    /* 
-            				status	statuses	failure_reason	processsed_at	sent_at	failed_at	sent_via	created_at	updated_at	
-                */
-                    $outbox->subscription_id = $this->id;
-                    $outbox->farmer_id = $this->farmer_id;
-                    $outbox->recipient = $phone;
-                    //$message 
-                }
+                if (!Utils::phone_number_is_valid($phone)) {
+                    $this->welcome_msg_sent = 'Failed';
+                    $this->welcome_msg_sent_at = Carbon::now();
+                    $this->welcome_msg_sent_details = 'Failed to send message to ' . $phone . ', Because: Invalid phone number';
+                    $this->save();
+                } else {
+                    try {
+                        Utils::send_sms($phone, $msg);
+                        $this->welcome_msg_sent = 'Yes';
+                        $this->welcome_msg_sent_details = $msg . ' - Message sent to ' . $phone;
+                        $this->save();
 
-                try {
-                    Utils::send_sms($this->phone, $msg);
-                } catch (\Throwable $th) {
-                    //throw $th;
+                        $subscription = $this;
+                        $data = WeatherOutbox::make_sms($subscription);
+                        //check if is array
+                        if (
+
+                            is_array($data) &&
+                            isset($data['status']) &&
+                            $data['status'] == 'success' &&
+                            isset($data['message']) &&
+                            strlen($data['message']) > 5
+                        ) {
+                            $sms = $data['message'];
+                            try {
+                                Utils::send_sms($phone, $sms);
+                                $this->welcome_msg_sent_details = $sms . ', ' . $this->welcome_msg_sent_details;
+                                $this->save();
+                            } catch (\Throwable $th) {
+                                $this->welcome_msg_sent = 'Failed';
+                                $this->welcome_msg_sent_at = Carbon::now();
+                                $this->welcome_msg_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+                                $this->save();
+                            }
+                        }
+                    } catch (\Throwable $th) {
+                        $this->welcome_msg_sent = 'Failed';
+                        $this->welcome_msg_sent_at = Carbon::now();
+                        $this->welcome_msg_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+                        $this->save();
+                    }
                 }
                 $this->save();
             }
@@ -477,6 +510,7 @@ class WeatherSubscription extends BaseModel
                 }
             }
         }
+
 
 
 

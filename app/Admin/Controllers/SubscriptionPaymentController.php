@@ -42,7 +42,7 @@ class SubscriptionPaymentController extends AdminController
 
         )
             ->placeholder('Search by account, reference id, reference, narrative, details, error message');
-        $grid->column('id', __('Id'))->sortable();
+        $grid->column('id', __('Id'))->sortable()->hide();
         $grid->column('weather_subscription_id', __('Weather subscription id'));
         $grid->column('market_subscription_id', __('Market subscription id'));
         $grid->column('insurance_subscription_id', __('Insurance subscription id'));
@@ -56,11 +56,11 @@ class SubscriptionPaymentController extends AdminController
         $grid->column('sms_api', __('Sms api'))->hide();
         $grid->column('amount', __('Amount'));
         $grid->column('status', __('Status'))
-        ->filter([
-            'SUCCESSFUL' => 'SUCCESSFUL',
-            'INDETERMINATE' => 'INDETERMINATE',
-            'FAILED' => 'FAILED',
-        ])->sortable();
+            ->filter([
+                'SUCCESSFUL' => 'SUCCESSFUL',
+                'INDETERMINATE' => 'INDETERMINATE',
+                'FAILED' => 'FAILED',
+            ])->sortable();
         $grid->column('details', __('Details'));
         $grid->column('error_message', __('Error message'));
         $grid->column('created_at', __('Created at'));

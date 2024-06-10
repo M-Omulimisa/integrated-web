@@ -163,6 +163,7 @@ class ApiShopController extends Controller
         $subscription->organisation_id = $u->organisation_id;
         $subscription->package_id = $package->id;
         $subscription->phone = $u->phone;
+        $subscription->is_paid = 'NOT PAID'; 
         $phone = $u->phone;
         $phone = Utils::prepare_phone_number($phone);
         if (!Utils::phone_number_is_valid($phone)) {
@@ -317,30 +318,7 @@ class ApiShopController extends Controller
             return $this->error('Failed to save subscription.');
         }
 
-        //Send sms, subscription successfull, open the app to pay
-        //$msg = "Hello, your weather info subscription worth UGX " . number_format($subscription->total_price) . ", " . $subscription->frequency . "(" . $subscription->period_paid . ") was successful. Alerts will be sent between midnight and 6AM. M-Omulimisa";
-        $msg = "Hello, your weather info subscription worth UGX " . number_format($subscription->total_price) . ", " . $subscription->frequency . "(" . $subscription->period_paid . ") was successful.  Please open the app to pay. M-Omulimisa";
-
-        try {
-            $resp = Utils::send_sms($phone_number, $msg);
-        } catch (Exception $e) {
-        }
-
-
-        //days
-        /* 
-
-id	
-name	
-	
-lat	
-lng	
-district_id	
-	
-
-			payment_id	MNOTransactionReferenceId	payment_reference_id	TransactionStatus	TransactionAmount	TransactionCurrencyCode	TransactionReference	TransactionInitiationDate	TransactionCompletionDate	is_paid	total_price	
-
-   */
+        $subscription->is_paid = 'NOT PAID';
 
         return $this->success($subscription, 'Weather subscription saved successfully.');
     }
@@ -385,7 +363,7 @@ district_id
             $administrator_id = Utils::get_user_id($r);
             $u = User::find($administrator_id);
         }
-        
+
         if ($u == null) {
             return $this->error('User not found.');
         }

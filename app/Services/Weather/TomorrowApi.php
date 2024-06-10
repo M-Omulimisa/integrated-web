@@ -159,9 +159,9 @@ class TomorrowApi
                 $errorCode = $responseStatusCode;
                 $responseFailureJson = json_decode($responseBodyAsString); 
 
-                $apiCode = $responseFailureJson->code;
-                $apiErrorType = $responseFailureJson->type;
-                $errorResponseMsg = $responseFailureJson->message;
+                $apiCode = $responseStatusCode;
+                $apiErrorType = $responseStatusCode;
+                $errorResponseMsg = $responseFailureJson;
 
                 if ($errorCode == 404) {
                 }
