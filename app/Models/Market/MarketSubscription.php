@@ -281,8 +281,8 @@ class MarketSubscription extends BaseModel
         if (((int)($value)) == 1) {
             if ($now->gt($then)) {
                 $this->send_renew_message();
-                $this->status = 0;
-                $this->save();
+                $sql = "UPDATE market_subscriptions SET status = 0 WHERE id = '{$this->id}'";
+                DB::update($sql); 
                 return 0;
             }
         }
