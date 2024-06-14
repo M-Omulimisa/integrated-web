@@ -276,12 +276,8 @@ class MarketSubscription extends BaseModel
 
     public function getStatusAttribute($value)
     {
-        return $value;
-
         $now = Carbon::now();
         $then = Carbon::parse($this->end_date);
-
-
         if (((int)($value)) == 1) {
             if ($now->gt($then)) {
                 $this->send_renew_message();
@@ -290,7 +286,6 @@ class MarketSubscription extends BaseModel
                 return 0;
             }
         }
-
         if ($value == 1) {
             return 1;
         }
