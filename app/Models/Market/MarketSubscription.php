@@ -277,46 +277,17 @@ class MarketSubscription extends BaseModel
     public function getStatusAttribute($value)
     {
         return $value;
-        if ($this->MNOTransactionReferenceId == null || strlen($this->MNOTransactionReferenceId) < 3) {
-            $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
-            if ($rec != null) {
-                if ($rec->status == 'SUCCESSFUL') {
-                    $this->is_paid = 'PAID';
-                } else {
-                    $this->is_paid = 'NOT PAID';
-                }
-                $this->MNOTransactionReferenceId = $rec->reference_id;
-                $this->TransactionReference = $rec->reference;
-                $this->payment_reference_id = $rec->id;
-                $this->TransactionStatus = $rec->status;
-                $this->TransactionAmount = $rec->amount;
-                $this->TransactionCurrencyCode = 'UGX';
-                $this->TransactionInitiationDate = $rec->created_at;
-                $this->TransactionCompletionDate = $rec->updated_at;
-                $this->total_price = $rec->amount;
-                $this->save();
-            }
-        }
 
         $now = Carbon::now();
         $then = Carbon::parse($this->end_date);
-        if ($now->gt($then)) {
-            if ($value == 1) {
+
+
+        if (((int)($value)) == 1) {
+            if ($now->gt($then)) {
+                $this->send_renew_message();
                 $this->status = 0;
                 $this->save();
-            }
-            return 0;
-        } else {
-            if ($value == 0) {
-                $this->status = 1;
-                $this->save();
-            }
-        }
-
-        if ($value == 1) {
-            if ($this->is_paid != 'PAID') {
-                $sql = "UPDATE market_subscriptions SET status = 0 WHERE id = '$this->id'";
-                DB::update($sql);
+                return 0;
             }
         }
 
