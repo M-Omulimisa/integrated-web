@@ -280,7 +280,7 @@ class MarketSubscription extends BaseModel
         $then = Carbon::parse($this->end_date);
         if (((int)($value)) == 1) {
             if ($now->gt($then)) {
-                self::send_renew_message_static($this);
+                //self::send_renew_message_static($this);
                 $sql = "UPDATE market_subscriptions SET status = 0 WHERE id = '{$this->id}'";
                 DB::update($sql);
                 return 0;
