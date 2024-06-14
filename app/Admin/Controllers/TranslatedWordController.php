@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\TranslatedWord;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -24,6 +25,21 @@ class TranslatedWordController extends AdminController
      */
     protected function grid()
     {
+        Utils::create_column(
+            (new TranslatedWord())->getTable(),
+            [
+                [
+                    'name' => 'lango',
+                    'type' => 'Text',
+                ],
+                [
+                    'name' => 'ateso',
+                    'type' => 'Text',
+                ],
+            ]
+        );
+
+
         $grid = new Grid(new TranslatedWord());
         $grid->model()->orderBy('word', 'asc');
         $grid->column('word', __('Word'))
@@ -46,6 +62,12 @@ class TranslatedWordController extends AdminController
             ->sortable()
             ->editable()
             ->filter('like');
+
+        //lango
+        $grid->column('lango', __('Lango'))->sortable()->editable()->filter('like');
+        //ateso
+        $grid->column('ateso', __('Ateso'))->sortable()->editable()->filter('like');
+
 
         return $grid;
     }
@@ -81,13 +103,18 @@ class TranslatedWordController extends AdminController
     {
         $form = new Form(new TranslatedWord());
 
-        $form->text('word', __('Word'))
+        $form->text('word', __('English Word'))
             ->required()
             ->rules('required|min:2');
         $form->text('luganda', __('Luganda'));
         $form->text('runyankole', __('Runyankole'));
         $form->text('acholi', __('Acholi'));
+
         $form->text('lumasaba', __('Lumasaba'));
+
+        $form->text('lango', __('Lango'));
+        $form->text('ateso', __('Ateso'));
+
 
         return $form;
     }
