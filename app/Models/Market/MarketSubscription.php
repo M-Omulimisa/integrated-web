@@ -280,9 +280,9 @@ class MarketSubscription extends BaseModel
         $then = Carbon::parse($this->end_date);
         if (((int)($value)) == 1) {
             if ($now->gt($then)) {
-                $this->send_renew_message();
+                self::send_renew_message_static($this);
                 $sql = "UPDATE market_subscriptions SET status = 0 WHERE id = '{$this->id}'";
-                DB::update($sql); 
+                DB::update($sql);
                 return 0;
             }
         }
@@ -291,6 +291,124 @@ class MarketSubscription extends BaseModel
         }
         return 0;
     }
+
+    public static function send_renew_message_static($m)
+    {
+        if ($m->end_date == null || strlen($m->end_date) < 4) {
+            return;
+        }
+        $end_date = Carbon::parse($m->end_date);
+
+        $now = Carbon::now();
+        if ($now->lt($end_date)) {
+            $diff = $now->diffInDays($end_date);
+            $diff = abs($diff);
+            if ($diff < 2) {
+                if ($m->is_paid == 'PAID') {
+                    if ($m->pre_renew_message_sent != 'Yes') {
+                        if ($diff < 1) {
+                            $diff = 1;
+                        }
+                        $msg = "Your M-Omulimisa market information subscription for {$m->package->name} will expire in next $diff days, Please renew now to avoid disconnection.";
+                        $phone = Utils::prepare_phone_number($m->phone);
+                        try {
+                            Utils::send_sms($phone, $msg);
+                            $m->pre_renew_message_sent = 'Yes';
+                            $m->pre_renew_message_sent_at = Carbon::now();
+                            $m->pre_renew_message_sent_details = $msg . ' - Message sent to ' . $phone;
+                            $m->save();
+                        } catch (\Throwable $th) {
+                            $m->pre_renew_message_sent = 'Failed';
+                            $m->pre_renew_message_sent_at = Carbon::now();
+                            $m->pre_renew_message_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+                            $m->save();
+                        }
+                    }
+                }
+            }
+        }
+
+
+        $now = Carbon::now();
+        $end_date = Carbon::parse($m->end_date);
+        if ($m->is_paid == 'PAID' && $m->renew_message_sent != 'Yes') {
+            if ($m->status != 1) {
+                $phone = Utils::prepare_phone_number($m->phone);
+                $msg = "Your M-Omulimisa market information subscription for {$m->package->name} has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+                try {
+                    Utils::send_sms($phone, $msg);
+                    $m->renew_message_sent = 'Yes';
+                    $m->renew_message_sent_at = Carbon::now();
+                    $m->renew_message_sent_details = $msg . ' - Message sent to ' . $phone;
+                    $m->save();
+                } catch (\Throwable $th) {
+                    $m->renew_message_sent = 'Failed';
+                    $m->renew_message_sent_at = Carbon::now();
+                    $m->renew_message_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+                    $m->save();
+                }
+            }
+        }
+        $created_date = Carbon::parse($m->created_at);
+
+        //welcome_msg_sent
+        if ($now->lt($end_date) && $now->gt($created_date) && $m->is_paid == 'PAID') {
+
+            $diff = $now->diffInDays($created_date);
+            $diff = abs($diff);
+            if ($diff > 3) {
+                $m->welcome_msg_sent = 'Skipped';
+                $m->welcome_msg_sent_at = Carbon::now();
+                $m->welcome_msg_sent_details = 'Skipped because the subscription is older than 3 days. (Days: ' . $diff . ')';
+                $m->save();
+            } else {
+                if ($m->welcome_msg_sent != 'Yes' && $m->welcome_msg_sent != 'Skipped') {
+                    $m->welcome_msg_sent = 'Yes';
+                    $m->welcome_msg_sent_at = Carbon::now();
+                    $mgs = "You have subscribed to M-Omulimisa market information updates. You will now receive updates twice a week. Thank you for subscribing.";
+                    $m->welcome_msg_sent_details = $mgs;
+                    try {
+                        Utils::send_sms($m->phone, $msg);
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+
+                    $msg = MarketPackageMessage::where([
+                        'package_id' => $m->package_id,
+                        'language_id' => $m->language_id,
+                    ])
+                        ->orderBy('created_at', 'desc')
+                        ->first();
+                    if ($msg != null) {
+                        MarketPackageMessage::prepareMessages($msg);
+                        $outbox = MarketOutbox::where([
+                            'subscription_id' => $m->id,
+                        ])
+                            ->orderBy('created_at', 'desc')
+                            ->first();
+                        if ($outbox != null) {
+                            $recipient = Utils::prepare_phone_number($outbox->recipient);
+                            if (!Utils::phone_number_is_valid($recipient)) {
+                                $outbox->status = 'Failed';
+                                $outbox->failure_reason = "Invalid phone number";
+                                $outbox->save();
+                            } else {
+                                $outbox->status = 'Sent';
+                                Utils::send_sms($recipient, $outbox->message);
+                                //message
+                                $m->welcome_msg_sent_details = "MARKET UPDATE: " . $outbox->message . ', WELCOME MESSAGE: ' . $this->welcome_msg_sent_details;
+                                $outbox->sent_at = Carbon::now();
+                                $outbox->save();
+                            }
+                        }
+                    }
+                    $m->save();
+                }
+            }
+        }
+    }
+
+
 
 
     public function send_renew_message()
