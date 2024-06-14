@@ -14,6 +14,7 @@ class MarketPackage extends BaseModel
     protected $fillable = [
         'country_id',
         'name',
+        'ussd_name',
         'menu',
         'status'
     ];

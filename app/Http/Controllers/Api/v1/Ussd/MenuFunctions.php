@@ -342,12 +342,10 @@ class MenuFunctions
 
 
     public function getPackages(){
-
         $packages =  MarketPackage::with('ents')->whereStatus(true)
         ->orderBy('menu', 'ASC')->get();
 
         return $packages;
-
     }
 
     /**

@@ -31,6 +31,7 @@ class MarketPackageController extends AdminController
         $grid->quickSearch('name')->placeholder('Search by name');
         $grid->model()->orderBy('name', 'asc');
         $grid->column('name', __('Name'))->sortable();
+        $grid->column('ussd_name', __('USSD Name'))->sortable();
         $grid->column('ents', __('Enterprise'))->display(function ($ents) {
             $ents = array_map(function ($ent) {
                 return "<span class='label label-success'>{$ent['name']}</span>";
@@ -59,6 +60,7 @@ class MarketPackageController extends AdminController
         $show->field('id', __('Id'));
         $show->field('country_id', __('Country id'));
         $show->field('name', __('Name'));
+        $show->field('ussd_name', __('USSD Name'));
         $show->field('menu', __('Menu'));
         $show->field('status', __('Status'));
 
@@ -79,19 +81,16 @@ class MarketPackageController extends AdminController
 
         $form->select('country_id',  __('Select a country'))->options(Country::all()->pluck('name', 'id'));
         $form->text('name', __('Name of package'));
+        $form->text('ussd_name', __('USSD Name'));
         $form->hidden('menu')->default($next_market_package);
-
         $form->multipleSelect('ents', 'Select enterprise')->options(Enterprise::all()->pluck('name', 'id'));
-
         $form->hasMany('pricing', function (Form\NestedForm $form) {
-
             $form->select('frequency', 'Select frequency')->options(['trial' => 'trial', 'daily' => 'daily', 'weekly' => 'weekly', 'monthly' => 'monthly', 'yearly' => 'yearly']);
             $form->text('cost', __('Cost of package'));
             $form->hidden('messages')->default(1);
         });
 
         $form->deleted(function () {
-
             info("gg");
         });
 

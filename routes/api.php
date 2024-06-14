@@ -267,7 +267,7 @@ Route::group([
 
     Route::middleware('client_credentials')->group(function () {
         Route::POST('logout', function () {
-            Route::POST('logout', [AuthApiController::class, 'logout']);
+            Route::POST('logout', [ApiAuthController::class, 'logout']);
         });
     });
 
