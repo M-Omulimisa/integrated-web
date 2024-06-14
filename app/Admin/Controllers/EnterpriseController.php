@@ -52,7 +52,8 @@ class EnterpriseController extends AdminController
 
         $grid->column('name', __('Name'));
         $grid->column('category', __('Category'));
-        $grid->column('include_in_insurance', __('Include in insurance'));
+        $grid->column('include_in_insurance', __('Include in insurance'))->default('Yes');
+        $grid->column('is_perrenial_crop', __('Is Perrenial Crop'))->default('No');
 
         return $grid;
     }
@@ -89,7 +90,8 @@ class EnterpriseController extends AdminController
 
         $form->text('name', __('Name'));
         $form->text('category', __('Category'));
-        $form->radio('include_in_insurance', __('Include in insurance'))->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
+        $form->radio('include_in_insurance', __('Include in insurance'))->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required')->default('Yes');
+        $form->radio('is_perrenial_crop', __('Is Perrenial Crop'))->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required')->default('No');
         $form->textarea('description', __('Description'));
 
         return $form;
