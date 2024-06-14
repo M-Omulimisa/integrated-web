@@ -29,7 +29,7 @@ class UserController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new User());
-
+        $grid->quickSearch('name', 'email', 'phone','first_name','last_name')->placeholder('Search by name, email, phone, first name, last name'); 
         Utils::create_column(
             (new User())->getTable(),
             [
