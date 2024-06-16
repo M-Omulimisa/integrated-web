@@ -21,7 +21,7 @@ class InsuranceAPIController extends Controller
     public function getServiceProvider($phoneNumber, $param)
     {
         $dialing_code = substr($phoneNumber, 0, 5);
-        $provider = \App\Models\Settings\CountryProvider::where('codes', 'LIKE', '%'.$dialing_code.'%')->first();
+        $provider = \App\Models\Settings\CountryProvider::where('codes', 'LIKE', '%' . $dialing_code . '%')->first();
         return $provider ? $provider->$param : null;
     }
 
@@ -32,13 +32,13 @@ class InsuranceAPIController extends Controller
         return $this->success($markup->amount, 'Success');
     }
 
-    public function generateReference($api){
-        do{
-          $reference_id = ltrim(mt_rand(100, 999999999), '0');
-        }
-        while (!is_null(\App\Models\Payments\SubscriptionPayment::whereReferenceId($reference_id)->wherePaymentApi($api)->first()));
-            return $reference_id;      
-      }
+    public function generateReference($api)
+    {
+        do {
+            $reference_id = ltrim(mt_rand(100, 999999999), '0');
+        } while (!is_null(\App\Models\Payments\SubscriptionPayment::whereReferenceId($reference_id)->wherePaymentApi($api)->first()));
+        return $reference_id;
+    }
 
     public function submitSubscriptionRequest(Request $r)
     {
@@ -69,46 +69,50 @@ class InsuranceAPIController extends Controller
                 "paid"                      => $r->paid,
                 "completed"                 => $r->completed,
                 "pending"                   => $r->pending,
-                "cancelled"                 => $r->cancelled,       
+                "cancelled"                 => $r->cancelled,
             ]);
 
             // Retrieve the session data for the given session ID and phone number.
             $sessionData = \App\Models\Ussd\UssdSessionData::whereSessionId($r->sessionID)->wherePhoneNumber($r->phoneNumber)->first();
 
             // Create a new Subscription record using the subscription_data array and assign it to $subscription variable.
-            if ($sessionData != null) {
-                // Get the payment API for the subscriber's phone number.
-                $api = $this->getServiceProvider($sessionData->insurance_subscriber, 'payment_api');
-                
-                print_r($sessionData->insurance_subscriber);
+            echo $r->insurance_type;
 
-                // Create an array containing the data for the new SubscriptionPayment record.
-                $payment = [
-                    'tool' => 'USSD',
-                    'insurance_session_id' => $sessionData->id,
-                    'method'    => 'MM',
-                    'provider'  => $this->getServiceProvider($sessionData->insurance_subscriber, 'name'),
-                    'account'   => $sessionData->insurance_subscriber,
-                    'amount'    => $sessionData->insurance_amount,
-                    'sms_api'   => $this->getServiceProvider($sessionData->insurance_subscriber, 'sms_api'),
-                    'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' at '.$sessionData->insurance_coverage.' coverage  insurance subscription',
-                    'reference_id' => $this->generateReference($api),
-                    'payment_api'  => $api,
-                    'status'       => 'INITIATED'
-                ];
+            if ($r->insurance_type == "crop" || $r->insurance_type == null) {
+                if ($sessionData != null) {
+                    // Get the payment API for the subscriber's phone number.
+                    $api = $this->getServiceProvider($sessionData->insurance_subscriber, 'payment_api');
 
-                // Create a new SubscriptionPayment record using the payment array and return true if successful.
-                if(\App\Models\Payments\SubscriptionPayment::create($payment))  {
-                    return $this->success("All good", 'Success');
-                }else{
-                    return $this->error("Something went wrong. Please contact system admins.");  
+                    // Create an array containing the data for the new SubscriptionPayment record.
+                    $payment = [
+                        'tool' => 'USSD',
+                        'insurance_session_id' => $sessionData->id,
+                        'method'    => 'MM',
+                        'provider'  => $this->getServiceProvider($sessionData->insurance_subscriber, 'name'),
+                        'account'   => $sessionData->insurance_subscriber,
+                        'amount'    => $sessionData->insurance_amount,
+                        'sms_api'   => $this->getServiceProvider($sessionData->insurance_subscriber, 'sms_api'),
+                        'narrative' => 'Insurance subscription',
+                        'reference_id' => $this->generateReference($api),
+                        'payment_api'  => $api,
+                        'status'       => 'INITIATED'
+                    ];
+
+                    // Create a new SubscriptionPayment record using the payment array and return true if successful.
+                    if (\App\Models\Payments\SubscriptionPayment::create($payment)) {
+                        return $this->success("All good", 'Success');
+                    } else {
+                        return $this->error("Something went wrong. Please contact system admins.");
+                    }
+                } else {
+                    return $this->error("Error saving session data");
                 }
-            }else{
-                return $this->error("Error saving session data");
+            } else {
+                return $this->success("All good", 'Success');
             }
-            } catch (\Throwable $th) {
-                return $this->error($th->getMessage());
-            }
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
     }
 
     public function get_premium_option_details(Request $r)
@@ -118,7 +122,7 @@ class InsuranceAPIController extends Controller
         return $this->success($enterprise, 'Success');
     }
 
-    public function regions() 
+    public function regions()
     {
         $items = \App\Models\Settings\Region::where([
             "menu_status" => 1
@@ -148,9 +152,9 @@ class InsuranceAPIController extends Controller
         $currentDate = now(); // Get the current date and time
 
         $items = \App\Models\Settings\Season::whereStatus(true)
-                        ->whereDate('cut_off_date', '>=', $currentDate) // Filter by end date
-                        ->orderBy('start_date', 'ASC')
-                        ->get();
+            ->whereDate('cut_off_date', '>=', $currentDate) // Filter by end date
+            ->orderBy('start_date', 'ASC')
+            ->get();
 
         return $this->success($items, 'Success');
     }
