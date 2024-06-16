@@ -2,11 +2,6 @@
 
 namespace App\Http\Controllers\Api\v1\Ussd;
 
-use Log;
-use Response;
-use Validator;
-use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\Ussd\MenuFunctions;
@@ -476,9 +471,7 @@ class MenuController extends Controller
             // Back to this step -- Retrieve previous input
             if ($last_menu == "market_confirmation") $input_text = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_frequency_count');
 
-
             if (strcasecmp($_frequency, "trial") == 0) {
-
                 $check_for_previous_subscription = MarketSubscription::where('phone', $phoneNumber)->where('frequency', 'Trial')->first();
 
                 if ($check_for_previous_subscription === null) {
@@ -505,7 +498,6 @@ class MenuController extends Controller
                     $current_menu   = "market_cancelled";
                 }
             } else {
-
                 if (!is_numeric($input_text) && $input_text >= 0) {
                     $response       = "Invalid input!\n";
                     $response       .= "Enter number of " . $_frequency;
@@ -538,7 +530,6 @@ class MenuController extends Controller
             }
         } elseif ($last_menu == "market_confirmation") {
             // check if crop is valid
-
             $action         = "end";
 
             if ($input_text == '1') {
@@ -568,8 +559,6 @@ class MenuController extends Controller
                         $response = "Subscription was unsuccessful. Please try again";
                     }
                 }
-
-
 
                 $current_menu   = "market_confirmed";
                 $field = 'market_confirmation';
@@ -619,7 +608,6 @@ class MenuController extends Controller
             $response       = "Invalid input!\n";
             $current_menu   = "invalid_input";
         } elseif ($last_menu == "weather_district") {
-
             $district = $this->menu_helper->getMostSimilarDistrict($input_text, "Uganda");
             $input_text = $district->name ?? null;
 
@@ -643,7 +631,6 @@ class MenuController extends Controller
                 $current_menu   = "weather_district";
             }
         } elseif ($last_menu == "weather_subcounty") {
-
             $districtId = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_district_id');
             $subcounty = $this->menu_helper->getSelectedSubcounty($input_text, $districtId);
             $input_text = $subcounty->name ?? null;
@@ -783,7 +770,6 @@ class MenuController extends Controller
             }
         } elseif ($last_menu == "weather_confirmation") {
             // check if crop is valid
-
             $action         = "end";
 
             if ($input_text == '1') {
@@ -809,7 +795,6 @@ class MenuController extends Controller
 
         /******************* START ADVISORY SHIT *******************/
         elseif ($last_menu == "advisory_option_menu") {
-
             if ($input_text == 1) {
 
                 $action         = "request";
@@ -841,7 +826,6 @@ class MenuController extends Controller
                 $current_menu   = "advisory_option_menu";
             }
         } elseif ($last_menu == "tip_language_menu") {
-
             $menu_id = 4;
 
             $language_check = $this->menu_helper->checkIfUssdLanguageIsValid($input_text);
@@ -897,7 +881,6 @@ class MenuController extends Controller
 
             $current_menu   = "advisory_subtopic_menu";
         } elseif ($last_menu == "advisory_subtopic_menu") {
-
             dispatch(new SendUssdAdvisoryMessage($sessionId, $input_text));
 
             $ussd_lang =  $this->menu_helper->getSessionLanguage($sessionId);
@@ -921,7 +904,6 @@ class MenuController extends Controller
 
             $current_menu  = "Sending advisory";
         } elseif ($last_menu == "evaluation_language_menu") {
-
             $menu_id = 4;
 
             $language = UssdLanguage::select('id')->where('menu_id', $menu_id)->where('position', $input_text)->first();
@@ -932,7 +914,6 @@ class MenuController extends Controller
                 $response       = "Invalid input!\n";
                 $current_menu   = "evaluation_language_menu";
             } else {
-
                 $data = [
 
                     'language_id' => $language->id
@@ -952,7 +933,6 @@ class MenuController extends Controller
                 $current_menu   = "advisory_evaluation_two";
             }
         } elseif ($last_menu == "advisory_evaluation_two") {
-
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 1, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(2, $sessionId);
@@ -966,7 +946,6 @@ class MenuController extends Controller
 
             $current_menu   = "advisory_evaluation_three";
         } elseif ($last_menu == "advisory_evaluation_three") {
-
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 2, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(3, $sessionId);
@@ -980,7 +959,6 @@ class MenuController extends Controller
 
             $current_menu   = "advisory_evaluation_four";
         } elseif ($last_menu == "advisory_evaluation_four") {
-
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 3, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(4, $sessionId);
@@ -994,7 +972,6 @@ class MenuController extends Controller
 
             $current_menu   = "advisory_evaluation_five";
         } elseif ($last_menu == "advisory_evaluation_five") {
-
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 4, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(5, $sessionId);
@@ -1008,7 +985,6 @@ class MenuController extends Controller
 
             $current_menu   = "advisory_evaluation_six";
         } elseif ($last_menu == "advisory_evaluation_five") {
-
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 4, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(5, $sessionId);
@@ -1022,7 +998,6 @@ class MenuController extends Controller
 
             $current_menu   = "advisory_evaluation_six";
         } elseif ($last_menu == "advisory_evaluation_six") {
-
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 5, $input_text);
 
             $evaluation_questions =   $this->menu_helper->getEvaluationQuestions(6, $sessionId);
@@ -1049,9 +1024,7 @@ class MenuController extends Controller
 
             $current_menu   = "advisory_evaluation_end";
         } elseif ($last_menu == "advisory_evaluation_end") {
-
             $save_answer = $this->menu_helper->saveEvaluationAnswer($sessionId, 7, $input_text);
-
             $action         = "end";
             $response       = "Thank you.";
             $current_menu  = "advisory_evaluation_end";
@@ -1060,8 +1033,6 @@ class MenuController extends Controller
             $current_menu = "system_error";
             $action         = "end";
         }
-
-
 
         //----------------HANDLE THE ACTUAL SENDING OF THE USSD CODE REQUEST--------------------------
 

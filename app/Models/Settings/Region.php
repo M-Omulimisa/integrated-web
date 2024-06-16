@@ -17,7 +17,6 @@ class Region extends BaseModel
         'name', 'menu_status'
     ];
 
-
     public function enterprises()
     {
         return $this->belongsToMany(Enterprise::class);

@@ -58,6 +58,18 @@ class InsuranceAPIController extends Controller
                 "insurance_coverage"        => $r->coverage,
                 "confirmation_message"      => 1,
                 "insurance_region_id"       => $r->regionID,
+
+                "agent_id"                  => $r->agent_id,
+                "insurer_name"              => $r->insurer_name,
+                "insurance_type"            => $r->insurance_type,
+                "surname"                   => $r->surname,
+                "telephone"                 => $r->telephone,
+                "other_name"                => $r->other_name,
+                "payment_phone"             => $r->payment_phone,
+                "paid"                      => $r->paid,
+                "completed"                 => $r->completed,
+                "pending"                   => $r->pending,
+                "cancelled"                 => $r->cancelled,       
             ]);
 
             // Retrieve the session data for the given session ID and phone number.
@@ -65,9 +77,10 @@ class InsuranceAPIController extends Controller
 
             // Create a new Subscription record using the subscription_data array and assign it to $subscription variable.
             if ($sessionData != null) {
-
                 // Get the payment API for the subscriber's phone number.
                 $api = $this->getServiceProvider($sessionData->insurance_subscriber, 'payment_api');
+                
+                print_r($sessionData->insurance_subscriber);
 
                 // Create an array containing the data for the new SubscriptionPayment record.
                 $payment = [
@@ -86,7 +99,7 @@ class InsuranceAPIController extends Controller
 
                 // Create a new SubscriptionPayment record using the payment array and return true if successful.
                 if(\App\Models\Payments\SubscriptionPayment::create($payment))  {
-                    return $this->success("all good", 'Success');
+                    return $this->success("All good", 'Success');
                 }else{
                     return $this->error("Something went wrong. Please contact system admins.");  
                 }

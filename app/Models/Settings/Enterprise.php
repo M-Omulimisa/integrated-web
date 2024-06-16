@@ -12,7 +12,12 @@ class Enterprise extends BaseModel
     use Uuid, EnterpriseRelationship;
 
     protected $fillable = [
-        'name', 'category', 'description', 'unit_id'
+    'name',
+    'category', 
+    'description',
+    'unit_id', 
+    'include_in_insurance',
+    'is_perrenial_crop',
     ];
 
     /**
