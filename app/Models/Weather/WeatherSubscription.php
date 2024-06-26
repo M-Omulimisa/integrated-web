@@ -336,6 +336,7 @@ class WeatherSubscription extends BaseModel
             }
         }
 
+        return;
         $msg = "Your M-Omulimisa subscription to the weather information has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
         try {
             Utils::send_sms($phone, $msg);
