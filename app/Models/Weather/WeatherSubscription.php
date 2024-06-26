@@ -477,7 +477,7 @@ class WeatherSubscription extends BaseModel
         }
 
         //if status is 0, send renewal message
-        if ($this->status == 0 && $this->is_paid == 'PAID') {
+        if ($this->status == 0 && $this->is_paid == 'PAID' && $this->renew_message_sent != 'Yes') {
             //check expiry
             $now = Carbon::now();
             $end_date = Carbon::parse($this->end_date);
@@ -494,14 +494,14 @@ class WeatherSubscription extends BaseModel
                             $sub_text = $subcount->name_text;
                         }
 
-                        return;
-                        $msg = "Your M-Omulimisa weather subscription for $sub_text has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+
                         try {
-                            Utils::send_sms($phone, $msg);
                             $this->renew_message_sent = 'Yes';
                             $this->renew_message_sent_at = Carbon::now();
-                            $this->renew_message_sent_details = $msg . ', Message sent to ' . $phone;
                             $this->save();
+                            $msg = "Your M-Omulimisa weather subscription for $sub_text has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
+                            Utils::send_sms($phone, $msg);
+                            $this->renew_message_sent_details = $msg . ', Message sent to ' . $phone;
                         } catch (\Throwable $th) {
                             $this->renew_message_sent = 'Failed';
                             $this->renew_message_sent_at = Carbon::now();
