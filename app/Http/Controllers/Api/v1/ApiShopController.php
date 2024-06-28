@@ -163,7 +163,7 @@ class ApiShopController extends Controller
         $subscription->organisation_id = $u->organisation_id;
         $subscription->package_id = $package->id;
         $subscription->phone = $u->phone;
-        $subscription->is_paid = 'NOT PAID'; 
+        $subscription->is_paid = 'NOT PAID';
         $phone = $u->phone;
         $phone = Utils::prepare_phone_number($phone);
         if (!Utils::phone_number_is_valid($phone)) {
@@ -375,7 +375,6 @@ class ApiShopController extends Controller
 
     public function weather_subscriptions_status(Request $r)
     {
-
         if (!isset($r->id) || $r->id == null) {
             return $this->error('Item ID is missing.');
         }

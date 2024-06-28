@@ -3,15 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Settings\Enterprise;
-use App\Models\Settings\Region;
-use App\Models\Settings\Season;
 use App\Traits\ApiResponser;
-use App\Models\Insurance\InsurancePremiumOption;
-use Carbon\Carbon;
-use Dflydev\DotAccessData\Util;
-use Encore\Admin\Auth\Database\Administrator;
-use Exception;
 use Illuminate\Http\Request;
 
 class InsuranceAPIController extends Controller
@@ -161,7 +153,7 @@ class InsuranceAPIController extends Controller
 
     public function premium_options(Request $r)
     {
-        $items = \App\Models\Settings\InsurancePremiumOption::whereEnterpriseId($r)->whereStatus(TRUE)->first();
+        $items = \App\Models\Insurance\InsurancePremiumOption::whereEnterpriseId($r)->whereStatus(TRUE)->first();
         return $this->success($items, 'Success');
     }
 }

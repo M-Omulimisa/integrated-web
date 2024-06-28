@@ -29,9 +29,7 @@ class InsurancePremiumOptionController extends AdminController
         $grid->column('id', __('Id'))->hide();
         $grid->column('country_id', __('Country'))->display(function ($country_data) {
             if ($this->country == 'null') {
-
                 return $country_data;
-
             }
             return $this->country->name;
         });

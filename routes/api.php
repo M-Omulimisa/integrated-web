@@ -16,6 +16,7 @@ use App\Models\OnlineCourseAfricaTalkingCall;
 use App\Models\OnlineCourseLesson;
 use App\Models\OnlineCourseStudent;
 use App\Models\User;
+use App\Http\Controllers\Api\v1\WeatherInformationAPIController;
 use App\Models\Utils;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
@@ -209,8 +210,12 @@ Route::group([
         Route::post("weather-packages-subscribe", [ApiShopController::class, "weather_packages_subscribe"]);
         Route::get("languages", [ApiShopController::class, "languages"]);
         /*==============END OF Market Information Endpoints==============*/
- 
-        /*==============START OF Insurance Endpoints==============*/
+
+        /*==============START Of Simeon-made Weather Information Endpoints==============*/
+        Route::get("check_if_subscribed", [WeatherInformationAPIController::class, "checkIfSubscribed"]);
+        /*==============END Of Simeon-made Weather Information Endpoints==============*/
+
+        /*==============START OF Simeon-Made Insurance Endpoints==============*/
         Route::get("insurance_regions", [InsuranceAPIController::class, "regions"]);
         Route::post("get_region_supported_crops", [InsuranceAPIController::class, "get_region_supported_crops"]);
         Route::get("get_premium_option_details", [InsuranceAPIController::class, "get_premium_option_details"]);
@@ -262,8 +267,6 @@ Route::group([
         Route::get('my-permissions', [ApiAuthController::class, 'my_permissions']);
         Route::get('roles', [ApiAuthController::class, 'roles']);
     });
-
-
 
     Route::middleware('client_credentials')->group(function () {
         Route::POST('logout', function () {
