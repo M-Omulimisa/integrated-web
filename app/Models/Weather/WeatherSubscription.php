@@ -495,7 +495,7 @@ class WeatherSubscription extends BaseModel
 
                             $u = User::where('phone', $phone)->first();
 
-                            $msg = "ITS {$u->id} Your M-Omulimisa weather information update for {$sub_text} will expire in next $diff days, Please renew now to avoid disconnection.";
+                            $msg = "Your M-Omulimisa weather information update for {$sub_text} will expire in next $diff days, Please renew now to avoid disconnection.";
 
                             try {
                                 Utils::send_sms($phone, $msg);
