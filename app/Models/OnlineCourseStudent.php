@@ -115,6 +115,18 @@ class OnlineCourseStudent extends Model
                 $message = str_replace('STUDENT_NAME', $onlineCourseStudent->name, $message);
                 $message = str_replace('[COURSE_NAME]', $onlineCourseStudent->onlineCourse->title, $message);
                 $message = str_replace('COURSE_NAME', $onlineCourseStudent->onlineCourse->title, $message);
+
+                $u = User::where('phone', $onlineCourseStudent->phone)->first();
+
+                if ($u && $u->id) {
+                    Utils::sendNotification2([
+                        'msg' => $message,
+                        'headings' => 'New Notification',
+                        'receiver' => $u->id,
+                        'type' => 'text',
+                    ]);
+                }
+
                 Utils::send_sms($onlineCourseStudent->phone, $message);
             } catch (Exception $e) {
                 //throw $th;

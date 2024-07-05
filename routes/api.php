@@ -159,6 +159,17 @@ Route::post("upload-file", function (Request $r) {
                 $phone = Utils::prepare_phone_number($student->phone);
                 if (Utils::phone_number_is_valid($phone)) {
                     try {
+                        $u = User::where('phone', $phone)->first();
+
+                        if ($u && $u->id) {
+                            Utils::sendNotification2([
+                                'msg' => "'Your instructor has answered your question. Please call 0323200710 to listen to the answer.",
+                                'headings' => 'Market Info Campaigns',
+                                'receiver' => $u->id,
+                                'type' => 'text',
+                            ]);
+                        }
+
                         Utils::send_sms($phone, 'Your instructor has answered your question. Please call 0323200710 to listen to the answer.');
                     } catch (\Exception $e) {
                     }
@@ -560,6 +571,17 @@ Route::post('/online-course-api', function (Request $r) {
         $session->save();
         $number = '0701035192';
         try {
+            $u = User::where('phone', $session->callerNumber)->first();
+
+            if ($u && $u->id) {
+                Utils::sendNotification2([
+                    'msg' => 'Your are not enrolled to any course yet. Please contact M-Omulimisa on ' . $number . ' to get yourself enrolled to online farm courses today. Thank you.',
+                    'headings' => 'You are not enrolled to any course yet',
+                    'receiver' => $u->id,
+                    'type' => 'text',
+                ]);
+            }
+
             Utils::send_sms($session->callerNumber, 'Your are not enrolled to any course yet. Please contact M-Omulimisa on ' . $number . ' to get yourself enrolled to online farm courses today. Thank you.');
         } catch (\Exception $e) {
         }

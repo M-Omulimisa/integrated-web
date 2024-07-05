@@ -235,8 +235,6 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
     //send password reset link
     public function sendPasswordReset()
     {
-
-
         $email = $this->email;
         //check if mail is not valid using filter
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -264,6 +262,17 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
         if (Utils::phone_number_is_valid($phone_num)) {
             $sms_message = "Dear {$this->name}, You have requested to reset your password. Please use the TOKEN below to reset your password. {$token}";
             try {
+                $u = User::where('phone', $phone_num)->first();
+
+                if ($u && $u->id) {
+                    Utils::sendNotification2([
+                        'msg' => $sms_message,
+                        'headings' => 'Password has been reset',
+                        'receiver' => $u->id,
+                        'type' => 'text',
+                    ]);
+                }
+
                 Utils::send_sms($phone_num, $sms_message);
             } catch (\Throwable $th) {
             }

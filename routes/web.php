@@ -183,8 +183,8 @@ Route::get('boot-system', function () {
     Utils::process_weather_subs(true);
     Utils::process_market_subs(true);
     Utils::renew_messages(true);
-    
-    Utils::system_boot();  
+
+    Utils::system_boot();
     die('done');
 });
 
@@ -335,7 +335,6 @@ Route::get('auth/password-reset-form', function () {
  */
 
 Route::get('market-info-message-campaigns-send-now', function () {
-
     $campaign = MarketInfoMessageCampaign::find($_GET['id']);
     if ($campaign == null) {
         die("Campaign not found");
@@ -365,9 +364,21 @@ Route::get('market-info-message-campaigns-send-now', function () {
         if ($outbox->status == 'Sent') {
             continue;
         }
+
+        $u = User::where('phone', $recipient)->first();
+
+        if ($u && $u->id) {
+            Utils::sendNotification2([
+                'msg' => $outbox->message,
+                'headings' => 'Market Info Campaigns',
+                'receiver' => $u->id,
+                'type' => 'text',
+            ]);
+        }
+
         Utils::send_sms($recipient, $outbox->message);
         $outbox->status = 'Sent';
-        $outbox->sent_at = Carbon::now(); 
+        $outbox->sent_at = Carbon::now();
         $outbox->save();
         echo "$i. Successfully sent to $recipient <br>";
     }

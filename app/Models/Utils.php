@@ -19,8 +19,6 @@ use Illuminate\Support\Facades\Schema;
 
 class Utils
 {
-
-
     public static function short($string, $length = 100)
     {
         if (strlen($string) > $length) {
@@ -642,7 +640,6 @@ class Utils
         return;
     }
 
-
     public static function sendNotification2(
         $data = [
             'msg' => null,
@@ -760,8 +757,6 @@ class Utils
         return $responseData['id'];
     }
 
-
-
     public static function get_user_id($request = null)
     {
         if ($request == null) {
@@ -805,6 +800,7 @@ class Utils
         }
         return $c->format('d M, Y - h:m a');
     }
+
     public static function to_date_time($raw)
     {
         return Utils::my_date_time($raw);
@@ -1059,6 +1055,7 @@ class Utils
         try {
             $data =  file_get_contents($url, null, $ctx);
             return $data;
+            
         } catch (Exception $x) {
             return "Failed $url";
         }

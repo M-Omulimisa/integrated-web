@@ -34,20 +34,20 @@ class Farmer extends BaseModel
             if (Utils::phone_number_is_valid($phone_number)) {
                 $exist = Farmer::where('phone', $phone_number)->first();
                 if ($exist) {
-                    return false; 
+                    return false;
                     throw new \Exception("Farmer with phone number " . $phone_number . " already exists. Please use a different phone number.");
                 }
             }
- 
+
             //get last id
             $f = Farmer::orderBy('id', 'desc')->first();
             if ($f) {
                 $model->id = $f->id + 1;
             } else {
                 $model->id = 1;
-            } 
+            }
         });
-     /*    self::updating(function (Farmer $model) {
+        /*    self::updating(function (Farmer $model) {
             //$model->id = $model->generateUuid();
             //prcess account
         }); */
@@ -63,7 +63,7 @@ class Farmer extends BaseModel
         });
 
         self::created(function (Farmer $model) {
-            return true; 
+            return true;
             try {
                 self::process($model);
             } catch (\Throwable $th) {
@@ -74,10 +74,22 @@ class Farmer extends BaseModel
             if (Utils::phone_number_is_valid($_phone)) {
                 $model->phone = $_phone;
                 $last_name = $model->last_name;
-                $app_download_link = 'bit.ly/4aM24Ea'; 
+                $app_download_link = 'bit.ly/4aM24Ea';
 
-                $msg = "Hello, your M-Omulimisa account has been created successfully! Download the app from this link $app_download_link and login using your phone number and password 4321. Thank you!";                
+                $msg = "Hello, your M-Omulimisa account has been created successfully! Download the app from this link $app_download_link and login using your phone number and password 4321. Thank you!";
+                
                 try {
+                    $u = User::where('phone', $_phone)->first();
+
+                    if ($u && $u->id) {
+                        Utils::sendNotification2([
+                            'msg' => $msg,
+                            'headings' => 'Welcome to M-Omulimisa',
+                            'receiver' => $u->id,
+                            'type' => 'text',
+                        ]);
+                    }
+
                     Utils::send_sms($_phone, $msg);
                 } catch (\Throwable $th) {
                     //throw $th;

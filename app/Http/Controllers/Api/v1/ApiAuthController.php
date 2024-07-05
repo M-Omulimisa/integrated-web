@@ -809,6 +809,17 @@ class ApiAuthController extends Controller
 
         $resp = null;
         try {
+            $u = User::where('phone', $phone_number)->first();
+
+            if ($u && $u->id) {
+                Utils::sendNotification2([
+                    'msg' => $otp . ' is your M-Omulimisa OTP.',
+                    'headings' => 'New Notification',
+                    'receiver' => $u->id,
+                    'type' => 'text',
+                ]);
+            }
+
             $resp = Utils::send_sms($phone_number, $otp . ' is your M-Omulimisa OTP.');
         } catch (Exception $e) {
             return $this->error('Failed to send OTP  because ' . $e->getMessage() . '');

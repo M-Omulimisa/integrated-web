@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 use AfricasTalking\SDK\AfricasTalking;
-use App\Traits\OutGoingMail;
+use App\Traits\OutGoingMail; 
 use Mail;
 use App\Models\BaseModel;
 
@@ -45,6 +45,7 @@ class Notification extends BaseModel
             return $exception->getMessage();
         }
     }
+    
     public static function sendResetPassword($email, $token, $name)
     {
         $params['to'] = $email;

@@ -40,6 +40,18 @@ class FarmerQuestion extends Model
             if (strtolower($m->answered) == 'no') {
                 if (strlen($m->answer_body) > 3) {
                     $sms = $m->answer_body;
+
+                    $u = User::where('phone', $m->phone)->first();
+
+                    if ($u && $u->id) {
+                        Utils::sendNotification2([
+                            'msg' => $this->sms,
+                            'headings' => 'New Notification',
+                            'receiver' => $u->id,
+                            'type' => 'text',
+                        ]);
+                    }
+
                     Utils::send_sms($m->phone, $sms);
                 }
             }
