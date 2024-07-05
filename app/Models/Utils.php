@@ -691,7 +691,6 @@ class Utils
             'include_external_user_ids' => $receivers,
         ];
 
-
         if (isset($data['big_picture']) && $data['big_picture'] != null && $data['big_picture'] != '' && strlen($data['big_picture']) > 2) {
             $notificationData['big_picture'] = $data['big_picture'];
             $notificationData['small_icon'] = $data['big_picture'];
