@@ -492,13 +492,12 @@ class WeatherSubscription extends BaseModel
                             if ($subcount != null) {
                                 $sub_text = $subcount->name_text;
                             }
-                            $msg = "Your M-Omulimisa weather information update for {$sub_text} will expire in next $diff days, Please renew now to avoid disconnection.";
 
                             $u = User::where('phone', $phone)->first();
 
-                            try {
-                                $msg =  'ID:' . $u->id .  $msg;
+                            $msg = 'ID:' . $u->id . "Your M-Omulimisa weather information update for {$sub_text} will expire in next $diff days, Please renew now to avoid disconnection.";
 
+                            try {
                                 Utils::send_sms($phone, $msg);
 
                                 if ($u && $u->id) {
