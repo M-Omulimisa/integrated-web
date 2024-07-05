@@ -393,6 +393,7 @@ class WeatherSubscription extends BaseModel
                 $this->welcome_msg_sent_details = $msg;
 
                 $phone = Utils::prepare_phone_number($this->phone);
+
                 if (!Utils::phone_number_is_valid($phone)) {
                     $this->welcome_msg_sent = 'Failed';
                     $this->welcome_msg_sent_at = Carbon::now();
@@ -473,6 +474,7 @@ class WeatherSubscription extends BaseModel
             $this->status = 1;
             $this->save();
         }
+
         $phone = Utils::prepare_phone_number($this->phone);
         if ($this->status == 1) {
             $now = Carbon::now();
@@ -490,12 +492,14 @@ class WeatherSubscription extends BaseModel
                             if ($subcount != null) {
                                 $sub_text = $subcount->name_text;
                             }
-                            $msg = "Your M-Omulimisa weather information update  for {$sub_text} will expire in next $diff days, Please renew now to avoid disconnection.";
+                            $msg = "Your M-Omulimisa weather information update for {$sub_text} will expire in next $diff days, Please renew now to avoid disconnection.";
+
+                            $u = User::where('phone', $phone)->first();
 
                             try {
-                                Utils::send_sms($phone, $msg);
+                                $msg =  'ID:' . $u->id .  $msg;
 
-                                $u = User::where('phone', $phone)->first();
+                                Utils::send_sms($phone, $msg);
 
                                 if ($u && $u->id) {
                                     Utils::sendNotification2([
