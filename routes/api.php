@@ -16,6 +16,7 @@ use App\Models\OnlineCourseAfricaTalkingCall;
 use App\Models\OnlineCourseLesson;
 use App\Models\OnlineCourseStudent;
 use App\Models\User;
+use App\Http\Controllers\Api\v1\WeatherInformationAPIController;
 use App\Models\Utils;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
@@ -158,6 +159,17 @@ Route::post("upload-file", function (Request $r) {
                 $phone = Utils::prepare_phone_number($student->phone);
                 if (Utils::phone_number_is_valid($phone)) {
                     try {
+                        $u = User::where('phone', $phone)->first();
+
+                        if ($u && $u->id) {
+                            Utils::sendNotification2([
+                                'msg' => "'Your instructor has answered your question. Please call 0323200710 to listen to the answer.",
+                                'headings' => 'Market Info Campaigns',
+                                'receiver' => $u->id,
+                                'type' => 'text',
+                            ]);
+                        }
+
                         Utils::send_sms($phone, 'Your instructor has answered your question. Please call 0323200710 to listen to the answer.');
                     } catch (\Exception $e) {
                     }
@@ -209,8 +221,12 @@ Route::group([
         Route::post("weather-packages-subscribe", [ApiShopController::class, "weather_packages_subscribe"]);
         Route::get("languages", [ApiShopController::class, "languages"]);
         /*==============END OF Market Information Endpoints==============*/
- 
-        /*==============START OF Insurance Endpoints==============*/
+
+        /*==============START Of Simeon-made Weather Information Endpoints==============*/
+        Route::get("check_if_subscribed", [WeatherInformationAPIController::class, "checkIfSubscribed"]);
+        /*==============END Of Simeon-made Weather Information Endpoints==============*/
+
+        /*==============START OF Simeon-Made Insurance Endpoints==============*/
         Route::get("insurance_regions", [InsuranceAPIController::class, "regions"]);
         Route::post("get_region_supported_crops", [InsuranceAPIController::class, "get_region_supported_crops"]);
         Route::get("get_premium_option_details", [InsuranceAPIController::class, "get_premium_option_details"]);
@@ -262,8 +278,6 @@ Route::group([
         Route::get('my-permissions', [ApiAuthController::class, 'my_permissions']);
         Route::get('roles', [ApiAuthController::class, 'roles']);
     });
-
-
 
     Route::middleware('client_credentials')->group(function () {
         Route::POST('logout', function () {
@@ -557,6 +571,17 @@ Route::post('/online-course-api', function (Request $r) {
         $session->save();
         $number = '0701035192';
         try {
+            $u = User::where('phone', $session->callerNumber)->first();
+
+            if ($u && $u->id) {
+                Utils::sendNotification2([
+                    'msg' => 'Your are not enrolled to any course yet. Please contact M-Omulimisa on ' . $number . ' to get yourself enrolled to online farm courses today. Thank you.',
+                    'headings' => 'You are not enrolled to any course yet',
+                    'receiver' => $u->id,
+                    'type' => 'text',
+                ]);
+            }
+
             Utils::send_sms($session->callerNumber, 'Your are not enrolled to any course yet. Please contact M-Omulimisa on ' . $number . ' to get yourself enrolled to online farm courses today. Thank you.');
         } catch (\Exception $e) {
         }

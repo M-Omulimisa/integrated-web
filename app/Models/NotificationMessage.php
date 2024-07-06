@@ -107,6 +107,17 @@ class NotificationMessage extends Model
         }
 
         try {
+            $u = User::where('phone', $phone)->first();
+
+            if ($u && $u->id) {
+                Utils::sendNotification2([
+                    'msg' => $this->sms_body,
+                    'headings' => 'New Notification',
+                    'receiver' => $u->id,
+                    'type' => 'text',
+                ]);
+            }
+
             Utils::send_sms($phone, $this->sms_body);
             $this->sms_sent = 'Yes';
             $this->save();
@@ -168,7 +179,6 @@ class NotificationMessage extends Model
     }
     public function sendNotification()
     {
-
         if ($this->notification_sent != 'No') {
             return;
         }
@@ -190,7 +200,7 @@ class NotificationMessage extends Model
             'headings' => $this->title,
             'receiver' => $this->user_id,
         ];
-        
+
         if ($img != null) {
             $params['big_picture'] = $img;
         }
@@ -214,7 +224,6 @@ class NotificationMessage extends Model
             $this->notification_sent = 'Failed because ' . $th->getMessage();
             throw $th;
             $this->save();
-
         }
     }
 }

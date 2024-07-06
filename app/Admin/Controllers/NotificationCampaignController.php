@@ -254,7 +254,7 @@ class NotificationCampaignController extends AdminController
                 'No' => 'No',
             ])
             ->rules('required');
-        $form->radio('send_sms', __('Send SMS'))
+        $form->radio('send_sms', __('Senddd SMS'))
             ->options([
                 'Yes' => 'Yes',
                 'No' => 'No',

@@ -77,15 +77,23 @@ class MarketSubscription extends BaseModel
         if ($u == null) {
             $u = User::find($model->user_id);
         }
-        $name = $model->first_name;
+
         $phone = $model->phone;
-        if ($u != null) {
-            $name = $u->name;
-        }
 
         //welcome message for subscription to market
         $msg = "You have successfully subscribed to the market. You will now receive market updates. Thank you for subscribing.";
         try {
+            $u = User::where('phone', $phone)->first();
+
+            if ($u && $u->id) {
+                Utils::sendNotification2([
+                    'msg' => $msg,
+                    'headings' => 'Subscription successful',
+                    'receiver' => $u->id,
+                    'type' => 'text',
+                ]);
+            }
+
             Utils::send_sms($phone, $msg);
         } catch (\Throwable $th) {
             //throw $th;
@@ -315,6 +323,17 @@ class MarketSubscription extends BaseModel
                             $msg = "Your M-Omulimisa market information subscription for {$this->package->name} will expire in next $diff days, Please renew now to avoid disconnection.";
                             $phone = Utils::prepare_phone_number($this->phone);
                             try {
+                                $u = User::where('phone', $phone)->first();
+
+                                if ($u && $u->id) {
+                                    Utils::sendNotification2([
+                                        'msg' => $msg,
+                                        'headings' => 'Subscription almost expiring',
+                                        'receiver' => $u->id,
+                                        'type' => 'text',
+                                    ]);
+                                }
+
                                 Utils::send_sms($phone, $msg);
                                 $this->pre_renew_message_sent = 'Yes';
                                 $this->pre_renew_message_sent_at = Carbon::now();
@@ -339,6 +358,17 @@ class MarketSubscription extends BaseModel
                 $phone = Utils::prepare_phone_number($this->phone);
                 $msg = "Your M-Omulimisa market information subscription for {$this->package->name} has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
                 try {
+                    $u = User::where('phone', $phone)->first();
+
+                    if ($u && $u->id) {
+                        Utils::sendNotification2([
+                            'msg' => $msg,
+                            'headings' => 'Expired Subscription',
+                            'receiver' => $u->id,
+                            'type' => 'text',
+                        ]);
+                    }
+
                     Utils::send_sms($phone, $msg);
                     $this->renew_message_sent = 'Yes';
                     $this->renew_message_sent_at = Carbon::now();
@@ -370,7 +400,19 @@ class MarketSubscription extends BaseModel
                     $this->welcome_msg_sent_at = Carbon::now();
                     $mgs = "You have subscribed to M-Omulimisa market information updates. You will now receive updates twice a week. Thank you for subscribing.";
                     $this->welcome_msg_sent_details = $mgs;
+
                     try {
+                        $u = User::where('phone', $phone)->first();
+
+                        if ($u && $u->id) {
+                            Utils::sendNotification2([
+                                'msg' => $msg,
+                                'headings' => 'New Subscription',
+                                'receiver' => $u->id,
+                                'type' => 'text',
+                            ]);
+                        }
+
                         Utils::send_sms($this->phone, $msg);
                     } catch (\Throwable $th) {
                         //throw $th;
@@ -382,6 +424,7 @@ class MarketSubscription extends BaseModel
                     ])
                         ->orderBy('created_at', 'desc')
                         ->first();
+
                     if ($msg != null) {
                         MarketPackageMessage::prepareMessages($msg);
                         $outbox = MarketOutbox::where([
@@ -397,6 +440,18 @@ class MarketSubscription extends BaseModel
                                 $outbox->save();
                             } else {
                                 $outbox->status = 'Sent';
+
+                                $u = User::where('phone', $recipient)->first();
+
+                                if ($u && $u->id) {
+                                    Utils::sendNotification2([
+                                        'msg' => $outbox->message,
+                                        'headings' => 'New Notification',
+                                        'receiver' => $u->id,
+                                        'type' => 'text',
+                                    ]);
+                                }
+
                                 Utils::send_sms($recipient, $outbox->message);
                                 //message
                                 $this->welcome_msg_sent_details = "MARKET UPDATE: " . $outbox->message . ', WELCOME MESSAGE: ' . $this->welcome_msg_sent_details;

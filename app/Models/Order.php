@@ -39,6 +39,17 @@ class Order extends Model
                 $msg .= ' Thank you for shopping with us.';
                 //send notification
                 try {
+                    $u = User::where('phone', $m->customer_phone_number_1)->first();
+
+                    if ($u && $u->id) {
+                        Utils::sendNotification2([
+                            'msg' => $msg,
+                            'headings' => 'Thank you for shopping with us',
+                            'receiver' => $u->id,
+                            'type' => 'text',
+                        ]);
+                    }
+
                     Utils::send_sms($m->customer_phone_number_1, $msg);
                 } catch (\Throwable $th) {
                     //throw $th;

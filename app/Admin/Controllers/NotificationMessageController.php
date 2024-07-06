@@ -233,6 +233,7 @@ class NotificationMessageController extends AdminController
                 ->options(\App\Models\User::getDropDownList([]))
                 ->rules('required');
         }
+        
         $form->text('title', __('Title'))->rules('required');
         $form->text('phone_number', __('Phone Number'));
         $form->email('email', __('Email'));
@@ -266,7 +267,7 @@ class NotificationMessageController extends AdminController
                 'No' => 'No',
             ])
             ->rules('required');
-        $form->radio('send_email', __('Send Email'))
+        $form->radio('send_email', __('Send Emails'))
             ->options([
                 'Yes' => 'Yes',
                 'No' => 'No',

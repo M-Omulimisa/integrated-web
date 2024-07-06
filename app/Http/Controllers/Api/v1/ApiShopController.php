@@ -3,34 +3,24 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminRoleUser;
-use App\Models\Animal;
-use App\Models\BatchSession;
 use App\Models\ChatHead;
 use App\Models\ChatMessage;
 use App\Models\DistrictModel;
-use App\Models\DrugStockBatch;
-use App\Models\Event;
-use App\Models\Farm;
 use App\Models\Image;
 use App\Models\Market\MarketPackagePricing;
 use App\Models\Market\MarketSubscription;
-use App\Models\Movement;
 use App\Models\NotificationMessage;
 use App\Models\Order;
 use App\Models\OrderedItem;
 use App\Models\ParishModel;
 use App\Models\Product;
 use App\Models\ProductCategory;
-use App\Models\SlaughterHouse;
-use App\Models\SlaughterRecord;
 use App\Models\SubcountyModel;
 use App\Models\User;
 use App\Models\Utils;
 use App\Models\Weather\WeatherSubscription;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
-use Dflydev\DotAccessData\Util;
 use Encore\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
@@ -163,7 +153,7 @@ class ApiShopController extends Controller
         $subscription->organisation_id = $u->organisation_id;
         $subscription->package_id = $package->id;
         $subscription->phone = $u->phone;
-        $subscription->is_paid = 'NOT PAID'; 
+        $subscription->is_paid = 'NOT PAID';
         $phone = $u->phone;
         $phone = Utils::prepare_phone_number($phone);
         if (!Utils::phone_number_is_valid($phone)) {
@@ -375,7 +365,6 @@ class ApiShopController extends Controller
 
     public function weather_subscriptions_status(Request $r)
     {
-
         if (!isset($r->id) || $r->id == null) {
             return $this->error('Item ID is missing.');
         }

@@ -74,7 +74,6 @@ class NotificationCampaign extends Model
             return;
         }
 
-
         foreach ($users as $key => $user) {
             $exists = NotificationMessage::where('notification_campaign_id', $this->id)
                 ->where('user_id', $user->id)

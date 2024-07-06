@@ -342,7 +342,6 @@ Route::get('auth/password-reset-form', function () {
  */
 
 Route::get('market-info-message-campaigns-send-now', function () {
-
     $campaign = MarketInfoMessageCampaign::find($_GET['id']);
     if ($campaign == null) {
         die("Campaign not found");
@@ -372,6 +371,18 @@ Route::get('market-info-message-campaigns-send-now', function () {
         if ($outbox->status == 'Sent') {
             continue;
         }
+
+        $u = User::where('phone', $recipient)->first();
+
+        if ($u && $u->id) {
+            Utils::sendNotification2([
+                'msg' => $outbox->message,
+                'headings' => 'Market Info Campaigns',
+                'receiver' => $u->id,
+                'type' => 'text',
+            ]);
+        }
+
         Utils::send_sms($recipient, $outbox->message);
         $outbox->status = 'Sent';
         $outbox->sent_at = Carbon::now();

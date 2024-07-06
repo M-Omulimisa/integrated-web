@@ -35,7 +35,6 @@ class InsuranceSubscription extends BaseModel
         'seen_by_admin'
     ];
 
-
     /**
      * every time a model is created
      * automatically assign a UUID to it

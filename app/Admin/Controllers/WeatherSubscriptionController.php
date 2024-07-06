@@ -166,6 +166,7 @@ class WeatherSubscriptionController extends AdminController
         $grid->column('trial_expiry_sms_sent_at', __('Trial expiry sms sent at'))->hide();
         $grid->column('trial_expiry_sms_failure_reason', __('Trial expiry sms failure reason'))->hide(); */
         $grid->column('phone', __('Phone'))->sortable();
+        $grid->column('status', __('Status'))->sortable();
         $grid->column('start_date', __('Start Date'))->sortable();
         $grid->column('end_date', __('End Date'))->sortable();
 
