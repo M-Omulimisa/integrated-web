@@ -815,7 +815,7 @@ class ApiAuthController extends Controller
                 Utils::sendNotification2([
                     'msg' => $otp . ' is your M-Omulimisa OTP.',
                     'headings' => 'New Notification',
-                    'receiver' => $u->id,
+                    'receiver' => [$u->id.""],
                     'type' => 'text',
                 ]);
             }
