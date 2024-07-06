@@ -668,20 +668,24 @@ class Utils
         $appId = $ONESIGNAL_APP_ID;
         $userId = $data['receiver'];
 
-        if ($userId == null) {
+
+        /* if ($userId == null) {
             throw new \Exception("User id is required");
         }
         if ($userId == '') {
             throw new \Exception("User id is required");
+        } */
+
+        $receivers = [];
+        if(is_array($userId)){
+            foreach ($userId as $key => $value) {
+                $receivers[] = trim($value).'';
+            }
+        }else{
+            $receivers[] = trim($userId).'';
         }
 
-        //if(is array)
-        $receivers = [];
-        if (!is_array($userId)) {
-            $receivers = array($userId);
-        } else {
-            $receivers = $userId;
-        }
+       
 
         // Notification data
         $notificationData = [
