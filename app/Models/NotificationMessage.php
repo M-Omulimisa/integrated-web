@@ -76,7 +76,6 @@ class NotificationMessage extends Model
         $this->save();
     }
 
-
     public function sendSms()
     {
         if ($this->sms_sent != 'No') {
@@ -127,7 +126,6 @@ class NotificationMessage extends Model
         }
     }
 
-
     public function sendEmail()
     {
         if ($this->email_sent != 'No') {
@@ -177,6 +175,7 @@ class NotificationMessage extends Model
             $this->save();
         }
     }
+
     public function sendNotification()
     {
         if ($this->notification_sent != 'No') {

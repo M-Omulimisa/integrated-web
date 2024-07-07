@@ -677,15 +677,13 @@ class Utils
         } */
 
         $receivers = [];
-        if(is_array($userId)){
+        if (is_array($userId)) {
             foreach ($userId as $key => $value) {
-                $receivers[] = trim($value).'';
+                $receivers[] = trim($value) . '';
             }
-        }else{
-            $receivers[] = trim($userId).'';
+        } else {
+            $receivers[] = trim($userId) . '';
         }
-
-       
 
         // Notification data
         $notificationData = [
@@ -1058,7 +1056,6 @@ class Utils
         try {
             $data =  file_get_contents($url, null, $ctx);
             return $data;
-            
         } catch (Exception $x) {
             return "Failed $url";
         }

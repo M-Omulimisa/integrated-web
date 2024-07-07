@@ -81,6 +81,7 @@ class NotificationCampaign extends Model
             if ($exists != null) {
                 continue;
             }
+            
             $msg = new NotificationMessage();
             $msg->notification_campaign_id = $this->id;
             $msg->user_id = $user->id;

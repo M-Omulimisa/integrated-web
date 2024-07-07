@@ -11,6 +11,7 @@ use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\WeatherSubscriptionRelationship;
 use App\Models\User;
 use App\Models\Utils;
+use App\Services\NotificationSender;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -403,16 +404,8 @@ class WeatherSubscription extends BaseModel
                     try {
                         Utils::send_sms($phone, $msg);
 
-                        $u = User::where('phone', $phone)->first();
-
-                        if ($u && $u->id) {
-                            Utils::sendNotification2([
-                                'msg' => $msg,
-                                'headings' => 'New Subscription',
-                                'receiver' => $u->id,
-                                'type' => 'text',
-                            ]);
-                        }
+                        $notificationManager = new NotificationSender();
+                        $notificationManager->sendNotification($phone, $msg);
 
                         $this->welcome_msg_sent = 'Yes';
                         $this->welcome_msg_sent_details = $msg . ' - Message sent to ' . $phone;
