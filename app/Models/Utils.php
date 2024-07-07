@@ -677,20 +677,23 @@ class Utils
         } */
 
         $receivers = [];
-        if (is_array($userId)) {
+        if(is_array($userId)){
             foreach ($userId as $key => $value) {
-                $receivers[] = trim($value) . '';
+                $receivers[] = trim($value).'';
             }
-        } else {
-            $receivers[] = trim($userId) . '';
+        }else{
+            $receivers[] = trim($userId).'';
         }
+
+       
 
         // Notification data
         $notificationData = [
             'app_id' => $appId,
             'contents' => ['en' => $data['msg']],
             'headings' => ['en' => $data['headings'] . ' - M-Omulimisa'],
-            'include_external_user_ids' => $receivers,
+            'external_user_id' => $receivers[0], 
+            'included_segments' => ['All'],
         ];
 
         if (isset($data['big_picture']) && $data['big_picture'] != null && $data['big_picture'] != '' && strlen($data['big_picture']) > 2) {
@@ -1056,6 +1059,7 @@ class Utils
         try {
             $data =  file_get_contents($url, null, $ctx);
             return $data;
+            
         } catch (Exception $x) {
             return "Failed $url";
         }
