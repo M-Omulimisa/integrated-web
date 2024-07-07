@@ -176,13 +176,13 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('test', function () {
     Utils::sendNotification2([
-        'msg' => 'Simple test messgae - FROM LOCAL WEB PORTAL',
-        'headings' => 'MUHINDO TEST NOTIFCATION',
-        'receiver' => '7777',
+        'msg' => 'Muhindo to Simeon - FROM LOCAL WEB PORTAL',
+        'headings' => 'mubahood TEST NOTIFCATION',
+        'receiver' => '8889',
         'type' => 'text',
     ]);
-    die("notification tested");
-    Utils::renew_messages();
+    die("notification tested. ID #8889");
+    Utils::renew_messages(); 
 });
 Route::get('boot-system', function () {
     //$m = MarketSubscription::find('82b28464-c790-41ed-b652-25ee7617350f');
