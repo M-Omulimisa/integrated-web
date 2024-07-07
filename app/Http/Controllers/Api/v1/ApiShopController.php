@@ -276,7 +276,7 @@ class ApiShopController extends Controller
         $subscription->user_id = $u->id;
         $subscription->status = 0;
         $subscription->outbox_reset_status = 0;
-        $subscription->is_paid = 'No';
+        $subscription->is_paid = 'NOT PAID';
 
         if ((int)($total_price) < 100) {
             $subscription->status = 1;
