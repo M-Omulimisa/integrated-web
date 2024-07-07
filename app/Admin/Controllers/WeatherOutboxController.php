@@ -29,7 +29,7 @@ class WeatherOutboxController extends AdminController
         $grid->disableCreateButton();
         $grid->model()->orderBy('created_at', 'desc');
 
-        $grid->column('id', __('Id'))->sortable();
+        $grid->column('id', __('Id'))->sortable()->filter('like')->hide();
         $grid->column('subscription_id', __('Subscription'))->hide();
         $grid->column('farmer_id', __('Farmer'))->sortable()
             ->display(function ($farmer_id) {
