@@ -11,6 +11,7 @@ use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\WeatherSubscriptionRelationship;
 use App\Models\User;
 use App\Models\Utils;
+use App\Services\NotificationSender;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -401,18 +402,10 @@ class WeatherSubscription extends BaseModel
                     $this->save();
                 } else {
                     try {
-                        $u = User::where('phone', $phone)->first();
+                        Utils::send_sms($phone, $msg);
 
-                        Utils::send_sms($phone, "Notification: You have subscribed to M-Omulimisa weather information updates. You will now receive updates everyday. Thank you for subscribing.");
-
-                        if ($u && $u->id) {
-                            Utils::sendNotification2([
-                                'msg' => $msg,
-                                'headings' => 'New Subscription',
-                                'receiver' => "59",
-                                'type' => 'text',
-                            ]);
-                        }
+                        $notificationManager = new NotificationSender();
+                        $notificationManager->sendNotification($phone, $msg);
 
                         $this->welcome_msg_sent = 'Yes';
                         $this->welcome_msg_sent_details = $msg . ' - Message sent to ' . $phone;
