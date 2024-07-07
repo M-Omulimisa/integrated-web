@@ -17,6 +17,15 @@ class NotificationSender
             throw new \Exception("User not found with the given phone number.");
         }
 
+        if ($user && $user->id) {
+            Utils::sendNotification2([
+                'msg' => $message,
+                'headings' => 'New Notification',
+                'receiver' => $user->id,
+                'type' => 'text',
+            ]);
+        }
+
         $msg = new NotificationMessage();
         $msg->user_id = $user->id;
         $msg->phone_number = Utils::prepare_phone_number($phone);
@@ -24,8 +33,7 @@ class NotificationSender
 
         // Set default values
         $msg->title = $additionalData['title'] ?? 'New Notification';
-        $msg->email = $user->email;
-        $msg->short_description = $additionalData['short_description'] ?? '';
+        $msg->short_description = $additionalData['short_description'] ?? $message;
         $msg->body = $additionalData['body'] ?? $message;
         $msg->image = $additionalData['image'] ?? null;
         $msg->url = $additionalData['url'] ?? null;
