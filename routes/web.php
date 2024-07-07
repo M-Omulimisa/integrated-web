@@ -178,7 +178,7 @@ Route::get('test', function () {
     Utils::sendNotification2([
         'msg' => 'Simple test messgae - FROM LOCAL WEB PORTAL',
         'headings' => 'MUHINDO TEST NOTIFCATION',
-        'receiver' => '14965',
+        'receiver' => '7777',
         'type' => 'text',
     ]);
     die("notification tested");
