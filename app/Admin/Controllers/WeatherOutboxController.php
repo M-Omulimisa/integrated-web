@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\User;
 use App\Models\Weather\WeatherOutbox;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -25,21 +26,33 @@ class WeatherOutboxController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new WeatherOutbox());
+        $grid->disableCreateButton();
+        $grid->model()->orderBy('created_at', 'desc');
 
-        $grid->column('id', __('Id'));
-        $grid->column('subscription_id', __('Subscription id'));
-        $grid->column('farmer_id', __('Farmer id'));
-        $grid->column('recipient', __('Recipient'));
-        $grid->column('message', __('Message'));
-        $grid->column('status', __('Status'));
-        $grid->column('statuses', __('Statuses'));
-        $grid->column('failure_reason', __('Failure reason'));
-        $grid->column('processsed_at', __('Processsed at'));
-        $grid->column('sent_at', __('Sent at'));
-        $grid->column('failed_at', __('Failed at'));
-        $grid->column('sent_via', __('Sent via'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
+        $grid->column('id', __('Id'))->sortable();
+        $grid->column('subscription_id', __('Subscription'))->hide();
+        $grid->column('farmer_id', __('Farmer'))->sortable()
+            ->display(function ($farmer_id) {
+                $f = User::find($farmer_id);
+                return $f ? $f->name : 'N/A';
+            })->filter('like');
+        $grid->column('recipient', __('Recipient'))->filter('like')
+            ->sortable();
+        $grid->column('message', __('Message'))->filter('like')
+            ->limit(50)->sortable();
+        $grid->column('status', __('Status'))->sortable();
+        $grid->column('statuses', __('Statuses'))->sortable();
+        $grid->column('failure_reason', __('Failure reason'))->hide();
+        $grid->column('processsed_at', __('Processsed at'))->hide();
+        $grid->column('sent_at', __('Sent at'))->hide();
+        $grid->column('failed_at', __('Failed at'))->hide();
+        $grid->column('sent_via', __('Sent via'))->hide();
+        $grid->column('created_at', __('Created at'))->sortable()
+            ->filter('range', 'datetime')
+            ->display(function ($created_at) {
+                return date('Y-m-d H:i:s', strtotime($created_at));
+            });
+        $grid->column('updated_at', __('Updated at'))->hide();
 
         return $grid;
     }
