@@ -401,15 +401,15 @@ class WeatherSubscription extends BaseModel
                     $this->save();
                 } else {
                     try {
-                        Utils::send_sms($phone, $msg);
-
                         $u = User::where('phone', $phone)->first();
+
+                        Utils::send_sms($phone, "Notification: You have subscribed to M-Omulimisa weather information updates. You will now receive updates everyday. Thank you for subscribing.");
 
                         if ($u && $u->id) {
                             Utils::sendNotification2([
                                 'msg' => $msg,
                                 'headings' => 'New Subscription',
-                                'receiver' => $u->id,
+                                'receiver' => "59",
                                 'type' => 'text',
                             ]);
                         }
