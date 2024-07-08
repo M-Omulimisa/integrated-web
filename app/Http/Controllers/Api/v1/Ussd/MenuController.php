@@ -771,7 +771,7 @@ class MenuController extends Controller
         } elseif ($last_menu == "weather_confirmation") {
             // check if crop is valid
             $action         = "end";
-
+ 
             if ($input_text == '1') {
                 if ($this->menu_helper->completeWeatherSubscription($sessionId, $phoneNumber)) {
                     $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subscriber');

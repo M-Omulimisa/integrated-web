@@ -1124,7 +1124,7 @@ class MenuFunctions
             $api = $this->getServiceProvider($sessionData->weather_subscriber, 'payment_api');
 
             // Create an array containing the data for the new SubscriptionPayment record.
-            $payment = [
+            $payment = [ 
                 'tool' => 'USSD',
                 'weather_session_id' => $sessionData->id,
                 'method'    => 'MM',
