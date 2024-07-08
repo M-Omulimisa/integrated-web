@@ -139,7 +139,7 @@ class InsuranceAPIController extends Controller
                 return $this->success("All good", 'Success');
             }
         } catch (\Throwable $th) {
-            return $this->error($th->getMessage());
+            return $this->error("Error creating payment:" . $th->getMessage());
         }
     }
 
