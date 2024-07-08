@@ -13,18 +13,6 @@ class AddFieldsToUssdSessionDataTable extends Migration
      */
     public function up()
     {
-       /*  "agent_id"                  
-                "insurer_name"      
-                "insurance_type"    
-                "surname"           
-                "telephone"         
-                "other_name"        
-                "payment_phone"     
-                "paid"              
-                "completed"         
-                "pending"           
-                "cancelled"    */
-
         Schema::table('ussd_session_data', function (Blueprint $table) {
             $table->string('national_id')->nullable();
             $table->string('village_id')->nullable();
