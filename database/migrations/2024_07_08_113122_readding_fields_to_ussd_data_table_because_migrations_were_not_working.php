@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFieldsToUssdSessionDataTable extends Migration
+class ReaddingFieldsToUssdDataTableBecauseMigrationsWereNotWorking extends Migration
 {
     /**
      * Run the migrations.
@@ -58,18 +58,8 @@ class AddFieldsToUssdSessionDataTable extends Migration
      */
     public function down()
     {
-        Schema::table('ussd_session_data', function (Blueprint $table) {
-            $table->dropColumn([
-                'agent_id', 'insurer_name', 'insurance_type', 'surname', 'payment_phone',
-                'paid', 'completed', 'pending', 'cancelled', 'national_id', 'village_id',
-                'driving_license', 'passport', 'email', 'lat', 'long', 'category',
-                'other_name', 'agent_sale', 'environments', 'animal_production_business_duration',
-                'profession', 'animals_in_posession_duration', 'animals_keeping_purpose',
-                'loan', 'selected_animals', 'animals_lost', 'selected_products', 'causes_of_death',
-                'animal_health', 'animal_illness', 'animal_treatment', 'animal_contagious',
-                'risks', 'conviction', 'additional_info', 'management', 'supervisory',
-                'security', 'laborer', 'sub_county', 'parish', 'village', 'district'
-            ]);
+        Schema::table('ussd_data_table_because_migrations_were_not_working', function (Blueprint $table) {
+            //
         });
     }
 }

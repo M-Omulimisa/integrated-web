@@ -14,10 +14,10 @@ class ModifyFieldsToUssdSessionDataTable extends Migration
     public function up()
     {
         Schema::table('ussd_session_data', function (Blueprint $table) {
-            $table->boolean('paid')->nullable()->default(false)->change();
-            $table->boolean('completed')->nullable()->default(false)->change();
-            $table->boolean('pending')->nullable()->default(true)->change();
-            $table->boolean('cancelled')->nullable()->default(false)->change();
+            $table->boolean('paid')->nullable()->default(false);
+            $table->boolean('completed')->nullable()->default(false);
+            $table->boolean('pending')->nullable()->default(true);
+            $table->boolean('cancelled')->nullable()->default(false);
         });
     }
 
