@@ -29,7 +29,7 @@ class UserController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new User());
-        $grid->quickSearch('name', 'email', 'phone','first_name','last_name')->placeholder('Search by name, email, phone, first name, last name'); 
+        $grid->quickSearch('name', 'email', 'phone','first_name', "selected_projects", 'last_name')->placeholder('Search by name, email, phone, first name, last name'); 
         Utils::create_column(
             (new User())->getTable(),
             [
@@ -66,7 +66,7 @@ class UserController extends AdminController
             });
         $grid->column('phone', __('Phone'))->sortable();
         $grid->column('email', __('Email'))->sortable();
-        $grid->column('affiliations', __('Affiliations'))->sortable();
+        $grid->column('selected_projects', __('Affiliations'))->sortable();
         $grid->column('other', __('Other'))->sortable();
         $grid->column('roles', trans('admin.roles'))->pluck('name')->label();
         $grid->column('created_at', __('Created at'))->hide();
@@ -97,6 +97,8 @@ class UserController extends AdminController
         $show->field('verified', __('Verified'));
         $show->field('email_verified_at', __('Email verified at'));
         $show->field('country_id', __('Country id'));
+        $show->field('selected_projects', __('Affiliations'));
+        $show->field('other', __('Other'));
         $show->field('organisation_id', __('Organisation id'));
         $show->field('microfinance_id', __('Microfinance id'));
         $show->field('distributor_id', __('Distributor id'));
