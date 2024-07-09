@@ -74,6 +74,8 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
         'country_id',
         'banned_until',
         'organisation_id',
+        'other',
+        "selected_projects",
         'microfinance_id',
         'invitation_token',
         'two_auth_method',

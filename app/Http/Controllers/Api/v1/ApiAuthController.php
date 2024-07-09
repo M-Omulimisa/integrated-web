@@ -921,6 +921,7 @@ class ApiAuthController extends Controller
         $user->phone = $r->phone;
         $user->phone_number = $r->phone;
         $user->selected_projects = $r->selected_projects;
+        $user->other = $r->other;
         $user->email = $r->email;
         $user->username = $r->phone;
         $user->photo = null;
