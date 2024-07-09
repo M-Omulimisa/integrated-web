@@ -897,7 +897,6 @@ class ApiAuthController extends Controller
 
     public function register(Request $r)
     {
-
         if ($r->first_name == null) {
             return $this->error('First name is required.');
         }
@@ -921,6 +920,7 @@ class ApiAuthController extends Controller
         $user->last_name = $r->last_name;
         $user->phone = $r->phone;
         $user->phone_number = $r->phone;
+        $user->selected_projects = $r->selected_projects;
         $user->email = $r->email;
         $user->username = $r->phone;
         $user->photo = null;

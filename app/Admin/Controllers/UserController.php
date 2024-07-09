@@ -66,6 +66,8 @@ class UserController extends AdminController
             });
         $grid->column('phone', __('Phone'))->sortable();
         $grid->column('email', __('Email'))->sortable();
+        $grid->column('affiliations', __('Affiliations'))->sortable();
+        $grid->column('other', __('Other'))->sortable();
         $grid->column('roles', trans('admin.roles'))->pluck('name')->label();
         $grid->column('created_at', __('Created at'))->hide();
 
