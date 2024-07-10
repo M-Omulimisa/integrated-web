@@ -495,12 +495,15 @@ class ApiShopController extends Controller
         if (!isset($r->amount) || $r->amount == null) {
             return $this->error('Amount is missing.');
         }
+
         if (!isset($r->phone_number) || $r->phone_number == null) {
             return $this->error('Phone number is missing.');
         }
+        
         if (!isset($r->item_id) || $r->item_id == null) {
             return $this->error('Item ID is missing.');
         }
+
         if (!isset($r->type) || $r->type == null) {
             return $this->error('Type is missing.');
         }
@@ -989,7 +992,6 @@ class ApiShopController extends Controller
 
     public function orders_submit(Request $r)
     {
-
         $u = auth('api')->user();
         if ($u == null) {
             $administrator_id = Utils::get_user_id($r);
@@ -1105,8 +1107,6 @@ class ApiShopController extends Controller
 
         return $this->success($order, $message = "Order Submitted Successfully.", 200);
     }
-
-
 
     public function chat_start(Request $r)
     {

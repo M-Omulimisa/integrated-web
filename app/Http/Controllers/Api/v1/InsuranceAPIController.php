@@ -66,10 +66,10 @@ class InsuranceAPIController extends Controller
                 "insurance_type" => $r->insurance_type,
                 "surname" => $r->surname,
                 "payment_phone" => $r->payment_phone,
-                "paid" => $this->boolToInt($r->paid),
-                "completed" => $this->boolToInt($r->completed),
-                "pending" => $this->boolToInt($r->pending),
-                "cancelled" => $this->boolToInt($r->cancelled),
+                "paid" => $r->paid,
+                "completed" => $r->completed,
+                "pending" => $r->pending,
+                "cancelled" => $r->cancelled,
                 "national_id" => $r->national_id,
                 "village_id" => $r->village_id,
                 "driving_license" => $r->driving_license,
@@ -95,7 +95,7 @@ class InsuranceAPIController extends Controller
                 "animal_treatment" => $r->animal_treatment,
                 "animal_contagious" => $r->animal_contagious,
                 "risks" => $r->risks,
-                "conviction" => $this->boolToInt($r->conviction),
+                "conviction" => $r->conviction,
                 "additional_info" => $r->additional_info,
                 "management" => $r->management,
                 "supervisory" => $r->supervisory,
@@ -110,11 +110,9 @@ class InsuranceAPIController extends Controller
             \App\Models\Ussd\UssdSessionData::create($data);
 
             // Retrieve the session data for the given session ID and phone number.
-            $sessionData = \App\Models\Ussd\UssdSessionData::whereSessionId($r->sessionID)->wherePhoneNumber($r->phoneNumber)->first();
+            $sessionData = \App\Models\Ussd\UssdSessionData::whereSessionId($r->session_id)->wherePhoneNumber($r->phone_number)->first();
 
             // Create a new Subscription record using the subscription_data array and assign it to $subscription variable.
-            echo $r->insurance_type;
-
             if ($r->insurance_type == "crop" || $r->insurance_type == null) {
                 if ($sessionData != null) {
                     // Get the payment API for the subscriber's phone number.
