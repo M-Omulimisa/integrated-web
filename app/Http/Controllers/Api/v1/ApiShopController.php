@@ -349,18 +349,9 @@ class ApiShopController extends Controller
 
     public function weather_subscriptions(Request $r)
     {
-        $u = auth('api')->user();
-        if ($u == null) {
-            $administrator_id = Utils::get_user_id($r);
-            $u = User::find($administrator_id);
-        }
-
-        if ($u == null) {
-            return $this->error('User not found.');
-        }
-        $subs = WeatherSubscription::where([
-            'farmer_id' => $u->id
-        ])->get();
+        $phone_number = $r->phone_number;
+        $phone_number = str_replace('+', '', $phone_number);
+        $subs = WeatherSubscription::where('phone', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(500)->get();
         return $this->success($subs, 'Success');
     }
 
@@ -410,7 +401,7 @@ class ApiShopController extends Controller
         $phone_number = str_replace('+', '', $phone_number);
 
         //like $phone_number
-        $records = WeatherOutbox::where('recipient', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(100)->get();
+        $records = WeatherOutbox::where('recipient', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(500)->get();
 
         return $this->success($records, 'Already paid!');
     }
