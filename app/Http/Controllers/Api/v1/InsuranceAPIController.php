@@ -95,7 +95,7 @@ class InsuranceAPIController extends Controller
                 "animal_treatment" => $r->animal_treatment,
                 "animal_contagious" => $r->animal_contagious,
                 "risks" => $r->risks,
-                "conviction" => $this->boolToInt($r->conviction),
+                "conviction" => $r->conviction,
                 "additional_info" => $r->additional_info,
                 "management" => $r->management,
                 "supervisory" => $r->supervisory,
