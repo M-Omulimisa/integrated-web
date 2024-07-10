@@ -364,6 +364,25 @@ class ApiShopController extends Controller
         return $this->success($subs, 'Success');
     }
 
+    public function my_weather_updates_mark_as_read(Request $r)
+    {
+
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = Administrator::find($administrator_id);
+        }
+
+        $rec = WeatherOutbox::find($r->weather_outbox_id);
+        if ($rec == null) {
+            return $this->error('Record not found.');
+        }
+        $rec->is_seen = 'Yes';
+        $rec->save();
+        return $this->success($rec, 'Success');
+    }
+
+
     public function my_weather_updates(Request $r)
     {
         Utils::create_column(
