@@ -2,6 +2,7 @@
 
 namespace App\Models\Weather;
 
+use App\Models\Agent\Subscription;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use App\Models\ParishModel;
@@ -199,5 +200,20 @@ class WeatherOutbox extends BaseModel
     public static function translations($code, $languageId)
     {
         return WeatherCondition::where('digit', $code)->where('language_id', $languageId)->first();
+    }
+    //appends for subscription_text
+    protected $appends = ['subscription_text'];
+
+    //getter for subscription_text
+    public function getSubscriptionTextAttribute()
+    {
+        $sub = WeatherSubscription::find($this->subscription_id);
+        if ($sub == null) {
+            return 'N/A';
+        }
+        if ($sub->parish == null) {
+            return '#' . $sub->id;
+        }
+        return $sub->parish->name_text;
     }
 }
