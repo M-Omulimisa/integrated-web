@@ -18,6 +18,7 @@ use App\Models\ProductCategory;
 use App\Models\SubcountyModel;
 use App\Models\User;
 use App\Models\Utils;
+use App\Models\Weather\WeatherOutbox;
 use App\Models\Weather\WeatherSubscription;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
@@ -361,6 +362,37 @@ class ApiShopController extends Controller
             'farmer_id' => $u->id
         ])->get();
         return $this->success($subs, 'Success');
+    }
+
+    public function my_weather_updates(Request $r)
+    {
+        Utils::create_column(
+            (new WeatherOutbox())->getTable(),
+            [
+                [
+                    'name' => 'is_seen',
+                    'type' => 'String',
+                    'default' => 'No',
+                ],
+            ]
+        );
+
+        $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = Administrator::find($administrator_id);
+        }
+        $u = Administrator::find($u->id);
+        if ($u == null) {
+            return $this->error('User is missing.');
+        }
+        $phone_number = $u->phone;
+        if ($phone_number == null || strlen($phone_number) < 3) {
+            $phone_number = $u->phone_number;
+        }
+        $records = WeatherOutbox::where([])
+            ->get();
+        return $this->success($records, 'Already paid!');
     }
 
     public function weather_subscriptions_status(Request $r)
