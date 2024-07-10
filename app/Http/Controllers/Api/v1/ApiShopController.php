@@ -409,8 +409,14 @@ class ApiShopController extends Controller
         if ($phone_number == null || strlen($phone_number) < 3) {
             $phone_number = $u->phone_number;
         }
-        $records = WeatherOutbox::where([])
-            ->get();
+
+
+        $phone_number = '+256705128728';
+        $phone_number = str_replace('+', '', $phone_number);
+
+        //like $phone_number
+        $records = WeatherOutbox::where('recipient', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(100)->get();
+
         return $this->success($records, 'Already paid!');
     }
 
@@ -499,7 +505,7 @@ class ApiShopController extends Controller
         if (!isset($r->phone_number) || $r->phone_number == null) {
             return $this->error('Phone number is missing.');
         }
-        
+
         if (!isset($r->item_id) || $r->item_id == null) {
             return $this->error('Item ID is missing.');
         }
