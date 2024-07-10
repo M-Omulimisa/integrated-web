@@ -396,7 +396,7 @@ class ApiShopController extends Controller
             ]
         );
 
-        $u = auth('api')->user();
+       /*  $u = auth('api')->user();
         if ($u == null) {
             $administrator_id = Utils::get_user_id($r);
             $u = Administrator::find($administrator_id);
@@ -409,7 +409,7 @@ class ApiShopController extends Controller
         if ($phone_number == null || strlen($phone_number) < 3) {
             $phone_number = $u->phone_number;
         }
-
+ */
 
         $phone_number = '+256705128728';
         $phone_number = str_replace('+', '', $phone_number);
