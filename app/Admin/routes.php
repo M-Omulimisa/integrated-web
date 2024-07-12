@@ -10,7 +10,6 @@ Route::group([
     'middleware'    => config('admin.route.middleware'),
     'as'            => config('admin.route.prefix') . '.',
 ], function (Router $router) {
-
     $router->get('/', 'HomeController@index')->name('home');
     $router->get('courses-stats', 'HomeController@stats')->name('home');
     $router->resource('users', UserController::class);
@@ -31,7 +30,6 @@ Route::group([
     $router->resource('financial-institutions', FinancialInstitutionController::class);
     $router->resource('requests', VendorController::class);
     $router->resource('products', ProductController::class);
-
     $router->resource('farmer-questions', FarmerQuestionController::class);
     $router->resource('farmer-questions-unanswered', FarmerQuestionController::class); // this is a custom route 
     $router->resource('farmer-questions', FarmerQuestionController::class);
@@ -45,6 +43,7 @@ Route::group([
     $router->resource('seasons', SeasonController::class);
     $router->resource('insurance-markup', MarkupController::class);
     $router->resource('regions', RegionController::class);
+    $router->resource('insurance-requests', InsuranceRequestsController::class);
     $router->resource('insurance-subscriptions', InsuranceSubscriptionController::class);
     $router->resource('insurance-premium-options', InsurancePremiumOptionController::class);
     $router->resource('orders', OrderController::class);

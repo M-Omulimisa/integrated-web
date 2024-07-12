@@ -158,6 +158,7 @@ use App\Models\Weather\WeatherSubscription;
 use App\Traits\Notification;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
+use App\Http\Controllers\InsuranceRequestController;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -173,6 +174,10 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
+Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestController::class, 'updateState'])
+    ->name('admin.insurance-requests.update-state');
+
+Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
 Route::get('test', function () {
     Utils::sendNotification2([
@@ -182,7 +187,7 @@ Route::get('test', function () {
         'type' => 'text',
     ]);
     die("notification tested. ID #8889");
-    Utils::renew_messages(); 
+    Utils::renew_messages();
 });
 Route::get('boot-system', function () {
     //$m = MarketSubscription::find('82b28464-c790-41ed-b652-25ee7617350f');
