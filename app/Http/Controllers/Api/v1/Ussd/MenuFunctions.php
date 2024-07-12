@@ -934,7 +934,6 @@ class MenuFunctions
                 "insurance_premium" => $sessionData->insurance_premium,
                 "markup" => $sessionData->markup,
                 "insurance_coverage" => $sessionData->insurance_coverage,
-                "confirmation_message" => $sessionData->confirmation_message,
                 "insurance_region_id" => $sessionData->insurance_region_id,
                 "insurance_type" => $sessionData->insurance_type,
                 "payment_phone" => $sessionData->payment_phone,

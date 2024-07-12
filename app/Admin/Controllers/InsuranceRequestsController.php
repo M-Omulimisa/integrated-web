@@ -2,7 +2,7 @@
 
 namespace App\Admin\Controllers;
 
-use App\Models\Insurance\InsurancePremiumOption;
+use App\Models\NewInsuranceRequest;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -40,7 +40,7 @@ class InsuranceRequestsController extends AdminController
 
     protected function grid()
     {
-        $grid = new Grid(new InsurancePremiumOption());
+        $grid = new Grid(new NewInsuranceRequest());
         $grid->column('id', __('Id'))->sortable()->hide();
         $grid->column('session_id', __('Session ID'))->hide();
         $grid->column('phone_number', __('Phone Number'));
@@ -120,7 +120,7 @@ class InsuranceRequestsController extends AdminController
 
     protected function detail($id)
     {
-        $show = new Show(InsurancePremiumOption::findOrFail($id));
+        $show = new Show(NewInsuranceRequest::findOrFail($id));
         $show->field('id', __('Id'))->hide();
         $show->field('session_id', __('Session ID'))->hide();
         $show->field('phone_number', __('Phone Number'));
@@ -189,7 +189,7 @@ class InsuranceRequestsController extends AdminController
 
     protected function form()
     {
-        $form = new Form(new InsurancePremiumOption());
+        $form = new Form(new NewInsuranceRequest());
         $form->text('session_id', __('Session ID'))->hide();
         $form->text('phone_number', __('Phone Number'));
         $form->text('insurance_subscrption_for', __('Insurance Subscription For'));
