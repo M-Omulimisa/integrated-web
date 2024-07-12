@@ -8,6 +8,32 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 
+/* TODO: Here's this code from postman for when you need it
+{
+    "enterprise": "79ca0d29-508f-4e10-a74b-3965541f84a7",
+    "amount": 60000,
+    "markup": 5000,
+    "sumInsured": 1000000,
+    "premium": 60000,
+    "acreage": 6,
+    "coverage": "full",
+    "phoneNumber": 256787799198,
+    "sessionID": "898l",
+    "regionID": "34720b4f-0593-4830-937c-b004fe298f7e",
+    "agent_id": "59",
+    "surname": "Kabagabe",
+    "insurance_type": "crop",
+    "insurer_name": "Simeon",
+    "telephone": 256787799198,
+    "other_name": "Marvice",
+    "payment_phone": 256704098918,
+    "paid": false,
+    "completed": false,
+    "pending": true,
+    "cancelled": false
+}
+*/
+
 class InsuranceRequestsController extends AdminController
 {
     protected $title = 'Insurance Requests';

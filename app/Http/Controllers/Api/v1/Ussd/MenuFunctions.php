@@ -572,7 +572,7 @@ class MenuFunctions
             return $seasonList;
         }
 
-        return $seasonList[$userInput];
+        return $seasonList[$response];
     }
 
     public function getSelectedRegionID($phone, $session, $response)
@@ -941,7 +941,7 @@ class MenuFunctions
                 "paid" => false,
                 "completed" => false,
                 "pending" => true,
-                "cancelled" => false, 
+                "cancelled" => false,
                 'method'    => 'USSD',
                 'payment_id' => $paymentID,
             ];
