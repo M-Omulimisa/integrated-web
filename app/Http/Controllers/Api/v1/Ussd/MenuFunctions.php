@@ -923,8 +923,6 @@ class MenuFunctions
             $paymentID = $this->generateReference($api);
 
             $data = [
-                'session_id' => $sessionData->id,
-                "phone_number" =>  $sessionData->insurance_subscriber,
                 "session_id" => $sessionData->id,
                 "phone_number" => $sessionData->insurance_subscriber,
                 "insurance_subscrption_for" => $sessionData->insurance_subscrption_for,
@@ -938,7 +936,6 @@ class MenuFunctions
                 "insurance_coverage" => $sessionData->insurance_coverage,
                 "confirmation_message" => $sessionData->confirmation_message,
                 "insurance_region_id" => $sessionData->insurance_region_id,
-                "insurer_name" => $sessionData->insurer_name,
                 "insurance_type" => $sessionData->insurance_type,
                 "payment_phone" => $sessionData->payment_phone,
                 "paid" => false,
