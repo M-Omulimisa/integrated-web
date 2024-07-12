@@ -212,6 +212,7 @@ Route::group([
         Route::post("market-subscriptions-status", [ApiShopController::class, 'market_subscriptions_status']);
         Route::post("weather-subscriptions-status", [ApiShopController::class, 'weather_subscriptions_status']);
         Route::get("my-weather-updates", [ApiShopController::class, 'my_weather_updates']);
+        Route::post("my-weather-updates-mark-as-read", [ApiShopController::class, 'my_weather_updates_mark_as_read']);
         /* ==============END OF SHOP API================== */
 
         /*==============START OF Market Information Endpoints==============*/

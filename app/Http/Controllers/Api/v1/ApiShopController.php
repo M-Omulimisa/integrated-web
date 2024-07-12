@@ -349,20 +349,24 @@ class ApiShopController extends Controller
 
     public function weather_subscriptions(Request $r)
     {
-        $u = auth('api')->user();
-        if ($u == null) {
-            $administrator_id = Utils::get_user_id($r);
-            $u = User::find($administrator_id);
-        }
-
-        if ($u == null) {
-            return $this->error('User not found.');
-        }
-        $subs = WeatherSubscription::where([
-            'farmer_id' => $u->id
-        ])->get();
+        $phone_number = $r->phone_number;
+        $phone_number = str_replace('+', '', $phone_number);
+        $subs = WeatherSubscription::where('phone', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(500)->get();
         return $this->success($subs, 'Success');
     }
+
+    public function my_weather_updates_mark_as_read(Request $r)
+    {
+
+        $rec = WeatherOutbox::find($r->weather_outbox_id);
+        if ($rec == null) {
+            return $this->error('Record not found.');
+        }
+        $rec->is_seen = 'Yes';
+        $rec->save();
+        return $this->success($rec, 'Success');
+    }
+
 
     public function my_weather_updates(Request $r)
     {
@@ -377,7 +381,7 @@ class ApiShopController extends Controller
             ]
         );
 
-        $u = auth('api')->user();
+        /*  $u = auth('api')->user();
         if ($u == null) {
             $administrator_id = Utils::get_user_id($r);
             $u = Administrator::find($administrator_id);
@@ -390,8 +394,15 @@ class ApiShopController extends Controller
         if ($phone_number == null || strlen($phone_number) < 3) {
             $phone_number = $u->phone_number;
         }
-        $records = WeatherOutbox::where([])
-            ->get();
+ */
+
+        //$phone_number = '+256705128728';
+        $phone_number = $r->phone_number;
+        $phone_number = str_replace('+', '', $phone_number);
+
+        //like $phone_number
+        $records = WeatherOutbox::where('recipient', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(500)->get();
+
         return $this->success($records, 'Already paid!');
     }
 
@@ -480,7 +491,7 @@ class ApiShopController extends Controller
         if (!isset($r->phone_number) || $r->phone_number == null) {
             return $this->error('Phone number is missing.');
         }
-        
+
         if (!isset($r->item_id) || $r->item_id == null) {
             return $this->error('Item ID is missing.');
         }

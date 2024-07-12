@@ -631,4 +631,19 @@ class WeatherSubscription extends BaseModel
     {
         return $this->belongsTo(ParishModel::class, 'parish_id', 'id');
     }
+
+    //appends subcounty_text
+    public function getSubcountyTextAttribute($value)
+    {
+        $subcounty = SubcountyModel::find($this->subcounty_id);
+        if ($subcounty != null) {
+            return $subcounty->name_text;
+        }
+        return '';
+    }
+
+    protected $appends = [
+        'subcounty_text',
+        'name_text'
+    ];
 }

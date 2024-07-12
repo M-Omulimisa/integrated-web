@@ -85,7 +85,7 @@ Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
 });
 
 if (!Utils::isLocalhost()) {
-    Utils::system_boot(); 
+    Utils::system_boot();
     //Utils::syncGroups();
 }
 
