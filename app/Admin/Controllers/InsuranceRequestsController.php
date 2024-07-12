@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\NewInsuranceRequest;
+use App\Models\Settings\Region;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -43,6 +44,7 @@ class InsuranceRequestsController extends AdminController
         $grid = new Grid(new NewInsuranceRequest());
         $grid->column('id', __('Id'))->sortable()->hide();
         $grid->column('session_id', __('Session ID'))->hide();
+        $grid->column('method', __('Method'));
         $grid->column('phone_number', __('Phone Number'));
         $grid->column('insurance_subscrption_for', __('Insurance Subscription For'))->hide();
 
@@ -58,7 +60,6 @@ class InsuranceRequestsController extends AdminController
         });
 
         $grid->column('insurance_amount', __('Insurance Amount'));
-        $grid->column('module', __('Module'));
         $grid->column('insurance_subscriber', __('Insurance Subscriber'));
         $grid->column('insurance_acreage', __('Insurance Acreage'));
         $grid->column('insurance_sum_insured', __('Insurance Sum Insured'));
@@ -66,7 +67,17 @@ class InsuranceRequestsController extends AdminController
         $grid->column('markup', __('Markup'));
         $grid->column('insurance_coverage', __('Insurance Coverage'));
         $grid->column('confirmation_message', __('Confirmation Message'))->bool();
-        $grid->column('insurance_region_id', __('Insurance Region ID'));
+        
+         // Displaying Enterprise Name
+         $grid->column('insurance_region_id', __('Insurance Region'))->display(function ($enterpriseId) {
+            $enterprise = \App\Models\Settings\Region::find($enterpriseId);
+
+            if ($enterprise) {
+                return $enterprise->name;
+            } else {
+                return 'N/A';
+            }
+        });
         $grid->column('agent_id', __('Agent ID'));
         $grid->column('insurer_name', __('Insurer Name'));
         $grid->column('insurance_type', __('Insurance Type'));
@@ -124,10 +135,10 @@ class InsuranceRequestsController extends AdminController
         $show->field('id', __('Id'))->hide();
         $show->field('session_id', __('Session ID'))->hide();
         $show->field('phone_number', __('Phone Number'));
+        $show->column('method', __('Method'));
         $show->field('insurance_subscrption_for', __('Insurance Subscription For'));
         $show->field('insurance_enterprise_id', __('Insurance Enterprise ID'));
         $show->field('insurance_amount', __('Insurance Amount'));
-        $show->field('module', __('Module'));
         $show->field('insurance_subscriber', __('Insurance Subscriber'));
         $show->field('insurance_acreage', __('Insurance Acreage'));
         $show->field('insurance_sum_insured', __('Insurance Sum Insured'));
@@ -192,10 +203,10 @@ class InsuranceRequestsController extends AdminController
         $form = new Form(new NewInsuranceRequest());
         $form->text('session_id', __('Session ID'))->hide();
         $form->text('phone_number', __('Phone Number'));
+        $form->text('method', __('Method'));
         $form->text('insurance_subscrption_for', __('Insurance Subscription For'));
         $form->text('insurance_enterprise_id', __('Insurance Enterprise ID'));
         $form->decimal('insurance_amount', __('Insurance Amount'))->default(0.00);
-        $form->text('module', __('Module'));
         $form->text('insurance_subscriber', __('Insurance Subscriber'));
         $form->decimal('insurance_acreage', __('Insurance Acreage'))->default(0.00);
         $form->decimal('insurance_sum_insured', __('Insurance Sum Insured'))->default(0.00);
