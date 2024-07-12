@@ -24,11 +24,12 @@ class InsuranceAPIController extends Controller
         return $this->success($markup->amount, 'Success');
     }
 
-    public function saveInsuranceSession()
+    public function saveInsuranceSession($data)
     {
-        $markup = \App\Models\Insurance\Markup::whereStatus(TRUE)->first();
+        $data["approved"] = false;
+        $data["approved"] = false;
 
-        return $this->success($markup->amount, 'Success');
+        return \App\Models\NewInsuranceRequest::create($data);
     }
 
     public function generateReference($api)
@@ -112,12 +113,9 @@ class InsuranceAPIController extends Controller
                 "district" => $r->district,
             ];
 
-            $data["approved"] = false;
-            $data["approved"] = false;
-
             \App\Models\Ussd\UssdSessionData::create($data);
 
-            $this->saveInsuranceSession();
+            $this->saveInsuranceSession($data);
 
             // Retrieve the session data for the given session ID and phone number.
             $sessionData = \App\Models\Ussd\UssdSessionData::whereSessionId($r->session_id)->wherePhoneNumber($r->phone_number)->first();
