@@ -28,6 +28,7 @@ class InsuranceAPIController extends Controller
     {
         $data["approved"] = false;
         $data["approved"] = false;
+        $data["method"] = "MOBILE APP";
 
         return \App\Models\NewInsuranceRequest::create($data);
     }

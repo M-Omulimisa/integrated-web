@@ -66,7 +66,6 @@ class InsuranceRequestsController extends AdminController
         $grid->column('insurance_premium', __('Insurance Premium'));
         $grid->column('markup', __('Markup'));
         $grid->column('insurance_coverage', __('Insurance Coverage'));
-        $grid->column('confirmation_message', __('Confirmation Message'))->bool();
         
          // Displaying Enterprise Name
          $grid->column('insurance_region_id', __('Insurance Region'))->display(function ($enterpriseId) {
@@ -145,7 +144,6 @@ class InsuranceRequestsController extends AdminController
         $show->field('insurance_premium', __('Insurance Premium'));
         $show->field('markup', __('Markup'));
         $show->field('insurance_coverage', __('Insurance Coverage'));
-        $show->field('confirmation_message', __('Confirmation Message'));
         $show->field('insurance_region_id', __('Insurance Region ID'));
         $show->field('agent_id', __('Agent ID'));
         $show->field('insurer_name', __('Insurer Name'));
@@ -213,7 +211,6 @@ class InsuranceRequestsController extends AdminController
         $form->decimal('insurance_premium', __('Insurance Premium'))->default(0.00);
         $form->decimal('markup', __('Markup'))->default(0.00);
         $form->text('insurance_coverage', __('Insurance Coverage'));
-        $form->switch('confirmation_message', __('Confirmation Message'));
         $form->text('insurance_region_id', __('Insurance Region ID'));
         $form->text('agent_id', __('Agent ID'));
         $form->text('insurer_name', __('Insurer Name'));
