@@ -161,6 +161,7 @@ use Dflydev\DotAccessData\Util;
 use App\Http\Controllers\InsuranceRequestController;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -179,6 +180,12 @@ Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestContr
 
 Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
+Route::get('migrate', function () {
+    //do run laravel migration command
+    Artisan::call('migrate');
+    //returning the output
+    return Artisan::output();
+});
 Route::get('test', function () {
     Utils::sendNotification2([
         'msg' => 'Muhindo to Simeon - FROM LOCAL WEB PORTAL',
