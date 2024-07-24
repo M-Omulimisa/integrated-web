@@ -124,6 +124,12 @@ class FarmerController extends AdminController
                 return date('d-m-Y', strtotime($created_at));
             })->sortable();
 
+        //home_gps_latitude
+        $grid->column('home_gps_latitude', __('GPS'))
+            ->display(function ($home_gps_latitude) {
+                if ($home_gps_latitude == null) return '-';
+                return $home_gps_latitude . ', ' . $this->home_gps_longitude;
+            })->sortable();
         return $grid;
 
         $grid->column('year_of_birth', __('Y.O.B'))->sortable();
