@@ -269,7 +269,8 @@ class FarmerQuestionController extends AdminController
                 $link = url('storage/' . $rec);
                 //retun photo with link
                 return '<a href="' . $link . '" target="_blank"><img src="' . $link . '" style="max-width:100px;max-height:100px" /></a>';
-            })->sortable();
+            })->sortable()->hide();
+        $grid->column('answer_body', __('Answer'))->sortable();
         $grid->column('video', __('Video'))->hide();
         $grid->column('document', __('Document'))->hide();
         $grid->column('user_id', __('Farmer'))
