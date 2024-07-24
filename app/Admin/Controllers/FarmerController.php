@@ -33,7 +33,7 @@ class FarmerController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Farmer());
-        $grid->model()->orderBy('created_at', 'desc');
+        $grid->model()->orderBy('is_imported', 'desc');
         $grid->quickSearch('phone', 'first_name', 'last_name', 'email', 'national_id_number')
             ->placeholder('Search by phone, name, email, or NIN');
         $grid->column('first_name', __('Name'))
@@ -90,7 +90,7 @@ class FarmerController extends AdminController
             ->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
             })->sortable();
-        $grid->column('imported_processed', __('Processed'))
+        $grid->column('is_imported', __('Processed'))
             ->label([
                 'Yes' => 'success',
                 'No' => 'danger',
