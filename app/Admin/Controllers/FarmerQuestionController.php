@@ -163,11 +163,11 @@ class FarmerQuestionController extends AdminController
 
         //segments
         $segs = request()->segments();
-        $grid->model()->where('answered', 'no');
         if (isset($segs[0])) {
             $text = $segs[0];
-            //if contains unanswered
-            if (strpos($text, 'unanswered') !== false) {
+            $text_splits = explode('-', $text);
+            //if text_splits contains unanswered
+            if (in_array('unanswered', $text_splits)) {
                 $grid->model()->where('answered', 'no');
             }
         }
@@ -352,12 +352,12 @@ class FarmerQuestionController extends AdminController
                     ]
                 );
         } else {
-            $form->textarea('body', __('Body'))->readonly();
-            $form->text('category', __('Category'))->readonly();
+            $form->textarea('body', __('Body'));
+            $form->text('category', __('Category'));
             $form->text('phone', __('Phone'));
-            $form->text('sent_via', __('Sent via'))->readonly();
+            $form->text('sent_via', __('Sent via'));
         }
-        $form->textarea('answer_body', __('Answer'));
+        $form->textarea('answer_body', __('Answer')); 
         $form->radio('answered', __('Send SMS'))
             ->options(['yes' => 'No', 'no' => 'Yes'])
             ->default('no');

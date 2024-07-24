@@ -756,6 +756,7 @@ class Utils
             'type' => 'text'
         ]
     ) {
+        return;
         if ($data['msg'] == null) {
             throw new \Exception("Message is required");
         }
