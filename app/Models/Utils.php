@@ -501,8 +501,8 @@ class Utils
         $client = new \GuzzleHttp\Client();
         $response = null;
         try {
-            $link = "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}";
-            dd($link);
+            // $link = "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}";
+            // dd($link);
             $response = $client->request('GET', "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}");
         } catch (\Throwable $th) {
             throw $th;

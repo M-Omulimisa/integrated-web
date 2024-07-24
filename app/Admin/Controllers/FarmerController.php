@@ -90,6 +90,15 @@ class FarmerController extends AdminController
             ->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
             })->sortable();
+        $grid->column('imported_processed', __('Processed'))
+            ->label([
+                'Yes' => 'success',
+                'No' => 'danger',
+            ])->sortable()
+            ->filter([
+                'Yes' => 'Yes',
+                'No' => 'No',
+            ]);
         return $grid;
 
 
@@ -155,6 +164,8 @@ class FarmerController extends AdminController
         $grid->column('cattle_count', __('Cattle count'));
         $grid->column('bank_account_number', __('Bank account number'));
         $grid->column('has_receive_loan', __('Has receive loan'));
+
+
 
         return $grid;
     }
