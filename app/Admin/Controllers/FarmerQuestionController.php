@@ -354,10 +354,18 @@ class FarmerQuestionController extends AdminController
         } else {
             $form->textarea('body', __('Body'));
             $form->text('category', __('Category'));
-            $form->text('phone', __('Phone'));
-            $form->text('sent_via', __('Sent via'));
         }
-        $form->textarea('answer_body', __('Answer')); 
+        $form->text('phone', __('Phone'));
+        $form->select('sent_via', __('Sent Via'))
+            ->options(
+                [
+                    'ussd' => 'ussd',
+                    'web' => 'web',
+                    'Mobile App' => 'Mobile App',
+                    'sms' => 'sms',
+                ]
+            );
+        $form->textarea('answer_body', __('Answer'));
         $form->radio('answered', __('Send SMS'))
             ->options(['yes' => 'No', 'no' => 'Yes'])
             ->default('no');
