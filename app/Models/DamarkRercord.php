@@ -161,6 +161,12 @@ class DamarkRercord extends Model
                 $question->language_id = $language->id;
             }
             try {
+
+                if($m->status == 'Answered'){
+                    $question->answered = 'Yes';
+                    $question->answer_body = $m->post_data;
+                }   
+
                 $question->save();
                 $set .= ', status = "Success" ';
                 $set .= ', question_id = ' . $question->id . " ";

@@ -648,15 +648,52 @@ class ApiShopController extends Controller
         $record->external_ref = json_encode($r->all());
         $record->sender = $r->phone_no;
         $record->message_body = $r->message;
+        $phone = Utils::prepare_phone_number($r->phone_no);
+        if (!Utils::phone_number_is_valid($phone)) {
+            return 'Invalid phone number ' . $phone . '.';
+        }
+        $record->sender = $phone;
+        $msg = $r->message;
+        if ($msg == null || strlen($msg) < 5) {
+            return 'Message too short. ' . $msg;
+        }
+        $words = explode(' ', $msg);
+        //check if contains manya
+        $containsManya = false;
+        foreach ($words as $key => $value) {
+            if (strtolower($value) == 'manya') {
+                $containsManya = true;
+                break;
+            }
+        }
+        if ($containsManya == false) {
+            return 'No word "manya"  in your message. ' . $msg;
+        }
+
+        $msg_without_word_manya = str_replace('manya', '', strtolower($msg));
+        $ai_answer =  null;
+        try {
+            $ai_answer = Utils::get_ai_answer($msg_without_word_manya);
+        } catch (\Throwable $th) {
+            $ai_answer = null;
+        }
+
         $record->get_data = json_encode($_GET);
         $record->post_data = json_encode($_POST);
         $record->is_processed = 'No';
-        $record->status = 'Pending';
         $record->error_message = 'Pending';
         $record->type = 'Other';
         $record->farmer_id = '';
         $record->question_id = '';
+        
+        if ($ai_answer != null) {
+            $record->status = 'Answered';
+            $record->post_data = $ai_answer;
+        } else {
+            $record->status = 'Pending';
+        }
         $record->save();
+        return $ai_answer;
         return $this->success(null, $message = "Success", 200);
     }
     public function get_orders_notification_nessage(Request $r)
