@@ -11,8 +11,17 @@ class FarmerQuestion extends Model
     use HasFactory;
     protected static function boot()
     {
-        parent::boot(); 
+        parent::boot();
         self::created(function ($m) {
+
+            if (strtolower($m->answered) == 'yes') {
+                return;
+            }
+
+            if (strlen($m->answer_body) > 6) {
+                return;
+            }
+
             $answer = null;
             try {
                 $answer = Utils::get_ai_answer($m->body);
@@ -67,7 +76,7 @@ class FarmerQuestion extends Model
                     $m->answer_body = $answer;
                 }
             }
-        }); 
+        });
 
         //updated
         self::updated(function ($m) {
