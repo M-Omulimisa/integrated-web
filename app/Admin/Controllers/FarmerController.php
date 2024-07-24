@@ -33,9 +33,13 @@ class FarmerController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Farmer());
-        $grid->model()->orderBy('is_imported', 'desc');
+        $grid->model()
+            ->where([
+                'is_imported' => 'Yes'
+            ])
+            ->orderBy('first_name', 'asc');
         $grid->quickSearch('phone', 'first_name', 'last_name', 'email', 'national_id_number')
-            ->placeholder('Search by phone, name, email, or NIN');
+            ->placeholder('Search by phone, name, email... ');
         $grid->column('first_name', __('Name'))
             ->display(function ($name) {
                 $name = $this->first_name . ' ' . $this->last_name;
@@ -53,23 +57,76 @@ class FarmerController extends AdminController
             ->display(function ($gender) {
                 if ($gender != 'Male' && $gender != 'Female') return 'Unknown';
                 return $gender;
-            })->sortable();
-        $grid->column('national_id_number', __('NIN'))
-            ->display(function ($nin) {
-                if ($nin == null) return '-';
-                return $nin;
-            })->sortable();
-        $grid->column('education_level', __('Education Level'))
+            })->sortable()
+            ->dot([
+                'Male' => 'success',
+                'Female' => 'warning',
+            ]);
+        $grid->column('phone', __('Phone Number'))->sortable()
+        ->display(function ($phone) {
+            if($phone == null || strlen($phone)<5){
+                return 'N/A';
+            }
+            return $phone;
+        });
+        $grid->column('highest_education_level', __('Education'))
             ->display(function ($education_level) {
                 if ($education_level == null) return '-';
-                return $education_level;
-            })->sortable()->hide();
-        $grid->column('phone', __('Phone'))->sortable();
-        $grid->column('email', __('Email'))->display(function ($email) {
-            if ($email == null) return '-';
-            return $email;
-        })->sortable()->hide();
-        $grid->column('year_of_birth', __('D.O.B'))->hide();
+                //capitalize first letter
+                return ucfirst($education_level);
+            })->sortable();
+        $grid->column('is_pwd', __('Is PWD?'))
+            ->using([
+                1 => 'Is PWD',
+                0 => 'Not PWD',
+            ])->sortable()
+            ->label([
+                '1' => 'success',
+                '0' => 'danger',
+            ]);
+        $grid->column('min_income_range', __('Income Range (UGX)'))
+            ->display(function ($min_income_range) {
+                if ($min_income_range == null) return '-';
+                return number_format($min_income_range) . ' - ' . number_format($this->max_income_range);
+            })->sortable();
+
+        /* own_a_smart_phone COL */
+        $grid->column('own_a_smart_phone', __('Has SmartPhone'))
+            ->using([
+                1 => 'Yes',
+                0 => 'No',
+            ])->sortable()
+            ->dot([
+                '1' => 'success',
+                '0' => 'danger',
+            ])
+            ->filter([
+                1 => 'Yes',
+                0 => 'No',
+            ])->width(100);
+        /* employment_status */
+        $grid->column('employment_status', __('Employment Status'))
+            ->display(function ($employment_status) {
+                if ($employment_status == null) return '-';
+                return ucfirst($employment_status);
+            })->sortable()
+            ->width(100)->hide();
+        /* number_of_children */
+        $grid->column('number_of_children', __('No. of Children'))
+            ->display(function ($number_of_children) {
+                if ($number_of_children == null) return '-';
+                return $number_of_children;
+            })->sortable()
+            ->width(100);
+
+        $grid->column('created_at', __('Registered'))
+            ->display(function ($created_at) {
+                return date('d-m-Y', strtotime($created_at));
+            })->sortable();
+
+        return $grid;
+
+        $grid->column('year_of_birth', __('Y.O.B'))->sortable();
 
         $grid->column('is_your_phone', __('Is your phone'))->hide();
         $grid->column('is_mm_registered', __('Is mm registered'))->hide();
@@ -86,10 +143,7 @@ class FarmerController extends AdminController
                 return $house_number;
             })->sortable();
 
-        $grid->column('created_at', __('Registered'))
-            ->display(function ($created_at) {
-                return date('d-m-Y', strtotime($created_at));
-            })->sortable();
+
         $grid->column('is_imported', __('Processed'))
             ->label([
                 'Yes' => 'success',

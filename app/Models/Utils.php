@@ -629,6 +629,7 @@ class Utils
             $farmer->created_at = $ext['created_at'];
             $farmer->marital_status = $ext['marital_status'];
             $farmer->is_pwd = $ext['pwd_status']; 
+            $farmer->is_refugee = $ext['refugee_status']; 
             $farmer->home_gps_latitude = $ext['gps_latitude'];
             $farmer->home_gps_longitude = $ext['gps_longitude'];
 
