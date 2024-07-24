@@ -11,7 +11,7 @@ class FarmerQuestion extends Model
     use HasFactory;
     protected static function boot()
     {
-        parent::boot();
+        parent::boot(); 
         self::created(function ($m) {
             $answer = null;
             try {
