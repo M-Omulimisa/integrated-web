@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\FarmerQuestion;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -189,7 +190,7 @@ class FarmerQuestionController extends AdminController
                 }
                 return $d->name;
             })
-            ->sortable();
+            ->sortable()->hide();
 
         /*  $grid->column('category', __('Category'))
             ->label(
@@ -284,7 +285,7 @@ class FarmerQuestionController extends AdminController
             ->sortable();
         $grid->column('created_at', __('DATE'))
             ->display(function ($created_at) {
-                return date('d M Y', strtotime($created_at));
+                return Utils::my_date_time($created_at);
             })
             ->sortable();
         return $grid;
