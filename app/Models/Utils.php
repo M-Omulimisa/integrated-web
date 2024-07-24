@@ -19,6 +19,50 @@ use Illuminate\Support\Facades\Schema;
 
 class Utils
 {
+    public static function get_ai_answer($query)
+    {
+        if (strlen($query) < 3) {
+            return '';
+        }
+        $url = 'http://20.246.158.238:8080/ask';
+        $data = [
+            'prompt' => $query
+        ];
+
+        $guzzle = new \GuzzleHttp\Client();
+        $response = null;
+        try {
+            $response = $guzzle->post($url, [
+                'json' => $data
+            ]);
+        } catch (\Throwable $th) {
+            return '';
+        }
+        if ($response == null) {
+            return '';
+        }
+        $body = $response->getBody();
+        $data = json_decode($body);
+        if ($data == null) {
+            return '';
+        }
+
+        //check if not array
+        if (!is_array($data)) {
+            return '';
+        }
+        //check if $data[0] is not set
+        if (!isset($data[0])) {
+            return '';
+        }
+        if (!isset($data[0]->message)) {
+            return '';
+        }
+        if ($data[0]->message == null) {
+            return '';
+        }
+        return $data[0]->message;
+    }
     public static function short($string, $length = 100)
     {
         if (strlen($string) > $length) {
@@ -474,11 +518,11 @@ class Utils
 
         $page = 0;
         $last = Farmer::orderBy('imported_page_number', 'desc')->first();
-        if($last != null){
+        if ($last != null) {
             $page = ((int)($last->imported_page_number));
             $page++;
         }
-     
+
         /* if ($last != null) {
             $page = ((int)($last->sheep_count));
             if ($page == 0) {
@@ -628,8 +672,8 @@ class Utils
             $farmer->year_of_birth = $ext['year_of_birth'];
             $farmer->created_at = $ext['created_at'];
             $farmer->marital_status = $ext['marital_status'];
-            $farmer->is_pwd = $ext['pwd_status']; 
-            $farmer->is_refugee = $ext['refugee_status']; 
+            $farmer->is_pwd = $ext['pwd_status'];
+            $farmer->is_refugee = $ext['refugee_status'];
             $farmer->home_gps_latitude = $ext['gps_latitude'];
             $farmer->home_gps_longitude = $ext['gps_longitude'];
 
