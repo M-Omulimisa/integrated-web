@@ -646,8 +646,8 @@ class ApiShopController extends Controller
         $record = new \App\Models\DamarkRercord();
 
         $record->external_ref = json_encode($r->all());
-        $record->sender = $r->sender;
-        $record->message_body = $r->body;
+        $record->sender = $r->phone_no;
+        $record->message_body = $r->message;
         $record->get_data = json_encode($_GET);
         $record->post_data = json_encode($_POST);
         $record->is_processed = 'No';
