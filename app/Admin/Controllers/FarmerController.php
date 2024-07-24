@@ -63,12 +63,12 @@ class FarmerController extends AdminController
                 'Female' => 'warning',
             ]);
         $grid->column('phone', __('Phone Number'))->sortable()
-        ->display(function ($phone) {
-            if($phone == null || strlen($phone)<5){
-                return 'N/A';
-            }
-            return $phone;
-        });
+            ->display(function ($phone) {
+                if ($phone == null || strlen($phone) < 5) {
+                    return 'N/A';
+                }
+                return $phone;
+            });
         $grid->column('highest_education_level', __('Education'))
             ->display(function ($education_level) {
                 if ($education_level == null) return '-';
@@ -80,7 +80,7 @@ class FarmerController extends AdminController
                 1 => 'Is PWD',
                 0 => 'Not PWD',
             ])->sortable()
-            ->label([
+            ->dot([
                 '1' => 'success',
                 '0' => 'danger',
             ]);
