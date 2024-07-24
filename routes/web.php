@@ -181,7 +181,7 @@ Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestContr
 Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
 Route::get('migrate', function () {
-    //do run laravel migration command
+    //do run laravel migration command 
     Artisan::call('migrate');
     //returning the output
     return Artisan::output();
