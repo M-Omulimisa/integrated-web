@@ -356,6 +356,19 @@ class ApiShopController extends Controller
         return $this->success($subs, 'Success');
     }
 
+    public function my_market_updates_mark_as_read(Request $r)
+    {
+
+        $rec = MarketOutbox::find($r->weather_outbox_id);
+        if ($rec == null) {
+            return $this->error('Record not found.');
+        }
+        $rec->is_seen = 'Yes';
+        $rec->save();
+        $rec = MarketOutbox::find($r->weather_outbox_id);
+        return $this->success($rec, 'Success');
+    }
+
     public function my_weather_updates_mark_as_read(Request $r)
     {
 
