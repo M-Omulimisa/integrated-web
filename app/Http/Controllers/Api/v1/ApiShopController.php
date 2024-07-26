@@ -7,6 +7,7 @@ use App\Models\ChatHead;
 use App\Models\ChatMessage;
 use App\Models\DistrictModel;
 use App\Models\Image;
+use App\Models\Market\MarketOutbox;
 use App\Models\Market\MarketPackagePricing;
 use App\Models\Market\MarketSubscription;
 use App\Models\NotificationMessage;
@@ -401,7 +402,7 @@ class ApiShopController extends Controller
         $phone_number = str_replace('+', '', $phone_number);
 
         //like $phone_number
-        $records = WeatherOutbox::where('recipient', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(500)->get();
+        $records = MarketOutbox::where('recipient', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(500)->get();
 
         return $this->success($records, 'Success');
     }
