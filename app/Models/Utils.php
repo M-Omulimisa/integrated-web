@@ -764,6 +764,7 @@ class Utils
             throw new \Exception("Receiver is required");
         }
 
+
         /* 
         */
         $ONESIGNAL_APP_ID = '2007b43a-6c6b-4cab-b619-b367e5c184fb';
@@ -789,6 +790,60 @@ class Utils
         } else {
             $receivers[] = trim($userId) . '';
         }
+
+        $message_created = false;
+        if (isset($data['message_created'])) {
+            if ($data['message_created'] == 'Yes') {
+                $message_created = true;
+            }
+        }
+
+        if (!$message_created) {
+            foreach ($receivers as $rec) {
+                $my_rec = User::find($rec);
+                if ($my_rec == null) {
+                    continue;
+                }
+                $not = new NotificationMessage();
+                $not->user_id = $my_rec->id;
+                $not->notification_campaign_id = 0;
+                $not->title = isset($data['headings']) ? $data['headings'] : 'M-OMULIMISA';
+                $not->phone_number = $my_rec->phone;
+                $not->email = $my_rec->email;
+                $not->sms_body = isset($data['msg']) ? $data['msg'] : 'No message';
+                $not->short_description = isset($data['msg']) ? $data['msg'] : 'No message';
+                $not->body = isset($data['msg']) ? $data['msg'] : 'No message';
+                $not->image = isset($data['big_picture']) ? $data['big_picture'] : '';
+                $not->url = isset($data['url']) ? $data['url'] : '';
+                $not->notification_seen = 'No';
+                $not->notification_sent = 'Yes';
+                $not->sms_sent = 'Yes';
+                try {
+                    $not->save();
+                } catch (\Throwable $th) {
+                    continue;
+                }
+            }
+        }
+
+
+        /*     
+        	
+        	
+        type	
+        priority	
+        status	
+        ready_to_send	
+        send_notification	
+        send_email	
+        send_sms	
+        sheduled_at	
+        email_sent	
+        	
+        	
+        notification_seen_time	
+        	
+        */
 
         // Notification data
         $notificationData = [

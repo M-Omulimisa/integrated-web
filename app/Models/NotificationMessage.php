@@ -213,6 +213,7 @@ class NotificationMessage extends Model
         }
 
         try {
+            $params['message_created'] = 'Yes';
             Utils::sendNotification2($params);
             $this->notification_sent = 'Yes';
             $this->notification_seen = 'No';
