@@ -692,6 +692,7 @@ class ApiShopController extends Controller
         $not->notification_seen = 'Yes';
         $not->notification_seen_time = Carbon::now();
         $not->save();
+        return $this->success($not, $message = "Success", 200); 
     }
     public function dmark_sms_webhook(Request $r)
     {
