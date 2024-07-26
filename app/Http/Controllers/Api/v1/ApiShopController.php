@@ -368,6 +368,45 @@ class ApiShopController extends Controller
     }
 
 
+    public function my_market_outboxes(Request $r)
+    {
+        /* Utils::create_column(
+            (new WeatherOutbox())->getTable(),
+            [
+                [
+                    'name' => 'is_seen',
+                    'type' => 'String',
+                    'default' => 'No',
+                ],
+            ]
+        ); */
+
+        /*  $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = Administrator::find($administrator_id);
+        }
+        $u = Administrator::find($u->id);
+        if ($u == null) {
+            return $this->error('User is missing.');
+        }
+        $phone_number = $u->phone;
+        if ($phone_number == null || strlen($phone_number) < 3) {
+            $phone_number = $u->phone_number;
+        }
+ */
+
+        //$phone_number = '+256705128728';
+        $phone_number = $r->phone_number;
+        $phone_number = str_replace('+', '', $phone_number);
+
+        //like $phone_number
+        $records = WeatherOutbox::where('recipient', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(500)->get();
+
+        return $this->success($records, 'Success');
+    }
+
+
     public function my_weather_updates(Request $r)
     {
         Utils::create_column(
@@ -685,7 +724,7 @@ class ApiShopController extends Controller
         $record->type = 'Other';
         $record->farmer_id = '';
         $record->question_id = '';
-        
+
         if ($ai_answer != null) {
             $record->status = 'Answered';
             $record->post_data = $ai_answer;
