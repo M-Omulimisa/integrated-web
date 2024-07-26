@@ -737,7 +737,8 @@ class Utils
                 );
         } catch (\Throwable $th) {
             //throw $th;
-            throw $th;
+            // die("failed");
+            // throw $th;
         }
 
 
@@ -756,7 +757,6 @@ class Utils
             'type' => 'text'
         ]
     ) {
-        return;
         if ($data['msg'] == null) {
             throw new \Exception("Message is required");
         }
@@ -790,15 +790,13 @@ class Utils
             $receivers[] = trim($userId) . '';
         }
 
-
-
         // Notification data
         $notificationData = [
             'app_id' => $appId,
             'contents' => ['en' => $data['msg']],
             'headings' => ['en' => $data['headings'] . ' - M-Omulimisa'],
-            'external_user_id' => $receivers[0],
-            'included_segments' => ['All'],
+            'external_user_id' => $receivers,
+            'include_external_user_ids' => $receivers,
         ];
 
         if (isset($data['big_picture']) && $data['big_picture'] != null && $data['big_picture'] != '' && strlen($data['big_picture']) > 2) {
@@ -838,7 +836,8 @@ class Utils
                 'headers' => [
                     'Authorization' => 'Basic ' . $apiKey,
                     'Content-Type' => 'application/json',
-                    'body' => json_encode($notificationData)
+                    'body' => json_encode($notificationData),
+
                 ],
                 'json' => $notificationData,
             ]);

@@ -188,11 +188,28 @@ Route::get('migrate', function () {
 });
 Route::get('test', function () {
     Utils::sendNotification2([
-        'msg' => 'Muhindo to Simeon - FROM LOCAL WEB PORTAL',
-        'headings' => 'mubahood TEST NOTIFCATION',
-        'receiver' => '8889',
+        'msg' => '333 Muhindo to Simeon - FROM LOCAL WEB PORTAL',
+        'headings' => '333 mubahood TEST NOTIFCATION',
+        'receiver' => '333',
         'type' => 'text',
     ]);
+
+    /* 
+    try {
+        Utils::sendNotification(
+            '$noti_body',
+            '333',
+            'Some title',
+            data: [
+                'id' => '333',
+                'user' => '333',
+                'order_state' => '$order->order_state',
+            ]
+        );
+    } catch (\Throwable $th) {
+        //throw $th;
+    }
+    */
     die("notification tested. ID #8889");
     Utils::renew_messages();
 });
