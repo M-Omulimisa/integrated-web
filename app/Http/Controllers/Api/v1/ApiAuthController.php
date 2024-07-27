@@ -207,7 +207,10 @@ class ApiAuthController extends Controller
     public function farmers()
     {
         //$u = auth('api')->user();
-        return $this->success(Farmer::where([])->get(), "Success");
+        return $this->success(Farmer::where([])
+            ->orderBy('created_at', 'desc')
+            ->limit(100)
+            ->get(), "Success");
     }
 
     public function countries()
@@ -815,7 +818,7 @@ class ApiAuthController extends Controller
                 Utils::sendNotification2([
                     'msg' => $otp . ' is your M-Omulimisa OTP.',
                     'headings' => 'New Notification',
-                    'receiver' => [$u->id.""],
+                    'receiver' => [$u->id . ""],
                     'type' => 'text',
                 ]);
             }
