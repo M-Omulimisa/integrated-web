@@ -81,13 +81,11 @@ class ApiShopController extends Controller
             return $this->error('Pricing not found.');
         }
 
-
         $existing_subs = \App\Models\Market\MarketSubscription::where([
             'farmer_id' => $r->subscriber_id,
             'package_id' => $r->package_id,
             'language_id' => $r->language_id,
         ])->get();
-
 
         $sub = null;
         foreach ($existing_subs as $key => $val) {
@@ -104,6 +102,7 @@ class ApiShopController extends Controller
                     break;
                 }
             }
+
             $start_date = Carbon::parse($val->start_date);
             $end_date = Carbon::parse($val->end_date);
             $now = Carbon::now();
@@ -125,6 +124,7 @@ class ApiShopController extends Controller
             $sub->save();
             return $this->success($sub, 'Success.');
         }
+        
         $language = \App\Models\Settings\Language::find($r->language_id);
         if ($language == null) {
             return $this->error('Language not found.');
@@ -215,7 +215,6 @@ class ApiShopController extends Controller
             return $this->error('Days is missing.');
         }
 
-
         //period
         if (!isset($r->period) || $r->period == null) {
             return $this->error('Period is missing.');
@@ -263,12 +262,14 @@ class ApiShopController extends Controller
         $subscription->parish_id = $parish->id;
         $subscription->first_name = $u->first_name;
         $subscription->last_name = $u->last_name;
+
         if ($subscription->first_name == null || strlen($subscription->first_name) < 2) {
             $subscription->first_name = $u->name;
         }
         if ($subscription->last_name == null || strlen($subscription->last_name) < 2) {
             $subscription->last_name = $u->name;
         }
+
         $subscription->email = $u->email;
         $subscription->frequency = $r->frequency;
         $subscription->period_paid = $r->period;
@@ -289,6 +290,7 @@ class ApiShopController extends Controller
         if ($days < 1) {
             return $this->error('Days should be greater than 0.');
         }
+
         $subscription->start_date = Carbon::now();
         $subscription->end_date = Carbon::now()->addDays($days);
         $subscription->trial_expiry_sms_sent_at = Carbon::now()->addDays(7);
@@ -304,6 +306,7 @@ class ApiShopController extends Controller
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }
+
         $subscription = WeatherSubscription::find($subscription->id);
         if ($subscription == null) {
             return $this->error('Failed to save subscription.');
@@ -313,9 +316,6 @@ class ApiShopController extends Controller
 
         return $this->success($subscription, 'Weather subscription saved successfully.');
     }
-
-
-
 
     public function market_packages()
     {
