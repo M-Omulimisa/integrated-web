@@ -404,6 +404,8 @@ class WeatherSubscription extends BaseModel
                     try {
                         Utils::send_sms($phone, $msg);
 
+                        return;
+
                         $notificationManager = new NotificationSender();
                         $notificationManager->sendNotification($phone, $msg);
 

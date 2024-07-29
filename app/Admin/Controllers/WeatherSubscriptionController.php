@@ -230,6 +230,7 @@ class WeatherSubscriptionController extends AdminController
                 $my_data['Expiry Message Sent Details'] = $data->renew_message_sent_details;
                 return new \Encore\Admin\Widgets\Table([], $my_data);
             });
+        
 
 
         return $grid;
