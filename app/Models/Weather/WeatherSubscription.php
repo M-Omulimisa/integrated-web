@@ -404,11 +404,6 @@ class WeatherSubscription extends BaseModel
                     try {
                         Utils::send_sms($phone, $msg);
 
-                        return;
-
-                        $notificationManager = new NotificationSender();
-                        $notificationManager->sendNotification($phone, $msg);
-
                         $this->welcome_msg_sent = 'Yes';
                         $this->welcome_msg_sent_details = $msg . ' - Message sent to ' . $phone;
                         $this->save();
@@ -428,13 +423,17 @@ class WeatherSubscription extends BaseModel
                             try {
                                 $u = User::where('phone', $phone)->first();
 
-                                if ($u && $u->id) {
-                                    Utils::sendNotification2([
-                                        'msg' => $sms,
-                                        'headings' => 'Notification',
-                                        'receiver' => $u->id,
-                                        'type' => 'text',
-                                    ]);
+                                try {
+                                    if ($u && $u->id) {
+                                        Utils::sendNotification2([
+                                            'msg' => $sms,
+                                            'headings' => 'Notification',
+                                            'receiver' => $u->id,
+                                            'type' => 'text',
+                                        ]);
+                                    }
+                                } catch (\Throwable $th) {
+                                    //do nothing
                                 }
 
                                 Utils::send_sms($phone, $sms);
