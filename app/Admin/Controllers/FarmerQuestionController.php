@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\FarmerQuestion;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -163,11 +164,11 @@ class FarmerQuestionController extends AdminController
 
         //segments
         $segs = request()->segments();
-        $grid->model()->where('answered', 'no');
         if (isset($segs[0])) {
             $text = $segs[0];
-            //if contains unanswered
-            if (strpos($text, 'unanswered') !== false) {
+            $text_splits = explode('-', $text);
+            //if text_splits contains unanswered
+            if (in_array('unanswered', $text_splits)) {
                 $grid->model()->where('answered', 'no');
             }
         }
@@ -189,7 +190,7 @@ class FarmerQuestionController extends AdminController
                 }
                 return $d->name;
             })
-            ->sortable();
+            ->sortable()->hide();
 
         /*  $grid->column('category', __('Category'))
             ->label(
@@ -269,7 +270,8 @@ class FarmerQuestionController extends AdminController
                 $link = url('storage/' . $rec);
                 //retun photo with link
                 return '<a href="' . $link . '" target="_blank"><img src="' . $link . '" style="max-width:100px;max-height:100px" /></a>';
-            })->sortable();
+            })->sortable()->hide();
+        $grid->column('answer_body', __('Answer'))->sortable();
         $grid->column('video', __('Video'))->hide();
         $grid->column('document', __('Document'))->hide();
         $grid->column('user_id', __('Farmer'))
@@ -283,7 +285,7 @@ class FarmerQuestionController extends AdminController
             ->sortable();
         $grid->column('created_at', __('DATE'))
             ->display(function ($created_at) {
-                return date('d M Y', strtotime($created_at));
+                return Utils::my_date_time($created_at);
             })
             ->sortable();
         return $grid;
@@ -351,11 +353,19 @@ class FarmerQuestionController extends AdminController
                     ]
                 );
         } else {
-            $form->textarea('body', __('Body'))->readonly();
-            $form->text('category', __('Category'))->readonly();
-            $form->text('phone', __('Phone'));
-            $form->text('sent_via', __('Sent via'))->readonly();
+            $form->textarea('body', __('Body'));
+            $form->text('category', __('Category'));
         }
+        $form->text('phone', __('Phone'));
+        $form->select('sent_via', __('Sent Via'))
+            ->options(
+                [
+                    'ussd' => 'ussd',
+                    'web' => 'web',
+                    'Mobile App' => 'Mobile App',
+                    'sms' => 'sms',
+                ]
+            );
         $form->textarea('answer_body', __('Answer'));
         $form->radio('answered', __('Send SMS'))
             ->options(['yes' => 'No', 'no' => 'Yes'])

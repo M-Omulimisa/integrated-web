@@ -38,7 +38,7 @@ use App\Models\Ussd\UssdEvaluationQuestionOption;
 use App\Models\Insurance\InsuranceSubscription;
 use App\Models\Insurance\InsurancePremiumOption;
 use App\Models\Insurance\Markup;
-
+use App\Models\NewInsuranceRequest;
 use App\Models\Weather\WeatherSubscription;
 use App\Models\Payments\SubscriptionPayment;
 
@@ -48,8 +48,8 @@ class MenuFunctions
     public function getLastMenu($sessionId, $phoneNumber)
     {
         $session = UssdSession::whereSessionId($sessionId)
-                                ->wherePhoneNumber($phoneNumber)
-                                ->first();
+            ->wherePhoneNumber($phoneNumber)
+            ->first();
         return $session ? $session->last_menu : null;
     }
 
@@ -57,8 +57,8 @@ class MenuFunctions
     {
         //check for the sessions existence
         $sessions = UssdSession::whereSessionId($sessionId)
-                                ->wherePhoneNumber($phoneNumber)
-                                ->count();
+            ->wherePhoneNumber($phoneNumber)
+            ->count();
         return $sessions > 0 ? true : false;
     }
 
@@ -68,10 +68,9 @@ class MenuFunctions
 
         if ($this->checkSession($sessionId, $phoneNumber)) {
             UssdSession::whereSessionId($sessionId)
-                        ->wherePhoneNumber($phoneNumber)
-                        ->update(['last_menu' => $current_menu]);
-        } 
-        else {
+                ->wherePhoneNumber($phoneNumber)
+                ->update(['last_menu' => $current_menu]);
+        } else {
             //create new session if does not exist
             UssdSession::create([
                 'session_id'    => $sessionId,
@@ -95,15 +94,15 @@ class MenuFunctions
                 'phone_number'  => $phoneNumber,
                 'module'        => $module
             ]);
-        } 
+        }
     }
 
     public function checkSessionData($sessionId, $phoneNumber)
     {
         //check for the session data existence
         $sessions = UssdSessionData::whereSessionId($sessionId)
-                                    ->wherePhoneNumber($phoneNumber)
-                                    ->get();
+            ->wherePhoneNumber($phoneNumber)
+            ->get();
         return count($sessions) > 0 ? true : false;
     }
 
@@ -115,10 +114,10 @@ class MenuFunctions
      */
     public function sessionData($sessionId, $phoneNumber, $param)
     {
-            $saved_data = UssdSessionData::whereSessionId($sessionId)
-                                            ->wherePhoneNumber($phoneNumber)
-                                            ->first();
-            return $saved_data->$param ?? null;
+        $saved_data = UssdSessionData::whereSessionId($sessionId)
+            ->wherePhoneNumber($phoneNumber)
+            ->first();
+        return $saved_data->$param ?? null;
     }
 
     /**
@@ -130,8 +129,8 @@ class MenuFunctions
     public function saveToField($sessionId, $phoneNumber, $field, $input)
     {
         UssdSessionData::whereSessionId($sessionId)
-                        ->wherePhoneNumber($phoneNumber)
-                        ->update([$field => $input]);
+            ->wherePhoneNumber($phoneNumber)
+            ->update([$field => $input]);
     }
 
     /**
@@ -149,16 +148,17 @@ class MenuFunctions
 
         if ($country) {
             $local_code = "0";
-            
-            if(strlen($phoneNumber) == ($country->length - strlen($country->dialing_code)) + strlen($local_code) && 
-                substr($phoneNumber, 0, strlen($local_code)) == $local_code)
-            {
+
+            if (
+                strlen($phoneNumber) == ($country->length - strlen($country->dialing_code)) + strlen($local_code) &&
+                substr($phoneNumber, 0, strlen($local_code)) == $local_code
+            ) {
                 $providers = CountryProvider::whereCountryId($country->id)->get();
                 if (count($providers)) {
                     foreach ($providers as $provider) {
                         $local_codes = str_replace($country->dialing_code, $local_code, $provider->codes);
                         $local_codes = str_replace(',', '|', $local_codes);
-                        if(preg_match("#^(".$local_codes.")(.*)$#i", $phoneNumber) > 0) return true;
+                        if (preg_match("#^(" . $local_codes . ")(.*)$#i", $phoneNumber) > 0) return true;
                     }
                 }
             }
@@ -167,7 +167,7 @@ class MenuFunctions
         return false;
     }
 
-    public function formatPhoneNumbers($phoneNumber, $country_code, $format_to='local')
+    public function formatPhoneNumbers($phoneNumber, $country_code, $format_to = 'local')
     {
         $country = Country::whereDialingCode($country_code)->first();
 
@@ -176,7 +176,7 @@ class MenuFunctions
         if ($country) {
             if ($format_to === "local") {
                 if (strlen($phoneNumber) == $country->length) {
-                    $formatted_number = preg_replace('/^'.$country_code.'/', $local_code, $phoneNumber);
+                    $formatted_number = preg_replace('/^' . $country_code . '/', $local_code, $phoneNumber);
                 } else {
                     $formatted_number = $phoneNumber;
                 }
@@ -186,16 +186,15 @@ class MenuFunctions
                 } else {
                     $formatted_number = $phoneNumber;
                 }
-                
             }
             return $formatted_number;
-        }        
+        }
     }
 
     public function getServiceProvider($phoneNumber, $param)
     {
         $dialing_code = substr($phoneNumber, 0, 5);
-        $provider = CountryProvider::where('codes', 'LIKE', '%'.$dialing_code.'%')->first();
+        $provider = CountryProvider::where('codes', 'LIKE', '%' . $dialing_code . '%')->first();
         return $provider ? $provider->$param : null;
     }
 
@@ -203,26 +202,26 @@ class MenuFunctions
 
     public function getRegionLanguageList($region_id)
     {
-        $languages = Language::whereIn('id',function($query) use ($region_id) {
-                                        $query->select('language_id')
-                                                ->whereIn('package_id',function($query) use ($region_id) {
-                                                    $query->select('package_id')
-                                                            ->whereRegionId($region_id)
-                                                            ->from(with(new MarketPackageRegion)->getTable());
-                                                })
-                                                ->whereIn('package_id',function($query) {
-                                                    $query->select('id')->from(with(new MarketPackage)->getTable());
-                                                })
-                                                ->from(with(new MarketPackageMessage)->getTable());
-                                    })                                    
-                                    ->orderBy('name', 'ASC')
-                                    ->get();
+        $languages = Language::whereIn('id', function ($query) use ($region_id) {
+            $query->select('language_id')
+                ->whereIn('package_id', function ($query) use ($region_id) {
+                    $query->select('package_id')
+                        ->whereRegionId($region_id)
+                        ->from(with(new MarketPackageRegion)->getTable());
+                })
+                ->whereIn('package_id', function ($query) {
+                    $query->select('id')->from(with(new MarketPackage)->getTable());
+                })
+                ->from(with(new MarketPackageMessage)->getTable());
+        })
+            ->orderBy('name', 'ASC')
+            ->get();
 
         $list = '';
         if (count($languages) > 0) {
             $count = 0;
             foreach ($languages as $language) {
-                $list .= (++$count).") ".ucwords(strtolower($language->name))."\n";
+                $list .= (++$count) . ") " . ucwords(strtolower($language->name)) . "\n";
             }
         }
 
@@ -233,22 +232,22 @@ class MenuFunctions
     {
         $menu = intval($language_menu_no);
 
-        $languages = Language::whereIn('id',function($query) use ($region_id) {
-                                        $query->select('language_id')
-                                                ->whereIn('package_id',function($query) use ($region_id) {
-                                                    $query->select('package_id')
-                                                            ->whereRegionId($region_id)
-                                                            ->from(with(new MarketPackageRegion)->getTable());
-                                                })
-                                                ->whereIn('package_id',function($query) {
-                                                    $query->select('id')->from(with(new MarketPackage)->getTable());
-                                                })
-                                                ->from(with(new MarketPackageMessage)->getTable());
-                                    })
-                                    ->orderBy('name', 'ASC')
-                                    ->get();
+        $languages = Language::whereIn('id', function ($query) use ($region_id) {
+            $query->select('language_id')
+                ->whereIn('package_id', function ($query) use ($region_id) {
+                    $query->select('package_id')
+                        ->whereRegionId($region_id)
+                        ->from(with(new MarketPackageRegion)->getTable());
+                })
+                ->whereIn('package_id', function ($query) {
+                    $query->select('id')->from(with(new MarketPackage)->getTable());
+                })
+                ->from(with(new MarketPackageMessage)->getTable());
+        })
+            ->orderBy('name', 'ASC')
+            ->get();
 
-        if($menu!=0) $language = $languages->skip($menu-1)->take(1)->first();
+        if ($menu != 0) $language = $languages->skip($menu - 1)->take(1)->first();
 
         return $language ?? null;
     }
@@ -270,11 +269,11 @@ class MenuFunctions
     {
         $list = '';
         $packages = MarketPackage::whereStatus(true)
-                                    
-                                    ->whereIn('id',function($query) use ($language_id) {
-                                        $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
-                                    })
-                                    ->orderBy('name', 'ASC')->get();
+
+            ->whereIn('id', function ($query) use ($language_id) {
+                $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
+            })
+            ->orderBy('name', 'ASC')->get();
 
         if (count($packages) > 0) {
             $count = 0;
@@ -282,10 +281,10 @@ class MenuFunctions
                 $items = '';
                 if (count($package->enterprises)) {
                     foreach ($package->enterprises as $enterprise) {
-                        $items .= $enterprise->enterprise->name.','; 
+                        $items .= $enterprise->enterprise->name . ',';
                     }
                 }
-                $list .= (++$count).") ".rtrim($items, ',')."\n";
+                $list .= (++$count) . ") " . rtrim($items, ',') . "\n";
                 // $list .= $package->menu.") ".rtrim($items, ',')."\n";
             }
             return $list;
@@ -302,7 +301,7 @@ class MenuFunctions
     {
         $package = MarketPackage::whereMenu($menu)->whereStatus(true)->first();
         return $package->id ?? null;
-    } 
+    }
 
     /**
      * Check if an active menu has many packages 
@@ -313,11 +312,11 @@ class MenuFunctions
     public function isPackageMenuValid($menu, $language_id)
     {
         $packages = MarketPackage::whereStatus(true)
-                                    
-                                    ->whereIn('id',function($query) use ($language_id) {
-                                        $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
-                                    })
-                                    ->orderBy('name', 'ASC')->get();
+
+            ->whereIn('id', function ($query) use ($language_id) {
+                $query->select('package_id')->whereLanguageId($language_id)->from(with(new MarketPackageMessage)->getTable());
+            })
+            ->orderBy('name', 'ASC')->get();
 
         $list = [];
         if (count($packages) > 0) {
@@ -329,7 +328,7 @@ class MenuFunctions
         }
 
         return false;
-    } 
+    }
 
     public function getSelectedPackage($package_menu_no)
     {
@@ -341,9 +340,10 @@ class MenuFunctions
     }
 
 
-    public function getPackages(){
+    public function getPackages()
+    {
         $packages =  MarketPackage::with('ents')->whereStatus(true)
-        ->orderBy('menu', 'ASC')->get();
+            ->orderBy('menu', 'ASC')->get();
 
         return $packages;
     }
@@ -377,12 +377,12 @@ class MenuFunctions
                     WHEN "Yearly" THEN 5
                     ELSE 6
                 END')
-                ->get();
+            ->get();
 
         if (count($frequencies) > 0) {
             $count = 0;
             foreach ($frequencies as $frequency) {
-                $list .= (++$count).") ".$frequency->frequency."\n";
+                $list .= (++$count) . ") " . $frequency->frequency . "\n";
             }
             return $list;
         }
@@ -420,9 +420,9 @@ class MenuFunctions
                     WHEN "Yearly" THEN 5
                     ELSE 6
                 END')
-                ->get();
-        
-        if($menu!=0) $frequency = $frequencies->skip($menu-1)->take(1)->first();
+            ->get();
+
+        if ($menu != 0) $frequency = $frequencies->skip($menu - 1)->take(1)->first();
 
         return $frequency ?? null;
     }
@@ -435,13 +435,13 @@ class MenuFunctions
     public function getPackageEnterprises($packageId)
     {
         $package = MarketPackage::with('ents')->where('id', $packageId)->first();
-        
+
         info($package->ents);
 
         $items = '';
         if (count($package->ents)) {
             foreach ($package->ents as $enterprise) {
-                $items .= $enterprise->name.','; 
+                $items .= $enterprise->name . ',';
             }
         }
         return rtrim($items, ',');
@@ -476,30 +476,29 @@ class MenuFunctions
                 'account'   => $sessionData->market_subscriber,
                 'amount'    => $sessionData->market_cost,
                 'sms_api'   => $this->getServiceProvider($sessionData->market_subscriber, 'sms_api'),
-                'narrative' => $sessionData->market_frequency .' Market subscription',
+                'narrative' => $sessionData->market_frequency . ' Market subscription',
                 'reference_id' => $this->generateReference($api),
                 'payment_api'  => $api,
                 'status' => 'INITIATED'
             ];
 
             // Create a new SubscriptionPayment record using the payment array and return true if successful.
-            if(SubscriptionPayment::create($payment)) return true;
+            if (SubscriptionPayment::create($payment)) return true;
         }
 
         // If an error occurred or data was missing, return false.
         return false;
     }
 
-    public function completeTrialMarketSubscription($sessionId, $phoneNumber){
+    public function completeTrialMarketSubscription($sessionId, $phoneNumber)
+    {
 
         $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
 
         if ($sessionData) {
 
             return true;
-            
         }
-
     }
 
     /**
@@ -509,12 +508,12 @@ class MenuFunctions
      * Check if there is already a subscription payment with the generated reference ID for the given payment API.
      * return Reference ID
      */
-    public function generateReference($api){
-      do{
-        $reference_id = ltrim(mt_rand(100, 999999999), '0');
-      }
-      while (!is_null(SubscriptionPayment::whereReferenceId($reference_id)->wherePaymentApi($api)->first()));
-          return $reference_id;      
+    public function generateReference($api)
+    {
+        do {
+            $reference_id = ltrim(mt_rand(100, 999999999), '0');
+        } while (!is_null(SubscriptionPayment::whereReferenceId($reference_id)->wherePaymentApi($api)->first()));
+        return $reference_id;
     }
 
     public function getRegionList()
@@ -525,7 +524,7 @@ class MenuFunctions
         if (count($locations) > 0) {
             $count = 0;
             foreach ($locations as $region) {
-                $list .= (++$count).") ".ucwords(strtolower($region->menu_name))."\n";
+                $list .= (++$count) . ") " . ucwords(strtolower($region->menu_name)) . "\n";
             }
         }
 
@@ -572,18 +571,18 @@ class MenuFunctions
             // If $seasonList is a string, it means there are no seasons available
             return $seasonList;
         }
-    
-        return $seasonList[$userInput];
+
+        return $seasonList[$response];
     }
 
     public function getSelectedRegionID($phone, $session, $response)
     {
         $saved_data = UssdSessionData::whereSessionId($session)
-                                            ->wherePhoneNumber($phone)
-                                            ->first();                                         
+            ->wherePhoneNumber($phone)
+            ->first();
 
-        $optionMappings = $saved_data->option_mappings;  
-        
+        $optionMappings = $saved_data->option_mappings;
+
         $decodedOptionMappings = json_decode($optionMappings, true);
 
         // Validate user response
@@ -607,7 +606,7 @@ class MenuFunctions
             $count = 0;
 
             foreach ($locations as $region) {
-                $list .= (++$count).") ".ucwords(strtolower($region->name))."\n";
+                $list .= (++$count) . ") " . ucwords(strtolower($region->name)) . "\n";
                 $optionMappings[$count] = $region->id;
             }
         }
@@ -622,7 +621,7 @@ class MenuFunctions
         $country = Country::whereName($country_name)->first();
 
         if ($country) {
-            $locations = DistrictModel::where('name', 'LIKE', substr($district_name, 0, 1).'%')->get();
+            $locations = DistrictModel::where('name', 'LIKE', substr($district_name, 0, 1) . '%')->get();
 
             $closestMatch = null;
             $lowestDistance = PHP_INT_MAX;
@@ -638,7 +637,7 @@ class MenuFunctions
             return $closestMatch;
         }
 
-        return null;        
+        return null;
     }
 
     public function getDistrict($districtId, $param)
@@ -658,7 +657,7 @@ class MenuFunctions
             foreach ($locations as $subcounty) {
                 $name = str_replace('TOWN COUNCIL', 'TC', $subcounty->name);
                 $name = str_replace('DIVISION', 'DIV', $subcounty->name);
-                $list .= (++$count).") ".ucwords(strtolower($name))."\n";
+                $list .= (++$count) . ") " . ucwords(strtolower($name)) . "\n";
             }
         }
 
@@ -673,7 +672,7 @@ class MenuFunctions
         if (count($locations) > 0) {
             $count = 0;
             foreach ($locations as $parish) {
-                $list .= (++$count).") ".ucwords(strtolower($parish->name))."\n";
+                $list .= (++$count) . ") " . ucwords(strtolower($parish->name)) . "\n";
             }
         }
 
@@ -686,7 +685,7 @@ class MenuFunctions
 
         $locations = Region::whereMenuStatus(TRUE)->orderBy('name', 'ASC')->get();
 
-        if($menu!=0) $region = $locations->skip($menu-1)->take(1)->first();
+        if ($menu != 0) $region = $locations->skip($menu - 1)->take(1)->first();
 
         return $region ?? null;
     }
@@ -697,7 +696,7 @@ class MenuFunctions
 
         $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->get();
 
-        if($menu!=0) $subcounty = $locations->skip($menu-1)->take(1)->first();
+        if ($menu != 0) $subcounty = $locations->skip($menu - 1)->take(1)->first();
 
         return $subcounty ?? null;
     }
@@ -708,7 +707,7 @@ class MenuFunctions
 
         $locations = ParishModel::whereSubcountyId($subcountyId)->orderBy('name', 'ASC')->get();
 
-        if($menu!=0) $parish = $locations->skip($menu-1)->take(1)->first();
+        if ($menu != 0) $parish = $locations->skip($menu - 1)->take(1)->first();
 
         return $parish ?? null;
     }
@@ -742,15 +741,15 @@ class MenuFunctions
         $currentDate = now(); // Get the current date and time
 
         $seasons = Season::whereStatus(true)
-                        ->whereDate('cut_off_date', '>=', $currentDate) // Filter by end date
-                        ->orderBy('start_date', 'ASC')
-                        ->get();
+            ->whereDate('cut_off_date', '>=', $currentDate) // Filter by end date
+            ->orderBy('start_date', 'ASC')
+            ->get();
 
         if ($seasons->isNotEmpty()) {
             $list = '';
             $count = 0;
             foreach ($seasons as $season) {
-                $list .= (++$count).") ".$season->name."\n";
+                $list .= (++$count) . ") " . $season->name . "\n";
             }
             return $list;
         } else {
@@ -800,7 +799,7 @@ class MenuFunctions
 
     public function getSeasonDetail($menu, $param)
     {
-        $season = Season::whereStatus(TRUE)->orderBy('start_date', 'ASC')->skip($menu-1)->first();
+        $season = Season::whereStatus(TRUE)->orderBy('start_date', 'ASC')->skip($menu - 1)->first();
         return $season->$param ?? null;
     }
 
@@ -832,11 +831,11 @@ class MenuFunctions
     public function getSelectedItemID($phone, $session, $response)
     {
         $saved_data = UssdSessionData::whereSessionId($session)
-                                            ->wherePhoneNumber($phone)
-                                            ->first();                                         
+            ->wherePhoneNumber($phone)
+            ->first();
 
-        $optionMappings = $saved_data->option_mappings;  
-        
+        $optionMappings = $saved_data->option_mappings;
+
         $decodedOptionMappings = json_decode($optionMappings, true);
 
         // Validate user response
@@ -852,7 +851,7 @@ class MenuFunctions
         $markup = Markup::whereStatus(TRUE)->first();
         return $markup->amount ?? 3000;
     }
-    
+
     public function getPremiumOptionDetails($enterprise_id, $param)
     {
         $enterprise = InsurancePremiumOption::whereEnterpriseId($enterprise_id)->whereStatus(TRUE)->first();
@@ -862,8 +861,8 @@ class MenuFunctions
     public function savePreviousItemList($sessionId, $phoneNumber)
     {
         $saved_data = UssdSessionData::whereSessionId($sessionId)
-                                            ->wherePhoneNumber($phoneNumber)
-                                            ->first();
+            ->wherePhoneNumber($phoneNumber)
+            ->first();
 
         UssdInsuranceList::create([
             'ussd_session_data_id' => $saved_data->id,
@@ -877,25 +876,25 @@ class MenuFunctions
     public function getInsuranceConfirmation($sessionId, $phoneNumber)
     {
         $saved_data = UssdSessionData::whereSessionId($sessionId)
-                                            ->wherePhoneNumber($phoneNumber)
-                                            ->first();
-                                             
-        $acerage     = $saved_data->insurance_acreage.' acre(s)';
+            ->wherePhoneNumber($phoneNumber)
+            ->first();
+
+        $acerage     = $saved_data->insurance_acreage . ' acre(s)';
 
         $enterprise_id  = $saved_data->insurance_enterprise_id;
         $enterpriseName = $this->getEnterprise($enterprise_id, 'name');
 
-        $phone          = $saved_data->insurance_subscriber;                
-        $sum_insured    = $saved_data->insurance_sum_insured;            
+        $phone          = $saved_data->insurance_subscriber;
+        $sum_insured    = $saved_data->insurance_sum_insured;
         $coverage    = $saved_data->insurance_coverage;
         $premium        = $saved_data->insurance_premium;
 
         if (count($saved_data->insurance_list) > 0) {
             foreach ($saved_data->insurance_list as $list) {
-                $acerage .= ','.$list->insurance_acreage.'A';
+                $acerage .= ',' . $list->insurance_acreage . 'A';
 
                 $enterprise_id  = $list->insurance_enterprise_id;
-                $enterpriseName .= ','.$this->getEnterprise($enterprise_id, 'name');
+                $enterpriseName .= ',' . $this->getEnterprise($enterprise_id, 'name');
 
                 $sum_insured  += $list->insurance_sum_insured;
                 $premium  += $list->insurance_premium;
@@ -904,7 +903,7 @@ class MenuFunctions
 
         $this->saveToField($sessionId, $phoneNumber, 'insurance_amount', $premium);
 
-        return "You are insuring ".$acerage." of ".$enterpriseName." at ".$coverage." coverage for the sum insured of  UGX".number_format($sum_insured).". You'll pay a premium of UGX".number_format(($premium)).". You're insured by MUA. Comfirm?";
+        return "You are insuring " . $acerage . " of " . $enterpriseName . " at " . $coverage . " coverage for the sum insured of  UGX" . number_format($sum_insured) . ". You'll pay a premium of UGX" . number_format(($premium)) . ". You're insured by MUA. Comfirm?";
     }
 
     /**
@@ -921,6 +920,33 @@ class MenuFunctions
             // Get the payment API for the subscriber's phone number.
             $api = $this->getServiceProvider($sessionData->insurance_subscriber, 'payment_api');
 
+            $paymentID = $this->generateReference($api);
+
+            $data = [
+                "session_id" => $sessionData->id,
+                "phone_number" => $sessionData->insurance_subscriber,
+                "insurance_subscrption_for" => $sessionData->insurance_subscrption_for,
+                "insurance_enterprise_id" => $sessionData->insurance_enterprise_id,
+                "insurance_amount" => $sessionData->insurance_amount,
+                "insurance_subscriber" => $sessionData->insurance_subscriber,
+                "insurance_acreage" => $sessionData->insurance_acreage,
+                "insurance_sum_insured" => $sessionData->insurance_sum_insured,
+                "insurance_premium" => $sessionData->insurance_premium,
+                "markup" => $sessionData->markup,
+                "insurance_coverage" => $sessionData->insurance_coverage,
+                "insurance_region_id" => $sessionData->insurance_region_id,
+                "insurance_type" => $sessionData->insurance_type,
+                "payment_phone" => $sessionData->payment_phone,
+                "paid" => false,
+                "completed" => false,
+                "pending" => true,
+                "cancelled" => false,
+                'method'    => 'USSD',
+                'payment_id' => $paymentID,
+            ];
+
+            NewInsuranceRequest::create($data);
+
             // Create an array containing the data for the new SubscriptionPayment record.
             $payment = [
                 'tool' => 'USSD',
@@ -930,21 +956,21 @@ class MenuFunctions
                 'account'   => $sessionData->insurance_subscriber,
                 'amount'    => $sessionData->insurance_amount,
                 'sms_api'   => $this->getServiceProvider($sessionData->insurance_subscriber, 'sms_api'),
-                'narrative' => $sessionData->insurance_acreage .'A of '.$sessionData->insurance_enterprise_id.' at '.$sessionData->insurance_coverage.' coverage  insurance subscription',
-                'reference_id' => $this->generateReference($api),
+                'narrative' => $sessionData->insurance_acreage . 'A of ' . $sessionData->insurance_enterprise_id . ' at ' . $sessionData->insurance_coverage . ' coverage  insurance subscription',
+                'reference_id' => $paymentID,
                 'payment_api'  => $api,
                 'status'       => 'INITIATED'
             ];
 
             // Create a new SubscriptionPayment record using the payment array and return true if successful.
-            if(SubscriptionPayment::create($payment)) return true;
+            if (SubscriptionPayment::create($payment)) return true;
         }
 
         // If an error occurred or data was missing, return false.
         return false;
     }
 
-    public function getWeatherPeriodDetails($value, $count=0)
+    public function getWeatherPeriodDetails($value, $count = 0)
     {
         $details = (object) [];
 
@@ -955,13 +981,11 @@ class MenuFunctions
             $details->period    = "week";
             $details->frequency = "weekly";
             $details->cost = $count * $weekly_cost;
-        }
-        elseif ($value == "2" || $value == "monthly") {
+        } elseif ($value == "2" || $value == "monthly") {
             $details->period    = "month";
             $details->frequency = "monthly";
             $details->cost = 4 * $count * $weekly_cost;
-        }
-        elseif ($value == "6" || $value == "annually") {
+        } elseif ($value == "6" || $value == "annually") {
             $details->period    = "year";
             $details->frequency = "annually";
             $details->cost = $count * $annual_cost;
@@ -970,7 +994,8 @@ class MenuFunctions
         return $details;
     }
 
-    public function getAdvisoryTopics($position, $menu_id, $session_id){
+    public function getAdvisoryTopics($position, $menu_id, $session_id)
+    {
 
         $language = UssdLanguage::select('id')->where('menu_id', $menu_id)->where('position', $position)->first();
 
@@ -986,30 +1011,34 @@ class MenuFunctions
         return $topics;
     }
 
-    public function getLanguage($input_text){
+    public function getLanguage($input_text)
+    {
         $language = UssdLanguage::select('language')->where('position', $input_text)->first();
         return $language;
     }
 
-    public function getLanguages($type){
+    public function getLanguages($type)
+    {
         $languages = Language::whereNotNull('position')->where($type, "Yes")->select('id', 'name', 'position')->orderBy('position', 'asc')->get();
         return $languages;
     }
 
-    public function getMenuLanaguages($menu_id){
+    public function getMenuLanaguages($menu_id)
+    {
 
         $languages = UssdLanguage::select('language', 'position')->where('menu_id', $menu_id)->orderBy('position', 'asc')->get();
 
         return $languages;
     }
 
-    public function getSelectedLanguage($response, $session, $phone){
+    public function getSelectedLanguage($response, $session, $phone)
+    {
         $saved_data = UssdSessionData::whereSessionId($session)
-                                            ->wherePhoneNumber($phone)
-                                            ->first();                                         
+            ->wherePhoneNumber($phone)
+            ->first();
 
-        $optionMappings = $saved_data->option_mappings;  
-        
+        $optionMappings = $saved_data->option_mappings;
+
         $decodedOptionMappings = json_decode($optionMappings, true);
 
         // Validate user response
@@ -1021,32 +1050,31 @@ class MenuFunctions
 
         $language = Language::find($languageID);
 
-        if($language === null){
+        if ($language === null) {
             return false;
-        }
-        else{
+        } else {
             return $language;
         }
     }
 
-    public function checkIfUssdLanguageIsValid($input_text){
+    public function checkIfUssdLanguageIsValid($input_text)
+    {
 
 
         $ussd_language = UssdLanguage::select('language', 'position')->where('position', $input_text)->first();
 
-        if($ussd_language === null){
+        if ($ussd_language === null) {
 
             return false;
-        }
-        else{
+        } else {
             return true;
         }
-
     }
 
-    public function getAdvisoryQuestions($position, $session_id){
+    public function getAdvisoryQuestions($position, $session_id)
+    {
 
-        $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();
+        $selected_language = UssdSession::where('session_id', $session_id)->select('data')->first();
 
         info($selected_language);
 
@@ -1062,14 +1090,15 @@ class MenuFunctions
 
         $question = UssdAdvisoryQuestion::with(['options' => function ($q) {
             $q->orderBy('position', 'asc');
-        }])->where('ussd_advisory_topic_id', $topic->id)->first(); 
+        }])->where('ussd_advisory_topic_id', $topic->id)->first();
 
         return $question;
     }
 
-    public function getEvaluationQuestions($position, $session_id){
-        
-        $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();
+    public function getEvaluationQuestions($position, $session_id)
+    {
+
+        $selected_language = UssdSession::where('session_id', $session_id)->select('data')->first();
 
         $question = UssdEvaluationQuestion::with(['options' => function ($q) {
             $q->orderBy('position', 'asc');
@@ -1080,24 +1109,25 @@ class MenuFunctions
         return $question;
     }
 
-    public function getSessionLanguage($session_id){
+    public function getSessionLanguage($session_id)
+    {
 
-        $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();
+        $selected_language = UssdSession::where('session_id', $session_id)->select('data')->first();
 
         $ussd_language = UssdLanguage::select('language')->where('id', $selected_language->data['language_id'])->first();
 
-        if($ussd_language === null){
+        if ($ussd_language === null) {
 
             return false;
-        }
-        else{
+        } else {
             return $ussd_language;
         }
     }
 
-    public function saveEvaluationAnswer($session_id, $current_question, $input_text){
+    public function saveEvaluationAnswer($session_id, $current_question, $input_text)
+    {
 
-        $selected_language = UssdSession::where('session_id',$session_id)->select('data')->first();
+        $selected_language = UssdSession::where('session_id', $session_id)->select('data')->first();
 
         $question = UssdEvaluationQuestion::where('position', $current_question)->where('ussd_language_id', $selected_language->data['language_id'])->first();
 
@@ -1107,7 +1137,6 @@ class MenuFunctions
         $selection->user_selection = $input_text;
         $selection->ussd_evaluation_question_id = $question->id;
         $selection->save();
-
     }
 
     /**
@@ -1124,7 +1153,7 @@ class MenuFunctions
             $api = $this->getServiceProvider($sessionData->weather_subscriber, 'payment_api');
 
             // Create an array containing the data for the new SubscriptionPayment record.
-            $payment = [ 
+            $payment = [
                 'tool' => 'USSD',
                 'weather_session_id' => $sessionData->id,
                 'method'    => 'MM',
@@ -1132,14 +1161,14 @@ class MenuFunctions
                 'account'   => $sessionData->weather_subscriber,
                 'amount'    => $sessionData->weather_amount,
                 'sms_api'   => $this->getServiceProvider($sessionData->weather_subscriber, 'sms_api'),
-                'narrative' => $sessionData->weather_frequency .' Weather subscription',
+                'narrative' => $sessionData->weather_frequency . ' Weather subscription',
                 'reference_id' => $this->generateReference($api),
                 'payment_api'  => $api,
                 'status' => 'INITIATED'
             ];
 
             // Create a new SubscriptionPayment record using the payment array and return true if successful.
-            if(SubscriptionPayment::create($payment)) return true;
+            if (SubscriptionPayment::create($payment)) return true;
         }
 
         // If an error occurred or data was missing, return false.

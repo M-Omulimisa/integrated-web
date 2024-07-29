@@ -120,3 +120,4 @@ Encore\Admin\Show::init(function (Encore\Admin\Show $show) {
 
 //styles.css
 Admin::css(url('/assets/css/styles-1.css'));
+//$a = Utils::get_ai_answer('What is the weather in Kampala today?');

@@ -12,6 +12,28 @@ class FarmerQuestion extends Model
     protected static function boot()
     {
         parent::boot();
+        self::created(function ($m) {
+
+            if (strtolower($m->answered) == 'yes') {
+                return;
+            }
+
+            if (strlen($m->answer_body) > 6) {
+                return;
+            }
+
+            $answer = null;
+            try {
+                $answer = Utils::get_ai_answer($m->body);
+            } catch (\Exception $e) {
+                return;
+            }
+            if ($answer != null && strlen($answer) > 3) {
+                $m->answered = 'no';
+                $m->answer_body = $answer;
+                $m->save();
+            }
+        });
         self::creating(function ($m) {
             $m->body = trim($m->body);
             if ($m->body == null || $m->body == '') {
@@ -35,6 +57,27 @@ class FarmerQuestion extends Model
             }
         });
 
+        //updating
+        self::updating(function ($m) {
+            $m->body = trim($m->body);
+            if ($m->body == null || $m->body == '') {
+                return false;
+            }
+            //check if answer is less than 5 characters and request for ai answer
+            if (strlen($m->answer_body) < 5) {
+                $answer = null;
+                try {
+                    $answer = Utils::get_ai_answer($m->body);
+                } catch (\Exception $e) {
+                    return;
+                }
+                if ($answer != null && strlen($answer) > 3) {
+                    $m->answered = 'no';
+                    $m->answer_body = $answer;
+                }
+            }
+        });
+
         //updated
         self::updated(function ($m) {
             if (strtolower($m->answered) == 'no') {
@@ -45,7 +88,7 @@ class FarmerQuestion extends Model
 
                     if ($u && $u->id) {
                         Utils::sendNotification2([
-                            'msg' => $this->sms,
+                            'msg' => $m->sms,
                             'headings' => 'New Notification',
                             'receiver' => $u->id,
                             'type' => 'text',

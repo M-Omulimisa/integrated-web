@@ -187,6 +187,7 @@ Route::group([
     //get all jea 
 
     Route::match(['get', 'post'], "dmark-sms-webhook", [ApiShopController::class, "dmark_sms_webhook"]);
+    Route::POST("notification-messages-seen", [ApiShopController::class, "set_notification_messages_seen"]);
 
     Route::middleware([JwtMiddleware::class])->group(function () {
         /* ==============START OF SHOP API================== */
@@ -213,6 +214,8 @@ Route::group([
         Route::post("weather-subscriptions-status", [ApiShopController::class, 'weather_subscriptions_status']);
         Route::get("my-weather-updates", [ApiShopController::class, 'my_weather_updates']);
         Route::post("my-weather-updates-mark-as-read", [ApiShopController::class, 'my_weather_updates_mark_as_read']);
+        Route::post("my-market-updates-mark-as-read", [ApiShopController::class, 'my_market_updates_mark_as_read']);
+        Route::get("market-outboxes", [ApiShopController::class, 'my_market_outboxes']);
         /* ==============END OF SHOP API================== */
 
         /*==============START OF Market Information Endpoints==============*/

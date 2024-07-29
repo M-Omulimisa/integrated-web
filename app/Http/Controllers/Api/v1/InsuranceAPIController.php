@@ -24,6 +24,15 @@ class InsuranceAPIController extends Controller
         return $this->success($markup->amount, 'Success');
     }
 
+    public function saveInsuranceSession($data)
+    {
+        $data["approved"] = false;
+        $data["approved"] = false;
+        $data["method"] = "MOBILE APP";
+
+        return \App\Models\NewInsuranceRequest::create($data);
+    }
+
     public function generateReference($api)
     {
         do {
@@ -52,14 +61,12 @@ class InsuranceAPIController extends Controller
                 "insurance_subscrption_for" => "self",
                 "insurance_enterprise_id" => $r->enterprise,
                 "insurance_amount" => $r->amount,
-                'module' => "insurance",
                 "insurance_subscriber" => $r->phone_number,
                 "insurance_acreage" => $r->acreage,
                 "insurance_sum_insured" => $r->sum_insured,
                 "insurance_premium" => $r->premium,
                 "markup" => $r->markup,
                 "insurance_coverage" => $r->coverage,
-                "confirmation_message" => 1,
                 "insurance_region_id" => $r->region_id,
                 "agent_id" => $r->agent_id,
                 "insurer_name" => $r->insurer_name,
@@ -108,6 +115,8 @@ class InsuranceAPIController extends Controller
             ];
 
             \App\Models\Ussd\UssdSessionData::create($data);
+
+            $this->saveInsuranceSession($data);
 
             // Retrieve the session data for the given session ID and phone number.
             $sessionData = \App\Models\Ussd\UssdSessionData::whereSessionId($r->session_id)->wherePhoneNumber($r->phone_number)->first();

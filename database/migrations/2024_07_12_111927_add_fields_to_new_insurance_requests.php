@@ -19,7 +19,6 @@ class AddFieldsToNewInsuranceRequests extends Migration
             $table->string('insurance_subscrption_for')->nullable();
             $table->string('insurance_enterprise_id')->nullable();
             $table->decimal('insurance_amount', 10, 2)->nullable();
-            $table->string('module')->nullable();
             $table->string('insurance_subscriber')->nullable();
             $table->decimal('insurance_acreage', 10, 2)->nullable();
             $table->decimal('insurance_sum_insured', 10, 2)->nullable();
@@ -87,7 +86,7 @@ class AddFieldsToNewInsuranceRequests extends Migration
         Schema::table('new_insurance_requests', function (Blueprint $table) {
             $table->dropColumn([
                 'session_id', 'phone_number', 'insurance_subscrption_for', 'insurance_enterprise_id',
-                'insurance_amount', 'module', 'insurance_subscriber', 'insurance_acreage',
+                'insurance_amount', 'insurance_subscriber', 'insurance_acreage',
                 'insurance_sum_insured', 'insurance_premium', 'markup', 'insurance_coverage',
                 'confirmation_message', 'insurance_region_id', 'agent_id', 'insurer_name',
                 'insurance_type', 'surname', 'telephone', 'other_name', 'payment_phone',

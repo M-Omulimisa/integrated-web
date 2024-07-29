@@ -19,6 +19,50 @@ use Illuminate\Support\Facades\Schema;
 
 class Utils
 {
+    public static function get_ai_answer($query)
+    {
+        if (strlen($query) < 3) {
+            return '';
+        }
+        $url = 'http://20.246.158.238:8080/ask';
+        $data = [
+            'prompt' => $query
+        ];
+
+        $guzzle = new \GuzzleHttp\Client();
+        $response = null;
+        try {
+            $response = $guzzle->post($url, [
+                'json' => $data
+            ]);
+        } catch (\Throwable $th) {
+            return '';
+        }
+        if ($response == null) {
+            return '';
+        }
+        $body = $response->getBody();
+        $data = json_decode($body);
+        if ($data == null) {
+            return '';
+        }
+
+        //check if not array
+        if (!is_array($data)) {
+            return '';
+        }
+        //check if $data[0] is not set
+        if (!isset($data[0])) {
+            return '';
+        }
+        if (!isset($data[0]->message)) {
+            return '';
+        }
+        if ($data[0]->message == null) {
+            return '';
+        }
+        return $data[0]->message;
+    }
     public static function short($string, $length = 100)
     {
         if (strlen($string) > $length) {
@@ -473,8 +517,13 @@ class Utils
         }
 
         $page = 0;
-        $last = Farmer::orderBy('created_at', 'desc')->first();
+        $last = Farmer::orderBy('imported_page_number', 'desc')->first();
         if ($last != null) {
+            $page = ((int)($last->imported_page_number));
+            $page++;
+        }
+
+        /* if ($last != null) {
             $page = ((int)($last->sheep_count));
             if ($page == 0) {
                 $page = 1;
@@ -490,12 +539,14 @@ class Utils
         }
         if (isset($_GET['page'])) {
             $page = $_GET['page'];
-        }
+        } */
 
         //http grt request to url using guzzlehttp 
         $client = new \GuzzleHttp\Client();
         $response = null;
         try {
+            // $link = "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}";
+            // dd($link);
             $response = $client->request('GET', "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}");
         } catch (\Throwable $th) {
             throw $th;
@@ -514,6 +565,7 @@ class Utils
         } catch (\Throwable $th) {
             $data = null;
         }
+
         if ($data == null) {
             return;
         }
@@ -529,53 +581,105 @@ class Utils
             $groups = $groups['data'];
         }
         foreach ($groups as $key => $ext) {
-            $old = Farmer::where([
+            $farmer = Farmer::where([
                 'user_id' => $ext['id']
             ])->first();
-            if ($old != null) {
-                echo "Done with " . $old->first_name . " " . $old->last_name . " PAGE: " . $page . "<br>";
-                //dd("old" . $ext['farmer_group'] . " - " . $ext['id']);
-                continue;
+            if ($farmer != null) {
+                $farmer = Farmer::where([
+                    'external_id' => $ext['id']
+                ])->first();
             }
             $phone = $ext['participant_contact'];
             $phone = Utils::prepare_phone_number($phone);
-            if (Utils::phone_number_is_valid($phone)) {
-                $old = Farmer::where([
-                    'phone' => $phone
-                ])->orderBy('created_at', 'desc')->first();
-                if ($old != null) {
-                    echo $old->id . ", PAGE: " . $page . '. already saved => ' . $phone . ", name: " . $old->first_name . " " . $old->last_name . "<br>";
-                    $old->sheep_count = $page;
-                    $old->save();
-                    if (strlen($old->first_name) < 2) {
-                        $old->delete();
-                    }
-                    continue;
+
+            if ($farmer == null && (strlen($phone) > 5)) {
+                if (Utils::phone_number_is_valid($phone)) {
+                    $farmer = Farmer::where([
+                        'phone' => $phone
+                    ])->first();
                 }
             }
-            try {
-                $new = new Farmer();
-                $new->user_id = $ext['id'];
-                $new->first_name = $ext['first_name'];
-                $new->last_name = $ext['last_name'] . " " . $ext['other_name'];
-                $group = FarmerGroup::where('external_id', $ext['farmer_group_id'])->first();
-                if ($group != null) {
-                    $new->farmer_group_id = $group->id;
-                    $new->organisation_id =  0;
-                } else {
-                    $new->farmer_group_id = 0;
-                    $new->organisation_id = $ext['farmer_group_id'];
+            if ($farmer == null && (strlen($phone) > 5)) {
+                $farmer = Farmer::where([
+                    'phone_number' => $phone
+                ])->first();
+            }
+
+            if ($farmer == null) {
+                if (Utils::phone_number_is_valid($phone) && (strlen($phone) > 5)) {
+                    $farmer = Farmer::where([
+                        'phone' => $ext['participant_contact']
+                    ])->first();
                 }
-                $new->village = $ext['village_id'];
-                $new->house_number = $ext['household_size'];
-                $new->gender = $ext['gender'];
-                $new->phone = $phone;
-                $new->phone_number = $phone;
-                $new->status = 'Active';
-                $new->process_status = 'No';
-                $new->sheep_count = $page;
-                $new->save();
-                echo ("<hr> SAVED " . $new->first_name . " " . $new->last_name . ". PAGE: " . $page . "<br>");
+            }
+
+            if (strlen($phone) < 5) {
+                $phone = $ext['participant_contact'];
+            }
+
+            $isNew = 'Existing';
+            if ($farmer == null) {
+                $farmer = new Farmer();
+                $isNew = 'New';
+            }
+            $farmer->external_id = $ext['id'];
+
+            $farmer->first_name = $ext['first_name'];
+            $farmer->last_name = $ext['last_name'];
+            $farmer->other_name =  $ext['other_name'];
+            $group = FarmerGroup::where('external_id', $ext['farmer_group_id'])->first();
+            if ($group != null) {
+                $farmer->farmer_group_id = $group->id;
+                $farmer->organisation_id =  0;
+            } else {
+                $farmer->farmer_group_id = 0;
+                $farmer->organisation_id = $ext['farmer_group_id'];
+            }
+            $farmer->village_id = $ext['village_id'];
+            $farmer->household_size = $ext['household_size'];
+            $farmer->gender = $ext['gender'];
+            $farmer->phone = $phone;
+            $farmer->phone_number = $phone;
+            $farmer->status = 'Active';
+            $farmer->process_status = 'No';
+            $farmer->imported_page_number = $page;
+            $farmer->external_group_id = $ext['farmer_group_id'];
+            $farmer->participant_code = $ext['participant_code'];
+            $farmer->household_details = $ext['household_details'];
+            $farmer->disability_type = $ext['disability_type'];
+            $farmer->number_of_pwd_in_house_hold = $ext['number_of_pwd_in_house_hold'];
+            $farmer->household_head_relationship = $ext['household_head_relationship'];
+            $farmer->household_head_year_of_birth = $ext['household_head_year_of_birth'];
+            $farmer->household_head_occupation = $ext['household_head_occupation'];
+            $farmer->received_other_ngo_support = $ext['received_other_ngo_support'];
+            $farmer->min_income_range = $ext['min_income_range'];
+            $farmer->max_income_range = $ext['max_income_range'];
+            $farmer->own_a_smart_phone = $ext['own_a_smart_phone'];
+            $farmer->village_id = $ext['village_id'];
+            $farmer->is_house_hold_head = $ext['is_house_hold_head'];
+            $farmer->participant_mobile_money = $ext['participant_mobile_money'];
+            $farmer->employment_status = $ext['employment_status'];
+            $farmer->created_by = $ext['created_by'];
+            $farmer->highest_education_level = $ext['highest_education_level'];
+            $farmer->main_economic_activity = $ext['main_economic_activity'];
+            $farmer->number_of_children = $ext['number_of_children'];
+            $farmer->next_of_kin_first_name = $ext['next_of_kin_first_name'];
+            $farmer->next_of_kin_last_name = $ext['next_of_kin_last_name'];
+            $farmer->next_of_kin_contact = $ext['next_of_kin_contact'];
+            $farmer->is_imported = "Yes";
+            $farmer->imported_processed = "No";
+            $farmer->imported_page_number = $page;
+            $farmer->year_of_birth = $ext['year_of_birth'];
+            $farmer->created_at = $ext['created_at'];
+            $farmer->marital_status = $ext['marital_status'];
+            $farmer->is_pwd = $ext['pwd_status'];
+            $farmer->is_refugee = $ext['refugee_status'];
+            $farmer->home_gps_latitude = $ext['gps_latitude'];
+            $farmer->home_gps_longitude = $ext['gps_longitude'];
+
+            try {
+                $farmer->save();
+                echo ("<hr>{$farmer->id}.  $isNew => " . $farmer->first_name . " " . $farmer->last_name . ". PAGE: " . $page . "<br>");
             } catch (\Throwable $th) {
                 echo 'FAILED: SAVE FARMER BECAUSE => ' . $th->getMessage() . "<br>";
                 continue;
@@ -633,7 +737,8 @@ class Utils
                 );
         } catch (\Throwable $th) {
             //throw $th;
-            throw $th;
+            // die("failed");
+            // throw $th;
         }
 
 
@@ -659,6 +764,7 @@ class Utils
             throw new \Exception("Receiver is required");
         }
 
+
         /* 
         */
         $ONESIGNAL_APP_ID = '2007b43a-6c6b-4cab-b619-b367e5c184fb';
@@ -677,23 +783,75 @@ class Utils
         } */
 
         $receivers = [];
-        if(is_array($userId)){
+        if (is_array($userId)) {
             foreach ($userId as $key => $value) {
-                $receivers[] = trim($value).'';
+                $receivers[] = trim($value) . '';
             }
-        }else{
-            $receivers[] = trim($userId).'';
+        } else {
+            $receivers[] = trim($userId) . '';
         }
 
-       
+        $message_created = false;
+        if (isset($data['message_created'])) {
+            if ($data['message_created'] == 'Yes') {
+                $message_created = true;
+            }
+        }
+
+        if (!$message_created) {
+            foreach ($receivers as $rec) {
+                $my_rec = User::find($rec);
+                if ($my_rec == null) {
+                    continue;
+                }
+                $not = new NotificationMessage();
+                $not->user_id = $my_rec->id;
+                $not->notification_campaign_id = 0;
+                $not->title = isset($data['headings']) ? $data['headings'] : 'M-OMULIMISA';
+                $not->phone_number = $my_rec->phone;
+                $not->email = $my_rec->email;
+                $not->sms_body = isset($data['msg']) ? $data['msg'] : 'No message';
+                $not->short_description = isset($data['msg']) ? $data['msg'] : 'No message';
+                $not->body = isset($data['msg']) ? $data['msg'] : 'No message';
+                $not->image = isset($data['big_picture']) ? $data['big_picture'] : '';
+                $not->url = isset($data['url']) ? $data['url'] : '';
+                $not->notification_seen = 'No';
+                $not->notification_sent = 'Yes';
+                $not->sms_sent = 'Yes';
+                try {
+                    $not->save();
+                } catch (\Throwable $th) {
+                    continue;
+                }
+            }
+        }
+
+
+        /*     
+        	
+        	
+        type	
+        priority	
+        status	
+        ready_to_send	
+        send_notification	
+        send_email	
+        send_sms	
+        sheduled_at	
+        email_sent	
+        	
+        	
+        notification_seen_time	
+        	
+        */
 
         // Notification data
         $notificationData = [
             'app_id' => $appId,
             'contents' => ['en' => $data['msg']],
             'headings' => ['en' => $data['headings'] . ' - M-Omulimisa'],
-            'external_user_id' => $receivers[0], 
-            'included_segments' => ['All'],
+            'external_user_id' => $receivers,
+            'include_external_user_ids' => $receivers,
         ];
 
         if (isset($data['big_picture']) && $data['big_picture'] != null && $data['big_picture'] != '' && strlen($data['big_picture']) > 2) {
@@ -733,7 +891,8 @@ class Utils
                 'headers' => [
                     'Authorization' => 'Basic ' . $apiKey,
                     'Content-Type' => 'application/json',
-                    'body' => json_encode($notificationData)
+                    'body' => json_encode($notificationData),
+
                 ],
                 'json' => $notificationData,
             ]);
@@ -1059,7 +1218,6 @@ class Utils
         try {
             $data =  file_get_contents($url, null, $ctx);
             return $data;
-            
         } catch (Exception $x) {
             return "Failed $url";
         }

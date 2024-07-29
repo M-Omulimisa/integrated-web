@@ -7,6 +7,7 @@ use App\Models\ChatHead;
 use App\Models\ChatMessage;
 use App\Models\DistrictModel;
 use App\Models\Image;
+use App\Models\Market\MarketOutbox;
 use App\Models\Market\MarketPackagePricing;
 use App\Models\Market\MarketSubscription;
 use App\Models\NotificationMessage;
@@ -355,6 +356,19 @@ class ApiShopController extends Controller
         return $this->success($subs, 'Success');
     }
 
+    public function my_market_updates_mark_as_read(Request $r)
+    {
+
+        $rec = MarketOutbox::find($r->weather_outbox_id);
+        if ($rec == null) {
+            return $this->error('Record not found.');
+        }
+        $rec->is_seen = 'Yes';
+        $rec->save();
+        $rec = MarketOutbox::find($r->weather_outbox_id);
+        return $this->success($rec, 'Success');
+    }
+
     public function my_weather_updates_mark_as_read(Request $r)
     {
 
@@ -365,6 +379,45 @@ class ApiShopController extends Controller
         $rec->is_seen = 'Yes';
         $rec->save();
         return $this->success($rec, 'Success');
+    }
+
+
+    public function my_market_outboxes(Request $r)
+    {
+        /* Utils::create_column(
+            (new WeatherOutbox())->getTable(),
+            [
+                [
+                    'name' => 'is_seen',
+                    'type' => 'String',
+                    'default' => 'No',
+                ],
+            ]
+        ); */
+
+        /*  $u = auth('api')->user();
+        if ($u == null) {
+            $administrator_id = Utils::get_user_id($r);
+            $u = Administrator::find($administrator_id);
+        }
+        $u = Administrator::find($u->id);
+        if ($u == null) {
+            return $this->error('User is missing.');
+        }
+        $phone_number = $u->phone;
+        if ($phone_number == null || strlen($phone_number) < 3) {
+            $phone_number = $u->phone_number;
+        }
+ */
+
+        //$phone_number = '+256705128728';
+        $phone_number = $r->phone_number;
+        $phone_number = str_replace('+', '', $phone_number);
+
+        //like $phone_number
+        $records = MarketOutbox::where('recipient', 'like', '%' . $phone_number . '%')->orderBy('created_at', 'desc')->limit(500)->get();
+
+        return $this->success($records, 'Success');
     }
 
 
@@ -639,6 +692,7 @@ class ApiShopController extends Controller
         $not->notification_seen = 'Yes';
         $not->notification_seen_time = Carbon::now();
         $not->save();
+        return $this->success($not, $message = "Success", 200); 
     }
     public function dmark_sms_webhook(Request $r)
     {
@@ -646,17 +700,54 @@ class ApiShopController extends Controller
         $record = new \App\Models\DamarkRercord();
 
         $record->external_ref = json_encode($r->all());
-        $record->sender = $r->sender;
-        $record->message_body = $r->body;
+        $record->sender = $r->phone_no;
+        $record->message_body = $r->message;
+        $phone = Utils::prepare_phone_number($r->phone_no);
+        if (!Utils::phone_number_is_valid($phone)) {
+            return 'Invalid phone number ' . $phone . '.';
+        }
+        $record->sender = $phone;
+        $msg = $r->message;
+        if ($msg == null || strlen($msg) < 5) {
+            return 'Message too short. ' . $msg;
+        }
+        $words = explode(' ', $msg);
+        //check if contains manya
+        $containsManya = false;
+        foreach ($words as $key => $value) {
+            if (strtolower($value) == 'manya') {
+                $containsManya = true;
+                break;
+            }
+        }
+        if ($containsManya == false) {
+            return 'No word "manya"  in your message. ' . $msg;
+        }
+
+        $msg_without_word_manya = str_replace('manya', '', strtolower($msg));
+        $ai_answer =  null;
+        try {
+            $ai_answer = Utils::get_ai_answer($msg_without_word_manya);
+        } catch (\Throwable $th) {
+            $ai_answer = null;
+        }
+
         $record->get_data = json_encode($_GET);
         $record->post_data = json_encode($_POST);
         $record->is_processed = 'No';
-        $record->status = 'Pending';
         $record->error_message = 'Pending';
         $record->type = 'Other';
         $record->farmer_id = '';
         $record->question_id = '';
+
+        if ($ai_answer != null) {
+            $record->status = 'Answered';
+            $record->post_data = $ai_answer;
+        } else {
+            $record->status = 'Pending';
+        }
         $record->save();
+        return $ai_answer;
         return $this->success(null, $message = "Success", 200);
     }
     public function get_orders_notification_nessage(Request $r)
