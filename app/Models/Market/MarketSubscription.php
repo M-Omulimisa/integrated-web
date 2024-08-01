@@ -71,8 +71,8 @@ class MarketSubscription extends BaseModel
     }
 
     //prepre
-    public static  function send_weldome_message($model)
-    {
+    public static  function send_welcome_message($model)
+    {   
         $u = User::find($model->farmer_id);
         if ($u == null) {
             $u = User::find($model->user_id);
@@ -81,7 +81,8 @@ class MarketSubscription extends BaseModel
         $phone = $model->phone;
 
         //welcome message for subscription to market
-        $msg = "You have successfully subscribed to the market. You will now receive market updates. Thank you for subscribing.";
+        $msg = "You have successfully subscribed to the market information. You will receive regular market information to keep you up-to-date with the latest in your subscribed category. Thank you for using M-Omulimisa.";
+        
         try {
             $u = User::where('phone', $phone)->first();
 
@@ -98,6 +99,7 @@ class MarketSubscription extends BaseModel
         } catch (\Throwable $th) {
             //throw $th;
         }
+
         if ($u != null) {
             try {
                 Utils::sendNotification2([
@@ -187,6 +189,10 @@ class MarketSubscription extends BaseModel
             $m->status = 0;
         } else {
             $m->status = 1;
+        }
+
+        if ($m->status == 1) {
+            self::send_welcome_message($m);
         }
 
         return $m;
