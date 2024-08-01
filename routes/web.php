@@ -213,6 +213,7 @@ Route::get('test', function () {
     die("notification tested. ID #8889");
     Utils::renew_messages();
 });
+
 Route::get('boot-system', function () {
     //$m = MarketSubscription::find('82b28464-c790-41ed-b652-25ee7617350f');
     //$m->send_renew_message();

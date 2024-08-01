@@ -60,6 +60,7 @@ class MarketSubscription extends BaseModel
                 $model->is_paid = 'PAID';
                 $model->status = 1;
             }
+
             return self::prepare($model);
         });
 
@@ -72,6 +73,8 @@ class MarketSubscription extends BaseModel
     //prepre
     public static  function send_weldome_message($model)
     {
+        echo("Sending welcome message, man");
+
         $u = User::find($model->farmer_id);
         if ($u == null) {
             $u = User::find($model->user_id);
@@ -115,6 +118,7 @@ class MarketSubscription extends BaseModel
         if ($m->is_test == 'Yes') {
             return;
         }
+
         $frequencies =  ['trial' => 'trial', 'daily' => 'daily', 'weekly' => 'weekly', 'monthly' => 'monthly', 'yearly' => 'yearly'];
         $frequency_text = "";
         $frequency = null;
@@ -159,7 +163,7 @@ class MarketSubscription extends BaseModel
         if (
             strtolower($m->frequency) == 'trial'
         ) {
-            $days = 3 * $m->period_paid;
+            $days = 30;
         } else if (
             strtolower($m->frequency) == 'weekly'
         ) {
@@ -180,6 +184,7 @@ class MarketSubscription extends BaseModel
         $m->start_date = $created_time;
         $m->end_date = $created_time_1->addDays($days);
         $now = Carbon::now();
+
         if ($now->gt($m->end_date)) {
             $m->status = 0;
         } else {
@@ -209,9 +214,11 @@ class MarketSubscription extends BaseModel
         if ($this->TransactionReference == null) {
             return 'NOT PAID';
         }
+
         if (strlen($this->TransactionReference) < 3) {
             return 'NOT PAID';
         }
+
         $resp = null;
         try {
             $resp = Utils::payment_status_check($this->TransactionReference, $this->payment_reference_id);
@@ -236,6 +243,7 @@ class MarketSubscription extends BaseModel
                 if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
                     $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
                 }
+
                 $this->save();
             } else if (
                 $resp->TransactionStatus == 'SUCCEEDED' ||
@@ -258,6 +266,7 @@ class MarketSubscription extends BaseModel
                 if (isset($resp->MNOTransactionReferenceId) && $resp->MNOTransactionReferenceId != null) {
                     $this->MNOTransactionReferenceId = $resp->MNOTransactionReferenceId;
                 }
+
                 $this->is_paid = 'PAID';
                 $this->save();
             }
@@ -506,7 +515,7 @@ class MarketSubscription extends BaseModel
             }
         }
 
-        $msg = "Thank you for subscribing to M-Omulimisa Market Information service. You will be receiving regular market updates.";
+       /*  $msg = "Thank you for subscribing to M-Omulimisa Market Information service. You will be receiving regular market updates.";
        
         try {
             Utils::send_sms($phone, $msg);
@@ -532,7 +541,7 @@ class MarketSubscription extends BaseModel
             $this->is_processed_at = Carbon::now();
             $this->is_processed_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
             $this->save();
-        }
+        } */
 
         $this->save();
         return $this->is_paid;

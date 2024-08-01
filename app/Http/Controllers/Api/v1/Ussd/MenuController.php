@@ -320,14 +320,15 @@ class MenuController extends Controller
 
         /******************* START MARKET *******************/
         elseif ($last_menu == "market_phone_option" && $input_text == '1' || $last_menu == "market_phone") {
-
             $action         = "request";
 
+            //phone number
             if ($last_menu == "market_phone" && !$this->menu_helper->isLocalPhoneValid($input_text, '256')) {
                 $response       = $invalid_phone . "\n";
                 $response       .= $enter_phone;
                 $current_menu   = "market_phone";
             } else {
+                //select package
                 $packages = $this->menu_helper->getPackages();
                 $response = "Select package:\n";
                 foreach ($packages as $package) {
@@ -351,6 +352,7 @@ class MenuController extends Controller
                 $field          = 'market_subscriber';
             }
         } elseif ($last_menu == "market_phone_option" && $input_text == '2') {
+            //subscribe for another person
             $action         = "request";
             $response       = $enter_phone;
             $current_menu   = "market_phone";
@@ -362,6 +364,7 @@ class MenuController extends Controller
             $response       = "Invalid input!\n";
             $response       .= $subscriber;
             $current_menu   = "market_phone_option";
+            //TOASK: What's the use of this? There's no regions anywhere
         } elseif ($last_menu == "market_region") {
             $region = $this->menu_helper->getSelectedRegion($input_text);
             $input_text = $region->name ?? null;
@@ -448,7 +451,7 @@ class MenuController extends Controller
             if ($this->menu_helper->isPackageFrequencyValid($package_id, $id)) {
 
                 if (strcasecmp($input_text, "trial") == 0) {
-                    $response = "You are subscribing for the trial package lasting 14 days\n";
+                    $response = "You are subscribing for the trial package lasting 30 days\n";
                     $response .= "1) Yes\n";
                     $response .= "2) Cancel\n";
                     $current_menu   = "market_period";

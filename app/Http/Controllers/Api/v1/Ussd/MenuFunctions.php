@@ -466,12 +466,18 @@ class MenuFunctions
         if ($sessionData) {
             // Get the payment API for the subscriber's phone number.
             $api = $this->getServiceProvider($sessionData->market_subscriber, 'payment_api');
+           
+            echo("Yiino language");
+            echo($sessionData->market_language_id);
 
             $data = [
                 "session_id" => $sessionData->id,
+                "language_id" => $sessionData->market_language_id,
                 "phone" => $sessionData->market_subscriber,
                 "package_id" => $sessionData->market_package_id,
                 "frequency" => $sessionData->market_frequency,
+                "status" => 1,
+                "period_paid" => $sessionData->market_frequency_count,
             ];
 
             MarketSubscription::create($data);
@@ -504,6 +510,18 @@ class MenuFunctions
         $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
 
         if ($sessionData) {
+            $data = [
+                "session_id" => $sessionData->id,
+                "language_id" => $sessionData->market_language_id,
+                "phone" => $sessionData->market_subscriber,
+                "package_id" => $sessionData->market_package_id,
+                "frequency" => "trial",
+                "status" => 1,
+                "period_paid" => 30,
+            ];
+
+            MarketSubscription::create($data);
+            
             return true;
         }
     }
@@ -1066,8 +1084,6 @@ class MenuFunctions
 
     public function checkIfUssdLanguageIsValid($input_text)
     {
-
-
         $ussd_language = UssdLanguage::select('language', 'position')->where('position', $input_text)->first();
 
         if ($ussd_language === null) {

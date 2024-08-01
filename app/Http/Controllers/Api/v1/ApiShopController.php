@@ -188,6 +188,7 @@ class ApiShopController extends Controller
           'pricing_id': '27ab2deb-2a6b-445c-bb40-53873aa5bee5',
           'language_id': '0332b59f-9699-4a32-99c4-1dae3666fc93',
         */
+        
         if (!isset($r->subscriber_id) || $r->subscriber_id == null) {
             return $this->error('Subscriber ID is missing.');
         }
