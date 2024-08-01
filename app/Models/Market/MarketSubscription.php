@@ -71,45 +71,34 @@ class MarketSubscription extends BaseModel
     }
 
     //prepre
-    public static  function send_welcome_message($model)
-    {   
-        $u = User::find($model->farmer_id);
-        if ($u == null) {
-            $u = User::find($model->user_id);
-        }
+    public static function send_welcome_message($model)
+    {
+        $phone = Utils::prepare_phone_number($model->phone);
+        $msg = "Welcome to M-Omulimisa market information updates. You have successfully subscribed to {$model->package->name}. You will now receive regular market updates. Thank you for subscribing.";
 
-        $phone = $model->phone;
-
-        //welcome message for subscription to market
-        $msg = "You have successfully subscribed to the market information. You will receive regular market information to keep you up-to-date with the latest in your subscribed category. Thank you for using M-Omulimisa.";
-        
         try {
             $u = User::where('phone', $phone)->first();
 
             if ($u && $u->id) {
                 Utils::sendNotification2([
                     'msg' => $msg,
-                    'headings' => 'Subscription successful',
+                    'headings' => 'Welcome to Market Information Service',
                     'receiver' => $u->id,
                     'type' => 'text',
                 ]);
             }
 
             Utils::send_sms($phone, $msg);
-        } catch (\Throwable $th) {
-            //throw $th;
-        }
 
-        if ($u != null) {
-            try {
-                Utils::sendNotification2([
-                    'msg' => $msg,
-                    'headings' => 'Market Subscription',
-                    'receiver' => $u->id,
-                    'type' => 'text',
-                ]);
-            } catch (\Throwable $th) {
-            }
+            $model->welcome_msg_sent = 'Yes';
+            $model->welcome_msg_sent_at = Carbon::now();
+            $model->welcome_msg_sent_details = $msg . ' - Message sent to ' . $phone;
+            $model->save();
+        } catch (\Throwable $th) {
+            $model->welcome_msg_sent = 'Failed';
+            $model->welcome_msg_sent_at = Carbon::now();
+            $model->welcome_msg_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+            $model->save();
         }
     }
 
