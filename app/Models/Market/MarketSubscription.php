@@ -73,8 +73,6 @@ class MarketSubscription extends BaseModel
     //prepre
     public static  function send_weldome_message($model)
     {
-        echo("Sending welcome message, man");
-
         $u = User::find($model->farmer_id);
         if ($u == null) {
             $u = User::find($model->user_id);

@@ -466,9 +466,6 @@ class MenuFunctions
         if ($sessionData) {
             // Get the payment API for the subscriber's phone number.
             $api = $this->getServiceProvider($sessionData->market_subscriber, 'payment_api');
-           
-            echo("Yiino language");
-            echo($sessionData->market_language_id);
 
             $data = [
                 "session_id" => $sessionData->id,
