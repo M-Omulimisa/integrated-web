@@ -467,6 +467,15 @@ class MenuFunctions
             // Get the payment API for the subscriber's phone number.
             $api = $this->getServiceProvider($sessionData->market_subscriber, 'payment_api');
 
+            $data = [
+                "session_id" => $sessionData->id,
+                "phone" => $sessionData->market_subscriber,
+                "package_id" => $sessionData->market_package_id,
+                "frequency" => $sessionData->market_frequency,
+            ];
+
+            MarketSubscription::create($data);
+
             // Create an array containing the data for the new SubscriptionPayment record.
             $payment = [
                 'tool' => 'USSD',
@@ -492,11 +501,9 @@ class MenuFunctions
 
     public function completeTrialMarketSubscription($sessionId, $phoneNumber)
     {
-
         $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
 
         if ($sessionData) {
-
             return true;
         }
     }

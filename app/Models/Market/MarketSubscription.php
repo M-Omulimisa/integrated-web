@@ -19,7 +19,6 @@ class MarketSubscription extends BaseModel
     protected $fillable = [
         'farmer_id',
         'language_id',
-        // 'location_id',
         'region_id',
         'first_name',
         'last_name',
@@ -110,6 +109,7 @@ class MarketSubscription extends BaseModel
             }
         }
     }
+
     public static function prepare($m)
     {
         if ($m->is_test == 'Yes') {
@@ -155,10 +155,9 @@ class MarketSubscription extends BaseModel
 
         $m->period_paid = (int)($m->period_paid);
 
-
         $days = 1;
         if (
-            strtolower($m->frequency) == 'tiral'
+            strtolower($m->frequency) == 'trial'
         ) {
             $days = 3 * $m->period_paid;
         } else if (
@@ -299,9 +298,6 @@ class MarketSubscription extends BaseModel
         }
         return 0;
     }
-
-
-
 
     public function send_renew_message()
     {
@@ -477,14 +473,17 @@ class MarketSubscription extends BaseModel
                     }
                 }
             }
+
             if (strtoupper($this->TransactionStatus) != 'SUCCEEDED') {
                 $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
                 if ($rec == null) {
                     $rec = SubscriptionPayment::where('market_subscription_id', $this->id)->orderBy('created_at', 'desc')->first();
                 }
+
                 if ($rec == null) {
                     $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
                 }
+
                 if ($rec != null) {
                     if ($rec->status == 'SUCCESSFUL') {
                         $this->is_paid = 'PAID';
@@ -506,6 +505,35 @@ class MarketSubscription extends BaseModel
                 }
             }
         }
+
+        $msg = "Thank you for subscribing to M-Omulimisa Market Information service. You will be receiving regular market updates.";
+       
+        try {
+            Utils::send_sms($phone, $msg);
+
+            $u = User::where('phone', $phone)->first();
+
+            if ($u && $u->id) {
+                Utils::sendNotification2([
+                    'msg' => $msg,
+                    'headings' => 'New Market Information Subscription',
+                    'receiver' => $u->id,
+                    'type' => 'text',
+                ]);
+            }
+
+            $this->is_processed = 'Yes';
+            $this->is_processed_at = Carbon::now();
+            $this->is_processed_details = 'Message sent to ' . $phone;
+            
+            $this->save();
+        } catch (\Throwable $th) {
+            $this->is_processed = 'Failed';
+            $this->is_processed_at = Carbon::now();
+            $this->is_processed_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
+            $this->save();
+        }
+
         $this->save();
         return $this->is_paid;
     }

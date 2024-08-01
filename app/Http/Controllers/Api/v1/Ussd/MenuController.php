@@ -24,7 +24,7 @@ class MenuController extends Controller
      * @return  - String request from user or - String closing ussd session
      */
     public function index(Request $request)
-    {
+    { 
         //sent variables
         // Log::info(['YoUssdData' => $request->all()]);
 
@@ -505,6 +505,7 @@ class MenuController extends Controller
                 } else {
                     $package_id  = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_package_id');
                     info($package_id);
+
                     $enterprises = $this->menu_helper->getPackageEnterprises($package_id);
                     $cost        = $this->menu_helper->getPackageCost($package_id, $frequency, $input_text);
                     $currency    = 'UGX';
@@ -531,31 +532,23 @@ class MenuController extends Controller
         } elseif ($last_menu == "market_confirmation") {
             // check if crop is valid
             $action         = "end";
-
             if ($input_text == '1') {
 
                 $frequency = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_frequency');
 
                 if (strcasecmp($frequency, "trial") == 0) {
-
-
                     if ($this->menu_helper->completeTrialMarketSubscription($sessionId, $phoneNumber)) {
-
                         $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_subscriber');
                         $response       = "Thank you for subscribing.\n";
                     } else {
-
                         $response = "Subscription was unsuccessful. Please try again";
                     }
                 } else {
-
                     if ($this->menu_helper->completeMarketSubscription($sessionId, $phoneNumber)) {
-
                         $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'market_subscriber');
                         $response       = "Thank you for subscribing.\n";
                         $response       .= "Check " . $phone . " to approve the payment\n";
                     } else {
-
                         $response = "Subscription was unsuccessful. Please try again";
                     }
                 }

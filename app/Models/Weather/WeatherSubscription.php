@@ -74,6 +74,7 @@ class WeatherSubscription extends BaseModel
                 $model->is_paid = 'PAID';
                 $model->status = 1;
             }
+
             return true;
         });
 
@@ -99,7 +100,6 @@ class WeatherSubscription extends BaseModel
     //prepare
     public static function prepare($model)
     {
-
         if ($model->is_test == 'Yes') {
             return;
         }
@@ -138,9 +138,7 @@ class WeatherSubscription extends BaseModel
         $created_date = Carbon::parse($created_date);
         $model->start_date = $start_date;
 
-
         $model->end_date = $created_date->addDays($days * $period_paid);
-
 
         //check if end date is less than current date
         $now = Carbon::now();
@@ -155,7 +153,6 @@ class WeatherSubscription extends BaseModel
         $model->start_date = Carbon::parse($model->start_date)->format('Y-m-d');
         $model->end_date = Carbon::parse($model->end_date)->format('Y-m-d');
         $model->phone = Utils::prepare_phone_number($model->phone);
-
 
         return $model;
     }
@@ -176,7 +173,6 @@ class WeatherSubscription extends BaseModel
 
     public function check_payment_status()
     {
-
         /* if (strlen($this->TransactionReference) < 3) {
             return 'NOT PAID';
         } */
@@ -315,6 +311,7 @@ class WeatherSubscription extends BaseModel
             'phone' => $phone,
             'renew_message_sent' => 'Yes'
         ])->orderBy('created_at', 'desc')->first();
+
         if ($last_subscription != null) {
             if ($last_subscription->renew_message_sent_at != null) {
                 $t = null;
@@ -367,7 +364,6 @@ class WeatherSubscription extends BaseModel
 
     public function process_subscription()
     {
-
         //if not paid, check_payment_status
         if ($this->is_paid != 'PAID') {
             $this->check_payment_status();
@@ -456,7 +452,6 @@ class WeatherSubscription extends BaseModel
                 $this->save();
             }
         }
-
 
         $end_date = Carbon::parse($this->end_date);
         //check for expiry $end_date
@@ -569,23 +564,29 @@ class WeatherSubscription extends BaseModel
         }
 
         return $this;
+
         //is_test
         die('Processing subscription');
+
         //sync-data
         $phone = Utils::prepare_phone_number($this->phone);
+
         //last subscription
         $last_subscription = WeatherSubscription::where([
             'phone' => $phone,
             'is_processed' => 'Yes'
         ])->orderBy('created_at', 'desc')->first();
+
         if ($last_subscription != null) {
             if ($last_subscription->is_processed_at != null) {
                 $t = null;
+
                 try {
                     $t = Carbon::parse($last_subscription->is_processed_at);
                 } catch (\Throwable $th) {
                     $t = null;
                 }
+
                 if ($t != null) {
                     $now = Carbon::now();
                     $diff = $now->diffInDays($t);
@@ -601,6 +602,7 @@ class WeatherSubscription extends BaseModel
         }
 
         $msg = "Thank you for subscribing to M-Omulimisa weather information service. You will be receiving weather updates daily.";
+       
         try {
             Utils::send_sms($phone, $msg);
 
@@ -618,6 +620,7 @@ class WeatherSubscription extends BaseModel
             $this->is_processed = 'Yes';
             $this->is_processed_at = Carbon::now();
             $this->is_processed_details = 'Message sent to ' . $phone;
+            
             $this->save();
         } catch (\Throwable $th) {
             $this->is_processed = 'Failed';

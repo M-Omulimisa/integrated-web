@@ -191,9 +191,11 @@ class ApiShopController extends Controller
         if (!isset($r->subscriber_id) || $r->subscriber_id == null) {
             return $this->error('Subscriber ID is missing.');
         }
+
         if (!isset($r->pricing_id) || $r->pricing_id == null) {
             return $this->error('Pricing ID is missing.');
         }
+
         if (!isset($r->language_id) || $r->language_id == null) {
             return $this->error('Language ID is missing.');
         }
@@ -209,9 +211,11 @@ class ApiShopController extends Controller
         if (!isset($r->frequency) || $r->frequency == null) {
             return $this->error('Frequency is missing.');
         }
+
         if (!isset($r->phone) || $r->phone == null) {
             return $this->error('Phone is missing.');
         }
+
         if (!isset($r->days) || $r->days == null) {
             return $this->error('Days is missing.');
         }
@@ -230,11 +234,11 @@ class ApiShopController extends Controller
         if ($subcounty == null) {
             return $this->error('Subcounty not found.');
         }
+
         $district = DistrictModel::find($subcounty->district_id);
         if ($district == null) {
             return $this->error('District not found.');
         }
-
 
         $u = User::find($r->subscriber_id);
         if ($u == null) {
