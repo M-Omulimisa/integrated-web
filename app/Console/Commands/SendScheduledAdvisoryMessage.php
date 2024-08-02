@@ -39,42 +39,34 @@ class SendScheduledAdvisoryMessage extends Command
      */
     public function handle()
     {
-        
+
         $scheduled_batches = UssdAdvisoryMessageOutbox::where('status', 'scheduled')->distinct()->get();
 
-        foreach($scheduled_batches as $batch){
+        foreach ($scheduled_batches as $batch) {
 
             $message = UssdAdvisoryMessageOutbox::with('session')->where('batch_number', $batch->batch_number)->where('status', 'scheduled')
-            ->orderBy('message_schedule_number', 'desc')->first();
-
-
-            
-        try {
-
-            $send_sms_url = config('app.dmark_send_sms_url');
-            $response = Http::get($send_sms_url, [
-                'spname' => config('app.dmark_username'),
-                'sppass' => config('app.dmark_password'),
-                'numbers' => $message->session->phone_number,
-                'msg' => $message->message,
-                'type' => 'json'
-            ]);
-
-            $update_message_outbox = UssdAdvisoryMessageOutbox::findorFail($message->id);
-            $update_message_outbox->status = "processed";
-            $update_message_outbox->save();
-            
-            
-        } catch (\Exception $e) {
-            Log::error("Failed to send sms");
+                ->orderBy('message_schedule_number', 'desc')->first();
 
 
 
-            
-        }
+            try {
 
+                $send_sms_url = config('app.dmark_send_sms_url');
+                return;
+                $response = Http::get($send_sms_url, [
+                    'spname' => config('app.dmark_username'),
+                    'sppass' => config('app.dmark_password'),
+                    'numbers' => $message->session->phone_number,
+                    'msg' => $message->message,
+                    'type' => 'json'
+                ]);
 
-
+                $update_message_outbox = UssdAdvisoryMessageOutbox::findorFail($message->id);
+                $update_message_outbox->status = "processed";
+                $update_message_outbox->save();
+            } catch (\Exception $e) {
+                Log::error("Failed to send sms");
+            }
         }
     }
 }

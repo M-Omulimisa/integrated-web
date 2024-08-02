@@ -73,7 +73,7 @@ class MarketSubscription extends BaseModel
     //prepre
     public static function send_welcome_message($model)
     {
-       /*  if($model->welcome_msg_sent != "Yes"){
+        /*  if($model->welcome_msg_sent != "Yes"){
             $phone = Utils::prepare_phone_number($model->phone);
             $msg = "Welcome to M-Omulimisa market information updates. You have successfully subscribed to {$model->package->name}. You will now receive regular market updates. Thank you for subscribing.";
 
@@ -303,11 +303,13 @@ class MarketSubscription extends BaseModel
 
     public function send_renew_message()
     {
+
+        return;
         if ($this->end_date == null || strlen($this->end_date) < 4) {
             return;
         }
 
-        if(strtolower($this->renew_message_sent) == 'yes'){
+        if (strtolower($this->renew_message_sent) == 'yes') {
             return;
         }
 
@@ -513,7 +515,7 @@ class MarketSubscription extends BaseModel
             }
         }
 
-       /*  $msg = "Thank you for subscribing to M-Omulimisa Market Information service. You will be receiving regular market updates.";
+        /*  $msg = "Thank you for subscribing to M-Omulimisa Market Information service. You will be receiving regular market updates.";
        
         try {
             Utils::send_sms($phone, $msg);
