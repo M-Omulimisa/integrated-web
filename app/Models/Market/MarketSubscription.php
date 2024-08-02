@@ -73,7 +73,7 @@ class MarketSubscription extends BaseModel
     //prepre
     public static function send_welcome_message($model)
     {
-        if($model->welcome_msg_sent != "Yes"){
+       /*  if($model->welcome_msg_sent != "Yes"){
             $phone = Utils::prepare_phone_number($model->phone);
             $msg = "Welcome to M-Omulimisa market information updates. You have successfully subscribed to {$model->package->name}. You will now receive regular market updates. Thank you for subscribing.";
 
@@ -99,7 +99,7 @@ class MarketSubscription extends BaseModel
                 $model->welcome_msg_sent_at = Carbon::now();
                 $model->welcome_msg_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
             }
-        }
+        } */
     }
 
     public static function prepare($m)
