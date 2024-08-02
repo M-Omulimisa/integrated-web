@@ -74,7 +74,7 @@ class Utils
 
     public static function system_boot()
     {
-        return; 
+        return;
         self::process_market_subs(false);
         self::renew_messages();
         $farmers = Farmer::where('user_account_processed', '!=', 'Yes')->get();
@@ -88,7 +88,7 @@ class Utils
 
     public static function renew_messages()
     {
-        foreach (MarketSubscription::where([/* 'renew_message_sent' => 'No' */])
+        foreach (MarketSubscription::where(['renew_message_sent' => 'No'])
             ->orderBy('created_at', 'desc')
             ->get() as $key => $value) {
             if ($key > 1000) {
@@ -339,7 +339,7 @@ class Utils
 
     public static  function send_sms($phone, $sms)
     {
-
+        return;
         if (Utils::isLocalhost()) {
             return true;
         }

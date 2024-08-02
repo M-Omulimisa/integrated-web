@@ -306,6 +306,11 @@ class MarketSubscription extends BaseModel
         if ($this->end_date == null || strlen($this->end_date) < 4) {
             return;
         }
+
+        if(strtolower($this->renew_message_sent) == 'yes'){
+            return;
+        }
+
         $end_date = Carbon::parse($this->end_date);
         if ($this->status == 1) {
             $now = Carbon::now();
