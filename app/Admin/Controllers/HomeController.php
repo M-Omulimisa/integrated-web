@@ -438,7 +438,7 @@ class HomeController extends Controller
                             ->count(),
                     ];
                     $box = new Box(
-                        'Famers registered',
+                        'Famers registered (NEW)',
                         view('admin.widgets.widget-1', [
                             'data' => $data,
                             'url' => ('/')
