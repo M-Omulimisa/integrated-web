@@ -74,6 +74,7 @@ class Utils
 
     public static function system_boot()
     {
+        return; 
         self::process_market_subs(false);
         self::renew_messages();
         $farmers = Farmer::where('user_account_processed', '!=', 'Yes')->get();
