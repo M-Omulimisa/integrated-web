@@ -17,7 +17,7 @@ class DmarkSms
     public function __construct(MtnPay $mtnpay)
     {
         $this->_username  = config('dmark.username');
-        $this->_password  = config('dmark.password');
+        $this->_password  = 'Dev@Team1';
         $this->mtnpay     = $mtnpay;
     }
 
@@ -37,7 +37,7 @@ class DmarkSms
         * https://sms.dmarkmobile.com/v2/api/send_sms/?spname=username&sppass=password&numbers=256XXXXXXX&msg=message&type=json
         Parameters for sending via API
             username : mulimisa
-            password : mul1m1s4
+            password : Dev@Team1
             numbers:  Receiver phone number
             msg: Message to be sent (urlencoded)
             type: xml|json - Optional(defaults to json)

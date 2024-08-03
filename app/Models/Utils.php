@@ -73,8 +73,7 @@ class Utils
     }
 
     public static function system_boot()
-    {
-        return;
+    { 
         self::process_market_subs(false);
         self::renew_messages();
         $farmers = Farmer::where('user_account_processed', '!=', 'Yes')->get();
@@ -87,14 +86,17 @@ class Utils
     }
 
     public static function renew_messages()
-    {
-        return; 
+    { 
         foreach (MarketSubscription::where(['renew_message_sent' => 'No'])
             ->orderBy('created_at', 'desc')
             ->get() as $key => $value) {
             if ($key > 1000) {
                 break;
             }
+            //check if skipped and skip
+            if ($value->skip_renew_message == 'Yes') {
+                continue;
+            } 
             $value->send_renew_message();
         }
 
@@ -340,7 +342,7 @@ class Utils
 
     public static  function send_sms($phone, $sms)
     {
-        return;
+
         if (Utils::isLocalhost()) {
             return true;
         }
@@ -351,7 +353,7 @@ class Utils
         $sms = urlencode($sms);
         $url = '';
         $url .= "?spname=mulimisa";
-        $url .= "&sppass=mul1m1s4";
+        $url .= "&sppass=Dev@Team1";
         $url .= "&numbers=$phone";
         $url .= "&msg=$sms";
         $url .= "&type=json";
