@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\DistrictModel;
+use App\Models\Organisations\Organisation;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
 use App\Models\Utils;
@@ -148,7 +149,7 @@ class WeatherSubscriptionController extends AdminController
                 'NO' => 'danger',
             ], 'danger')
             ->filter(['PAID' => 'PAID', 'NO' => 'NOT PAID']);
-/*         $grid->column('location_id', __('Location id'))->hide(); */
+        /*         $grid->column('location_id', __('Location id'))->hide(); */
 
         //start_date
 
@@ -166,13 +167,21 @@ class WeatherSubscriptionController extends AdminController
         $grid->column('trial_expiry_sms_sent_at', __('Trial expiry sms sent at'))->hide();
         $grid->column('trial_expiry_sms_failure_reason', __('Trial expiry sms failure reason'))->hide(); */
         $grid->column('phone', __('Phone'))->sortable();
-        $grid->column('status', __('Status'))->sortable();
+        /* organization_id */
+        $grid->column('organization_id', __('Organization'))
+            ->display(function ($organization_id) {
+                if ($this->organization == null) {
+                    return 'N/A';
+                }
+                return $this->organization->name;
+            })->sortable();
+        /* $grid->column('status', __('Status'))->sortable(); */
         $grid->column('start_date', __('Start Date'))->sortable();
         $grid->column('end_date', __('End Date'))->sortable();
 
 
 
-        $grid->column('renew_message_sent', __('Renew alert sent'))
+        /*  $grid->column('renew_message_sent', __('Renew alert sent'))
             ->sortable()
             ->dot([
                 'Yes' => 'success',
@@ -180,14 +189,14 @@ class WeatherSubscriptionController extends AdminController
                 'No' => 'danger',
                 'Failed' => 'danger'
             ])
-            ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No']);
-        $grid->column('renew_message_sent_at', __('Renew Alert sent at'))->sortable()
+            ->filter(['Yes' => 'Yes', 'Skipped' => 'Skipped', 'Failed' => 'Failed', 'No' => 'No']); */
+        /* $grid->column('renew_message_sent_at', __('Renew Alert sent at'))->sortable()
             ->display(function ($created_at) {
                 if ($created_at == null) {
                     return '-';
                 }
                 return Utils::my_date($created_at);
-            });
+            }); */
         $grid->column('renew_message_sent_details', __('Renew Alert Sent Details'))->sortable()
             ->display(function ($created_at) {
                 if ($created_at == null) {
@@ -230,7 +239,7 @@ class WeatherSubscriptionController extends AdminController
                 $my_data['Expiry Message Sent Details'] = $data->renew_message_sent_details;
                 return new \Encore\Admin\Widgets\Table([], $my_data);
             });
-        
+
 
 
         return $grid;
@@ -303,6 +312,17 @@ class WeatherSubscriptionController extends AdminController
         $form->text('first_name', __('First name'));
         $form->text('last_name', __('Last name'));
         $form->email('email', __('Email'));
+
+        $form->radio('belong_to_ogranization', 'Does this subscriber belong to an organization?')
+            ->options([
+                'Yes' => 'Yes',
+                'No' => 'No',
+            ])
+            ->when('Yes', function ($form) {
+                $form->select('organization_id', __('Organization'))
+                    ->options(Organisation::all()->pluck('name', 'id'))
+                    ->rules('required');
+            })->required();
 
         if (!$form->isCreating()) {
             $form->display('start_date', __('Start Date'));
