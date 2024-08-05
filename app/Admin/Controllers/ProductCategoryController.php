@@ -31,6 +31,20 @@ class ProductCategoryController extends AdminController
         $grid->column('category', __('Category'))
             ->editable()
             ->sortable();
+
+            // Add the new column for Parent Category
+    $grid->column('parent_category', __('Parent Category'))
+    ->display(function () {
+        if ($this->is_parent == 'Yes' || $this->parent_id === null) {
+            return 'No parent';
+        } else {
+            $parentCategory = ProductCategory::find($this->parent_id);
+            return $parentCategory ? $parentCategory->category : 'No parent';
+        }
+    })
+    
+    ->sortable();
+            
         $grid->column('show_in_banner', __('Show in Banner'))
             ->editable('select', ['Yes' => 'Yes', 'No' => 'No'])
             ->sortable();
