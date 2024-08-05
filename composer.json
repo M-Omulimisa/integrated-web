@@ -14,6 +14,7 @@
         "barryvdh/laravel-dompdf": "^0.9.0",
         "berkayk/onesignal-laravel": "^2.0",
         "doctrine/dbal": "^3.3",
+        "dompdf/dompdf": "^1.2",
         "encore/laravel-admin": "1.*",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",

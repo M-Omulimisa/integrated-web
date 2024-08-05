@@ -4,6 +4,7 @@ namespace App\Models\Weather;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use App\Models\Organisations\Organisation;
 use App\Models\ParishModel;
 use App\Models\Payments\SubscriptionPayment;
 use App\Models\SubcountyModel;
@@ -470,7 +471,7 @@ class WeatherSubscription extends BaseModel
             if ($now->lt($end_date)) {
                 $diff = $now->diffInDays($end_date);
                 $diff = abs($diff);
-                if ($diff < 10) {
+                if ($diff < 5) {
                     if ($this->is_paid == 'PAID') {
                         if ($this->pre_renew_message_sent != 'Yes') {
                             if ($diff < 1) {
@@ -602,7 +603,7 @@ class WeatherSubscription extends BaseModel
         }
 
         $msg = "Thank you for subscribing to M-Omulimisa weather information service. You will be receiving weather updates daily.";
-       
+
         try {
             Utils::send_sms($phone, $msg);
 
@@ -620,7 +621,7 @@ class WeatherSubscription extends BaseModel
             $this->is_processed = 'Yes';
             $this->is_processed_at = Carbon::now();
             $this->is_processed_details = 'Message sent to ' . $phone;
-            
+
             $this->save();
         } catch (\Throwable $th) {
             $this->is_processed = 'Failed';
@@ -650,4 +651,10 @@ class WeatherSubscription extends BaseModel
         'subcounty_text',
         'name_text'
     ];
+
+    //belongs to organization_id
+    public function organization()
+    {
+        return $this->belongsTo(Organisation::class, 'organization_id', 'id');
+    }
 }

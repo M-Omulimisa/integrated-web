@@ -159,10 +159,13 @@ use App\Traits\Notification;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
 use App\Http\Controllers\InsuranceRequestController;
+use App\Models\SubscriptionReport;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Dompdf\Dompdf; 
 
 /*
 |--------------------------------------------------------------------------
@@ -180,6 +183,17 @@ Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestContr
 
 Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
+Route::get('subscription-reports-print', function (Request $r) {
+    $report = SubscriptionReport::find($r->pdf);
+
+  
+
+    $pdf= new Dompdf();
+    $pdf->loadHTML('->render()');
+    return $pdf->stream('test.pdf');
+
+    dd($report);
+});
 Route::get('migrate', function () {
     //do run laravel migration command
     Artisan::call('migrate');
