@@ -159,13 +159,14 @@ use App\Traits\Notification;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
 use App\Http\Controllers\InsuranceRequestController;
+use App\Models\Organisations\Organisation;
 use App\Models\SubscriptionReport;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
-use Dompdf\Dompdf; 
+use Dompdf\Dompdf;
 
 /*
 |--------------------------------------------------------------------------
@@ -185,12 +186,39 @@ Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'ind
 
 Route::get('subscription-reports-print', function (Request $r) {
     $report = SubscriptionReport::find($r->pdf);
+    if ($report == null) {
+        die("Report not found");
+    }
+    $company = Organisation::find($report->organization_id);
+    $pdf = new Dompdf();
 
-  
+    $pdf->loadHTML(
+        view('reports.service-subs', [
+            'company' => $company
+        ])
+    );
 
-    $pdf= new Dompdf();
-    $pdf->loadHTML('->render()');
-    return $pdf->stream('test.pdf');
+    // (Optional) Setup the paper size and orientation
+    $pdf->setPaper('A4', 'portrait');
+
+    // Render the HTML as PDF
+    $pdf->render();
+
+    // Output the generated PDF to Browser
+    $pdf->stream(
+        'test.pdf',
+        array("Attachment" => false)
+    );
+
+    return;
+
+    $pdf->loadHTML(
+        "view('reports.service-subs')"
+    );
+    return $pdf->stream(
+        'test.pdf',
+        array("Attachment" => false)
+    );
 
     dd($report);
 });

@@ -73,7 +73,7 @@ class Utils
     }
 
     public static function system_boot()
-    { 
+    {
         self::process_market_subs(false);
         self::renew_messages();
         $farmers = Farmer::where('user_account_processed', '!=', 'Yes')->get();
@@ -86,7 +86,7 @@ class Utils
     }
 
     public static function renew_messages()
-    { 
+    {
         foreach (MarketSubscription::where(['renew_message_sent' => 'No'])
             ->orderBy('created_at', 'desc')
             ->get() as $key => $value) {
@@ -96,7 +96,7 @@ class Utils
             //check if skipped and skip
             if ($value->skip_renew_message == 'Yes') {
                 continue;
-            } 
+            }
             $value->send_renew_message();
         }
 
@@ -761,9 +761,11 @@ class Utils
         ]
     ) {
         if ($data['msg'] == null) {
+            return true;
             throw new \Exception("Message is required");
         }
         if ($data['receiver'] == null) {
+            return true;
             throw new \Exception("Receiver is required");
         }
 

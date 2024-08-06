@@ -96,7 +96,7 @@ class SubscriptionReportController extends AdminController
         if (!$form->isCreating()) {
             $form->text('title', __('Title'))->rules('required');
         }
-        $form->select('organization_id', __('Conservation Area'))
+        $form->select('organization_id', __('Selecting Organization'))
             ->options(Organisation::all()->pluck('name', 'id'))
             ->rules('required');
 
