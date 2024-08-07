@@ -44,7 +44,7 @@ class MartketPackageMessageController extends AdminController
             }
             //by organization
             $filter->equal('organization_id', __('Organization'))->select($orgs);
-        }); 
+        });
         $campaigns = [];
         foreach (MarketInfoMessageCampaign::where([])
             ->orderBy('created_at', 'desc')->get()
@@ -66,11 +66,13 @@ class MartketPackageMessageController extends AdminController
 
         $grid->model()
             ->orderBy('created_at', 'desc');
-            
+
         $grid->column('created_at', 'Date')
             ->display(function ($x) {
                 return Utils::my_date($x);
             })->width('90')
+            ->sortable();
+        $grid->column('recipient', __('Recipient'))->filter('like')
             ->sortable();
         $grid->column('package_id', __('Package'))
             ->display(function ($package_id) {
