@@ -96,6 +96,16 @@ class WeatherSubscription extends BaseModel
         //created
         self::created(function (WeatherSubscription $model) {
         });
+
+        //updated
+        self::updated(function (WeatherSubscription $model) {
+            //set organization_id for weather outbox
+            WeatherOutbox::where('subscription_id', $model->id)
+                ->orWhere('recipient', $model->phone)
+                ->update([
+                    'organization_id' => $model->organization_id
+                ]);
+        });
     }
 
     //prepare

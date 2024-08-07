@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\DistrictModel;
+use App\Models\Market\MarketSubscription;
 use App\Models\Organisations\Organisation;
 use App\Models\ParishModel;
 use App\Models\SubcountyModel;
@@ -295,6 +296,7 @@ class WeatherSubscriptionController extends AdminController
      */
     protected function form()
     {
+
         $form = new Form(new WeatherSubscription());
 
         /* $form->text('farmer_id', __('Farmer id'));

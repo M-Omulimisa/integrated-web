@@ -5,6 +5,7 @@ namespace App\Models\Weather;
 use App\Models\Agent\Subscription;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use App\Models\Organisations\Organisation;
 use App\Models\ParishModel;
 use App\Models\Settings\Language;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
@@ -215,5 +216,11 @@ class WeatherOutbox extends BaseModel
             return '#' . $sub->id;
         }
         return $sub->parish->name_text;
+    }
+
+    //belongs to organization_id
+    public function organization()
+    {
+        return $this->belongsTo(Organisation::class, 'organization_id', 'id');
     }
 }

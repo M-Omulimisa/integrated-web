@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\Market\MarketPackagePricing;
 use App\Models\Market\MarketSubscription;
+use App\Models\Organisations\Organisation;
 use App\Models\Settings\Location;
 use App\Models\Utils;
 use Dflydev\DotAccessData\Util;
@@ -228,7 +229,7 @@ class MarketSubscriptionController extends AdminController
                 'NOT PAID' => 'danger'
             ])
             ->filter(['PAID' => 'PAID', 'NOT PAID' => 'NOT PAID']);
-   /*      $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide()->sortable();
+        /*      $grid->column('MNOTransactionReferenceId', __('MNO Transaction Reference ID'))->hide()->sortable();
         $grid->column('payment_reference_id', __('Payment Reference ID'))->hide();
         $grid->column('TransactionStatus', __('Transaction Status'))->hide();
         $grid->column('TransactionAmount', __('Transaction Amount'))->hide();
@@ -286,6 +287,14 @@ class MarketSubscriptionController extends AdminController
                 return new \Encore\Admin\Widgets\Table([], $my_data);
             });
 
+        $grid->column('organization_id', __('Organization'))
+            ->display(function ($organization_id) {
+                if ($this->organization == null) {
+                    return 'N/A';
+                }
+                return $this->organization->name;
+            })->sortable();
+
         return $grid;
     }
 
@@ -340,11 +349,12 @@ class MarketSubscriptionController extends AdminController
      * @return Form
      */
     protected function form()
+    
     {
-        $f =  MarketSubscription::find('e0a7f6d1-e00c-4394-bbe5-7b376bc28eca');
-        //$f->total_price = rand(1000, 10000);
-        //$f->save();
-        //dd($f->total_price);
+        /* $f = MarketSubscription::find('59f8b8b1-ffc9-4cd5-90d5-71173b076318');
+        $f->belong_to_ogranization .= '.'; 
+        $f->save();
+        dd("as"); */
         $form = new Form(new MarketSubscription());
 
         $form->text('first_name', __('First Name'));
@@ -477,6 +487,16 @@ class MarketSubscriptionController extends AdminController
                 $form->text('welcome_msg_sent_details', __('Welcome message_sent details'));
             })->rules();
 
+        $form->radio('belong_to_ogranization', 'Does this subscriber belong to an organization?')
+            ->options([
+                'Yes' => 'Yes',
+                'No' => 'No',
+            ])
+            ->when('Yes', function ($form) {
+                $form->select('organization_id', __('Organization'))
+                    ->options(Organisation::all()->pluck('name', 'id'))
+                    ->rules('required');
+            })->required();
 
         $form->disableCreatingCheck();
         return $form;

@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\Market\MarketOutbox;
 use App\Models\MarketInfoMessageCampaign;
+use App\Models\Organisations\Organisation;
 use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -27,6 +28,19 @@ class MarketOutboxController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new MarketOutbox());
+        $grid->filter(function ($filter) {
+
+            $filter->disableIdFilter();
+            $filter->like('recipient', __('Recipient'));
+            $filter->like('message', __('Message'));
+            $filter->between('created_at', __('Date'))->date();
+            $orgs = [];
+            foreach (Organisation::all() as $org) {
+                $orgs[$org->id] = $org->name;
+            }
+            //by organization
+            $filter->equal('organization_id', __('Organization'))->select($orgs);
+        });
 
         $campaigns = [];
         foreach (MarketInfoMessageCampaign::where([])
@@ -80,6 +94,14 @@ class MarketOutboxController extends AdminController
             })
             ->filter($campaigns)
             ->sortable();
+
+        $grid->column('organization_id', __('Organization'))
+            ->display(function ($organization_id) {
+                if ($this->organization == null) {
+                    return 'N/A';
+                }
+                return $this->organization->name;
+            })->sortable();
 
         return $grid;
     }

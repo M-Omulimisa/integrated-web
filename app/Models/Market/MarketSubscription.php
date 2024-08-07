@@ -4,6 +4,7 @@ namespace App\Models\Market;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use App\Models\Organisations\Organisation;
 use App\Models\Payments\SubscriptionPayment;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\MarketSubscriptionRelationship;
@@ -67,6 +68,17 @@ class MarketSubscription extends BaseModel
         //updating
         self::updating(function (MarketSubscription $model) {
             return self::prepare($model);
+        });
+
+        //updated
+        self::updated(function (MarketSubscription $model) {
+            //set organization_id for weather outbox
+
+            MarketOutbox::where('subscription_id', $model->id)
+                ->orWhere('recipient', $model->phone)
+                ->update([
+                    'organization_id' => $model->organization_id
+                ]);
         });
     }
 
@@ -545,5 +557,12 @@ class MarketSubscription extends BaseModel
 
         $this->save();
         return $this->is_paid;
+    }
+
+
+    //belongs to organization_id
+    public function organization()
+    {
+        return $this->belongsTo(Organisation::class, 'organization_id', 'id');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Models\Market;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use App\Models\MarketInfoMessageCampaign;
+use App\Models\Organisations\Organisation;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\MarketOutboxRelationship;
 use Carbon\Carbon;
@@ -86,5 +87,10 @@ class MarketOutbox extends BaseModel
     public function campaign()
     {
         return $this->belongsTo(MarketInfoMessageCampaign::class, 'market_info_message_campaign_id');
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organisation::class, 'organization_id', 'id');
     }
 }
