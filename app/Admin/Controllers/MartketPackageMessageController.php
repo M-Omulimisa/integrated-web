@@ -80,8 +80,7 @@ class MartketPackageMessageController extends AdminController
             })->filter($langs)->sortable();
 
         $grid->column('message', __('Message'))
-            ->filter('like')->sortable()
-            ->limit(80);
+            ->filter('like')->sortable();
         $grid->column('market_info_message_campaign_id', __('Campaign'))
             ->display(function () {
                 if ($this->campaign == null) {
