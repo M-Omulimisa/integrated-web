@@ -53,13 +53,10 @@ class MarketOutboxController extends AdminController
         $grid->column('subscription_id', __('Subscription'))->hide();
         $grid->column('farmer_id', __('Farmer id'))->hide();
         $grid->column('recipient', __('Recipient'))
-            ->filter('like')
             ->sortable()
             ->width(120);
         $grid->column('message', __('Message'))
-            ->filter('like')
-            ->sortable()
-            ->limit(60);
+            ->sortable();
         $grid->column('status', __('Status'))
             ->width(80)
             ->filter([
