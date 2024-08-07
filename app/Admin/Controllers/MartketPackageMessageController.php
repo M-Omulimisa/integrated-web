@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Models\Market\MarketPackageMessage;
 use App\Models\Market\MarketPackage;
 use App\Models\MarketInfoMessageCampaign;
+use App\Models\Organisations\Organisation;
 use App\Models\Settings\Language;
 use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
@@ -29,7 +30,21 @@ class MartketPackageMessageController extends AdminController
     protected function grid()
     {
 
+
         $grid = new Grid(new MarketPackageMessage());
+        $grid->filter(function ($filter) {
+
+            $filter->disableIdFilter();
+            $filter->like('recipient', __('Recipient'));
+            $filter->like('message', __('Message'));
+            $filter->between('created_at', __('Date'))->date();
+            $orgs = [];
+            foreach (Organisation::all() as $org) {
+                $orgs[$org->id] = $org->name;
+            }
+            //by organization
+            $filter->equal('organization_id', __('Organization'))->select($orgs);
+        }); 
         $campaigns = [];
         foreach (MarketInfoMessageCampaign::where([])
             ->orderBy('created_at', 'desc')->get()
@@ -51,11 +66,11 @@ class MartketPackageMessageController extends AdminController
 
         $grid->model()
             ->orderBy('created_at', 'desc');
+            
         $grid->column('created_at', 'Date')
             ->display(function ($x) {
                 return Utils::my_date($x);
             })->width('90')
-            ->filter('range', 'date')
             ->sortable();
         $grid->column('package_id', __('Package'))
             ->display(function ($package_id) {
@@ -96,6 +111,13 @@ class MartketPackageMessageController extends AdminController
                 return $this->outboxes()->count();
             });
 
+        $grid->column('organization_id', __('Organization'))
+            ->display(function ($organization_id) {
+                if ($this->organization == null) {
+                    return 'N/A';
+                }
+                return $this->organization->name;
+            })->sortable();
 
 
         return $grid;
