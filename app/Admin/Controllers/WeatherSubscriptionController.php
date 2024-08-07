@@ -351,13 +351,16 @@ class WeatherSubscriptionController extends AdminController
         $form->select('parish_id', __('Parish'))
             ->options(ParishModel::selectData())
             ->rules('required');
-        $form->select('frequency', __('Frequency'))
-            ->options([
-                'daily' => 'Daily',
-                'weekly' => 'Weekly',
-                'monthly' => 'Monthly',
-                'yearly' => 'Yearly',
-            ])->rules('required');
+
+        if ($form->isCreating()) {
+            $form->select('frequency', __('Frequency'))
+                ->options([
+                    'daily' => 'Daily',
+                    'weekly' => 'Weekly',
+                    'monthly' => 'Monthly',
+                    'yearly' => 'Yearly',
+                ])->rules('required');
+        }
 
         $form->decimal('period_paid', __('Period Paid'))->rules('required');
 
