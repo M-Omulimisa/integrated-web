@@ -224,7 +224,8 @@ Route::get('subscription-reports-print', function (Request $r) {
 });
 Route::get('migrate', function () {
     //do run laravel migration command
-    Artisan::call('migrate');
+    // Artisan::call('migrate');
+    Artisan::call('migrate', ['--force' => true ]); 
     //returning the output
     return Artisan::output();
 });
