@@ -75,7 +75,7 @@ class MarketSubscription extends BaseModel
             //set organization_id for weather outbox
 
             MarketOutbox::where('subscription_id', $model->id)
-                ->orWhere('recipient', $model->phone)
+                ->orWhere('phone', $model->phone)
                 ->update([
                     'organization_id' => $model->organization_id
                 ]);

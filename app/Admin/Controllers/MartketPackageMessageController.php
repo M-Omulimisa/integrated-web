@@ -35,7 +35,7 @@ class MartketPackageMessageController extends AdminController
         $grid->filter(function ($filter) {
 
             $filter->disableIdFilter();
-            $filter->like('recipient', __('Recipient'));
+            $filter->like('phone', __('Recipient'));
             $filter->like('message', __('Message'));
             $filter->between('created_at', __('Date'))->date();
             $orgs = [];
@@ -72,7 +72,7 @@ class MartketPackageMessageController extends AdminController
                 return Utils::my_date($x);
             })->width('90')
             ->sortable();
-        $grid->column('recipient', __('Recipient'))->filter('like')
+        $grid->column('phone', __('Recipient'))
             ->sortable();
         $grid->column('package_id', __('Package'))
             ->display(function ($package_id) {
