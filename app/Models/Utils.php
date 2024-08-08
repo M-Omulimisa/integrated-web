@@ -87,9 +87,11 @@ class Utils
 
     public static function renew_messages()
     {
-        foreach (MarketSubscription::where(['renew_message_sent' => 'No'])
-            ->orderBy('created_at', 'desc')
-            ->get() as $key => $value) {
+        foreach (
+            MarketSubscription::where(['renew_message_sent' => 'No'])
+                ->orderBy('created_at', 'desc')
+                ->get() as $key => $value
+        ) {
             if ($key > 1000) {
                 break;
             }
@@ -100,9 +102,11 @@ class Utils
             $value->send_renew_message();
         }
 
-        foreach (WeatherSubscription::where(['renew_message_sent' => 'No'])
-            ->orderBy('created_at', 'desc')
-            ->get() as $key => $value) {
+        foreach (
+            WeatherSubscription::where(['renew_message_sent' => 'No'])
+                ->orderBy('created_at', 'desc')
+                ->get() as $key => $value
+        ) {
             if ($key > 1000) {
                 break;
             }
@@ -550,11 +554,17 @@ class Utils
         try {
             // $link = "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}";
             // dd($link);
-            $response = $client->request('GET', "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}");
+            $link = "https://me.agrinetug.net/api/export_participants/{$external_id}?token=*psP@3ksMMw7&page={$page}";
+            echo $link;
+            $response = $client->request('GET', $link);
         } catch (\Throwable $th) {
             throw $th;
             return;
         }
+        echo "<pre>";
+        print_r($response);
+        echo "</pre>";
+
 
         if ($response == null) {
             throw new \Exception("Failed to get response");
