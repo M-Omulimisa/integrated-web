@@ -17,7 +17,7 @@ class DmarkSms
     public function __construct(MtnPay $mtnpay)
     {
         $this->_username  = config('dmark.username');
-        $this->_password  = 'mul1m1s4';
+        $this->_password  = 'Dev@Team1';
         $this->mtnpay     = $mtnpay;
     }
 
