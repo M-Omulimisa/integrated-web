@@ -357,7 +357,7 @@ class Utils
         $sms = urlencode($sms);
         $url = '';
         $url .= "?spname=mulimisa";
-        $url .= "&sppass=Dev@Team1";
+        $url .= "&sppass=mul1m1s4";
         $url .= "&numbers=$phone";
         $url .= "&msg=$sms";
         $url .= "&type=json";
