@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
+    
     //boot
     public static function boot()
     {
@@ -57,6 +58,7 @@ class Order extends Model
             }
         });
 
+        //deleting
         self::deleting(function ($m) {
             try {
                 $items = OrderedItem::where('order', $m->id)->get();
@@ -101,7 +103,6 @@ class Order extends Model
         }
         return $items;
     }
-
 
     //check payment status
     public function check_payment_status()

@@ -20,7 +20,7 @@ use App\Models\SubcountyModel;
 use App\Models\User;
 use App\Models\Utils;
 use App\Models\Weather\WeatherOutbox;
-use App\Models\Weather\WeatherSubscription;
+use App\Models\Weather\WeatherSubscription; 
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
@@ -773,19 +773,18 @@ class ApiShopController extends Controller
 
     public function orders_get(Request $r)
     {
-
-
         $u = auth('api')->user();
         if ($u == null) {
             $administrator_id = Utils::get_user_id($r);
             $u = Administrator::find($administrator_id);
         }
-        $u = Administrator::find($u->id);
 
+        $u = Administrator::find($u->id);
 
         if ($u == null) {
             return $this->error('User not found.');
         }
+
         $orders = [];
         $conds = [];
 
@@ -1095,6 +1094,7 @@ class ApiShopController extends Controller
 
         foreach ($items as $key => $value) {
             $p = Product::find($value->product_id);
+
             if ($p == null) {
                 return $this->error("Product #" . $value->product_id . " not found.");
             }
@@ -1112,6 +1112,8 @@ class ApiShopController extends Controller
             return $this->error('User not found.');
         }
 
+        $delivery_fee = $r->delivery_fee;
+
         $delivery = null;
         try {
             $delivery = json_decode($r->delivery);
@@ -1122,6 +1124,7 @@ class ApiShopController extends Controller
         if ($delivery == null) {
             return $this->error('Delivery information is missing.');
         }
+        
         if ($delivery->phone_number == null) {
             return $this->error('Phone number is missing.');
         }
@@ -1138,12 +1141,15 @@ class ApiShopController extends Controller
         $order->date_created = Carbon::now();
         $order->date_updated = Carbon::now();
         $order->save();
+
         $order_total = 0;
+
         foreach ($items as $key => $item) {
             $product = Product::find($item->product_id);
             if ($product == null) {
                 return $this->error("Product #" . $item->product_id . " not found.");
             }
+
             $oi = new OrderedItem();
             $oi->order = $order->id;
             $oi->product = $item->product_id;
@@ -1154,6 +1160,10 @@ class ApiShopController extends Controller
             $order_total += ($product->price_1 * $oi->qty);
             $oi->save();
         }
+
+        $order_total += $delivery_fee;
+
+        $order->delivery_fee = $delivery_fee;
         $order->order_total = $order_total;
         $order->amount = $order_total;
         $order->customer_phone_number_1 = $delivery->phone_number;
@@ -1165,6 +1175,7 @@ class ApiShopController extends Controller
         //send notification to customer, how order was received
         $noti_title = "Order Received";
         $noti_body = "Your order has been received. We will contact you soon. Thank you.";
+        
         try {
             Utils::sendNotification(
                 $noti_body,
@@ -1184,9 +1195,11 @@ class ApiShopController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
         }
+
         if ($order == null) {
             return $this->error('Failed to save order.');
         }
+        
         //Utils::send_sms($noti_body, $delivery->phone_number);
         $order = Order::find($order->id);
 

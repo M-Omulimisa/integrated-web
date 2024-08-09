@@ -26,6 +26,7 @@ class OrderController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Order());
+        
         $grid->disableBatchActions();
         $grid->disableCreateButton();
         $grid->disableExport();
