@@ -48,17 +48,24 @@ class ProductController extends AdminController
         });
         $grid->model()->orderBy('id', 'desc');
         $grid->column('id', __('Id'))->sortable();
+
         $grid->column('name', __('Name'))->sortable()
             ->editable();
+
         $grid->column('description', __('Description'))
             ->hide();
 
         $grid->column('price_2', __('Original Price'))
             ->sortable()
             ->editable();
+
         $grid->column('price_1', __('Selling Price'))
             ->sortable()
             ->editable();
+
+        $grid->column('agent_commission', __('Agent Commission'))
+            ->sortable();
+            
         $grid->picture('feature_photo', __('Photo'))
             ->image('', 100, 100)
             ->hide();
@@ -187,6 +194,10 @@ class ProductController extends AdminController
 
         $form->decimal('price_2', __('Original Price'))
             ->rules('required');
+
+        $form->decimal('agent_commission', __('Agent Commission'))
+            ->rules('required');
+
         $form->decimal('price_1', __('Selling Price'))
             ->rules('required');
         $form->quill('description', __('Description'))
