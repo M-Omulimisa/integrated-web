@@ -316,7 +316,6 @@ class MarketSubscription extends BaseModel
     public function send_renew_message()
     {
 
-        return;
         if ($this->end_date == null || strlen($this->end_date) < 4) {
             return;
         }

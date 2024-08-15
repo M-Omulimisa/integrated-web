@@ -20,7 +20,7 @@ use App\Models\SubcountyModel;
 use App\Models\User;
 use App\Models\Utils;
 use App\Models\Weather\WeatherOutbox;
-use App\Models\Weather\WeatherSubscription; 
+use App\Models\Weather\WeatherSubscription;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
@@ -125,7 +125,7 @@ class ApiShopController extends Controller
             $sub->save();
             return $this->success($sub, 'Success.');
         }
-        
+
         $language = \App\Models\Settings\Language::find($r->language_id);
         if ($language == null) {
             return $this->error('Language not found.');
@@ -188,7 +188,7 @@ class ApiShopController extends Controller
           'pricing_id': '27ab2deb-2a6b-445c-bb40-53873aa5bee5',
           'language_id': '0332b59f-9699-4a32-99c4-1dae3666fc93',
         */
-        
+
         if (!isset($r->subscriber_id) || $r->subscriber_id == null) {
             return $this->error('Subscriber ID is missing.');
         }
@@ -609,6 +609,38 @@ class ApiShopController extends Controller
         $phone_number = $r->phone_number;
         $phone_number = str_replace('+', '', $phone_number);
 
+        $test_numbers = [
+            '256783204665',
+            '256706638494',
+        ];
+        //check if number in test numbers
+        $_order = null;
+        if (in_array($phone_number, $test_numbers)) {
+            $amount = 500;
+            if ($r->type == 'ORDER') {
+                $order->TransactionStatus = 'SUCCEEDED';
+                $order->TransactionReference = 'FREE-TESTING-TRANSACTION-REFERENCE';
+                $order->is_paid = 'PAID';
+                $this->save();
+                $_order = $order;
+            } else if ($r->type == 'MarketSubscription') {
+                $MarketSubscription->TransactionStatus = 'SUCCEEDED';
+                $MarketSubscription->TransactionReference = 'FREE-TESTING-TRANSACTION-REFERENCE';
+                $MarketSubscription->payment_reference_id = '1';
+                $MarketSubscription->is_paid = 'PAID';
+                $MarketSubscription->save();
+                $_order = $MarketSubscription;
+            } else if ($r->type == 'WeatherSubscriptionModel') {
+                $MarketSubscription->TransactionStatus = 'SUCCEEDED';
+                $MarketSubscription->TransactionReference = 'FREE-TESTING-TRANSACTION-REFERENCE';
+                $MarketSubscription->payment_reference_id = '1';
+                $MarketSubscription->is_paid = 'PAID';
+                $MarketSubscription->save();
+                $_order = $MarketSubscription;
+            }
+            return $this->success($_order, $message = "Tested $phone_number.", 200);
+        }
+
         $payment_resp = null;
         try {
             $payment_resp = Utils::init_payment($phone_number, $amount, $payment_reference_id);
@@ -657,8 +689,7 @@ class ApiShopController extends Controller
             } catch (\Throwable $th) {
                 //throw $th;
             }
-        } else 
-        if ($r->type == 'MarketSubscription') {
+        } else if ($r->type == 'MarketSubscription') {
             $MarketSubscription->TransactionStatus = $payment_resp->TransactionStatus;
             $MarketSubscription->TransactionReference = $payment_resp->TransactionReference;
             $MarketSubscription->payment_reference_id = $payment_reference_id;
@@ -697,7 +728,7 @@ class ApiShopController extends Controller
         $not->notification_seen = 'Yes';
         $not->notification_seen_time = Carbon::now();
         $not->save();
-        return $this->success($not, $message = "Success", 200); 
+        return $this->success($not, $message = "Success", 200);
     }
     public function dmark_sms_webhook(Request $r)
     {
@@ -1124,7 +1155,7 @@ class ApiShopController extends Controller
         if ($delivery == null) {
             return $this->error('Delivery information is missing.');
         }
-        
+
         if ($delivery->phone_number == null) {
             return $this->error('Phone number is missing.');
         }
@@ -1175,7 +1206,7 @@ class ApiShopController extends Controller
         //send notification to customer, how order was received
         $noti_title = "Order Received";
         $noti_body = "Your order has been received. We will contact you soon. Thank you.";
-        
+
         try {
             Utils::sendNotification(
                 $noti_body,
@@ -1199,7 +1230,7 @@ class ApiShopController extends Controller
         if ($order == null) {
             return $this->error('Failed to save order.');
         }
-        
+
         //Utils::send_sms($noti_body, $delivery->phone_number);
         $order = Order::find($order->id);
 
