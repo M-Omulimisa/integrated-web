@@ -83,40 +83,7 @@ class MarketSubscription extends BaseModel
         });
     }
 
-    //prepre
-    public static function send_welcome_message($model)
-    {
-        if ($model->welcome_msg_sent != 'No') {
-            return;
-        }
-        if ($model->welcome_msg_sent != "Yes") {
-            $phone = Utils::prepare_phone_number($model->phone);
-            $msg = "Welcome to M-Omulimisa market information updates. You have successfully subscribed to {$model->package->name}. You will now receive regular market updates. Thank you for subscribing.";
 
-            try {
-                Utils::send_sms($phone, $msg);
-
-                $u = User::where('phone', $phone)->first();
-
-                if ($u && $u->id) {
-                    Utils::sendNotification2([
-                        'msg' => $msg,
-                        'headings' => 'Welcome to Market Information Service',
-                        'receiver' => $u->id,
-                        'type' => 'text',
-                    ]);
-                }
-
-                $model->welcome_msg_sent = 'Yes';
-                $model->welcome_msg_sent_at = Carbon::now();
-                $model->welcome_msg_sent_details = $msg . ' - Message sent to ' . $phone;
-            } catch (\Throwable $th) {
-                $model->welcome_msg_sent = 'Failed';
-                $model->welcome_msg_sent_at = Carbon::now();
-                $model->welcome_msg_sent_details = 'Failed to send message to ' . $phone . ', Because: ' . $th->getMessage();
-            }
-        }
-    }
 
     public static function prepare($m)
     {
@@ -196,9 +163,7 @@ class MarketSubscription extends BaseModel
             $m->status = 1;
         }
 
-        if ($m->status == 1) {
-            self::send_welcome_message($m);
-        }
+
 
         return $m;
     }
