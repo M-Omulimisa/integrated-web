@@ -347,6 +347,7 @@ class Utils
     public static  function send_sms($phone, $sms)
     {
 
+        return true; 
         if (Utils::isLocalhost()) {
             return true;
         }
