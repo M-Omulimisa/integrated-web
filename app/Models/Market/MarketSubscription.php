@@ -387,6 +387,13 @@ class MarketSubscription extends BaseModel
                     $this->welcome_msg_sent_details = $mgs;
 
                     try {
+                        $phone = Utils::prepare_phone_number($this->phone);
+                        Utils::send_sms($phone, $msg);
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+
+                    try {
                         $u = User::where('phone', $phone)->first();
 
                         if ($u && $u->id) {
@@ -397,8 +404,6 @@ class MarketSubscription extends BaseModel
                                 'type' => 'text',
                             ]);
                         }
-
-                        Utils::send_sms($this->phone, $msg);
                     } catch (\Throwable $th) {
                         //throw $th;
                     }
@@ -440,7 +445,7 @@ class MarketSubscription extends BaseModel
                                 // sleep(10); //sleep for 10 seconds
                                 Utils::send_sms($recipient, $outbox->message);
                                 //message
-                                $this->welcome_msg_sent_details = "MARKET UPDATE: " . $outbox->message . ', WELCOME MESSAGE: ' . $this->welcome_msg_sent_details;
+                                $this->welcome_msg_sent_details = "MARKET UPDATE: => " . $outbox->message . ', WELCOME MESSAGE: => ' . $this->welcome_msg_sent_details;
                                 $outbox->sent_at = Carbon::now();
                                 $outbox->save();
                             }
