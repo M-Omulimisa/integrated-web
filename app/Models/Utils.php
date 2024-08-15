@@ -354,6 +354,8 @@ class Utils
         $outbox->sms = $sms;
         $outbox->status = 'pending';
 
+
+
         $test_numbers = [
             '256783204665',
             '+256783204665',
@@ -383,6 +385,31 @@ class Utils
             $outbox->reason = 'Test number';
             $outbox->save();
             return 'success';
+        }
+
+
+        try {
+            $_phone = Utils::prepare_phone_number($phone);
+            $u = User::where('phone', $_phone)->first();
+            if ($u == null) {
+                $u = User::where('phone', $phone)->first();
+            }
+            if ($u == null) {
+                $_phone = str_replace("+", "", $_phone);
+                $u = User::where('phone_number', $_phone)->first();
+            }
+            if ($u != null) {
+                if ($u->id > 0) {
+                    Utils::sendNotification2([
+                        'msg' => $sms,
+                        'headings' => 'Welcome to Market Information Service',
+                        'receiver' => $u->id,
+                        'type' => 'text',
+                    ]);
+                }
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
         }
 
         if (Utils::isLocalhost()) {

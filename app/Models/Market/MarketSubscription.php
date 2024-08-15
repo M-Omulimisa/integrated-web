@@ -394,6 +394,7 @@ class MarketSubscription extends BaseModel
                     }
 
                     try {
+                        
                         $u = User::where('phone', $phone)->first();
                         if ($u && $u->id) {
                             Utils::sendNotification2([
