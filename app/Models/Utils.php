@@ -354,6 +354,13 @@ class Utils
         $outbox->sms = $sms;
         $outbox->status = 'pending';
 
+        $test_numbers = [
+            '256783204665',
+            '+256783204665',
+            '256706638494',
+            '+256706638494',
+        ];
+
         //check if phone number received same message in the last 5 minutes
         $last = SMSOutbox::where([
             'phone' => $phone,
@@ -369,6 +376,13 @@ class Utils
                 $outbox->save();
                 return 'success';
             }
+        }
+        //check if phone number is in test numbers
+        if (in_array($phone, $test_numbers)) {
+            $outbox->status = 'cancelled';
+            $outbox->reason = 'Test number';
+            $outbox->save();
+            return 'success';
         }
 
         if (Utils::isLocalhost()) {
