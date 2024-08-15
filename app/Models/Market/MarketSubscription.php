@@ -472,7 +472,7 @@ class MarketSubscription extends BaseModel
                                     ]);
                                 }
 
-                                sleep(10); //sleep for 10 seconds
+                                // sleep(10); //sleep for 10 seconds
                                 Utils::send_sms($recipient, $outbox->message);
                                 //message
                                 $this->welcome_msg_sent_details = "MARKET UPDATE: " . $outbox->message . ', WELCOME MESSAGE: ' . $this->welcome_msg_sent_details;
