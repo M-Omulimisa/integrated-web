@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\SMSOutbox;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -27,8 +28,11 @@ class SMSOutboxController extends AdminController
         $grid = new Grid(new SMSOutbox());
         $grid->model()->orderBy('id', 'desc');
         $grid->column('id', __('Id'))->sortable();
-        $grid->column('created_at', __('Created'))->sortable()->filter('range', 'datetime');
-        $grid->column('updated_at', __('Updated'))->sortable()->filter('range', 'datetime');
+        $grid->column('created_at', __('Created'))->sortable()->filter('range', 'datetime')
+            ->display(function ($created_at) {
+                return Utils::my_date_time($created_at);
+            });
+        $grid->column('updated_at', __('Updated'))->sortable()->filter('range', 'datetime')->hide();
         $grid->column('phone', __('Phone'))->sortable()->filter('like');
         $grid->column('sms', __('Sms'))->sortable()->filter('like');
         $grid->column('status', __('Status'))->sortable()->filter([
