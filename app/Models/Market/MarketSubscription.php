@@ -388,14 +388,13 @@ class MarketSubscription extends BaseModel
 
                     try {
                         $phone = Utils::prepare_phone_number($this->phone);
-                        Utils::send_sms($phone, $msg);
+                        Utils::send_sms($phone, $mgs);
                     } catch (\Throwable $th) {
                         //throw $th;
                     }
 
                     try {
                         $u = User::where('phone', $phone)->first();
-
                         if ($u && $u->id) {
                             Utils::sendNotification2([
                                 'msg' => $msg,
