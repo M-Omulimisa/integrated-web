@@ -376,7 +376,7 @@ class Utils
             $diff = $now->diffInMinutes($last);
             if ($diff < (60 * 12)) {
                 $outbox->status = 'cancelled';
-                $outbox->reason = 'Duplicate message. Sent in the last 10 minutes';
+                $outbox->reason = 'Duplicate message. Sent in the last 12 hours.';
                 $outbox->save();
                 return 'success';
             }
