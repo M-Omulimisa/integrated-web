@@ -85,6 +85,9 @@ class MarketSubscription extends BaseModel
     //prepre
     public static function send_welcome_message($model)
     {
+        if ($model->welcome_msg_sent != 'No') {
+            return;
+        }
         if ($model->welcome_msg_sent != "Yes") {
             $phone = Utils::prepare_phone_number($model->phone);
             $msg = "Welcome to M-Omulimisa market information updates. You have successfully subscribed to {$model->package->name}. You will now receive regular market updates. Thank you for subscribing.";
@@ -468,7 +471,7 @@ class MarketSubscription extends BaseModel
                                     ]);
                                 }
 
-                                sleep(10); //sleep for 10 seconds
+                                // sleep(10); //sleep for 10 seconds
                                 Utils::send_sms($recipient, $outbox->message);
                                 //message
                                 $this->welcome_msg_sent_details = "MARKET UPDATE: " . $outbox->message . ', WELCOME MESSAGE: ' . $this->welcome_msg_sent_details;
