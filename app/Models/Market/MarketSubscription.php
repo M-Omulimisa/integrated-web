@@ -56,6 +56,7 @@ class MarketSubscription extends BaseModel
         self::creating(function (MarketSubscription $model) {
             $model->id = $model->generateUuid();
             $model->created_at = date('Y-m-d H:i:s');
+            $model->welcome_msg_sent = 'No';
 
             if ($model->is_paid == null || strlen($model->is_paid) < 3) {
                 $model->is_paid = 'PAID';
@@ -471,7 +472,7 @@ class MarketSubscription extends BaseModel
                                     ]);
                                 }
 
-                                // sleep(10); //sleep for 10 seconds
+                                sleep(10); //sleep for 10 seconds
                                 Utils::send_sms($recipient, $outbox->message);
                                 //message
                                 $this->welcome_msg_sent_details = "MARKET UPDATE: " . $outbox->message . ', WELCOME MESSAGE: ' . $this->welcome_msg_sent_details;
