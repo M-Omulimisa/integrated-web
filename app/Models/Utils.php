@@ -19,6 +19,15 @@ use Illuminate\Support\Facades\Schema;
 
 class Utils
 {
+    public static function isTestNumber($f)
+    {
+        $prep = self::prepare_phone_number($f);
+        $numb = TestPhoneNumber::where('phone', $prep)->first();
+        if ($numb != null) {
+            return true;
+        }
+        return false;
+    }
     public static function get_ai_answer($query)
     {
         if (strlen($query) < 3) {
@@ -356,13 +365,6 @@ class Utils
 
 
 
-        $test_numbers = [
-            '256783204665',
-            '+256783204665',
-            '256706638494',
-            '+256706638494',
-        ];
-
         //check if phone number received same message in the last 5 minutes
         $last = SMSOutbox::where([
             'phone' => $phone,
@@ -380,7 +382,7 @@ class Utils
             }
         }
         //check if phone number is in test numbers
-        if (in_array($phone, $test_numbers)) {
+        if (self::isTestNumber($phone)) {
             $outbox->status = 'cancelled';
             $outbox->reason = 'Test number';
             $outbox->save();

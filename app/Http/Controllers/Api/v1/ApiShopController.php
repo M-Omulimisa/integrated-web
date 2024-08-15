@@ -609,13 +609,9 @@ class ApiShopController extends Controller
         $phone_number = $r->phone_number;
         $phone_number = str_replace('+', '', $phone_number);
 
-        $test_numbers = [
-            '256783204665',
-            '256706638494',
-        ];
         //check if number in test numbers
         $_order = null;
-        if (in_array($phone_number, $test_numbers)) {
+        if (Utils::isTestNumber($phone_number)) {
             $amount = 500;
             if ($r->type == 'ORDER') {
                 $order->TransactionStatus = 'SUCCEEDED';
