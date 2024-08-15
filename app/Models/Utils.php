@@ -355,10 +355,10 @@ class Utils
         $outbox->status = 'pending';
 
         $test_numbers = [
-            '256783204665',
+/*             '256783204665',
             '+256783204665',
             '256706638494',
-            '+256706638494',
+            '+256706638494', */
         ];
 
         //check if phone number received same message in the last 5 minutes
