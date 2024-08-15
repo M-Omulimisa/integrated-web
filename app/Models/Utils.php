@@ -33,7 +33,7 @@ class Utils
         if (strlen($query) < 3) {
             return '';
         }
-        $url = 'http://20.246.158.238:8080/ask';
+        $url = 'http://51.141.91.10:8080/ask';
         $data = [
             'prompt' => $query
         ];
