@@ -374,7 +374,7 @@ class Utils
             $now = Carbon::now();
             $last = Carbon::parse($last->created_at);
             $diff = $now->diffInMinutes($last);
-            if ($diff < 10) {
+            if ($diff < (60 * 12)) {
                 $outbox->status = 'cancelled';
                 $outbox->reason = 'Duplicate message. Sent in the last 10 minutes';
                 $outbox->save();
