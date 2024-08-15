@@ -96,5 +96,6 @@ Route::group([
     $router->resource('market-info-message-campaigns', MarketInfoMessageCampaignController::class);
     $router->resource('weather-outboxes', WeatherOutboxController::class);
     $router->resource('subscription-reports', SubscriptionReportController::class);
+    $router->resource('s-m-s-outboxes', SMSOutboxController::class); 
 
 });

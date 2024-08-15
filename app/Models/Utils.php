@@ -347,12 +347,41 @@ class Utils
     public static  function send_sms($phone, $sms)
     {
 
-        return true; 
+
+
+        $outbox = new SMSOutbox();
+        $outbox->phone = $phone;
+        $outbox->sms = $sms;
+        $outbox->status = 'pending';
+
+        //check if phone number received same message in the last 5 minutes
+        $last = SMSOutbox::where([
+            'phone' => $phone,
+            'sms' => $sms
+        ])->orderBy('created_at', 'desc')->first();
+        if ($last != null) {
+            $now = Carbon::now();
+            $last = Carbon::parse($last->created_at);
+            $diff = $now->diffInMinutes($last);
+            if ($diff < 10) {
+                $outbox->status = 'cancelled';
+                $outbox->reason = 'Duplicate message. Sent in the last 10 minutes';
+                $outbox->save();
+                return 'success';
+            }
+        }
+
         if (Utils::isLocalhost()) {
+            $outbox->status = 'sent';
+            $outbox->reason = 'Localhost';
+            $outbox->save();
             return true;
         }
         $phone = Utils::prepare_phone_number($phone);
         if (Utils::phone_number_is_valid($phone) == false) {
+            $outbox->status = 'failed';
+            $outbox->reason = 'Invalid phone number';
+            $outbox->save();
             return 'Invalid phone number';
         }
         $sms = urlencode($sms);
@@ -376,31 +405,57 @@ class Utils
             curl_close($ch);
         } catch (\Throwable $th) {
             //throw $th;
+            $outbox->status = 'failed';
+            $outbox->reason = 'Failed to send request. ' . $th->getMessage();
+            $outbox->save();
+            return 'Failed to send request';
         }
 
         if ($body == null) {
+            $outbox->status = 'failed';
+            $outbox->reason = 'Failed to send request 2';
+            $outbox->save();
             return 'Failed to send request 2';
         }
 
         $data = json_decode($body);
 
         if ($data == null) {
+            $outbox->status = 'failed';
+            $outbox->reason = 'Failed to decode response';
+            $outbox->save();
             return 'Failed to decode response 1';
         }
 
         if (!isset($data->Failed)) {
+            $outbox->status = 'failed';
+            $outbox->reason = 'Failed to get status';
+            $outbox->save();
             return 'Failed to get status ' . $body;
         }
         if (!isset($data->Total)) {
+            $outbox->status = 'failed';
+            $outbox->reason = 'Total not set';
+            $outbox->save();
             return 'Total not set ' . $body;
         }
 
         if (((int)$data->Failed) > 0) {
+            $outbox->status = 'failed';
+            $outbox->reason = 'Failed sms sent is greater than 0';
+            $outbox->save();
+            return 'Failed sms sent is greater than 0';
             return 'Failed sms sent is greater than 0 4';
         }
         if (((int)$data->Total) < 1) {
+            $outbox->status = 'failed';
+            $outbox->reason = 'Total sms sent is less than 1';
+            $outbox->save();
             return 'Total sms sent is less than 1 5';
         }
+        $outbox->status = 'sent';
+        $outbox->reason = 'Success';
+        $outbox->save();
         return 'success';
     }
 
