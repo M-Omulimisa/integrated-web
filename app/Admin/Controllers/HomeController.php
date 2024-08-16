@@ -76,7 +76,7 @@ class HomeController extends Controller
                     $data = [];
                     $data[] = [
                         'title' => 'All Farmers',
-                        'detail' => \App\Models\Farmers\Farmer::where('is_imported','Yes')->count(),
+                        'detail' => \App\Models\Farmers\Farmer::where([])->count(),
                     ];
                     $data[] = [
                         'title' => 'Farmer Groups',
@@ -84,7 +84,7 @@ class HomeController extends Controller
                     ];
                     $data[] = [
                         'title' => 'Individual farmers',
-                        'detail' => \App\Models\Farmers\Farmer::where('is_imported','Yes')->where([
+                        'detail' => \App\Models\Farmers\Farmer::where([])->where([
                             'farmer_group_id' => 1
                         ])
                             ->count(),
@@ -424,7 +424,7 @@ class HomeController extends Controller
                     $data = [];
                     $data[] = [
                         'title' => 'All Farmers',
-                        'detail' => \App\Models\Farmers\Farmer::where('is_imported','Yes')->count(),
+                        'detail' => \App\Models\Farmers\Farmer::where([])->count(),
                     ];
                     $data[] = [
                         'title' => 'Farmer Groups',
@@ -432,7 +432,7 @@ class HomeController extends Controller
                     ];
                     $data[] = [
                         'title' => 'Individual farmers',
-                        'detail' => \App\Models\Farmers\Farmer::where('is_imported','Yes')->where([
+                        'detail' => \App\Models\Farmers\Farmer::where([])->where([
                             'farmer_group_id' => 1
                         ])
                             ->count(),
