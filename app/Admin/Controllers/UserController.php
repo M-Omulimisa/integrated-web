@@ -69,7 +69,7 @@ class UserController extends AdminController
             });
         $grid->column('phone', __('Phone'))->sortable()->filter('like');
         $grid->column('email', __('Email'))->sortable();
-        $grid->column('selected_projects', __('Affiliations'))->sortable();
+        // $grid->column('selected_projects', __('Affiliations'))->sortable();
         $grid->column('other', __('Other'))->sortable();
         $grid->column('roles', trans('admin.roles'))->pluck('name')->label();
         $grid->column('created_at', __('Created at'))->hide();
@@ -167,7 +167,7 @@ class UserController extends AdminController
             }
         })->rules('required');
 
-        
+
         $form->text('village', __('Village'));
         $form->text('address', __('Address'));
 
