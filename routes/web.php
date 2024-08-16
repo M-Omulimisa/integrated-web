@@ -159,6 +159,7 @@ use App\Traits\Notification;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
 use App\Http\Controllers\InsuranceRequestController;
+use App\Models\Farmers\Farmer;
 use App\Models\Organisations\Organisation;
 use App\Models\SubscriptionReport;
 use Encore\Admin\Facades\Admin;
@@ -225,7 +226,7 @@ Route::get('subscription-reports-print', function (Request $r) {
 Route::get('migrate', function () {
     //do run laravel migration command
     // Artisan::call('migrate');
-    Artisan::call('migrate', ['--force' => true ]); 
+    Artisan::call('migrate', ['--force' => true]);
     //returning the output
     return Artisan::output();
 });
@@ -627,7 +628,73 @@ Route::get('/payment-test', function () {
     Utils::payment_test();
     die("<br>done.");
 });
+Route::get('/import-farmers', function () {
+    ini_set('memory_limit', '128M');
+    ini_set('max_execution_time', -1);
+    $path = public_path('assets/farmers.csv');
+    if (!file_exists($path)) {
+        dd("File not found. Please upload the file to storage/app/public/Ug_Parishes.csv");
+    }
+    $file = fopen($path, "r");
+    if (!$file) {
+        dd("Error opening data file.");
+    }
+    $data = [];
+    while (($column = fgetcsv($file, 10000, ",")) !== FALSE) {
+        $data[] = $column;
+    }
+    fclose($file);
+    $parishes = [];
+    $done = [];
+    $i = 0;
+
+    $is_first = true;
+    foreach ($data as $key => $value) {
+        $i++;
+        if (!isset($value[14])) {
+            continue;
+        }
+        $phone = $value[14];
+        if ($phone == null || strlen($phone) < 6) {
+            continue;
+        }
+        $phone = Utils::prepare_phone_number($phone);
+        //CHECK IF PHONE NUMBER IS VALID
+        if (!Utils::phone_number_is_valid($phone)) {
+            continue;
+        }
+        $existing = User::where('phone', $phone)->first();
+        if ($existing != null) {
+            continue;
+        }
+        $existing = User::where('phone_number', $phone)->first();
+        if ($existing != null) {
+            continue;
+        }
+        $existing = Farmer::where('phone', $phone)->first();
+        if ($existing != null) {
+            continue;
+        }
+        $existing = Farmer::where('phone_number', $phone)->first();
+        if ($existing != null) {
+            continue;
+        }
+        $f = new Farmer();
+        $f->organisation_id = null;
+        $f->farmer_group_id = null;
+        $f->first_name = $value[9];
+        $f->last_name = $value[10];
+        $f->gender = $value[13];
+        $f->created_at = $value[32];
+        $f->phone = $phone;
+        $f->phone_number = $phone;
+        $f->save();
+        echo "$i. Saved $f->first_name $f->last_name, Phone: $f->phone , Gender: {$f->gender}<br>";
+    }
+});
 Route::get('/prepare-data', function () {
+
+
 
     die("done");
     ini_set('memory_limit', '128M');
