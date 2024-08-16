@@ -2,6 +2,9 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\DistrictModel;
+use App\Models\ParishModel;
+use App\Models\SubcountyModel;
 use App\Models\User;
 use App\Models\Utils;
 use Encore\Admin\Auth\Database\Administrator;
@@ -29,7 +32,7 @@ class UserController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new User());
-        $grid->quickSearch('name', 'email', 'phone','first_name', "selected_projects", 'last_name')->placeholder('Search by name, email, phone, first name, last name'); 
+        $grid->quickSearch('name', 'email', 'phone', 'first_name', "selected_projects", 'last_name')->placeholder('Search by name, email, phone, first name, last name');
         Utils::create_column(
             (new User())->getTable(),
             [
@@ -64,7 +67,7 @@ class UserController extends AdminController
                 }
                 return $this->organisation->name;
             });
-        $grid->column('phone', __('Phone'))->sortable();
+        $grid->column('phone', __('Phone'))->sortable()->filter('like');
         $grid->column('email', __('Email'))->sortable();
         $grid->column('selected_projects', __('Affiliations'))->sortable();
         $grid->column('other', __('Other'))->sortable();
@@ -140,6 +143,34 @@ class UserController extends AdminController
         $form->text('username', 'Username')->rules('required');
         $form->text('name', 'Full name')->rules('required');
         $form->text('phone', 'Phone number')->rules('required');
+
+        $form->divider('Location Information');
+        $form->select('district_id', __('District'))->options(function ($id) {
+            $district = DistrictModel::find($id);
+            if ($district) {
+                return [$district->id => $district->name];
+            }
+        })->ajax(env('APP_URL') . '/api/select-distcists')->rules('required')
+            ->load('subcounty_id', env('APP_URL') . '/api/select-subcounties?by_id=1', 'id', 'name');
+        $form->select('subcounty_id', __('Subcounty'))->options(function ($id) {
+            $item = SubcountyModel::find($id);
+            if ($item) {
+                return [$item->id => $item->name];
+            }
+        })->rules('required')
+            ->load('parish_id', env('APP_URL') . '/api/select-parishes?by_id=1', 'id', 'name');
+
+        $form->select('parish_id', __('Parish'))->options(function ($id) {
+            $item = ParishModel::find($id);
+            if ($item) {
+                return [$item->id => $item->name];
+            }
+        })->rules('required');
+
+        
+        $form->text('village', __('Village'));
+        $form->text('address', __('Address'));
+
 
         $form->image('avatar', trans('admin.avatar'));
         $form->password('password', trans('admin.password'))->rules('required|confirmed');
