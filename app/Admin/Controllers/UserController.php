@@ -145,7 +145,12 @@ class UserController extends AdminController
         $form->text('phone', 'Phone number')->rules('required');
 
         $form->divider('Location Information');
-        $form->select('district_id', __('District'))->options(function ($id) {
+
+        $form->text('district_id', __('District'));
+        $form->text('subcounty_id', __('Subcounty'));
+        $form->text('parish_id', __('Parish'));
+
+        /*   $form->select('district_id', __('District'))->options(function ($id) {
             $district = DistrictModel::find($id);
             if ($district) {
                 return [$district->id => $district->name];
@@ -158,14 +163,14 @@ class UserController extends AdminController
                 return [$item->id => $item->name];
             }
         })
-            ->load('parish_id', env('APP_URL') . '/api/select-parishes?by_id=1', 'id', 'name');
-
+            ->load('parish_id', env('APP_URL') . '/api/select-parishes?by_id=1', 'id', 'name'); */
+        /* 
         $form->select('parish_id', __('Parish'))->options(function ($id) {
             $item = ParishModel::find($id);
             if ($item) {
                 return [$item->id => $item->name];
             }
-        });
+        }); */
 
 
         $form->text('village', __('Village'));
