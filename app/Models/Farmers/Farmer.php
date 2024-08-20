@@ -45,7 +45,14 @@ class Farmer extends BaseModel
             }
             if ($toDelete) {
                 echo "<hr>" . $this->id . ". DELTED  " . $this->first_name . ' ' . $this->last_name . ' ' . $this->phone . '<br>';
+                $user_id = $person->user_id;
                 $person->delete();
+                if ($user_id) {
+                    $user = User::find($user_id);
+                    if ($user) {
+                        $user->delete();
+                    }
+                }
             }
         }
 
@@ -68,7 +75,14 @@ class Farmer extends BaseModel
             }
             if ($toDelete) {
                 echo "<hr>" . $this->id . ". DELTED  " . $this->first_name . ' ' . $this->last_name . ' ' . $this->phone . '<br>';
+                $user_id = $person->user_id;
                 $person->delete();
+                if ($user_id) {
+                    $user = User::find($user_id);
+                    if ($user) {
+                        $user->delete();
+                    }
+                }
             }
         }
 
