@@ -186,10 +186,16 @@ Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestContr
 Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
 Route::get('process-farmers', function (Request $r) {
+
+    //set unlimited time
+    ini_set('max_execution_time', -1);
+    //set memory limit
+    ini_set('memory_limit', -1);
+
     $farmers = Farmer::where([
         'duplicate_checked' => 'No'
     ])->orderBy('id', 'desc')
-        ->limit(200)
+        ->limit(10000)
         ->get();
     foreach ($farmers as $key => $farmer) {
         $farmer->process_duplicate();
