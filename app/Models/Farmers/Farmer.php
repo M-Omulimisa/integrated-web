@@ -49,7 +49,7 @@ class Farmer extends BaseModel
                 $person->delete();
                 if ($user_id) {
                     $user = User::find($user_id);
-                    if ($user) {
+                    if ($user) { 
                         $user->delete();
                     }
                 }
