@@ -150,14 +150,14 @@ class UserController extends AdminController
             if ($district) {
                 return [$district->id => $district->name];
             }
-        })->ajax(env('APP_URL') . '/api/select-distcists')->rules('required')
+        })->ajax(env('APP_URL') . '/api/select-distcists')
             ->load('subcounty_id', env('APP_URL') . '/api/select-subcounties?by_id=1', 'id', 'name');
         $form->select('subcounty_id', __('Subcounty'))->options(function ($id) {
             $item = SubcountyModel::find($id);
             if ($item) {
                 return [$item->id => $item->name];
             }
-        })->rules('required')
+        })
             ->load('parish_id', env('APP_URL') . '/api/select-parishes?by_id=1', 'id', 'name');
 
         $form->select('parish_id', __('Parish'))->options(function ($id) {
@@ -165,7 +165,7 @@ class UserController extends AdminController
             if ($item) {
                 return [$item->id => $item->name];
             }
-        })->rules('required');
+        });
 
 
         $form->text('village', __('Village'));
