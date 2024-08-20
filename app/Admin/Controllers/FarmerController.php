@@ -450,7 +450,7 @@ class FarmerController extends AdminController
             $district = DistrictModel::find($id);
             if ($district) {
                 return [$district->id => $district->name];
-            }
+            } 
         })->ajax(env('APP_URL') . '/api/select-distcists')->rules('required')
             ->load('subcounty_id', env('APP_URL') . '/api/select-subcounties?by_id=1', 'id', 'name');
         $form->select('subcounty_id', __('Subcounty'))->options(function ($id) {
