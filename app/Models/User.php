@@ -161,6 +161,18 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
                     throw new \Exception("Phone number already registered.", 1);
                 }
             }
+
+            $model->parish_id = $model->parish_id;
+            if ($model->parish_id != null) {
+                $p = ParishModel::find($model->parish_id);
+                if ($p != null) {
+                    $model->subcounty_id = $p->subcounty_id;
+                    $sub = SubcountyModel::find($p->subcounty_id);
+                    if ($sub != null) {
+                        $model->district_id = $sub->district_id;
+                    }
+                }
+            }
             $model->username = $model->email;
         });
 
@@ -181,6 +193,18 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
             //if email not empty and not null set username to email
             if ($model->email != null && strlen($model->email) > 3) {
                 $model->username = $model->email;
+            }
+
+            $model->parish_id = $model->parish_id;
+            if ($model->parish_id != null) {
+                $p = ParishModel::find($model->parish_id);
+                if ($p != null) {
+                    $model->subcounty_id = $p->subcounty_id;
+                    $sub = SubcountyModel::find($p->subcounty_id);
+                    if ($sub != null) {
+                        $model->district_id = $sub->district_id;
+                    }
+                }
             }
         });
     }

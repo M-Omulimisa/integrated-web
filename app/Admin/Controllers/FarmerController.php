@@ -438,7 +438,10 @@ class FarmerController extends AdminController
 
 
         $form->divider('Location Information');
-        $form->select('country_id', __('Country'))
+        $form->select('parish_id', __('Select Parish'))
+        ->options(ParishModel::selectData())
+        ->rules('required');  
+        /* $form->select('country_id', __('Country'))
             ->options(Country::where([])
                 ->orderBy('name', 'asc')
                 ->get()->pluck('name', 'id'))
@@ -463,7 +466,7 @@ class FarmerController extends AdminController
             if ($item) {
                 return [$item->id => $item->name];
             }
-        })->rules('required');
+        })->rules('required'); */
         $form->text('village', __('Village'));
         $form->text('address', __('Address'));
 

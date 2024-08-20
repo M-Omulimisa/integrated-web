@@ -5,8 +5,10 @@ namespace App\Models\Farmers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
 use App\Models\Organisations\Organisation;
+use App\Models\ParishModel;
 use App\Models\Settings\Country;
 use App\Models\Settings\Language;
+use App\Models\SubcountyModel;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use App\Models\Traits\Relationships\FarmerRelationship;
 use App\Models\User;
@@ -49,7 +51,7 @@ class Farmer extends BaseModel
                 $person->delete();
                 if ($user_id) {
                     $user = User::find($user_id);
-                    if ($user) { 
+                    if ($user) {
                         $user->delete();
                     }
                 }
@@ -120,11 +122,32 @@ class Farmer extends BaseModel
             } else {
                 $model->id = 1;
             }
+
+            $model->parish_id = $model->parish_id;
+            if ($model->parish_id != null) {
+                $p = ParishModel::find($model->parish_id);
+                if ($p != null) {
+                    $model->subcounty_id = $p->subcounty_id;
+                    $sub = SubcountyModel::find($p->subcounty_id);
+                    if ($sub != null) {
+                        $model->district_id = $sub->district_id;
+                    }
+                }
+            }
         });
-        /*    self::updating(function (Farmer $model) {
-            //$model->id = $model->generateUuid();
-            //prcess account
-        }); */
+        self::updating(function (Farmer $model) {
+            $model->parish_id = $model->parish_id;
+            if ($model->parish_id != null) {
+                $p = ParishModel::find($model->parish_id);
+                if ($p != null) {
+                    $model->subcounty_id = $p->subcounty_id;
+                    $sub = SubcountyModel::find($p->subcounty_id);
+                    if ($sub != null) {
+                        $model->district_id = $sub->district_id;
+                    }
+                }
+            }
+        });
 
         //udpated
         self::updated(function (Farmer $model) {
@@ -243,9 +266,19 @@ class Farmer extends BaseModel
         $user->last_name = $m->last_name;
         $user->sex = $m->sex;
         $user->nin = $m->national_id_number;
-        $user->district_id = $m->district_id;
-        $user->subcounty_id = $m->subcounty_id;
+
         $user->parish_id = $m->parish_id;
+        if ($user->parish_id != null) {
+            $p = ParishModel::find($user->parish_id);
+            if ($p != null) {
+                $user->subcounty_id = $p->subcounty_id;
+                $sub = SubcountyModel::find($p->subcounty_id);
+                if ($sub != null) {
+                    $user->district_id = $sub->district_id;
+                }
+            }
+        }
+
         $user->village = $m->village;
         $user->language_id = $m->language_id;
 
