@@ -22,6 +22,66 @@ class Farmer extends BaseModel
     //table farmer
     protected $table = 'farmers';
 
+    public function process_duplicate()
+    {
+        //get people with first_name last_name but not id
+        $people = Farmer::where('id', '!=', $this->id)
+            ->where('first_name', $this->first_name)
+            ->where('last_name', $this->last_name)
+            ->get();
+        foreach ($people as $person) {
+            $toDelete = false;
+            if ($person->phone == $this->phone) {
+                $toDelete = true;
+            }
+            if ($person->phone == null || $person->phone == '') {
+                $toDelete = true;
+            }
+            if (strlen($person->phone) < 6) {
+                $toDelete = true;
+            }
+            if ($this->id == $person->id) {
+                $toDelete = false;
+            }
+            if ($toDelete) {
+                echo "<hr>" . $this->id . ". DELTED  " . $this->first_name . ' ' . $this->last_name . ' ' . $this->phone . '<br>';
+                $person->delete();
+            }
+        }
+
+        $people2 = Farmer::where('id', '!=', $this->id)
+            ->where('phone', $this->phone)
+            ->get();
+        foreach ($people2 as $person) {
+            $toDelete = false;
+            if ($person->phone == $this->phone) {
+                $toDelete = true;
+            }
+            if ($person->phone == null || $person->phone == '') {
+                $toDelete = true;
+            }
+            if (strlen($person->phone) < 6) {
+                $toDelete = true;
+            }
+            if ($this->id == $person->id) {
+                $toDelete = false;
+            }
+            if ($toDelete) {
+                echo "<hr>" . $this->id . ". DELTED  " . $this->first_name . ' ' . $this->last_name . ' ' . $this->phone . '<br>';
+                $person->delete();
+            }
+        }
+
+
+
+        $this->duplicate_checked = 'Yes';
+        $this->save();
+
+
+        //display checked name and phone number and id
+        echo $this->id . ". " . $this->first_name . ' ' . $this->last_name . ' ' . $this->phone . '<br>';
+    }
+
 
     protected static function boot()
     {
@@ -77,7 +137,7 @@ class Farmer extends BaseModel
                 $app_download_link = 'bit.ly/4aM24Ea';
 
                 $msg = "Hello, your M-Omulimisa account has been created successfully! Download the app from this link $app_download_link and login using your phone number and password 4321. Thank you!";
-                
+
                 try {
                     $u = User::where('phone', $_phone)->first();
 

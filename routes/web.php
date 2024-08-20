@@ -186,10 +186,134 @@ Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestContr
 Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
 Route::get('process-farmers', function (Request $r) {
-    //farmers with no phone numbers phone
-    $noPhones = Farmer::where('phone', null)->get();
-    dd($noPhones);
+    $farmers = Farmer::where([
+        'duplicate_checked' => 'No'
+    ])->orderBy('id', 'desc')
+        ->limit(200)
+        ->get();
+    foreach ($farmers as $key => $farmer) {
+        $farmer->process_duplicate();
+    }
+    die("done");
 });
+/* 
+
+id	
+organisation_id	
+farmer_group_id	
+first_name	
+last_name	
+country_id	
+language_id	
+national_id_number	
+gender	
+education_level	
+year_of_birth	
+phone	
+email	
+is_your_phone	
+is_mm_registered	
+other_economic_activity	
+location_id	
+address	
+latitude	
+longitude	
+password	
+farming_scale	
+land_holding_in_acres	
+land_under_farming_in_acres	
+ever_bought_insurance	
+ever_received_credit	
+status	
+created_by_user_id	
+created_by_agent_id	
+agent_id	
+created_at	
+updated_at	
+poverty_level	
+food_security_level	
+marital_status	
+family_size	
+farm_decision_role	
+is_pwd	
+is_refugee	
+date_of_birth	
+age_group	
+language_preference	
+phone_number	
+phone_type	
+preferred_info_type	
+home_gps_latitude	
+home_gps_longitude	
+village	
+street	
+house_number	
+land_registration_numbers	
+labor_force	
+equipment_owned	
+livestock	
+crops_grown	
+has_bank_account	
+has_mobile_money_account	
+payments_or_transfers	
+financial_service_provider	
+has_credit	
+loan_size	
+loan_usage	
+farm_business_plan	
+covered_risks	
+insurance_company_name	
+insurance_cost	
+repaid_amount	
+photo	
+district_id	
+subcounty_id	
+parish_id	
+bank_id	
+other_livestock_count	
+poultry_count	
+sheep_count	
+goat_count	
+cattle_count	
+bank_account_number	
+has_receive_loan	
+user_account_processed	
+user_id	
+process_status	
+error_message	
+external_id	
+external_group_id	
+other_name	
+participant_code	
+household_size	
+household_details	
+disability_type	
+number_of_pwd_in_house_hold	
+household_head_relationship	
+household_head_year_of_birth	
+household_head_occupation	
+received_other_ngo_support	
+min_income_range	
+max_income_range	
+own_a_smart_phone	
+village_id	
+is_house_hold_head	
+participant_mobile_money	
+employment_status	
+created_by	
+highest_education_level	
+main_economic_activity	
+number_of_children	
+next_of_kin_first_name	
+next_of_kin_last_name	
+next_of_kin_contact	
+is_imported	
+imported_processed	
+imported_page_number	
+is_seen	
+	
+
+*/
 Route::get('subscription-reports-print', function (Request $r) {
     $report = SubscriptionReport::find($r->pdf);
     if ($report == null) {
