@@ -363,8 +363,7 @@ class FarmerController extends AdminController
                 []
             )
                 ->orderBy('name', 'asc')
-                ->get()->pluck('name', 'id'))
-            ->rules('required');
+                ->get()->pluck('name', 'id'));
 
         $form->text('first_name', __('First name'))->rules('required');
         $form->text('last_name', __('Last name'))->rules('required');
@@ -382,21 +381,21 @@ class FarmerController extends AdminController
             'Married' => 'Married',
             'Divorced' => 'Divorced',
             'Widowed' => 'Widowed',
-        ])->rules('required');
+        ]);
         $form->decimal('family_size', __('Family size'));
         $form->radioCard('farm_decision_role', __('Can the farmer make farm decisions?'))->options([
             'Yes' => 'Yes',
             'No' => 'No',
-        ])->rules('required');
+        ]);
 
         $form->radioCard('is_pwd', __('Is this farmer a person with disability?'))->options([
             'Yes' => 'Yes',
             'No' => 'No',
-        ])->rules('required');
+        ]);
         $form->radioCard('is_refugee', __('Is this farmer a refugee?'))->options([
             'Yes' => 'Yes',
             'No' => 'No',
-        ])->rules('required');
+        ]);
 
         /* $form->select('preferred_info_type', __('Preferred info type'))->options([
             'Crops' => 'Crops',
@@ -426,21 +425,20 @@ class FarmerController extends AdminController
         $form->radioCard('is_your_phone', __('Is the number provided your own phone?'))->options([
             '1' => 'Yes',
             '0' => 'No',
-        ])->rules('required');
+        ]);
         $form->select('education_level', __('Education level'))->options([
             'None' => 'None',
             'Primary' => 'Primary',
             'Secondary' => 'Secondary',
             'Tertiary' => 'Tertiary',
-        ])->rules('required');
+        ]);
         $form->email('email', __('Email Address'));
         $form->textarea('other_economic_activity', __('Economic activity'));
 
 
         $form->divider('Location Information');
         $form->select('parish_id', __('Select Parish'))
-        ->options(ParishModel::selectData())
-        ->rules('required');  
+        ->options(ParishModel::selectData());  
         /* $form->select('country_id', __('Country'))
             ->options(Country::where([])
                 ->orderBy('name', 'asc')
@@ -479,7 +477,7 @@ class FarmerController extends AdminController
             'Small Scale' => 'Small Scale',
             'Medium Scale' => 'Medium Scale',
             'Large Scale' => 'Large Scale',
-        ])->rules('required');
+        ]);
 
         $form->radioCard('ever_bought_insurance', __('Has this farmer bought insurance in past 6 months?'))->options([
             'Yes' => 'Yes',
