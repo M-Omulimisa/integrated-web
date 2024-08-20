@@ -44,7 +44,7 @@ class Farmer extends BaseModel
                 $toDelete = false;
             }
             if ($toDelete) {
-                echo "<hr>" . $this->id . ". DELTED  " . $this->first_name . ' ' . $this->last_name . ' ' . $this->phone . '<br>';
+                echo "<hr>" . $person->id . ". DELTED  " . $person->first_name . ' ' . $person->last_name . ' ' . $person->phone . '<br>';
                 $user_id = $person->user_id;
                 $person->delete();
                 if ($user_id) {
@@ -74,7 +74,7 @@ class Farmer extends BaseModel
                 $toDelete = false;
             }
             if ($toDelete) {
-                echo "<hr>" . $this->id . ". DELTED  " . $this->first_name . ' ' . $this->last_name . ' ' . $this->phone . '<br>';
+                echo "<hr>" . $person->id . ". DELeTED  " . $people->first_name . ' ' . $person->last_name . ' ' . $person->phone . '<br>';
                 $user_id = $person->user_id;
                 $person->delete();
                 if ($user_id) {
