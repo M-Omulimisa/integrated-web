@@ -159,6 +159,18 @@ class FarmerController extends AdminController
                 'Yes' => 'Yes',
                 'No' => 'No',
             ]);
+        $grid->column('duplicate_checked', __('Processed'))
+            ->label([
+                'Yes' => 'success',
+                'No' => 'danger',
+            ])->sortable()
+            ->filter([
+                'Yes' => 'Yes',
+                'No' => 'No',
+            ])
+            ->hide();
+
+
         return $grid;
 
 
