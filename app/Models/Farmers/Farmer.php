@@ -93,7 +93,7 @@ class Farmer extends BaseModel
 
 
         //display checked name and phone number and id
-        echo $this->id . ". " . $this->first_name . ' ' . $this->last_name . ' ' . $this->phone . '<br>';
+        echo $this->id . ". processed " . $this->first_name . ' ' . $this->last_name . ' ' . $this->phone . '<br>';
     }
 
 
