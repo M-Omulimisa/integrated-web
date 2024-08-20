@@ -146,9 +146,10 @@ class UserController extends AdminController
 
         $form->divider('Location Information');
 
-        $form->text('district_id', __('District'));
-        $form->text('subcounty_id', __('Subcounty'));
-        $form->text('parish_id', __('Parish'));
+        $form->select('parish_id', __('Parish'))
+            ->options(ParishModel::selectData())
+            ->rules('required');
+
 
         /*   $form->select('district_id', __('District'))->options(function ($id) {
             $district = DistrictModel::find($id);
