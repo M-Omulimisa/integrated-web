@@ -146,7 +146,8 @@ class UserController extends AdminController
 
         $form->divider('Location Information');
 
-        $form->select('parish_id', __('Parish'))
+
+        $form->select('parish_id', __('Select Parish'))
             ->options(ParishModel::selectData())
             ->rules('required');
 

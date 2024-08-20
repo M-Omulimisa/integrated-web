@@ -117,6 +117,32 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
      *
      * @var array
      */
+    /* 
+    
+
+        /*   $form->select('district_id', __('District'))->options(function ($id) {
+            $district = DistrictModel::find($id);
+            if ($district) {
+                return [$district->id => $district->name];
+            }
+        })->ajax(env('APP_URL') . '/api/select-distcists')
+            ->load('subcounty_id', env('APP_URL') . '/api/select-subcounties?by_id=1', 'id', 'name');
+        $form->select('subcounty_id', __('Subcounty'))->options(function ($id) {
+            $item = SubcountyModel::find($id);
+            if ($item) {
+                return [$item->id => $item->name];
+            }
+        })
+            ->load('parish_id', env('APP_URL') . '/api/select-parishes?by_id=1', 'id', 'name'); */
+    /* 
+        $form->select('parish_id', __('Parish'))->options(function ($id) {
+            $item = ParishModel::find($id);
+            if ($item) {
+                return [$item->id => $item->name];
+            }
+        }); */
+
+
     protected static function boot()
     {
         parent::boot();

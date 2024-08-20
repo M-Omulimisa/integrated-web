@@ -17,6 +17,7 @@ use App\Models\OnlineCourseLesson;
 use App\Models\OnlineCourseStudent;
 use App\Models\User;
 use App\Http\Controllers\Api\v1\WeatherInformationAPIController;
+use App\Models\ParishModel;
 use App\Models\Utils;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Util;
@@ -35,9 +36,11 @@ use Dflydev\DotAccessData\Util;
 //market-package-pricings
 Route::get('/market-package-pricings', function (Request $r) {
     $pricings = [];
-    foreach (MarketPackagePricing::where([
-        'package_id' => $r->q
-    ])->get() as $key => $value) {
+    foreach (
+        MarketPackagePricing::where([
+            'package_id' => $r->q
+        ])->get() as $key => $value
+    ) {
         $pricings[] = [
             'id' => $value->id,
             'text' => $value->frequency . " - UGX " . $value->cost . ", (" . $value->frequency . ")"
@@ -65,6 +68,29 @@ Route::get('/select-distcists', function (Request $request) {
             'text' => $district->name
         ];
     }
+    return response()->json([
+        'data' => $data
+    ]);
+});
+
+Route::get('/parishes', function (Request $request) {
+    $conditions = [];
+    if ($request->has('q')) {
+        $conditions[] = ['name', 'like', '%' . $request->q . '%'];
+    }
+
+    $parishes = ParishModel::where($conditions)
+        ->orderBy('name', 'asc')
+        ->limit(15)
+        ->get();
+    $data = [];
+    foreach ($parishes as $parish) {
+        $data[] = [
+            'id' => $parish->id,
+            'text' => $parish->name_text
+        ];
+    }
+
     return response()->json([
         'data' => $data
     ]);

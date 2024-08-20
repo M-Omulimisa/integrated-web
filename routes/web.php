@@ -185,6 +185,11 @@ Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestContr
 
 Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
+Route::get('process-farmers', function (Request $r) {
+    //farmers with no phone numbers phone
+    $noPhones = Farmer::where('phone', null)->get();
+    dd($noPhones);
+});
 Route::get('subscription-reports-print', function (Request $r) {
     $report = SubscriptionReport::find($r->pdf);
     if ($report == null) {
