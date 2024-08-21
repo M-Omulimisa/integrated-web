@@ -35,7 +35,7 @@ class HomeController extends Controller
     {
         $course = Training::where([])
             ->get();
-        Admin::js('/vendor/chartjs/dist/Chart.min.js');
+        // Admin::js('/vendor/chartjs/dist/Chart.min.js');
         return $content
             ->title(strtoupper('Online Courses - Statistics'))
             ->row(function (Row $row) {
@@ -282,7 +282,7 @@ class HomeController extends Controller
 
 
         $u = Admin::user();
-        Admin::js('/vendor/chartjs/dist/Chart.min.js');
+        // Admin::js('/vendor/chartjs/dist/Chart.min.js');
         $content
             ->title('M-Omulimisa')
             ->description(Utils::greet() . " " . $u->name . ".");
