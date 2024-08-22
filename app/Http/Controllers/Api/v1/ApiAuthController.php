@@ -605,54 +605,59 @@ class ApiAuthController extends Controller
         return $this->success(Organisation::where([])->get(), "Success");
     }
 
-    public function farmer_questions_create(Request $r)
-    {
-        if ($r->category == null) return $this->error("Category is required.");
-
-        $images = [];
-        if (!empty($_FILES)) {
-            try {
-                $images = Utils::upload_images_2($_FILES, false);
-            } catch (Throwable $t) {
-                $images = [];
-            }
-        }
-
-        $f = new FarmerQuestion();
-        if (is_array($images)) {
-            if (isset($images[0])) {
-                if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[0])) {
-                    $f->photo = 'images/' . $images[0];
-                } else {
-                    $f->audio = 'images/' . $images[0];
-                }
-            }
-            if (isset($images[1])) {
-                if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[1])) {
-                    $f->photo = 'images/' . $images[1];
-                } else {
-                    $f->audio = $images[1];
-                }
-            }
-        }
-
-        $u = auth('api')->user();
-        $f->user_id = $u->id;
-        $f->body = $r->body;
-        $f->category = $r->category;
-        $f->phone = $r->phone;
-        $f->sent_via = $r->sent_via;
-        $f->answered = 'no';
-        $f->video = $r->video;
-        $f->views = 0;
-        try {
-            $f->save();
-        } catch (\Throwable $t) {
-            return $this->error($t->getMessage());
-        }
-
-        return $this->success($f, "Question submitted successfully.");
+   public function farmer_questions_create(Request $r)
+{
+    // Remove the check for $r->body
+    if (empty($r->body) && empty($_FILES) && empty($r->video)) {
+        return $this->error("At least one of text, image, audio, or video is required.");
     }
+    if ($r->category == null) return $this->error("Category is required.");
+
+    $images = [];
+    if (!empty($_FILES)) {
+        try {
+            $images = Utils::upload_images_2($_FILES, false);
+        } catch (Throwable $t) {
+            $images = [];
+        }
+    }
+
+    $f = new FarmerQuestion();
+    if (is_array($images)) {
+        if (isset($images[0])) {
+            if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[0])) {
+                $f->photo = 'images/' . $images[0];
+            } else {
+                $f->audio = 'images/' . $images[0];
+            }
+        }
+        if (isset($images[1])) {
+            if (Utils::isImageFile(Utils::docs_root() . '/storage/images/' . $images[1])) {
+                $f->photo = 'images/' . $images[1];
+            } else {
+                $f->audio = $images[1];
+            }
+        }
+    }
+
+    $u = auth('api')->user();
+    $f->user_id = $u->id;
+    $f->body = $r->body ?? ''; // Set body to an empty string if it's not provided
+    $f->category = $r->category;
+    $f->phone = $r->phone;
+    $f->sent_via = $r->sent_via;
+    $f->answered = 'no';
+    $f->video = $r->video;
+    $f->views = 0;
+    try {
+        $f->save();
+    } catch (\Throwable $t) {
+        return $this->error($t->getMessage());
+    }
+
+    return $this->success($f, "Question submitted successfully.");
+}
+
 
     public function farmer_answers_create(Request $r)
     {
