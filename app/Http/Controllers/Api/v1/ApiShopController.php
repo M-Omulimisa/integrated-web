@@ -1157,10 +1157,10 @@ class ApiShopController extends Controller
 
         $order = new Order();
         $order->user = $u->id;
-
-        if ($delivery->delivery_district != null) {
-            $order->customer_address = $delivery->delivery_district;
-        }
+/* 
+        if ($delivery->customer_address != null) {
+            $order->customer_address = $delivery->customer_address;
+        } */
 
         $order->order_state = 0;
         $order->temporary_id = 0;
