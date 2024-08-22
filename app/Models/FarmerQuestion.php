@@ -23,17 +23,24 @@ class FarmerQuestion extends Model
             }
 
             $answer = null;
-            try {
-                $answer = Utils::get_ai_answer($m->body);
-            } catch (\Exception $e) {
-                return;
+            if (!is_null($m->body) && $m->body !== '') {
+                try {
+                    $answer = Utils::get_ai_answer($m->body);
+                } catch (\Exception $e) {
+                    return;
+                }
             }
+
             if ($answer != null && strlen($answer) > 3) {
-                $m->answered = 'no';
                 $m->answer_body = $answer;
-                $m->save();
+                $m->answered = 'yes';
+            } else {
+                $m->answered = 'no';
             }
+
+            $m->save();
         });
+
         self::creating(function ($m) {
             $m->body = trim($m->body);
             if ($m->body == null || $m->body == '') {
@@ -109,10 +116,12 @@ class FarmerQuestion extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function district()
     {
         return $this->belongsTo(District::class, 'district_model_id');
     }
+
     public function farmer_question_answers()
     {
         return $this->hasMany(FarmerQuestionAnswer::class);
