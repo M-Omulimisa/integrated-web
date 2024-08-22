@@ -43,9 +43,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ApiAuthController extends Controller
 {
-
     use ApiResponser;
-
     /**
      * Create a new AuthController instance.
      *
@@ -296,9 +294,11 @@ class ApiAuthController extends Controller
         $u = auth('api')->user();
         $data = [];
         $slugs = [];
-        foreach (AdminRoleUser::where([
-            'user_id' => $u->id,
-        ])->get() as $key => $role) {
+        foreach (
+            AdminRoleUser::where([
+                'user_id' => $u->id,
+            ])->get() as $key => $role
+        ) {
             if ($role->role == null) continue;
             $r = AdminRole::find($role->role_id);
             if ($r == null) continue;
@@ -441,9 +441,11 @@ class ApiAuthController extends Controller
         $session->gps_longitude = $r->gps_longitude;
 
         $images = [];
-        foreach (Image::where([
-            'parent_id' => $id,
-        ])->get() as $key => $value) {
+        foreach (
+            Image::where([
+                'parent_id' => $id,
+            ])->get() as $key => $value
+        ) {
             $images[] = 'images/' . $value->src;
         }
         $session->attendance_list_pictures = $images;
@@ -524,9 +526,11 @@ class ApiAuthController extends Controller
         $garden->crop_planted = $r->crop_text;
 
         $images = [];
-        foreach (Image::where([
-            'parent_id' => $id,
-        ])->get() as $key => $value) {
+        foreach (
+            Image::where([
+                'parent_id' => $id,
+            ])->get() as $key => $value
+        ) {
             $images[] = 'images/' . $value->src;
         }
         $garden->photos = $images;
@@ -565,9 +569,11 @@ class ApiAuthController extends Controller
     {
         $u = auth('api')->user();
         $data = [];
-        foreach (AdminRoleUser::where([
-            'user_id' => $u->id,
-        ])->get() as $key => $role) {
+        foreach (
+            AdminRoleUser::where([
+                'user_id' => $u->id,
+            ])->get() as $key => $role
+        ) {
             if ($role->role == null) continue;
             $r = AdminRole::find($role->role_id);
             if ($r == null) continue;
@@ -601,7 +607,6 @@ class ApiAuthController extends Controller
 
     public function farmer_questions_create(Request $r)
     {
-        if ($r->body == null && empty($_FILES)) return $this->error("Question is required.");
         if ($r->category == null) return $this->error("Category is required.");
 
         $images = [];
@@ -645,12 +650,13 @@ class ApiAuthController extends Controller
         } catch (\Throwable $t) {
             return $this->error($t->getMessage());
         }
+
         return $this->success($f, "Question submitted successfully.");
     }
 
     public function farmer_answers_create(Request $r)
     {
-        if ($r->body == null && empty($_FILES)) return $this->error("Question is required.");
+        if ($r->body == null && empty($_FILES)) return $this->error("Answer is required.");
         if ($r->question_id == null) return $this->error("Question is required.");
 
         $images = [];

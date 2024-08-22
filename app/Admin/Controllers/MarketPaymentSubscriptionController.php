@@ -27,15 +27,12 @@ class MarketPaymentSubscriptionController extends AdminController
         $grid = new Grid(new SubscriptionPayment());
 
         $grid->model()->where(function ($query) {
-
             $query->whereNotNull('market_session_id');
-        
         })->orderBy('created_at', 'desc');
 
         $grid->disableBatchActions();
 
         $grid->disableCreateButton();
-
 
         $grid->column('method', __('Method'));
         $grid->column('provider', __('Provider'));
