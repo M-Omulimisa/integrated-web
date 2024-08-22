@@ -1159,7 +1159,7 @@ class ApiShopController extends Controller
         $order->user = $u->id;
 
         if ($delivery->delivery_district != null) {
-            $order->delivery_district = $delivery->delivery_district;
+            $order->customer_address = $delivery->delivery_district;
         }
 
         $order->order_state = 0;
