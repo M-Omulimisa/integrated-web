@@ -82,7 +82,7 @@ class MarketSubscriptionController extends AdminController
         $grid->export(function ($export) {
             $export->filename('market_subscriptions_' . date('Y-m-d'));
             $export->column('status', function ($value, $original) {
-                return $value == 1 ? 'Active' : 'Expired';
+                return $value == 1 ? 'Active' : 'Not Active';
             });
 
             $export->column('is_paid', function ($value) {
@@ -173,13 +173,13 @@ class MarketSubscriptionController extends AdminController
                 return date('d-m-Y', strtotime($start_date));
             })->sortable();
         $grid->column('status', __('STATUS'))
-            ->using(['1' => 'Active', '0' => 'Expired'])
+            ->using(['1' => 'Active', '0' => 'Not Active'])
             ->sortable()
             ->label([
                 '1' => 'success',
                 '0' => 'danger'
             ])
-            ->filter(['1' => 'Active', '0' => 'Expired']);
+            ->filter(['1' => 'Active', '0' => 'Not Active']);
         $grid->column('renew_message_sent', __('Renew alert sent'))
             ->sortable()
             ->dot([
