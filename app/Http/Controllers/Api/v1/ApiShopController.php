@@ -933,7 +933,6 @@ class ApiShopController extends Controller
         $u->business_cover_photo = $request->business_cover_photo;
         $u->business_cover_details = $request->business_cover_details;
 
-
         if ($u->status != 'Active') {
             $u->status = 'Pending';
         }
@@ -1158,6 +1157,11 @@ class ApiShopController extends Controller
 
         $order = new Order();
         $order->user = $u->id;
+
+        if ($delivery->delivery_district == null) {
+            $order->delivery_district = $delivery->delivery_district;
+        }
+
         $order->order_state = 0;
         $order->temporary_id = 0;
         $order->amount = 0;

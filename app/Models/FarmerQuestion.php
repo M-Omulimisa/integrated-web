@@ -13,7 +13,6 @@ class FarmerQuestion extends Model
     {
         parent::boot();
         self::created(function ($m) {
-
             if (strtolower($m->answered) == 'yes') {
                 return;
             }
@@ -135,6 +134,7 @@ class FarmerQuestion extends Model
         }
         return $u->name . ' (' . $u->phone . ')';
     }
+
     public function getDistrictTextAttribute()
     {
         $d = DistrictModel::find($this->district_model_id);
@@ -158,6 +158,7 @@ class FarmerQuestion extends Model
         }
         return $u->photo;
     }
+    
     public function getAnswersCountAttribute()
     {
         return $this->farmer_question_answers()->count();
