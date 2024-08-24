@@ -135,6 +135,15 @@ class FarmerController extends AdminController
                 if ($home_gps_latitude == null) return '-';
                 return $home_gps_latitude . ', ' . $this->home_gps_longitude;
             })->sortable();
+
+        $grid->column('organisation_id', __('Organisation'))
+            ->display(function ($x) {
+                if ($this->organisation == null) {
+                    return $x;
+                }
+                return $this->organisation->name;
+            })->sortable();
+
         return $grid;
 
         $grid->column('year_of_birth', __('Y.O.B'))->sortable();
@@ -175,13 +184,6 @@ class FarmerController extends AdminController
             ])
             ->hide();
         //organisation_id
-        $grid->column('organisation_id', __('Organisation'))
-            ->display(function ($x) {
-                if ($this->organisation == null) {
-                    return $x;
-                }
-                return $this->organisation->name;
-            });
 
         return $grid;
 
