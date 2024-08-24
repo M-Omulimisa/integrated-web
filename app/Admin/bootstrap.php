@@ -94,6 +94,7 @@ if (!Utils::isLocalhost()) {
 
 use App\Models\CountyModel;
 use App\Models\SubcountyModel;
+use App\Models\User;
 use App\Models\Weather\WeatherOutbox;
 use App\Models\Weather\WeatherSubscription;
 use Encore\Admin\Form\Tools;
@@ -117,6 +118,15 @@ Encore\Admin\Show::init(function (Encore\Admin\Show $show) {
         $tools->disableDelete();
     });
 });
+
+$u = Admin::user();
+if ($u != null) {
+    $u = User::find($u->id);
+    if ($u != null) {
+        $u->avatar;
+    }
+}
+
 
 //styles.css
 Admin::css(url('/assets/css/styles-1.css'));

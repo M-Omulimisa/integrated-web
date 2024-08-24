@@ -23,6 +23,33 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
 
     protected $connection = 'mysql';
 
+    //getter fro avatar
+    public function getAvatarAttribute($value)
+    {
+        $avatar_url =  url('assets/images/user-icon.jpg');
+        if ($value == $avatar_url) {
+            return $value;
+        }
+
+        $sections = explode("/", $value);
+        $last = end($sections);
+
+        $exists = false;
+        if ($last != null && strlen($last) > 3) {
+            $path = public_path('storage/images/' . $last);
+            $exists = file_exists($path);
+        }
+        /* /Users/mac/Downloads/user-icon.jpg */
+        if ($exists) {
+            return $value;
+        }
+
+        //sql using prepared statements , update
+        $sql = "UPDATE users SET avatar = ? WHERE id = ?";
+        $stmt = $this->getConnection()->getPdo()->prepare($sql);
+        $stmt->execute([$avatar_url, $this->id]);
+        return $avatar_url;
+    }
 
     public function getJWTIdentifier()
     {
