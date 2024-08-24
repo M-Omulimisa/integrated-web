@@ -185,6 +185,31 @@ Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestContr
 
 Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
+Route::get('test-mail', function (Request $r) {
+    $mails = ['sales@m-omulimisa.com', 'mubahood360@gmail.com'];
+
+    $data['email'] = $mails;
+    $email = $data['email'];
+
+    $url = admin_url('online-courses/');
+    $msg = "Dear " . 'Mubahood' . ",<br>";
+    $msg .= "This is a test email.<br><br>";
+    $msg .= "<br><br><small>This is an automated message, please do not reply.</small><br>";
+
+    $data['body'] = $msg;
+    //$data['view'] = 'mails/mail-1';
+    $data['data'] = $data['body'];
+    $data['name'] = 'Mubahood';
+    $data['mail'] = $email;
+    $data['subject'] = "M-Omulimisa - Test Email";
+
+    try {
+        Utils::mail_sender($data);
+        die("sent");
+    } catch (\Throwable $th) {
+        die("FAILED: " . $th->getMessage());
+    }
+});
 Route::get('process-farmers', function (Request $r) {
 
     //set unlimited time
