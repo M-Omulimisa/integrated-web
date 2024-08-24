@@ -9,13 +9,19 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-    
+
     //boot
     public static function boot()
     {
         parent::boot();
         //created
         self::created(function ($m) {
+            try {
+                //send mail to admin
+                self::send_mail_to_admin($m);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
         });
 
         //updating
@@ -84,9 +90,11 @@ class Order extends Model
     public function get_items()
     {
         $items = [];
-        foreach (OrderedItem::where([
-            'order' => $this->id
-        ])->get() as $_item) {
+        foreach (
+            OrderedItem::where([
+                'order' => $this->id
+            ])->get() as $_item
+        ) {
             $pro = Product::find($_item->product);
             if ($pro == null) {
                 continue;
@@ -165,5 +173,42 @@ class Order extends Model
         }
 
         return 'NOT PAID';
+    }
+
+    //send mail to admin
+    public static function send_mail_to_admin($m)
+    {
+        $mails = ['sales@m-omulimisa.com', 'mubahood360@gmail.com'];
+
+        $data['email'] = $mails;
+        $email = $data['email'];
+
+        $url = admin_url('online-courses/');
+        $msg = "Dear Admin,<br>";
+        $msg .= "A new order has been placed on the website.<br>";
+        $msg .= "Order ID: " . $m->id . "<br>";
+        $msg .= "Customer: " . $m->customer_name . "<br>";
+        $msg .= "Phone: " . $m->customer_phone_number_1 . "<br>";
+        $msg .= "Email: " . $m->customer_email . "<br>";
+        $msg .= "Amount: " . $m->total_amount . "<br>";
+        $msg .= "Payment Status: " . $m->payment_confirmation . "<br>";
+        $msg .= "Order State: " . $m->order_state . "<br>";
+        $msg .= "Order Date: " . $m->created_at . "<br>";
+        $review_link = admin_url('orders/' . $m->id . '/edit');
+        $msg .= "<a href='" . $review_link . "'>Review Order</a>";
+        $msg .= "<br><br><small>This is an automated message, please do not reply.</small><br>";
+
+        $data['body'] = $msg;
+        //$data['view'] = 'mails/mail-1';
+        $data['data'] = $data['body'];
+        $data['name'] = 'Admin';
+        $data['mail'] = $email;
+        $data['subject'] = "New Order Notification - #" . $m->id . ' - M-Omulimisa';
+
+        try {
+            Utils::mail_sender($data);
+        } catch (\Throwable $th) {
+            // die("FAILED: " . $th->getMessage());
+        }
     }
 }
