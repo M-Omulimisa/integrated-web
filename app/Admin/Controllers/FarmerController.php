@@ -33,6 +33,11 @@ class FarmerController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Farmer());
+
+        Farmer::where([])->update([
+            'organisation_id' => '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0'
+        ]);
+
         $grid->model()
             ->where([
                 'is_imported' => 'Yes'
@@ -169,7 +174,14 @@ class FarmerController extends AdminController
                 'No' => 'No',
             ])
             ->hide();
-
+        //organisation_id
+        $grid->column('organisation_id', __('Organisation'))
+            ->display(function ($x) {
+                if ($this->organisation == null) {
+                    return $x;
+                }
+                return $this->organisation->name;
+            });
 
         return $grid;
 
@@ -438,7 +450,7 @@ class FarmerController extends AdminController
 
         $form->divider('Location Information');
         $form->select('parish_id', __('Select Parish'))
-        ->options(ParishModel::selectData());  
+            ->options(ParishModel::selectData());
         /* $form->select('country_id', __('Country'))
             ->options(Country::where([])
                 ->orderBy('name', 'asc')
@@ -544,8 +556,8 @@ class FarmerController extends AdminController
 
 
         return $form;
-
         $form->text('organisation_id', __('Organisation id'));
+
         $form->text('farmer_group_id', __('Farmer group id'));
         $form->text('first_name', __('First name'));
         $form->text('last_name', __('Last name'));
