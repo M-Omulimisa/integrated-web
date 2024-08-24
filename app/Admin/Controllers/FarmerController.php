@@ -34,9 +34,9 @@ class FarmerController extends AdminController
     {
         $grid = new Grid(new Farmer());
 
-        Farmer::where([])->update([
+        /* Farmer::where([])->update([
             'organisation_id' => '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0'
-        ]);
+        ]); */
 
         $grid->model()
             ->where([
@@ -130,7 +130,7 @@ class FarmerController extends AdminController
             })->sortable();
 
         //home_gps_latitude
-        $grid->column('home_gps_latitude', __('GPS'))
+        $grid->column('home_gps_latitude', __('Home GPS'))
             ->display(function ($home_gps_latitude) {
                 if ($home_gps_latitude == null) return '-';
                 return $home_gps_latitude . ', ' . $this->home_gps_longitude;
