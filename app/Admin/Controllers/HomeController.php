@@ -268,7 +268,7 @@ class HomeController extends Controller
     public function index(Content $content)
     {
         $u = Admin::user();
-       /*  if ($u != 'Yes') {
+        /*  if ($u != 'Yes') {
             if ($u->has_changed_password != 'Yes') {
                 $token = rand(100000, 999999);
                 $u->reset_password_token = $token;
@@ -785,7 +785,9 @@ class HomeController extends Controller
                             ];
                         }
 
-                        $recent_market_subscriptions = MarketSubscription::where([])
+                        $recent_market_subscriptions = MarketSubscription::where([
+                            'is_paid' => 'PAID'
+                        ])
                             ->orderBy('created_at', 'desc')
                             ->limit(10)
                             ->get();
@@ -856,7 +858,9 @@ class HomeController extends Controller
                             ];
                         }
 
-                        $weather_subscriptions = WeatherSubscription::where([])
+                        $weather_subscriptions = WeatherSubscription::where([
+                            'is_paid' => 'PAID'
+                        ])
                             ->orderBy('created_at', 'desc')
                             ->limit(10)
                             ->get();
