@@ -47,11 +47,11 @@ class MenuController extends Controller
         $main_menu .= "1) Agriculture Insurance \n";
         $main_menu .= "2) Market Information \n";
         $main_menu .= "3) Weather Information\n";
-        $main_menu .= "4) Advisory";
+        $main_menu .= "4) Farmer's Marketplace";
 
-        $advisory_option_menu = "Select option\n";
-        $advisory_option_menu .= "1) Advisory Tips\n";
-        $advisory_option_menu .= "2) Advisory Tip Evaluation";
+        $farmer_marketplace_option_menu = "Select option\n";
+        $farmer_marketplace_option_menu .= "1) Advisory Tips\n";
+        $farmer_marketplace_option_menu .= "2) Advisory Tip Evaluation";
 
         $advisory_languages_menu  = "Select language!\n";
         $advisory_languages_menu .= "1) English\n";
@@ -115,11 +115,12 @@ class MenuController extends Controller
                 $current_menu   = "weather_phone_option";
                 $module         = 'weather';
             } elseif ($input_text == '4') {
-                // Ask language for advisory message
+                
+                
                 $action         = "request";
-                $response  = $advisory_option_menu;
-                $current_menu   = "advisory_option_menu";
-                $module         = 'advisory';
+                $response  = $farmer_marketplace_option_menu;
+                $current_menu   = "farmer_marketplace_option_menu";
+                $module         = 'market_place';
             } else {
                 $action         = "end";
                 $response       = "Invalid input!\n";
@@ -790,13 +791,10 @@ class MenuController extends Controller
         }
 
         /******************* START ADVISORY SHIT *******************/
-        elseif ($last_menu == "advisory_option_menu") {
+        elseif ($last_menu == "farmer_marketplace_option_menu") {
             if ($input_text == 1) {
-
                 $action         = "request";
-
                 $languages = $this->menu_helper->getMenuLanaguages(4);
-
                 $response  = "Select language!\n";
                 foreach ($languages as $language) {
                     $response .= $language->position . ") " . $language->language . "\n";
@@ -805,11 +803,8 @@ class MenuController extends Controller
                 $current_menu   = "tip_language_menu";
                 $module         = 'advisory';
             } else if ($input_text == 2) {
-
                 $action         = "request";
-
                 $languages = $this->menu_helper->getMenuLanaguages(4);
-
                 $response  = "Select language!\n";
                 foreach ($languages as $language) {
                     $response .= $language->position . ") " . $language->language . "\n";
@@ -819,7 +814,7 @@ class MenuController extends Controller
             } else {
                 $action         = "request";
                 $response       = "Invalid input!\n";
-                $current_menu   = "advisory_option_menu";
+                $current_menu   = "farmer_marketplace_option_menu";
             }
         } elseif ($last_menu == "tip_language_menu") {
             $menu_id = 4;
