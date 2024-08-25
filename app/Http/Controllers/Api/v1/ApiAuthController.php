@@ -697,11 +697,13 @@ class ApiAuthController extends Controller
         $f->user_id = $u->id;
         $f->body = $r->body;
         $f->farmer_question_id = $r->question_id;
+        
         try {
             $f->save();
         } catch (\Throwable $t) {
             return $this->error($t->getMessage());
         }
+
         return $this->success($f, "Answer submitted successfully.");
     }
 
