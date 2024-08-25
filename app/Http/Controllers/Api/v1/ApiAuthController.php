@@ -518,6 +518,7 @@ class ApiAuthController extends Controller
         $garden->name = $r->name;
         $garden->details = $r->details;
         $garden->size = $r->size;
+        $garden->coordinates = $r->coordinates;
         $garden->status = $r->status;
         $garden->soil_type = $r->soil_type;
         $garden->soil_ph = $r->soil_ph;
