@@ -186,7 +186,7 @@ Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestContr
 Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
 Route::get('test-mail', function (Request $r) {
-    $mails = ['sales@m-omulimisa.com', 'mubahood360@gmail.com'];
+    $mails = ['mubahood360@gmail.com'];
 
     $data['email'] = $mails;
     $email = $data['email'];
