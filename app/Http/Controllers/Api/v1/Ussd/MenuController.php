@@ -997,7 +997,7 @@ class MenuController extends Controller
                 // $response       .= "0) Back\n";
 
                 $current_menu   = "farmer_market_subcounty";
-                $action         = "end";
+                $action         = "request";
             } else {
                 $response = "Invalid district name. Please enter a valid district name.";
                 $current_menu   = "farmer_market_district";
@@ -1021,7 +1021,7 @@ class MenuController extends Controller
                 $response       .= $this->menu_helper->getFarmerParish($phoneNumber, $sessionId, $subcounty->id);
 
                 $current_menu   = "farmer_market_parish";
-                $action         = "end";
+                $action         = "request";
             } else {
                 $response       = "Wrong input!\n";
                 $response       .= "Select Subcounty\n";
