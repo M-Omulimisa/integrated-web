@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\v1\Ussd\MenuFunctions;
 use App\Jobs\SendUssdAdvisoryMessage;
 use App\Models\Ussd\UssdLanguage;
 use App\Models\Ussd\UssdSession;
+use App\Models\ProductCategory;
 use App\Models\Market\MarketSubscription;
 
 class MenuController extends Controller
@@ -24,7 +25,7 @@ class MenuController extends Controller
      * @return  - String request from user or - String closing ussd session
      */
     public function index(Request $request)
-    { 
+    {
         //sent variables
         // Log::info(['YoUssdData' => $request->all()]);
 
@@ -47,7 +48,7 @@ class MenuController extends Controller
         $main_menu .= "1) Agriculture Insurance \n";
         $main_menu .= "2) Market Information \n";
         $main_menu .= "3) Weather Information\n";
-        $main_menu .= "4) Advisory";
+        $main_menu .= "4) Farmers Marketplace";
 
         $advisory_option_menu = "Select option\n";
         $advisory_option_menu .= "1) Advisory Tips\n";
@@ -94,6 +95,22 @@ class MenuController extends Controller
         $referee .= "1) No\n";
         $referee .= "2) Yes";
 
+        //new farmers market section
+        $new_user_welcome_message = "Welcome to Farmer Market. Choose an option:\n";
+        $new_user_welcome_message .= "1. Buyer\n";
+        $new_user_welcome_message .= "2. Seller\n";
+        $new_user_welcome_message .= "3. Service Provider\n";
+
+        $new_user_name = "Hi there. What are your full names?";
+
+        $new_user_gender = "What's your gender?\n";
+        $new_user_gender .= "1. Male\n";
+        $new_user_gender .= "2. Female\n";
+
+        $new_user_age = "How old are you?\n";
+
+        $new_user_district = "Enter District e.g Kampala";
+
         if ($last_menu == null) {
             $response  = $main_menu;
             $action = "request";
@@ -115,11 +132,40 @@ class MenuController extends Controller
                 $current_menu   = "weather_phone_option";
                 $module         = 'weather';
             } elseif ($input_text == '4') {
-                // Ask language for advisory message
+                //print found user
+                $foundUserData = $this->menu_helper->getMarketPlaceUserData($phoneNumber);
+
+                if ($foundUserData) {
+                    if ($foundUserData->done_with_ussd_farming_onboarding == "Yes") {
+                        //TODO: Get approved categories and display them
+                        $categories = ProductCategory::where('show_in_ussd', "Yes")->get();
+                        $optionMappings = [];
+
+                        $list = "Chose a category: \n";
+                        if (count($categories) > 0) {
+                            $count = 0;
+                            foreach ($categories as $language) {
+                                $list .= (++$count) . ") " . ucwords(strtolower($language->category)) . "\n";
+                                $optionMappings[$count] = $language->id;
+                            }
+                        }
+
+                        $this->menu_helper->saveToField($sessionId, $phoneNumber, "farmer_market_category_options", json_encode($optionMappings));
+
+                        $response = $list;
+
+                        $current_menu   = "farmer_market_categories";
+                    } else {
+                        $response = $new_user_welcome_message;
+                        $current_menu   = "farmer_market_first_menu";
+                    }
+                } else {
+                    $response = $new_user_welcome_message;
+                    $current_menu   = "farmer_market_first_menu";
+                }
+
                 $action         = "request";
-                $response  = $advisory_option_menu;
-                $current_menu   = "advisory_option_menu";
-                $module         = 'advisory';
+                $module         = 'farmers_market';
             } else {
                 $action         = "end";
                 $response       = "Invalid input!\n";
@@ -767,7 +813,7 @@ class MenuController extends Controller
         } elseif ($last_menu == "weather_confirmation") {
             // check if crop is valid
             $action         = "end";
- 
+
             if ($input_text == '1') {
                 if ($this->menu_helper->completeWeatherSubscription($sessionId, $phoneNumber)) {
                     $phone          = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'weather_subscriber');
@@ -789,8 +835,261 @@ class MenuController extends Controller
             }
         }
 
+        /******************* START NEW FARMERS MARKET SHIT *******************/
+        elseif ($last_menu == "farmer_market_first_menu") {
+            $user_type = "";
+
+            if ($input_text == "1") {
+                $user_type = "buyer";
+            } elseif ($input_text == "2") {
+                $user_type = "seller";
+            } else {
+                $user_type = "service_provider";
+            }
+
+            $foundUserData = $this->menu_helper->getMarketPlaceUserData($phoneNumber);
+
+            if ($foundUserData) {
+                //User exists in DB
+                if ($foundUserData->done_with_ussd_farming_onboarding == 1) {
+                    //TODO: Get approved categories and display them
+                    $response = "Welcome back. Chose an option:\n";
+                } else {
+                    if ($input_text == "1" || $input_text == "2" || $input_text == "3") {
+                        $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_type',  $user_type);
+
+                        $response = $new_user_name;
+                        $current_menu   = "new_user_name";
+                    } else {
+                        $response = "Invalid option chosen. Please press (1) if you are a buyer, (2) If you are a seller and (3) if you are a service provider.";
+                        $current_menu   = "farmer_market_first_menu";
+                    }
+                }
+            } else {
+                //User does not exist in DB
+                if ($input_text == "1" || $input_text == "2" || $input_text == "3") {
+                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_type',  $user_type);
+
+                    $response = $new_user_name;
+                    $current_menu   = "new_user_name";
+                } else {
+                    $response = "Invalid option chosen. Please press (1) if you are a buyer, (2) If you are a seller and (3) if you are a service provider.";
+                    $current_menu   = "farmer_market_first_menu";
+                }
+            }
+
+            $action = "request";
+        }
+
+        //new user stuff
+        elseif ($last_menu == "new_user_name") {
+            $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_name',  $input_text);
+
+            $response = $new_user_gender;
+            $current_menu   = "new_user_gender";
+
+            $action = "request";
+        } elseif ($last_menu == "new_user_gender") {
+            $user_gender = "";
+
+            if ($input_text == "1") {
+                $user_gender = "male";
+            } elseif ($input_text == "2") {
+                $user_gender = "female";
+            }
+
+            //User does not exist in DB
+            if ($input_text == "1" || $input_text == "2") {
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_gender',  $user_gender);
+
+                $response = $new_user_age;
+                $current_menu   = "new_user_age";
+            } else {
+                $response = "Invalid option chosen. Please press (1) if you are male and (2) if you are female.";
+                $current_menu   = "new_user_gender";
+            }
+
+            $action = "request";
+        } elseif ($last_menu == "new_user_age") {
+            if (!is_numeric($input_text)) {
+                $response = "Invalid input. Please enter a valid age.";
+                $current_menu = "new_user_age";
+                $action = "request";
+            } else {
+                $age = intval($input_text);
+
+                if ($age < 18) {
+                    $response = "You must be at least 18 years old to register.";
+                    $current_menu = "new_user_age";
+                    $action = "request";
+                } elseif ($age > 100) {
+                    $response = "Please enter your actual age.";
+                    $current_menu = "new_user_age";
+                    $action = "request";
+                } else {
+                    //User does not exist in DB
+                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_age',  $input_text);
+
+                    $response = $new_user_district;
+                    $current_menu   = "new_user_district";
+
+                    $action = "request";
+                }
+            }
+        } elseif ($last_menu == "new_user_district") {
+            //User does not exist in DB
+            $district = $this->menu_helper->getMostSimilarDistrict($input_text, "Uganda");
+            $input_text = $district->name ?? null;
+
+            if ($this->menu_helper->checkIfDistrictIsValid($input_text) && strlen($input_text) > 3) {
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_district',  $input_text);
+
+                $this->menu_helper->completeFarmersMarketRegistration($sessionId, $phoneNumber);
+
+                $response = "Thank you for registering on the M-Omulimisa Farmer Market. Dial *217*101# to start shopping.";
+                $current_menu   = "new_user_confirmation";
+                $action         = "end";
+            } else {
+                $response = "Invalid district name. Please enter a valid district name.";
+                $current_menu   = "new_user_district";
+                $action         = "request";
+            }
+        }
+
+        //existing user stuff
+        elseif ($last_menu == "farmer_market_categories") {
+            //TODO: Get selected products in the selected category and display the products
+            $catrogry = $this->menu_helper->getSelectedCategoryID($sessionId, $phoneNumber, $input_text);
+            $response = $this->menu_helper->getProductsInACategory($sessionId, $phoneNumber, $catrogry);
+
+            $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_category',  $catrogry);
+
+            $current_menu   = "farmer_market_products";
+            $action = "request";
+        } elseif ($last_menu == "farmer_market_products") {
+            //TODO: Get selected products in the selected category and display the products
+            $catrogry = $this->menu_helper->getOptionMappedID($sessionId, $phoneNumber, $input_text);
+            $product = $this->menu_helper->getSelectedProduct($catrogry);
+
+            $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_product',  $catrogry);
+            $response = "How many units of " . $product->name . " do you want to buy?";
+
+            $current_menu   = "farmer_market_quantity";
+            $action = "request";
+        } elseif ($last_menu == "farmer_market_quantity") {
+            $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_quantity',  $input_text);
+
+            $response = "To which district should we deliver? (eg Kampala)";
+            $current_menu   = "farmer_market_district";
+
+            $action = "request";
+        } elseif ($last_menu == "farmer_market_district") {
+            $district = $this->menu_helper->getMostSimilarDistrict($input_text, "Uganda");
+            $input_text = $district->name ?? null;
+
+            if ($this->menu_helper->checkIfDistrictIsValid($input_text) && strlen($input_text) > 3) {
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_district',  $input_text);
+
+                $response       = $input_text . "\n";
+                $response       .= "Select Subcounty:\n";
+
+                $response       .= $this->menu_helper->getFarmerSubcounties($phoneNumber, $sessionId, $district->id);
+                // $response       .= "0) Back\n";
+
+                $current_menu   = "farmer_market_subcounty";
+                $action         = "end";
+            } else {
+                $response = "Invalid district name. Please enter a valid district name.";
+                $current_menu   = "farmer_market_district";
+                $action         = "request";
+            }
+        } elseif ($last_menu == "farmer_market_subcounty") {
+            $districtName = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'farmer_market_district');
+            $district = $this->menu_helper->getMostSimilarDistrict($districtName, "Uganda");
+
+            $subcounty = $this->menu_helper->getSelectedSubcounty($input_text, $district->id);
+            $input_text = $subcounty->name ?? null;
+
+            echo ($input_text . "is the subcounty id");
+
+            if ($this->menu_helper->checkIfSubcountyIsValid($district->id, $input_text) && strlen($input_text) > 3) {
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_subcounty',  $input_text);
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'selected_subcounty_id',  $subcounty->id);
+
+                $response       = $input_text . "\n";
+                $response       .= "Select Parish:\n";
+                $response       .= $this->menu_helper->getFarmerParish($phoneNumber, $sessionId, $subcounty->id);
+
+                $current_menu   = "farmer_market_parish";
+                $action         = "end";
+            } else {
+                $response       = "Wrong input!\n";
+                $response       .= "Select Subcounty\n";
+                $response       .= $this->menu_helper->getSubcountyList($districtId);
+
+                $current_menu   = "farmer_market_subcounty";
+                $action         = "request";
+            }
+        } elseif ($last_menu == "farmer_market_parish") {
+            /* $selectedParishID = $this->menu_helper->getOptionMappedID($sessionId, $phoneNumber, $input_text);
+             */
+
+            $subcountyId = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'selected_subcounty_id');
+            $parish = $this->menu_helper->getSelectedParish($input_text, $subcountyId);
+            $input_text = $parish->name ?? null;
+
+            if ($this->menu_helper->checkIfParishIsValid($subcountyId, $input_text) && strlen($input_text) > 3) {
+                $action         = "request";
+                $response       = $input_text . "\n";
+
+                $saved_data = \App\Models\Ussd\UssdSessionData::whereSessionId($sessionId)
+                    ->wherePhoneNumber($phoneNumber)
+                    ->first();
+
+                $quantity = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'farmer_market_quantity');
+
+                $catrogry = $saved_data->farmer_market_product;
+                $product = $this->menu_helper->getSelectedProduct($catrogry);
+
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_parish',  $input_text);
+                $units = intval($quantity); // Convert the input_text string to an integer
+                $subtotal = $units * $product->price_1;
+
+                $response = "You are about to buy " . $quantity . " units of " . $product->name . " at UGX " . $product->price_1 . " each. Subtotal: UGX " . number_format($subtotal) . "\nPress 1 to confirm.";
+
+                $current_menu   = "farmer_market_confirmation";
+            } else {
+                $action         = "request";
+                $response       = "Wrong input!\n";
+                $response       .= "Select Parish\n";
+                $response       .= $this->menu_helper->getParishList($subcountyId);
+                $response       .= "0) Back\n";
+                $current_menu   = "farmer_market_parish";
+            }
+
+            $action = "request";
+        } elseif ($last_menu == "farmer_market_confirmation") {
+            if ($input_text == "1") {
+                $result =    $this->menu_helper->completeFarmersMarketPurchase($sessionId, $phoneNumber);
+
+                if ($result == true) {
+                    $response = "Order successfully placed. Thank you for shopping with M-Omulimisa";
+                    $current_menu   = "farmer_market_finished";
+                    $action = "end";
+                } else {
+                    $response = "Error placing order. Please try again or call us directly on +256788322929";
+                    $current_menu   = "farmer_market_finished";
+                    $action = "end";
+                }
+            } else {
+                $response = "Request cancelled. Dial *217*101# to restart shopping.";
+                $current_menu   = "farmer_market_finished";
+                $action = "end";
+            }
+        }
+
         /******************* START ADVISORY SHIT *******************/
-        elseif ($last_menu == "advisory_option_menu") {
+        /*  elseif ($last_menu == "advisory_option_menu") {
             if ($input_text == 1) {
 
                 $action         = "request";
@@ -1028,7 +1327,7 @@ class MenuController extends Controller
             $response  = "An Error occured. Contact M-Omulimisa team for help!";
             $current_menu = "system_error";
             $action         = "end";
-        }
+        } */
 
         //----------------HANDLE THE ACTUAL SENDING OF THE USSD CODE REQUEST--------------------------
 

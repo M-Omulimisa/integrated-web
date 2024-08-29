@@ -1160,7 +1160,7 @@ class ApiShopController extends Controller
 
         if ($r->customer_address != null) {
             $order->customer_address = $r->customer_address;
-        } 
+        }
 
         $order->order_state = 0;
         $order->temporary_id = 0;

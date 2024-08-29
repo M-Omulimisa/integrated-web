@@ -21,6 +21,7 @@ class UssdSessionData extends BaseModel
         'market_subscriber',
         'market_package_id',
         'market_region',
+        "farmer_market_category_options",
         'market_region_id',
         'market_language',
         'market_language_id',
@@ -30,8 +31,9 @@ class UssdSessionData extends BaseModel
         'market_confirmation',
         'market_payment_status',
         'market_currency',
+        "subcounty_options",
         'market_cost',
-
+        'option_mappings',
         'insurance_subscrption_for',
         'insurance_subscriber',
         // 'insurance_subscriber_name',

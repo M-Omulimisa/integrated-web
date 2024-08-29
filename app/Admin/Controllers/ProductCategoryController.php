@@ -42,12 +42,16 @@ class ProductCategoryController extends AdminController
             return $parentCategory ? $parentCategory->category : 'No parent';
         }
     })
-    
     ->sortable();
             
         $grid->column('show_in_banner', __('Show in Banner'))
             ->editable('select', ['Yes' => 'Yes', 'No' => 'No'])
             ->sortable();
+
+        $grid->column('show_in_ussd', __('Show in USSD'))
+            ->editable('select', ['Yes' => 'Yes', 'No' => 'No'])
+            ->sortable();
+
         $grid->column('show_in_categories', __('Show in Categories'))
             ->editable('select', ['Yes' => 'Yes', 'No' => 'No'])
             ->sortable();
@@ -79,6 +83,7 @@ class ProductCategoryController extends AdminController
         $show->field('image_origin', __('Image origin'));
         $show->field('banner_image', __('Banner image'));
         $show->field('show_in_banner', __('Show in banner'));
+        $show->field('show_in_ussd', __('Show in USSD'));
         $show->field('show_in_categories', __('Show in categories'));
 
         return $show;
@@ -113,6 +118,7 @@ class ProductCategoryController extends AdminController
 
 
         $form->radio('show_in_banner', __('Show in banner'))->options(['Yes' => 'Yes', 'No' => 'No'])->required();
+        $form->radio('show_in_ussd', __('Show in USSD'))->options(['Yes' => 'Yes', 'No' => 'No'])->required();
         $form->radio('show_in_categories', __('Show in categories'))->options(['Yes' => 'Yes', 'No' => 'No'])->required();
 
         return $form;

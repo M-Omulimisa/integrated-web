@@ -71,6 +71,11 @@ class UserController extends AdminController
         $grid->column('email', __('Email'))->sortable();
         // $grid->column('selected_projects', __('Affiliations'))->sortable();
         $grid->column('other', __('Other'))->sortable();
+        $grid->column('done_with_ussd_farming_onboarding', __('Ever used Market USSD'))
+            ->display(function ($value) {
+                return $value === 'Yes' ? 'Yes' : 'No';
+            })
+            ->sortable();
         $grid->column('roles', trans('admin.roles'))->pluck('name')->label();
         $grid->column('created_at', __('Created at'))->hide();
 

@@ -97,6 +97,8 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
         'status',
         'created_by',
         'verified',
+        "done_with_ussd_farming_onboarding",
+        "date_of_birth",
         'email_verified_at',
         'country_id',
         'banned_until',

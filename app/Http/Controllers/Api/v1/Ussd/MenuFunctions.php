@@ -34,16 +34,287 @@ use App\Models\Ussd\UssdAdvisoryQuestion;
 use App\Models\Ussd\UssdEvaluationQuestion;
 use App\Models\Ussd\UssdEvaluationSelection;
 use App\Models\Ussd\UssdEvaluationQuestionOption;
-
+use App\Models\Product;
 use App\Models\Insurance\InsuranceSubscription;
 use App\Models\Insurance\InsurancePremiumOption;
 use App\Models\Insurance\Markup;
 use App\Models\NewInsuranceRequest;
+use App\Models\Order;
+use App\Models\OrderedItem;
+use App\Models\Utils;
 use App\Models\Weather\WeatherSubscription;
 use App\Models\Payments\SubscriptionPayment;
+use App\Models\ProductCategory;
 
 class MenuFunctions
 {
+    //=======Farmers market functions======================
+    public function   getMarketPlaceUserData($phoneNumber)
+    {
+        $user = User::where('phone', '+' . $phoneNumber)->first();
+        return $user;
+    }
+
+    public function completeFarmersMarketRegistration($sessionId, $phoneNumber)
+    {
+        // Retrieve the session data for the given session ID and phone number.
+        $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
+
+        // Create a new Subscription record using the subscription_data array and assign it to $subscription variable.
+        if ($sessionData) {
+            $foundUserData = $this->getMarketPlaceUserData($phoneNumber);
+
+            $age = $sessionData->farmer_market_user_age ?? null;
+            $dateOfBirth = null;
+
+            if ($age !== null) {
+                $ageInt = intval($age);
+                if ($ageInt > 0) {
+                    $dateOfBirth = Carbon::now()->subYears($ageInt)->format('Y-m-d');
+                }
+            }
+
+            $data =     [
+                'phone' => '+' . $phoneNumber,
+                'name' => $sessionData->farmer_market_user_name ?? "User",
+                'farmer_market_user_type' => $sessionData->farmer_market_user_type ?? "buyer",
+                'gender' => $sessionData->farmer_market_user_gender ?? "male",
+                'date_of_birth' => $dateOfBirth,
+                'user_district' => $sessionData->farmer_market_user_district ?? "Kampala",
+                'done_with_ussd_farming_onboarding' => "Yes",
+            ];
+
+            if ($foundUserData) {
+                $user_id = $foundUserData->id;
+                // Update the user table with the provided fields
+                return User::where('id', $user_id)->update($data);
+            } else {
+                // Create a new user with the provided fields
+                return User::create($data);
+            }
+        }
+
+        // If an error occurred or data was missing, return false.
+        return false;
+    }
+
+    public function completeFarmersMarketPurchase($sessionId, $phoneNumber)
+    {
+        // Retrieve the session data for the given session ID and phone number.
+        $sessionData = UssdSessionData::whereSessionId($sessionId)->wherePhoneNumber($phoneNumber)->first();
+
+        // Create a new Subscription record using the subscription_data array and assign it to $subscription variable.
+        if ($sessionData) {
+            $delivery_fee = 0;
+            $u = $this->getMarketPlaceUserData($phoneNumber);
+
+            $order = new Order();
+            $order->user = $u->id;
+
+            $deliveryAddress =  $sessionData->farmer_market_district . " " . $sessionData->farmer_market_subcounty. " " . $sessionData->farmer_market_parish;
+
+            $order->customer_address =  $deliveryAddress;
+
+            $order->order_state = 0;
+            $order->temporary_id = 0;
+            $order->amount = 0;
+            $order->order_total = 0;
+            $order->payment_confirmation = '';
+            $order->description = '';
+            $order->date_created = Carbon::now();
+            $order->date_updated = Carbon::now();
+            $order->save();
+            $order_total = 0;
+
+            //prpduct stuff
+            $product = Product::find($sessionData->farmer_market_product);
+
+            $oi = new OrderedItem();
+            $oi->order = $order->id;
+            $oi->product = $sessionData->farmer_market_product;
+            $oi->qty = $sessionData->farmer_market_quantity;
+            $oi->amount = $product->price_1;
+            $oi->color = '';
+            $oi->size = '';
+            $order_total += ($product->price_1 * $oi->qty);
+            $oi->save();
+
+            $order_total += $delivery_fee;
+
+            $order->delivery_fee = $delivery_fee;
+            $order->order_total = $order_total;
+            $order->amount = $order_total;
+            $order->customer_phone_number_1 = $phoneNumber;
+            $order->payment_confirmation = 'Not Paid';
+            $order->order_state = 'Pending'; // 'Pending', 'Processing', 'Completed', 'Cancelled
+            $order->description = "Order via USSD code. Deliver to" . $deliveryAddress;
+            $order->save();
+
+            //send notification to customer, how order was received
+            $noti_title = "Order Received";
+            $noti_body = "Your order has been received. We will contact you soon. Thank you.";
+
+            try {
+                Utils::sendNotification(
+                    $noti_body,
+                    $u->id,
+                    $noti_title,
+                    data: [
+                        'id' => $order->id,
+                        'user' => $u->id,
+                        'order_state' => $order->order_state,
+                        'amount' => $order->amount,
+                        'order_total' => $order->order_total,
+                        'payment_confirmation' => $order->payment_confirmation,
+                        'description' => $order->description,
+                        'customer_phone_number_1' => $order->customer_phone_number_1,
+                    ]
+                );
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+
+            //Utils::send_sms($noti_body, $delivery->phone_number);
+            $order = Order::find($order->id);
+
+            $_items = $order->get_items();
+            $order->items = json_encode($_items);
+
+            return true;
+        }
+
+        // If an error occurred or data was missing, return false.
+        return false;
+    }
+
+    public function getProductsInACategory($sessionId, $phoneNumber, $categoryID)
+    {
+        $categories = Product::where('category', $categoryID)->get();
+        $optionMappings = [];
+
+        $list = 'Chose a product to buy' . "\n";
+        if (count($categories) > 0) {
+            $count = 0;
+            foreach ($categories as $language) {
+                $list .= (++$count) . ") " . ucwords(strtolower($language->name)) . " at " . $language->price_1 . " UGX per unit" . "\n";
+                $optionMappings[$count] = $language->id;
+            }
+        }
+
+        $this->saveToField($sessionId, $phoneNumber, "option_mappings", $optionMappings);
+        return $list;
+    }
+
+    public function getOptionMappedID($session, $phone, $response,)
+    {
+        $saved_data = UssdSessionData::whereSessionId($session)
+            ->wherePhoneNumber($phone)
+            ->first();
+
+        if (!$saved_data) {
+            return "Session data not found.";
+        }
+
+        $optionMappings = $saved_data->option_mappings;
+
+        $decodedOptionMappings = json_decode($optionMappings, true);
+
+        // Validate user response
+        if (!is_numeric($response)) {
+            return "Invalid selection.";
+        }
+
+        // Check if the response exists in the decoded mappings
+        if (!isset($decodedOptionMappings[$response])) {
+            return "Selected option not found.";
+        }
+
+        return $decodedOptionMappings[$response];
+    }
+
+    public function getSelectedCategoryID($session, $phone, $response,)
+    {
+        $saved_data = UssdSessionData::whereSessionId($session)
+            ->wherePhoneNumber($phone)
+            ->first();
+
+        if (!$saved_data) {
+            return "Session data not found.";
+        }
+
+        $optionMappings = $saved_data->farmer_market_category_options;
+
+        $decodedOptionMappings = json_decode($optionMappings, true);
+
+        // Validate user response
+        if (!is_numeric($response)) {
+            return "Invalid selection.";
+        }
+
+        return $decodedOptionMappings[$response];
+    }
+
+    public function getSelectedProduct($region_menu_no)
+    {
+        $product = Product::find($region_menu_no);
+
+        return $product ?? null;
+    }
+
+    public function getSelectedSubcountyfromID($region_menu_no)
+    {
+        $product = SubcountyModel::find($region_menu_no);
+
+        return $product ?? null;
+    }
+
+    public function getFarmerSubcounties($sessionId, $phoneNumber, $districtId)
+    {
+        $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->get();
+
+       // $optionMappings = [];
+        $list = '';
+        if (count($locations) > 0) {
+            $count = 0;
+            foreach ($locations as $subcounty) {
+                $name = str_replace('TOWN COUNCIL', 'TC', $subcounty->name);
+                $name = str_replace('DIVISION', 'DIV', $subcounty->name);
+                $list .= (++$count) . ") " . ucwords(strtolower($name)) . "\n";
+              //  $optionMappings[$count] = $subcounty->id;
+            }
+        }
+
+        //$this->saveToField($sessionId, $phoneNumber, "subcounty_options", $optionMappings);
+        return $list;
+    }
+
+    public function getFarmerParish($sessionId, $phoneNumber, $subcountyId)
+    {
+        $locations = ParishModel::whereSubcountyId($subcountyId)->whereNotNull('lat')->whereNotNull('lng')->orderBy('name', 'ASC')->get();
+
+        //$optionMappings = [];
+        $list = '';
+        if (count($locations) > 0) {
+            $count = 0;
+            foreach ($locations as $parish) {
+                $list .= (++$count) . ") " . ucwords(strtolower($parish->name)) . "\n";
+                //$optionMappings[$count] = $parish->id;
+            }
+        }
+
+        //$this->saveToField($sessionId, $phoneNumber, "option_mappings", $optionMappings);
+        return $list;
+    }
+
+    public function getSelectedParishfromID($region_menu_no)
+    {
+        $product = ParishModel::find($region_menu_no);
+
+        return $product ?? null;
+    }
+
+    //=======End Farmers Market Functions=================
+
 
     public function getLastMenu($sessionId, $phoneNumber)
     {
@@ -128,10 +399,28 @@ class MenuFunctions
      */
     public function saveToField($sessionId, $phoneNumber, $field, $input)
     {
-        UssdSessionData::whereSessionId($sessionId)
-            ->wherePhoneNumber($phoneNumber)
-            ->update([$field => $input]);
+        $session = UssdSessionData::where('session_id', $sessionId)
+            ->where('phone_number', $phoneNumber)
+            ->first();
+
+        if (!$session) {
+            // Session doesn't exist, create a new one
+            $session = new UssdSessionData();
+            $session->session_id = $sessionId;
+            $session->phone_number = $phoneNumber;
+        }
+
+        $session->$field = $input;
+
+        try {
+            $result = $session->save();
+            return $result; // This will return true if the save was successful
+        } catch (\Exception $e) {
+            // Log the error or handle it as needed
+            return false;
+        }
     }
+
 
     /**
      * 
@@ -518,7 +807,7 @@ class MenuFunctions
             ];
 
             MarketSubscription::create($data);
-            
+
             return true;
         }
     }
@@ -704,18 +993,14 @@ class MenuFunctions
     public function getSelectedRegion($region_menu_no)
     {
         $menu = intval($region_menu_no);
-
         $locations = Region::whereMenuStatus(TRUE)->orderBy('name', 'ASC')->get();
-
         if ($menu != 0) $region = $locations->skip($menu - 1)->take(1)->first();
-
         return $region ?? null;
     }
 
     public function getSelectedSubcounty($subcounty_menu_no, $districtId)
     {
         $menu = intval($subcounty_menu_no);
-
         $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->get();
 
         if ($menu != 0) $subcounty = $locations->skip($menu - 1)->take(1)->first();
