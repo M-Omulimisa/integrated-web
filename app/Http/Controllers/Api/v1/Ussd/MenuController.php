@@ -1010,8 +1010,6 @@ class MenuController extends Controller
             $subcounty = $this->menu_helper->getSelectedSubcounty($input_text, $district->id);
             $input_text = $subcounty->name ?? null;
 
-            echo ($input_text . "is the subcounty id");
-
             if ($this->menu_helper->checkIfSubcountyIsValid($district->id, $input_text) && strlen($input_text) > 3) {
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_subcounty',  $input_text);
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'selected_subcounty_id',  $subcounty->id);
