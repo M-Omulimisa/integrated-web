@@ -390,7 +390,7 @@ class Utils
         }
 
 
-        try {
+        /* try {
             $_phone = Utils::prepare_phone_number($phone);
             $u = User::where('phone', $_phone)->first();
             if ($u == null) {
@@ -400,7 +400,7 @@ class Utils
                 $_phone = str_replace("+", "", $_phone);
                 $u = User::where('phone_number', $_phone)->first();
             }
-            if ($u != null) {
+            if ($u != null) { 
                 if ($u->id > 0) {
                     Utils::sendNotification2([
                         'msg' => $sms,
@@ -412,7 +412,7 @@ class Utils
             }
         } catch (\Throwable $th) {
             //throw $th;
-        }
+        } */
 
         if (Utils::isLocalhost()) {
             $outbox->status = 'sent';
