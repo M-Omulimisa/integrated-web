@@ -697,7 +697,7 @@ class ApiAuthController extends Controller
         $f->user_id = $u->id;
         $f->body = $r->body;
         $f->farmer_question_id = $r->question_id;
-        
+
         try {
             $f->save();
         } catch (\Throwable $t) {
@@ -710,42 +710,65 @@ class ApiAuthController extends Controller
     public function update_profile(Request $r)
     {
         $u = auth('api')->user();
-        if ($r->name != null) {
-            $u->name = $r->name;
+
+        if ($u == null) {
+            return $this->error("Unauthorised.");
         }
 
-        $u_1 = User::where([
-            'email' => $r->email,
-        ])->first();
+        $u = User::find($u->id);
+        if ($u == null) {
+            return $this->error("User not found.");
+        }
 
-        if ($u_1 != null) {
-            if ($u_1->id != $u->id) {
-                return $this->error("Email address already taken.");
+        //check if first and last name were submitted
+        if ($r->first_name == null || strlen($r->first_name) < 3) {
+            return $this->error("First name is required.");
+        }
+        if ($r->last_name == null || strlen($r->last_name) < 3) {
+            return $this->error("Last name is required.");
+        }
+        $u->first_name = $r->first_name;
+        $u->last_name = $r->last_name;
+        $u->name = $r->first_name . ' ' . $r->last_name;
+
+        //phone_number
+        if ($r->phone_number != null) {
+            $phone_number = Utils::prepare_phone_number($r->phone_number);
+            if (!Utils::phone_number_is_valid($phone_number)) {
+                return $this->error('Invalid phone number.');
             }
         }
 
-        if ($r->email != null) {
-            $u->email = $r->email;
+        $u2 = User::where('phone_number', $phone_number)->first();
+        if ($u2 != null && $u2->id != $u->id) {
+            return $this->error('Phone number already in used by another account: ' . $u2->name);
         }
-        if ($r->phone != null) {
-            $u->phone = $r->phone;
-        }
+        $u->phone_number = $phone_number;
+        $u->sex = $r->sex;
 
-        $image = "";
-        if (!empty($_FILES)) {
-            try {
-                $image = Utils::upload_images_2($_FILES, true);
-            } catch (Throwable $t) {
-                $image = "no_image.jpg";
+        //check if email is not empty and find duplicate
+        if ($r->email != null && strlen($r->email) > 3) {
+            $email = $r->email;
+            $u2 = User::where('email', $email)->first();
+            if ($u2 != null && $u2->id != $u->id) {
+                return $this->error('Email already in used by another account: ' . $u2->name);
             }
+            //chec by username
+            $u2 = User::where('username', $email)->first();
+            if ($u2 != null && $u2->id != $u->id) {
+                return $this->error('Email already in used by another account: ' . $u2->name);
+            }
+            $u->email = $email;
+            $u->username = $email;
         }
-        $u->photo = $image;
-
-        if ($u->save()) {
-            return $this->success($u, "Profile updated successfully.");
-        } else {
-            return $this->error("Failed to update profile.");
+        $u->address = $r->address;
+        $u->parish_id = $r->parish_id;
+        try {
+            $u->save();
+        } catch (\Throwable $t) {
+            return $this->error($t->getMessage());
         }
+        return $this->success($u, "Profile updated successfully!");
     }
     public function organisation_joining_request_post(Request $r)
     {
