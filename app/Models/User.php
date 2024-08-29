@@ -382,4 +382,17 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
             }
         }
     }
+
+    //protected appends
+    protected $appends = ['parish_text'];
+
+    //geter for parish_text
+    public function getParishTextAttribute()
+    {
+        $parish = ParishModel::find($this->parish_id);
+        if ($parish != null) {
+            return $parish->name_text;
+        }
+        return null;
+    }
 }
