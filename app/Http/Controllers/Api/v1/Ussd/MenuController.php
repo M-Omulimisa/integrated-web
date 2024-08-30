@@ -103,11 +103,11 @@ class MenuController extends Controller
 
         $new_user_name = "Hi there. What are your full names?";
 
-        $new_user_gender = "What is your gender (Chose 1 or 2)?\n";
+        $new_user_gender = "What is your gender (Choose 1 or 2)?\n";
         $new_user_gender .= "1. Male\n";
         $new_user_gender .= "2. Female\n";
 
-        $new_user_age = "How old are you?\n";
+        $new_user_age = "How old are you (years)?\n";
 
         $new_user_district = "Enter District e.g Kampala";
 
