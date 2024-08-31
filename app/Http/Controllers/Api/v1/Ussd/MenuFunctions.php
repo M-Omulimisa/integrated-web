@@ -17,6 +17,7 @@ use App\Models\Ussd\UssdSession;
 use App\Models\DistrictModel;
 use App\Models\SubcountyModel;
 use App\Models\ParishModel;
+use App\Models\ProductCustomUnit;
 use App\Models\Settings\Enterprise;
 use App\Models\Settings\Region;
 use App\Models\Ussd\UssdSessionData;
@@ -111,7 +112,7 @@ class MenuFunctions
             $order = new Order();
             $order->user = $u->id;
 
-            $deliveryAddress =  $sessionData->farmer_market_district . " " . $sessionData->farmer_market_subcounty. " " . $sessionData->farmer_market_parish;
+            $deliveryAddress =  $sessionData->farmer_market_district . " " . $sessionData->farmer_market_subcounty . " " . $sessionData->farmer_market_parish;
 
             $order->customer_address =  $deliveryAddress;
 
@@ -127,16 +128,15 @@ class MenuFunctions
             $order_total = 0;
 
             //prpduct stuff
-            $product = Product::find($sessionData->farmer_market_product);
-
             $oi = new OrderedItem();
             $oi->order = $order->id;
             $oi->product = $sessionData->farmer_market_product;
             $oi->qty = $sessionData->farmer_market_quantity;
-            $oi->amount = $product->price_1;
+            $oi->amount = $sessionData->farmer_market_price;
+            $oi->units = $sessionData->farmer_market_units;
             $oi->color = '';
             $oi->size = '';
-            $order_total += ($product->price_1 * $oi->qty);
+            $order_total += ($oi->amount * $oi->qty);
             $oi->save();
 
             $order_total += $delivery_fee;
@@ -196,13 +196,31 @@ class MenuFunctions
         if (count($categories) > 0) {
             $count = 0;
             foreach ($categories as $language) {
-                $list .= (++$count) . ") " . ucwords(strtolower($language->name)) . " at " . $language->price_1 . " UGX per unit" . "\n";
+                $list .= (++$count) . ") " . ucwords(strtolower($language->name)) . "\n";
                 $optionMappings[$count] = $language->id;
             }
         }
 
         $this->saveToField($sessionId, $phoneNumber, "option_mappings", $optionMappings);
         return $list;
+    }
+
+    public function getUnitsAndPricingInAProduct($sessionId, $phoneNumber, $product)
+    {
+        $customUnits = $product->customUnits;
+        $optionMappings = [];
+
+        // If custom units exist, present them as options
+        $response = "Select units for " . $product->name . ":\n";
+
+        $count = 0;
+        foreach ($customUnits as $language) {
+            $response .= (++$count) . ") " . $language->unit . " at UGX " . $language->price . " each\n";
+            $optionMappings[$count] = $language->id;
+        }
+
+        $this->saveToField($sessionId, $phoneNumber, "option_mappings", $optionMappings);
+        return $response;
     }
 
     public function getOptionMappedID($session, $phone, $response,)
@@ -261,6 +279,13 @@ class MenuFunctions
         return $product ?? null;
     }
 
+    public function getSelectedProductUnits($region_menu_no)
+    {
+        $product = ProductCustomUnit::find($region_menu_no);
+
+        return $product ?? null;
+    }
+
     public function getSelectedSubcountyfromID($region_menu_no)
     {
         $product = SubcountyModel::find($region_menu_no);
@@ -272,7 +297,7 @@ class MenuFunctions
     {
         $locations = SubcountyModel::whereDistrictId($districtId)->orderBy('name', 'ASC')->get();
 
-       // $optionMappings = [];
+        // $optionMappings = [];
         $list = '';
         if (count($locations) > 0) {
             $count = 0;
@@ -280,7 +305,7 @@ class MenuFunctions
                 $name = str_replace('TOWN COUNCIL', 'TC', $subcounty->name);
                 $name = str_replace('DIVISION', 'DIV', $subcounty->name);
                 $list .= (++$count) . ") " . ucwords(strtolower($name)) . "\n";
-              //  $optionMappings[$count] = $subcounty->id;
+                //  $optionMappings[$count] = $subcounty->id;
             }
         }
 

@@ -78,6 +78,7 @@ class ProcessWeatherSubscriptionPayment extends Command
                     if ($initial_status=="INITIATED") {
                         $response = $service->depositFunds($payment->account, $payment->amount, $payment->narrative, $payment->reference_id);
                     }
+
                     elseif ($initial_status=="PENDING") {
                         $response = $service->getTransactionStatus($payment->reference);
                     }
@@ -108,7 +109,6 @@ class ProcessWeatherSubscriptionPayment extends Command
                             }
 
                             // TODO for App & Web
-
                             if (isset($data) && $data) {
                                 // Subscription already exists -- Payment has been reset
                                 if ($subscription = WeatherSubscription::wherePaymentId($payment->id)->first()) {
