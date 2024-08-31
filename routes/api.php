@@ -208,6 +208,8 @@ Route::post("upload-file", function (Request $r) {
 
 Route::get('weather-subscriptions-check-payment-status', [ApiShopController::class, "weather_subscriptions_chec_payment_status"]);
 Route::get('weather-subscriptions-trigger-payment', [ApiShopController::class, "weather_subscriptions_trigger_payment"]);
+//Route::get('weather-subscriptions-check-payments-cron-job', [ApiShopController::class, "weather_subscriptions_check_payments_cron_job"]);
+
 Route::group([
     'prefix' => '/v1'
 ], function () {
