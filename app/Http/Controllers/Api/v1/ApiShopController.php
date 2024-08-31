@@ -37,6 +37,36 @@ class ApiShopController extends Controller
         return $this->success($items, 'Success');
     }
 
+    public function weather_subscriptions_chec_payment_status(Request $r)
+    {
+        $sub = WeatherSubscription::find($r->id);
+        //check if is null
+        if ($sub == null) {
+            return $this->error('Subscription not found.');
+        }
+
+        try {
+            $sub->check_payment_status();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+        $sub = WeatherSubscription::find($r->id);
+        return $this->success($sub, 'Success');
+    }
+    public function weather_subscriptions_trigger_payment(Request $r)
+    {
+        $sub = WeatherSubscription::find($r->id);
+        //check if is null
+        if ($sub == null) {
+            return $this->error('Subscription not found.');
+        }
+        try {
+            $resp = $sub->trigger_payment();
+            return $this->success($sub, 'Success');
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+    }
     public function market_packages_subscribe(Request $r)
     {
         /* 

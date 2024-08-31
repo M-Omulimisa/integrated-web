@@ -48,6 +48,8 @@ class WeatherSubscription extends BaseModel
         'phone'
     ];
 
+
+
     /**
      * every time a model is created
      * automatically assign a UUID to it
@@ -94,8 +96,7 @@ class WeatherSubscription extends BaseModel
         });
 
         //created
-        self::created(function (WeatherSubscription $model) {
-        });
+        self::created(function (WeatherSubscription $model) {});
 
         //updated
         self::updated(function (WeatherSubscription $model) {
@@ -107,6 +108,88 @@ class WeatherSubscription extends BaseModel
                 ]);
         });
     }
+
+
+
+    public function trigger_payment()
+    {
+        // check if subscription is paid
+        if ($this->is_paid == 'PAID') {
+            throw new \Exception('Subscription is already paid.');
+        }
+
+        if (Utils::isTestNumber($this->phone)) {
+            $this->total_price = 500;
+        }
+
+        $r = $this;
+        if (!isset($this->total_price) || $this->total_price == null) {
+            throw new \Exception('Amount is missing. Amount : ' . $this->total_price);
+        }
+
+        if (!isset($this->phone) || $this->phone == null) {
+            throw new \Exception('Phone number is missing.');
+        }
+
+        $this->phone = Utils::prepare_phone_number($this->phone);
+
+        //validate
+        if (!Utils::phone_number_is_valid($this->phone)) {
+            throw new \Exception('Invalid phone number ' . $this->phone);
+        }
+
+        $payment_reference_id = time() . rand(1000000, 99999999);
+
+        $amount = (int)(($r->total_price));
+        if ($amount < 500) {
+            throw new \Exception('Amount should be greater or equal to UGX 500.');
+        }
+
+        $phone_number = str_replace('+', '', $this->phone);
+
+        $payment_resp = null;
+        try {
+            $payment_resp = Utils::init_payment($phone_number, $amount, $payment_reference_id);
+        } catch (\Throwable $th) {
+            $payment_resp = null;
+            throw $th;
+        }
+
+        if ($payment_resp == null) {
+            throw new \Exception('Failed to initiate payment because payment_resp is null.');
+        }
+
+
+        if (!isset($payment_resp->Status)) {
+            throw new \Exception('Failed to initiate payment because Status is missing.');
+        }
+
+        if ($payment_resp->Status != 'OK') {
+            //StatusMessage
+            if (isset($payment_resp->StatusMessage)) {
+                throw new \Exception("Failed to initiate payment because " . $payment_resp->StatusMessage);
+            }
+            throw new \Exception('Failed to initiate payment.');
+        }
+
+        //TransactionStatus
+        if (!isset($payment_resp->TransactionStatus)) {
+            throw new \Exception('Failed to initiate payment because TransactionStatus is missing.');
+        }
+
+        //TransactionReference
+        if (!isset($payment_resp->TransactionReference)) {
+            throw new \Exception('Failed to initiate payment because TransactionReference is missing.');
+        }
+
+        $this->TransactionStatus = $payment_resp->TransactionStatus;
+        $this->TransactionReference = $payment_resp->TransactionReference;
+        $this->payment_reference_id = $payment_reference_id;
+        $this->save();
+        return 'SUCCESS';
+    }
+
+
 
     //prepare
     public static function prepare($model)
@@ -184,91 +267,74 @@ class WeatherSubscription extends BaseModel
 
     public function check_payment_status()
     {
-        /* if (strlen($this->TransactionReference) < 3) {
-            return 'NOT PAID';
-        } */
+
         if ($this->is_paid == 'PAID') {
             return 'PAID';
         }
+
 
         $resp = null;
         try {
             if ($this->TransactionReference != null && strlen($this->TransactionReference) > 3) {
                 $resp = Utils::payment_status_check($this->TransactionReference, $this->payment_reference_id);
+            } else {
+                $this->is_paid = 'NOT PAID';
+                $this->save();
+                return $this->is_paid;
             }
         } catch (\Throwable $th) {
+            $resp = null;
         }
 
-        if ($resp != null) {
-            if ($resp->Status == 'OK') {
-                if ($resp->TransactionStatus == 'PENDING') {
-                    $this->TransactionStatus = 'PENDING';
-                    if (isset($resp->Amount) && $resp->Amount != null) {
-                        $this->TransactionAmount = $resp->Amount;
-                    }
-                    if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
-                        $this->TransactionCurrencyCode = $resp->CurrencyCode;
-                    }
-                    if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
-                        $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
-                    }
-                    if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
-                        $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
-                    }
-                    $this->save();
-                } else if (
-                    $resp->TransactionStatus == 'SUCCEEDED' ||
-                    $resp->TransactionStatus == 'SUCCESSFUL'
-                ) {
-                    $this->TransactionStatus = 'SUCCEEDED';
-                    if (isset($resp->Amount) && $resp->Amount != null) {
-                        $this->TransactionAmount = $resp->Amount;
-                    }
-                    if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
-                        $this->TransactionCurrencyCode = $resp->CurrencyCode;
-                    }
-                    if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
-                        $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
-                    }
-                    if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
-                        $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
-                    }
-                    //MNOTransactionReferenceId
-                    if (isset($resp->MNOTransactionReferenceId) && $resp->MNOTransactionReferenceId != null) {
-                        $this->MNOTransactionReferenceId = $resp->MNOTransactionReferenceId;
-                    }
-                    $this->is_paid = 'PAID';
-                    $this->save();
-                }
-            }
+        if ($resp == null) {
+            throw new \Exception('Failed to check payment status because resp is null.');
         }
 
-        //if not paid
-        if ($this->is_paid != 'PAID') {
-            $rec = SubscriptionPayment::where('id', $this->payment_id)->orderBy('created_at', 'desc')->first();
-            if ($rec == null) {
-                $rec = SubscriptionPayment::where('weather_subscription_id', $this->id)->orderBy('created_at', 'desc')->first();
-            }
-            if ($rec != null) {
-                if ($rec->status == 'SUCCESSFUL') {
-                    $this->is_paid = 'PAID';
-                } else {
-                    $this->is_paid = 'NOT PAID';
-                }
-                $this->MNOTransactionReferenceId = $rec->reference_id;
-                $this->TransactionReference = $rec->reference;
-                $this->payment_reference_id = $rec->id;
-                $this->payment_id = $rec->id;
-                $this->TransactionStatus = $rec->status;
-                $this->TransactionAmount = $rec->amount;
-                $this->TransactionCurrencyCode = 'UGX';
-                $this->TransactionInitiationDate = $rec->created_at;
-                $this->TransactionCompletionDate = $rec->updated_at;
-                $this->total_price = $rec->amount;
-                $has_paid = true;
-                $this->save();
-            }
+        if ($resp->Status != 'OK') {
+            throw new \Exception('Failed to check payment status because Status is not OK.');
         }
+
+
+        if ($resp->TransactionStatus == 'PENDING') {
+            $this->TransactionStatus = 'PENDING';
+            if (isset($resp->Amount) && $resp->Amount != null) {
+                $this->TransactionAmount = $resp->Amount;
+            }
+            if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
+                $this->TransactionCurrencyCode = $resp->CurrencyCode;
+            }
+            if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
+                $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
+            }
+            if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
+                $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
+            }
+            $this->save();
+        } else if (
+            $resp->TransactionStatus == 'SUCCEEDED' ||
+            $resp->TransactionStatus == 'SUCCESSFUL'
+        ) {
+            $this->TransactionStatus = 'SUCCEEDED';
+            if (isset($resp->Amount) && $resp->Amount != null) {
+                $this->TransactionAmount = $resp->Amount;
+            }
+            if (isset($resp->CurrencyCode) && $resp->CurrencyCode != null) {
+                $this->TransactionCurrencyCode = $resp->CurrencyCode;
+            }
+            if (isset($resp->TransactionInitiationDate) && $resp->TransactionInitiationDate != null) {
+                $this->TransactionInitiationDate = $resp->TransactionInitiationDate;
+            }
+            if (isset($resp->TransactionCompletionDate) && $resp->TransactionCompletionDate != null) {
+                $this->TransactionCompletionDate = $resp->TransactionCompletionDate;
+            }
+            //MNOTransactionReferenceId
+            if (isset($resp->MNOTransactionReferenceId) && $resp->MNOTransactionReferenceId != null) {
+                $this->MNOTransactionReferenceId = $resp->MNOTransactionReferenceId;
+            }
+            $this->is_paid = 'PAID';
+            $this->save();
+        }
+        return $this->is_paid;
     }
 
     public function getStatusAttribute($value)

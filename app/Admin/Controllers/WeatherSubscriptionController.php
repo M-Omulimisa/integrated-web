@@ -241,6 +241,20 @@ class WeatherSubscriptionController extends AdminController
                 return new \Encore\Admin\Widgets\Table([], $my_data);
             });
 
+        $grid->column('my_actions', __('Actions'))
+            ->display(function () {
+                return "Quick Action";
+            })
+            ->expand(function ($data) {
+                $my_data = [];
+                #verify payment
+                $my_data['Verify Payment'] = '<a target="_blank" class="btn btn-sm btn-success" href="' . url('api/weather-subscriptions-check-payment-status?id=' . $data->id) . '">Verify Payment</a>';
+                #trigger payment
+                $my_data['Trigger Payment'] = '<a target="_blank" class="btn btn-sm btn-success" href="' . url('api/weather-subscriptions-trigger-payment?id=' . $data->id) . '">Trigger Payment</a>';
+
+                return new \Encore\Admin\Widgets\Table([], $my_data);
+            });
+
 
 
         return $grid;
