@@ -9,6 +9,7 @@ use App\Jobs\SendUssdAdvisoryMessage;
 use App\Models\Ussd\UssdLanguage;
 use App\Models\Ussd\UssdSession;
 use App\Models\ProductCategory;
+use App\Models\Ussd\UssdSessionData;
 use App\Models\Market\MarketSubscription;
 
 class MenuController extends Controller
@@ -969,10 +970,25 @@ class MenuController extends Controller
         } elseif ($last_menu == "farmer_market_products") {
             //TODO: Get selected products in the selected category and display the products
             $catrogry = $this->menu_helper->getOptionMappedID($sessionId, $phoneNumber, $input_text);
+            $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_product',  $catrogry);
+
+            $product = $this->menu_helper->getSelectedProduct($catrogry);
+            $response = $this->menu_helper->getUnitsAndPricingInAProduct($sessionId, $phoneNumber, $product);
+
+            $current_menu   = "farmer_market_units";
+            $action = "request";
+        } elseif ($last_menu == "farmer_market_units") {
+            $productUnitID = $this->menu_helper->getOptionMappedID($sessionId, $phoneNumber, $input_text);
+
+            //TODO: Get selected products in the selected category and display the products
+            $catrogry = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'farmer_market_product');
+            $unitText = $this->menu_helper->getSelectedProductUnits($productUnitID);
             $product = $this->menu_helper->getSelectedProduct($catrogry);
 
-            $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_product',  $catrogry);
-            $response = "How many units of " . $product->name . " do you want to buy?";
+            $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_units',  $unitText->unit);
+            $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_price',  $unitText->price);
+
+            $response = "How many " . $unitText->unit . "s of " . $product->name . " do you want to buy?";
 
             $current_menu   = "farmer_market_quantity";
             $action = "request";
@@ -991,7 +1007,7 @@ class MenuController extends Controller
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_district',  $input_text);
 
                 $response       = $input_text . "\n";
-                $response       .= "Select Subcounty:\n";
+                $response       .= "Select Subcounty (Enter a number):\n";
 
                 $response       .= $this->menu_helper->getFarmerSubcounties($phoneNumber, $sessionId, $district->id);
                 // $response       .= "0) Back\n";
@@ -1015,7 +1031,7 @@ class MenuController extends Controller
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'selected_subcounty_id',  $subcounty->id);
 
                 $response       = $input_text . "\n";
-                $response       .= "Select Parish:\n";
+                $response       .= "Select Parish (Enter a number):\n";
                 $response       .= $this->menu_helper->getFarmerParish($phoneNumber, $sessionId, $subcounty->id);
 
                 $current_menu   = "farmer_market_parish";
@@ -1032,7 +1048,11 @@ class MenuController extends Controller
             /* $selectedParishID = $this->menu_helper->getOptionMappedID($sessionId, $phoneNumber, $input_text);
              */
 
-            $subcountyId = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'selected_subcounty_id');
+            $sessionData = UssdSessionData::whereSessionId($sessionId)
+                ->wherePhoneNumber($phoneNumber)
+                ->first();
+
+            $subcountyId = $sessionData->selected_subcounty_id;
             $parish = $this->menu_helper->getSelectedParish($input_text, $subcountyId);
             $input_text = $parish->name ?? null;
 
@@ -1044,16 +1064,18 @@ class MenuController extends Controller
                     ->wherePhoneNumber($phoneNumber)
                     ->first();
 
-                $quantity = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'farmer_market_quantity');
+                $quantity = $sessionData->farmer_market_quantity;
+                $unitString = $sessionData->farmer_market_units;
+                $price = $sessionData->farmer_market_price;
 
                 $catrogry = $saved_data->farmer_market_product;
                 $product = $this->menu_helper->getSelectedProduct($catrogry);
 
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_parish',  $input_text);
-                $units = intval($quantity); // Convert the input_text string to an integer
-                $subtotal = $units * $product->price_1;
+                $quantityInNumbers = intval($quantity); // Convert the input_text string to an integer
+                $subtotal = $quantityInNumbers * $price;
 
-                $response = "You are about to buy " . $quantity . " units of " . $product->name . " at UGX " . $product->price_1 . " each. Subtotal: UGX " . number_format($subtotal) . "\nPress 1 to confirm.";
+                $response = "You are about to buy " . $quantity . " " . $unitString . "s of " . $product->name . " at UGX " . $price . " each. Subtotal: UGX " . number_format($subtotal) . "\nPress 1 to confirm.";
 
                 $current_menu   = "farmer_market_confirmation";
             } else {

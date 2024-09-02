@@ -27,8 +27,6 @@ class ProductController extends AdminController
      */
     protected function grid()
     {
-
-
         $grid = new Grid(new Product());
         $grid->actions(function ($actions) {
             $actions->disableView();
@@ -46,11 +44,19 @@ class ProductController extends AdminController
             $filter->between('price_1', 'Select Price');
             $filter->between('created_at', 'Created at')->datetime();
         });
+
         $grid->model()->orderBy('id', 'desc');
         $grid->column('id', __('Id'))->sortable();
 
         $grid->column('name', __('Name'))->sortable()
             ->editable();
+
+        $grid->column('customUnits', 'Custom Units')->display(function ($customUnits) {
+            $units = array_map(function ($unit) {
+                return $unit['unit'] . ': ' . number_format($unit['price'], 2);
+            }, $customUnits);
+            return implode('<br>', $units);
+        });
 
         $grid->column('description', __('Description'))
             ->hide();
@@ -65,7 +71,7 @@ class ProductController extends AdminController
 
         $grid->column('agent_commission', __('Agent Commission'))
             ->sortable();
-            
+
         $grid->picture('feature_photo', __('Photo'))
             ->image('', 100, 100)
             ->hide();
@@ -157,8 +163,6 @@ class ProductController extends AdminController
     {
         $form = new Form(new Product());
 
-
-
         if ($form->isCreating()) {
             $form->hidden('user', __('Product provider'))->default(Auth::user()->id)->readOnly()->rules('required');
         }
@@ -197,6 +201,11 @@ class ProductController extends AdminController
 
         $form->decimal('agent_commission', __('Agent Commission'))
             ->rules('required');
+
+        $form->hasMany('customUnits', 'Custom Units', function (Form\NestedForm $form) {
+            $form->text('unit', 'Unit');
+            $form->decimal('price', 'Price');
+        });
 
         $form->decimal('price_1', __('Selling Price'))
             ->rules('required');

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Dflydev\DotAccessData\Util;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -77,6 +76,10 @@ class Product extends Model
         return $src;
     }
 
+    public function customUnits()
+    {
+        return $this->hasMany(ProductCustomUnit::class);
+    }
 
     protected $casts = [
         'data' => 'json',

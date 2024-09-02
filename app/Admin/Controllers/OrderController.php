@@ -26,7 +26,7 @@ class OrderController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Order());
-        
+
         $grid->disableBatchActions();
         $grid->disableCreateButton();
         $grid->disableExport();
@@ -74,19 +74,33 @@ class OrderController extends AdminController
             ->display(function () {
                 $items = [];
                 foreach ($this->get_items() as $item) {
-                    $items[] = $item->product_name . ' (' . $item->product_quantity . ' x ' . number_format($item->product_price_1) . ')';
+                    $itemString = $item->product_name;
+
+                    // Check and add units if available
+                    if (isset($item->units)) {
+                        $itemString .= " ($item->product_quantity" . " {$item->units}";
+                    } else {
+                        $itemString .= " ({$item->product_quantity}";
+                    }
+
+                    // Check for amount, if not available use product's price_1
+                    if (isset($item->amount)) {
+                        $price = number_format($item->amount);
+                    } elseif (isset($item->product) && isset($item->product->price_1)) {
+                        $price = number_format($item->product->price_1);
+                    } else {
+                        $price = 'N/A';
+                    }
+
+                    $itemString .= " x {$price})";
+                    $items[] = $itemString;
                 }
                 return implode(', ', $items);
             });
+
         $grid->column('order_total', __('Order total'))->sortable();
         $grid->column('order_details', __('Order details'))->hide();
-        $grid->column('get_items', __('Order Items'))->display(function () {
-            $items = [];
-            foreach ($this->get_items() as $item) {
-                $items[] = $item->product_name . ' (' . $item->product_quantity . ' x ' . number_format($item->product_price_1) . ')';
-            }
-            return implode(', ', $items);
-        });
+    
         return $grid;
     }
 
