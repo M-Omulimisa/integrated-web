@@ -359,9 +359,14 @@ class Utils
 
 
         $outbox = new SMSOutbox();
-        $outbox->phone = $phone;
         $outbox->sms = $sms;
         $outbox->status = 'pending';
+        try {
+            $_phone = Utils::prepare_phone_number($phone);
+        } catch (\Throwable $th) {
+            $_phone = $phone;
+        }
+        $outbox->phone = $_phone;
 
 
 
