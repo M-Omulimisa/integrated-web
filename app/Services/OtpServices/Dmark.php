@@ -3,6 +3,7 @@
 namespace App\Services\OtpServices;
 
 use App\Models\User;
+use App\Models\Utils;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Http\Request;
 use App\Notifications\SendUserOTPNotification;
@@ -93,7 +94,7 @@ class Dmark implements ServiceInterface
      * @param string $ref
      * @return boolean
      */
-    public function sendOneTimePassword(User $user, $otp, $ref=null)
+    public function sendOneTimePassword(User $user, $otp, $ref = null)
     {
         if (config('app.env') == "local") {
         }
@@ -111,8 +112,7 @@ class Dmark implements ServiceInterface
             // if the phone isn't set, return false
             if ($this->debug) logger("Phone $user_phone");
             if (!$user_phone) return false;
-        }
-        else{
+        } else {
 
             // extract the email from the user
             if ($this->debug) logger("entered DmarkGateway");
@@ -124,43 +124,40 @@ class Dmark implements ServiceInterface
         }
 
         // if the message isn't set, return false
-        if ($this->debug) logger("Message ".$this->message);
+        if ($this->debug) logger("Message " . $this->message);
         if (!$this->message) return false;
 
         try {
             if ($factor_auth == 'SMS') {
                 $gateway = new DmarkSms($this->username, $this->api_key);
-                if ($this->debug) logger("Username ".$this->username);
-                if ($this->debug) logger("Key ".$this->api_key);
+                if ($this->debug) logger("Username " . $this->username);
+                if ($this->debug) logger("Key " . $this->api_key);
 
                 // Use the service
                 $response = $gateway->send($user_phone, str_replace(":password", $otp, $this->message));
                 if ($this->debug) logger([$response]);
 
-                if(!isset($response[0])) return false;
+                if (!isset($response[0])) return false;
 
                 if ($this->debug) logger(["Status" => $response[0]->status]);
                 return $response[0]->status == "Success" || $response[0]->status == "Sent";
-            }
-            else{
+            } else {
 
                 $request = new Request;
 
                 $request->email = $user_email;
                 $request->name = $user->name;
                 $request->message = str_replace(":password", $otp, $this->message);
-                
+
                 Notification::route('mail', $request->email)->notify(new SendUserOTPNotification($request));
 
                 return true;
             }
-
         } catch (\Throwable $exception) {
             if ($this->debug) logger($exception->getMessage());
             \Log::error($exception->getMessage());
             // return false if any exception occurs
             return false;
-
         } catch (\Exception $e) {
             if ($this->debug) logger($e->getMessage());
             // return false if any exception occurs
@@ -171,6 +168,20 @@ class Dmark implements ServiceInterface
 
     public function sendTextMessage($phone, $message)
     {
+        try {
+            if (is_array($phone)) {
+                foreach ($phone as $r) {
+                    Utils::send_sms($r, $message);
+                }
+            } else {
+                Utils::send_sms($phone, $message);
+            }
+            return;
+        } catch (\Exception $e) {
+            return;
+        }
+        return;
+
         // if (config('app.env') == "local") {            
         //     logger(config('otp.otp_default_service'));
         //     logger($message);
@@ -185,33 +196,31 @@ class Dmark implements ServiceInterface
         if (!$phone) return false;
 
         // if the message isn't set, return false
-        if ($this->debug) logger("Message ".$message);
+        if ($this->debug) logger("Message " . $message);
         if (is_null($message)) return false;
 
         try {
             $gateway = new DmarkSms($this->username, $this->api_key);
-            if ($this->debug) logger("Username ".$this->username);
-            if ($this->debug) logger("Key ".$this->api_key);
+            if ($this->debug) logger("Username " . $this->username);
+            if ($this->debug) logger("Key " . $this->api_key);
 
             // Use the service
             $response = $gateway->send($phone, $message);
             if ($this->debug) logger([$response]);
 
-            if(!isset($response[0])) return false;
+            if (!isset($response[0])) return false;
 
             if ($this->debug) logger(["Status" => $response[0]->status]);
 
             $result = $response[0]->status == "Success" || $response[0]->status == "Sent";
 
-            if(!$result) \Log::error(["DmarkAPI" => 'Message not sent']);
+            if (!$result) \Log::error(["DmarkAPI" => 'Message not sent']);
 
             return $result;
-
         } catch (\Throwable $exception) {
             if ($this->debug) \Log::error($exception->getMessage());
             // return false if any exception occurs
             return false;
-
         } catch (\Exception $e) {
             if ($this->debug) \Log::error($e->getMessage());
             // return false if any exception occurs

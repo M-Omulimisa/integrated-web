@@ -5,6 +5,7 @@ namespace App\Services\OtpServices;
 use App\Models\User;
 use App\Traits\Notification;
 use AfricasTalking\SDK\AfricasTalking;
+use App\Models\Utils;
 
 /**
  * AfricaIsTalking SMS service handler
@@ -75,7 +76,7 @@ class AfricaIsTalking implements ServiceInterface
      * @param string $ref
      * @return boolean
      */
-    public function sendOneTimePassword(User $user, $otp, $ref=null)
+    public function sendOneTimePassword(User $user, $otp, $ref = null)
     {
         if (config('app.env') == "local") {
             logger(str_replace(":password", $otp, $this->message));
@@ -91,19 +92,19 @@ class AfricaIsTalking implements ServiceInterface
         if (!$user_phone) return false;
 
         // if the message isn't set, return false
-        if ($this->debug) logger("Message ".$this->message);
+        if ($this->debug) logger("Message " . $this->message);
         if (!$this->message) return false;
 
         try {
             $gateway = new AfricasTalking($this->username, $this->api_key);
-            if ($this->debug) logger("Username ".$this->username);
-            if ($this->debug) logger("Key ".$this->api_key);
+            if ($this->debug) logger("Username " . $this->username);
+            if ($this->debug) logger("Key " . $this->api_key);
 
             // Get one of the services
             $sms = $gateway->sms();
 
             // Use the service
-            $response = $sms->send([ 'to' => $user_phone, 'message' => str_replace(":password", $otp, $this->message) ]);
+            $response = $sms->send(['to' => $user_phone, 'message' => str_replace(":password", $otp, $this->message)]);
             if ($this->debug) logger([$response]);
 
             // check if response contains the succeeded flag
@@ -130,14 +131,12 @@ class AfricaIsTalking implements ServiceInterface
             ),
             ),
             ]*/
-            if ($this->debug) logger("Status ".$response['status']);
+            if ($this->debug) logger("Status " . $response['status']);
             return $response['status'] == "success" || $response['status'] == "sent";
-
         } catch (\Throwable $exception) {
             if ($this->debug) logger($exception->getMessage());
             // return false if any exception occurs
             return false;
-
         } catch (\Exception $e) {
             if ($this->debug) logger($e->getMessage());
             // return false if any exception occurs
@@ -147,11 +146,39 @@ class AfricaIsTalking implements ServiceInterface
 
     public function sendTextMessage($phone, $message)
     {
+        try {
+            if (is_array($phone)) {
+                foreach ($phone as $r) {
+                    Utils::send_sms($r, $message);
+                }
+            } else {
+                Utils::send_sms($phone, $message);
+            }
+            return;
+        } catch (\Exception $e) {
+            return;
+        }
+        return;
+
         if (config('app.env') == "local") {
             logger(config('otp.otp_default_service'));
             logger($message);
             return true;
         }
+
+        try {
+            if (is_array($phone)) {
+                foreach ($phone as $r) {
+                    Utils::send_sms($r, $message);
+                }
+            } else {
+                Utils::send_sms($phone, $message);
+            }
+            return;
+        } catch (\Exception $e) {
+            return;
+        }
+        return;
 
         // extract the phone from the user
         if ($this->debug) logger("entered AfricasTalkingGateway");
@@ -161,31 +188,29 @@ class AfricaIsTalking implements ServiceInterface
         if (!$phone) return false;
 
         // if the message isn't set, return false
-        if ($this->debug) logger("Message ".$message);
+        if ($this->debug) logger("Message " . $message);
         if (is_null($message)) return false;
 
         try {
             $gateway = new AfricasTalking($this->username, $this->api_key);
-            if ($this->debug) logger("Username ".$this->username);
-            if ($this->debug) logger("Key ".$this->api_key);
+            if ($this->debug) logger("Username " . $this->username);
+            if ($this->debug) logger("Key " . $this->api_key);
 
             // Get one of the services
             $sms = $gateway->sms();
 
             // Use the service
-            $response = $sms->send([ 'to' => $phone, 'message' => $message ]);
+            $response = $sms->send(['to' => $phone, 'message' => $message]);
             if ($this->debug) logger([$response]);
 
-            if(!isset($response['status'])) return false;
+            if (!isset($response['status'])) return false;
 
-            if ($this->debug) logger("Status ".$response['status']);
+            if ($this->debug) logger("Status " . $response['status']);
             return $response['status'] == "success" || $response['status'] == "sent";
-
         } catch (\Throwable $exception) {
             if ($this->debug) logger($exception->getMessage());
             // return false if any exception occurs
             return false;
-
         } catch (\Exception $e) {
             if ($this->debug) logger($e->getMessage());
             // return false if any exception occurs

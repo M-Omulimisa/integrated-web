@@ -125,6 +125,7 @@ class ProcessMarketSubscriptionPayment extends Command
                                 logger(['ProcessMarketSubscriptionPayment' => 'No session found for TxnID: ' . $payment->id]);
                             }
                         } elseif ($response->TransactionStatus === "FAILED") {
+                            $message = null;
                         }
 
                         if (!$update) logger(['ProcessMarketSubscriptionPayment' => 'Not updating for TxnID: ' . $payment->id]);
@@ -139,7 +140,7 @@ class ProcessMarketSubscriptionPayment extends Command
                         if ($this->debug) logger($response->StatusMessage);
 
                         if ($new_status === "FAILED") {
-                            $message = "Hello, your market info subscription worth UGX " . number_format($payment->amount) . " failed. Please try again. M-Omulimisa";
+                            $message = null;
                             $recipient = $payment->account;
                             logger(['UpdateMarketSubscriptionPayment' => 'Payment failed for TxnID: ' . $payment->id]);
                         }
@@ -147,7 +148,7 @@ class ProcessMarketSubscriptionPayment extends Command
                         logger(['UpdateMarketSubscriptionPayment' => 'NULL response for TxnID: ' . $payment->id]);
                     }
 
-                    if (isset($message)) {
+                    if (isset($message) && $message != null && strlen($message) > 5) {
                         $SMSFactory = new ServiceFactory();
                         $service = $SMSFactory->getService(config("otp.otp_default_service", null));
 
