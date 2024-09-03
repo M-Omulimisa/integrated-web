@@ -211,7 +211,7 @@ class MenuFunctions
         $optionMappings = [];
 
         // If custom units exist, present them as options
-        $response = "Select units for " . $product->name . ":\n";
+        $response = "Select units for " . $product->name . " (Type 1 or 2):\n";
 
         $count = 0;
         foreach ($customUnits as $language) {
