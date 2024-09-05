@@ -215,6 +215,7 @@ belong_to_ogranization
         $this->TransactionStatus = $payment_resp->TransactionStatus;
         $this->TransactionReference = $payment_resp->TransactionReference;
         $this->payment_reference_id = $payment_reference_id;
+        $this->is_paid = 'NOT PAID';
         $this->save();
         return 'SUCCESS';
     }
@@ -379,6 +380,7 @@ belong_to_ogranization
                 }
 
                 $this->is_paid = 'PAID';
+                $this->status = 1;
                 $this->save();
             }
         }

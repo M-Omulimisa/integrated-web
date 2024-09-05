@@ -836,8 +836,8 @@ class MenuFunctions
 
             try {
                 $marketSub->trigger_payment();
-                $msg = "Complete your Market Info Subscription payment, enter your Mobile Money PIN on the prompt, or dial *165# for manual payment.";
-                Utils::send_sms($marketSub->phone, $msg);
+                //$msg = "Complete your Market Info Subscription payment, enter your Mobile Money PIN on the prompt, or dial *165# for manual payment.";
+                //Utils::send_sms($marketSub->phone, $msg);
                 return true;
             } catch (\Exception $e) {
                 $msg = "Market Subscription Failed because " . $e->getMessage();

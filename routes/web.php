@@ -616,6 +616,24 @@ Route::get('market-info-message-campaigns-send-now', function () {
     $campaign->save();
     die("<br>MESSAGES");
 });
+Route::get('sync-payments', function () {
+    //get market subs that were updated 30 minues ago
+    $market_subs = MarketSubscription::where('updated_at', '<', Carbon::now()->subMinutes(60))
+        ->where('is_paid', 'NOT PAID')
+        ->get();
+    //SET unlimted time
+    set_time_limit(0);
+    foreach ($market_subs as $key => $market_sub) {
+        try {
+            $resp = $market_sub->check_payment_status();
+            echo "<hr>";
+            print_r($resp);
+        } catch (\Exception $e) {
+            echo "<hr> FAIELD: ";
+            echo $e->getMessage();
+        }
+    }
+});
 Route::get('sync-data', function () {
     foreach (OnlineCourseStudent::all() as $key => $s) {
         if ($s->progress >= 99) {
