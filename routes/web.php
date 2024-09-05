@@ -624,12 +624,14 @@ Route::get('sync-payments', function () {
     //SET unlimted time
     set_time_limit(0);
     foreach ($market_subs as $key => $market_sub) {
-        if ($market_sub->is_paid == 'PAID') {
-            continue;
-        }
         echo "<hr>";
         echo $market_sub->id . "<br>";
         echo $market_sub->phone . "<br>";
+        if ($market_sub->is_paid == 'PAID') {
+            echo "<br>SKIPPED BECAUSE ALREADY PAID";
+            continue;
+        }
+
 
         try {
             echo Utils::my_date_time($market_sub->created_at) . "<br>";
