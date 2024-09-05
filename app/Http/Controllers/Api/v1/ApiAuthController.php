@@ -712,7 +712,7 @@ class ApiAuthController extends Controller
         $u = auth('api')->user();
 
         if ($u == null) {
-            return $this->error("Unauthorised.");
+            return $this->error("Not authenticated.");
         }
 
         $u = User::find($u->id);
