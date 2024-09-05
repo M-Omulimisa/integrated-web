@@ -53,8 +53,7 @@ class ApiShopController extends Controller
             $sub->check_payment_status();
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
-        }
-        $sub = WeatherSubscription::find($r->id);
+        } 
         return $this->success($sub, 'Success');
     }
     public function weather_subscriptions_trigger_payment(Request $r)
