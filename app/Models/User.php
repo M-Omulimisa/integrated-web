@@ -138,7 +138,6 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     /**
