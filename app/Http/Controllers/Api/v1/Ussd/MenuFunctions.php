@@ -75,10 +75,10 @@ class MenuFunctions
                 }
             }
 
-            $data =     [
+            $data = [
                 'phone' => '+' . $phoneNumber,
                 'name' => $sessionData->farmer_market_user_name ?? "User",
-                'farmer_market_user_type' => $sessionData->farmer_market_user_type ?? "buyer",
+                'farmer_market_user_type' => $sessionData->farmer_market_user_type,
                 'gender' => $sessionData->farmer_market_user_gender ?? "male",
                 'date_of_birth' => $dateOfBirth,
                 'user_district' => $sessionData->farmer_market_user_district ?? "Kampala",
@@ -189,14 +189,17 @@ class MenuFunctions
 
     public function getProductsInACategory($sessionId, $phoneNumber, $categoryID)
     {
-        $categories = Product::where('category', $categoryID)->get();
+        $categories = Product::where('category', $categoryID)
+            ->orderBy("ussd_order", "desc")
+            ->get();
+
         $optionMappings = [];
 
         $list = 'Chose a product to buy' . "\n";
         if (count($categories) > 0) {
             $count = 0;
             foreach ($categories as $language) {
-                $list .= (++$count) . ") " . ucwords(strtolower($language->name)) . "\n";
+                $list .= (++$count) . ") " . $language->name . "\n";
                 $optionMappings[$count] = $language->id;
             }
         }

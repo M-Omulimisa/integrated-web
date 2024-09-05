@@ -41,7 +41,7 @@ class Order extends Model
             $order_state_2 = $m->order_state;
             if ($order_state_1 != $order_state_2) {
                 //send notification
-                $msg = 'Your order #' . $m->id . ' status has been updated to ' . $order_state_2 . '.';
+                $msg = 'Your order #' . $m->id . ' status has been updated to ' . $order_state_2 . '. Incase you need any assistance or have any queries, call us on 0200904415 or visit m-omulimisa.com';
                 //thank you.
                 $msg .= ' Thank you for shopping with us.';
                 //send notification

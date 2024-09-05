@@ -108,8 +108,9 @@ class MenuController extends Controller
         $new_user_gender = "What is your gender (Choose 1 or 2)?\n";
         $new_user_gender .= "1. Male\n";
         $new_user_gender .= "2. Female\n";
+        $new_user_gender .= "0. Go back\n";
 
-        $new_user_age = "How old are you (years)?\n";
+        $new_user_age = "How old are you (in years)?\n";
 
         $new_user_district = "Enter District e.g Kampala";
 
@@ -151,6 +152,8 @@ class MenuController extends Controller
                                 $optionMappings[$count] = $language->id;
                             }
                         }
+
+                        $list .= "0) Go back\n";
 
                         $this->menu_helper->saveToField($sessionId, $phoneNumber, "farmer_market_category_options", json_encode($optionMappings));
 
@@ -845,6 +848,7 @@ class MenuController extends Controller
         }
 
         /******************* START NEW FARMERS MARKET SHIT *******************/
+        //new user stuff
         elseif ($last_menu == "farmer_market_first_menu") {
             $user_type = "";
 
@@ -856,42 +860,21 @@ class MenuController extends Controller
                 $user_type = "service_provider";
             }
 
-            $foundUserData = $this->menu_helper->getMarketPlaceUserData($phoneNumber);
+            //User does not exist in DB
+            if ($input_text == "1" || $input_text == "2" || $input_text == "3") {
 
-            if ($foundUserData) {
-                //User exists in DB
-                if ($foundUserData->done_with_ussd_farming_onboarding == 1) {
-                    //TODO: Get approved categories and display them
-                    $response = "Welcome back. Chose an option:\n";
-                } else {
-                    if ($input_text == "1" || $input_text == "2" || $input_text == "3") {
-                        $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_type',  $user_type);
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_type',  $user_type);
+                $districtName = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'farmer_market_user_type');
 
-                        $response = $new_user_name;
-                        $current_menu   = "new_user_name";
-                    } else {
-                        $response = "Invalid option chosen. Please press (1) if you are a buyer, (2) If you are a seller and (3) if you are a service provider.";
-                        $current_menu   = "farmer_market_first_menu";
-                    }
-                }
+                $response = $new_user_name;
+                $current_menu   = "new_user_name";
             } else {
-                //User does not exist in DB
-                if ($input_text == "1" || $input_text == "2" || $input_text == "3") {
-                    $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_type',  $user_type);
-
-                    $response = $new_user_name;
-                    $current_menu   = "new_user_name";
-                } else {
-                    $response = "Invalid option chosen. Please press (1) if you are a buyer, (2) If you are a seller and (3) if you are a service provider.";
-                    $current_menu   = "farmer_market_first_menu";
-                }
+                $response = "Invalid option chosen. Please press (1) if you are a buyer, (2) If you are a seller and (3) if you are a service provider.";
+                $current_menu   = "farmer_market_first_menu";
             }
 
             $action = "request";
-        }
-
-        //new user stuff
-        elseif ($last_menu == "new_user_name") {
+        } elseif ($last_menu == "new_user_name") {
             $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_name',  $input_text);
 
             $response = $new_user_gender;
@@ -913,6 +896,9 @@ class MenuController extends Controller
 
                 $response = $new_user_age;
                 $current_menu   = "new_user_age";
+            } elseif ($input_text == "0") {
+                $response = $new_user_name;
+                $current_menu   = "new_user_name";
             } else {
                 $response = "Invalid option chosen. Please press (1) if you are male and (2) if you are female.";
                 $current_menu   = "new_user_gender";
@@ -946,16 +932,24 @@ class MenuController extends Controller
                 }
             }
         } elseif ($last_menu == "new_user_district") {
-            //User does not exist in DB
             $district = $this->menu_helper->getMostSimilarDistrict($input_text, "Uganda");
             $input_text = $district->name ?? null;
 
             if ($this->menu_helper->checkIfDistrictIsValid($input_text) && strlen($input_text) > 3) {
                 $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_user_district',  $input_text);
 
+                $userType = $this->menu_helper->sessionData($sessionId, $phoneNumber, 'farmer_market_user_type');
+
+                if ($userType == "buyer") {
+                    $response = "Thank you for registering on the M-Omulimisa Farmer Market. Dial *217*101# to start shopping.";
+                } elseif ($userType == "seller") {
+                    $response = "Thank you for registering on the M-Omulimisa Farmer Market as a seller. We shall reach out shortly to complete your registration.";
+                } elseif ($userType == "service_provider") {
+                    $response = "Thank you for registering on the M-Omulimisa Farmer Market as a service provider. We shall reach out shortly to complete your registration.";
+                }
+
                 $this->menu_helper->completeFarmersMarketRegistration($sessionId, $phoneNumber);
 
-                $response = "Thank you for registering on the M-Omulimisa Farmer Market. Dial *217*101# to start shopping.";
                 $current_menu   = "new_user_confirmation";
                 $action         = "end";
             } else {
@@ -968,13 +962,19 @@ class MenuController extends Controller
         //existing user stuff
         elseif ($last_menu == "farmer_market_categories") {
             //TODO: Get selected products in the selected category and display the products
-            $catrogry = $this->menu_helper->getSelectedCategoryID($sessionId, $phoneNumber, $input_text);
-            $response = $this->menu_helper->getProductsInACategory($sessionId, $phoneNumber, $catrogry);
+            if ($input_text == "0") {
+                $response  = $main_menu;
+                $current_menu   = "main_menu";
+                $action = "request";
+            } else {
+                $catrogry = $this->menu_helper->getSelectedCategoryID($sessionId, $phoneNumber, $input_text);
+                $response = $this->menu_helper->getProductsInACategory($sessionId, $phoneNumber, $catrogry);
 
-            $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_category',  $catrogry);
+                $this->menu_helper->saveToField($sessionId, $phoneNumber, 'farmer_market_category',  $catrogry);
 
-            $current_menu   = "farmer_market_products";
-            $action = "request";
+                $current_menu   = "farmer_market_products";
+                $action = "request";
+            }
         } elseif ($last_menu == "farmer_market_products") {
             //TODO: Get selected products in the selected category and display the products
             $catrogry = $this->menu_helper->getOptionMappedID($sessionId, $phoneNumber, $input_text);

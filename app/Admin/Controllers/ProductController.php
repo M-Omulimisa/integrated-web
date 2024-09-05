@@ -51,6 +51,11 @@ class ProductController extends AdminController
         $grid->column('name', __('Name'))->sortable()
             ->editable();
 
+        $grid->column('ussd_order', __('USSD Order'))
+            ->sortable()
+            ->editable();
+
+
         $grid->column('customUnits', 'Custom Units')->display(function ($customUnits) {
             $units = array_map(function ($unit) {
                 return $unit['unit'] . ': ' . number_format($unit['price'], 2);
@@ -206,6 +211,10 @@ class ProductController extends AdminController
             $form->text('unit', 'Unit');
             $form->decimal('price', 'Price');
         });
+
+        $form->number('ussd_order', __('USSD Order'))
+            ->default(1)
+            ->rules('required|min:1');
 
         $form->decimal('price_1', __('Selling Price'))
             ->rules('required');
