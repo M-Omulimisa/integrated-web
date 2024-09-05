@@ -926,9 +926,10 @@ class ApiAuthController extends Controller
         ]);
 
 
-        if ($token == null) {
-            return $this->error('Wrong credentials.');
+        if ($token == null || strlen($token) < 5) {
+            return $this->error('Token not generated.');
         }
+
         $u->token = $token;
         $u->remember_token = $token;
         $u->roles_text = json_encode($u->roles);
