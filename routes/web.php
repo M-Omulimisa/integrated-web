@@ -168,6 +168,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -618,13 +619,19 @@ Route::get('market-info-message-campaigns-send-now', function () {
 });
 Route::get('sync-payments', function () {
     //get market subs that were updated 30 minues ago
-    $market_subs = MarketSubscription::where([])
-        ->orderBy('created_at', 'desc')
-        ->limit(100)
-        ->get();
-    //SET unlimted time
+    $sql = "SELECT * FROM market_subscriptions WHERE updated_at < DATE_SUB(NOW(), INTERVAL 300 MINUTE) ORDER BY updated_at DESC LIMIT 500";
+    $market_subs = DB::select($sql);
+
     set_time_limit(0);
-    foreach ($market_subs as $key => $market_sub) {
+    foreach ($market_subs as $key => $rec) {
+
+        $market_sub = MarketSubscription::find($rec->id);
+        if ($market_sub == null) {
+            echo "<br>Skipped because not found: $rec->id";
+            continue;
+        }
+        //SET unlimted time
+
         echo "<hr>";
         echo $market_sub->id . "<br>";
         echo $market_sub->phone . "<br>";
