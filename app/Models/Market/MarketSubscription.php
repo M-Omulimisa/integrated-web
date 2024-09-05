@@ -59,8 +59,8 @@ class MarketSubscription extends BaseModel
             $model->welcome_msg_sent = 'No';
 
             if ($model->is_paid == null || strlen($model->is_paid) < 3) {
-                $model->is_paid = 'PAID';
-                $model->status = 1;
+                $model->is_paid = 'NOT PAID';
+                $model->status = 0;
             }
 
             return self::prepare($model);
@@ -394,7 +394,7 @@ class MarketSubscription extends BaseModel
                     }
 
                     try {
-
+                        
                         $u = User::where('phone', $phone)->first();
                         if ($u && $u->id) {
                             Utils::sendNotification2([
