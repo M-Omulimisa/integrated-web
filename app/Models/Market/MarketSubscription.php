@@ -391,7 +391,7 @@ belong_to_ogranization
             $this->save();
         }
         return $this->is_paid;
-    }  
+    }
     //belongs to package_id
     public function package()
     {
@@ -407,8 +407,9 @@ belong_to_ogranization
         return $this->first_name . ' ' . $this->last_name;
     }
 
-    public function getStatusAttribute($value)
+    /*  public function getStatusAttribute($value)
     {
+        return $value;
         $now = Carbon::now();
         $then = Carbon::parse($this->end_date);
         if (((int)($value)) == 1) {
@@ -424,7 +425,7 @@ belong_to_ogranization
         }
         return 0;
     }
-
+ */
     public function send_renew_message()
     {
 
