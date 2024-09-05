@@ -618,21 +618,18 @@ Route::get('market-info-message-campaigns-send-now', function () {
     die("<br>MESSAGES");
 });
 Route::get('sync-payments', function () {
-    //get market subs that were updated 30 minues ago
-    $sql = "SELECT * FROM market_subscriptions WHERE updated_at < DATE_SUB(NOW(), INTERVAL 300 MINUTE) ORDER BY updated_at DESC LIMIT 500";
-    $market_subs = DB::select($sql);
+    //get latest MarketSubscription 
+    $market_subs = MarketSubscription::where([])
+        ->orderBy('created_at', 'desc')
+        ->limit(300)
+        ->get();
 
     set_time_limit(0);
-    foreach ($market_subs as $key => $rec) {
+    foreach ($market_subs as $key => $market_sub) {
 
-        $market_sub = MarketSubscription::find($rec->id);
-        if ($market_sub == null) {
-            echo "<br>Skipped because not found: $rec->id";
-            continue;
-        }
         //SET unlimted time
 
-        echo "<hr>";
+        echo "<hr>ID: ";
         echo $market_sub->id . "<br>";
         echo $market_sub->phone . "<br>";
         if ($market_sub->is_paid == 'PAID') {
