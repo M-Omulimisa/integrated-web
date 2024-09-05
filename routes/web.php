@@ -630,9 +630,10 @@ Route::get('sync-payments', function () {
 
         if ($market_sub->TransactionReference == null || strlen($market_sub->TransactionReference) < 3) {
             echo "<br>Skipped because ref is short: $market_sub->TransactionReference";
+            continue;
         }
         try {
-            $resp = $market_sub->process_subscription();
+            $resp = $market_sub->check_payment_status();
             print_r($resp);
         } catch (\Exception $e) {
             echo "<hr> FAIELD: ";
