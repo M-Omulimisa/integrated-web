@@ -106,6 +106,7 @@ class User extends Administrator implements AuthenticatableContract, JWTSubject
         'other',
         "selected_projects",
         'microfinance_id',
+        "farmer_market_user_type",
         'invitation_token',
         'two_auth_method',
         'user_hash',
