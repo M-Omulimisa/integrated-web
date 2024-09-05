@@ -618,20 +618,23 @@ Route::get('market-info-message-campaigns-send-now', function () {
 });
 Route::get('sync-payments', function () {
     //get market subs that were updated 30 minues ago
-    $market_subs = MarketSubscription::where('created_at', '<', Carbon::now()->subHours(5))
+    $market_subs = MarketSubscription::where('created_at', '<', Carbon::now()->subHours(24*3))
         ->get();
     //SET unlimted time
     set_time_limit(0);
     foreach ($market_subs as $key => $market_sub) {
+        if ($market_sub->is_paid == 'PAID') {
+            continue;
+        }
         echo "<hr>";
         echo $market_sub->id . "<br>";
         echo $market_sub->phone . "<br>";
 
-        try{
+        try {
             echo Utils::my_date_time($market_sub->created_at) . "<br>";
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             echo $e->getMessage();
-        } 
+        }
 
         if ($market_sub->TransactionReference == null || strlen($market_sub->TransactionReference) < 3) {
             echo "<br>Skipped because ref is short: $market_sub->TransactionReference";
