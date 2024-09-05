@@ -84,6 +84,143 @@ class MarketSubscription extends BaseModel
     }
 
 
+    public function trigger_payment()
+    {
+        // check if subscription is paid
+        if ($this->is_paid == 'PAID') {
+            throw new \Exception('Subscription is already paid.');
+        }
+
+        if (Utils::isTestNumber($this->phone)) {
+            $this->total_price = 500;
+        }
+
+        /* 
+        
+id
+farmer_id
+language_id
+location_id
+district_id
+subcounty_id
+parish_id
+first_name
+last_name
+email
+frequency
+period_paid
+start_date
+end_date
+status
+user_id
+outbox_generation_status
+outbox_reset_status
+outbox_last_date
+seen_by_admin
+trial_expiry_sms_sent_at
+trial_expiry_sms_failure_reason
+renewal_id
+organisation_id
+package_id
+created_at
+updated_at
+phone
+region_id
+payment_id
+outbox_count
+MNOTransactionReferenceId
+payment_reference_id
+TransactionStatus
+TransactionAmount
+TransactionCurrencyCode
+TransactionReference
+TransactionInitiationDate
+TransactionCompletionDate 
+renew_message_sent
+renew_message_sent_at
+renew_message_sent_details
+is_processed
+is_test
+pre_renew_message_sent
+pre_renew_message_sent_at
+pre_renew_message_sent_details
+welcome_msg_sent
+welcome_msg_sent_at
+welcome_msg_sent_details
+organization_id
+belong_to_ogranization
+	
+ 
+        */
+        $r = $this;
+        if (!isset($this->total_price) || $this->total_price == null) {
+            throw new \Exception('Amount is missing. Amount : ' . $this->total_price);
+        }
+
+        if (!isset($this->phone) || $this->phone == null) {
+            throw new \Exception('Phone number is missing.');
+        }
+
+        $this->phone = Utils::prepare_phone_number($this->phone);
+
+        //validate
+        if (!Utils::phone_number_is_valid($this->phone)) {
+            throw new \Exception('Invalid phone number ' . $this->phone);
+        }
+
+        $payment_reference_id = time() . rand(1000000, 99999999);
+
+        $amount = (int)(($r->total_price));
+        if ($amount < 500) {
+            throw new \Exception('Amount should be greater or equal to UGX 500.');
+        }
+
+        $phone_number = str_replace('+', '', $this->phone);
+
+        $payment_resp = null;
+        try {
+            $payment_resp = Utils::init_payment($phone_number, $amount, $payment_reference_id);
+        } catch (\Throwable $th) {
+            $payment_resp = null;
+            throw new \Exception('Failed to initiate payment because ' . $th->getMessage());
+        }
+
+        if ($payment_resp == null) {
+            throw new \Exception('Failed to initiate payment because payment_resp is null.');
+        }
+
+
+        if (!isset($payment_resp->Status)) {
+            throw new \Exception('Failed to initiate payment because Status is missing.');
+        }
+
+        if ($payment_resp->Status != 'OK') {
+            //StatusMessage
+            if (isset($payment_resp->StatusMessage)) {
+                throw new \Exception("Failed to initiate payment because " . $payment_resp->StatusMessage);
+            }
+            throw new \Exception('Failed to initiate payment.');
+        }
+
+        //TransactionStatus
+        if (!isset($payment_resp->TransactionStatus)) {
+            throw new \Exception('Failed to initiate payment because TransactionStatus is missing.');
+        }
+
+        //TransactionReference
+        if (!isset($payment_resp->TransactionReference)) {
+            throw new \Exception('Failed to initiate payment because TransactionReference is missing.');
+        }
+
+        $this->TransactionStatus = $payment_resp->TransactionStatus;
+        $this->TransactionReference = $payment_resp->TransactionReference;
+        $this->payment_reference_id = $payment_reference_id;
+        $this->save();
+        return 'SUCCESS';
+    }
+
+
+
 
     public static function prepare($m)
     {
@@ -394,7 +531,7 @@ class MarketSubscription extends BaseModel
                     }
 
                     try {
-                        
+
                         $u = User::where('phone', $phone)->first();
                         if ($u && $u->id) {
                             Utils::sendNotification2([

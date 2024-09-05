@@ -46,6 +46,7 @@ use App\Models\Utils;
 use App\Models\Weather\WeatherSubscription;
 use App\Models\Payments\SubscriptionPayment;
 use App\Models\ProductCategory;
+use Dflydev\DotAccessData\Util;
 
 class MenuFunctions
 {
@@ -784,19 +785,68 @@ class MenuFunctions
             // Get the payment API for the subscriber's phone number.
             $api = $this->getServiceProvider($sessionData->market_subscriber, 'payment_api');
 
-            $data = [
-                "session_id" => $sessionData->id,
-                "language_id" => $sessionData->market_language_id,
-                "phone" => $sessionData->market_subscriber,
-                "package_id" => $sessionData->market_package_id,
-                "frequency" => $sessionData->market_frequency,
-                "status" => 1,
-                "period_paid" => $sessionData->market_frequency_count,
-            ];
 
-            MarketSubscription::create($data);
+            $marketSub = new MarketSubscription();
+            $marketSub->language_id = $sessionData->market_language_id;
+            $marketSub->phone = Utils::prepare_phone_number($sessionData->market_subscriber);
+            $marketSub->package_id = $sessionData->market_package_id;
+            $marketSub->period_paid = $sessionData->market_frequency_count;
+            $marketSub->frequency = $sessionData->market_frequency;
+            $marketSub->total_price = $sessionData->market_cost;
+            $marketSub->status = 0;
+            $marketSub->is_paid = 'NOT PAID';
+            $user = User::where('phone', $marketSub->phone)->first();
+            if ($user != null) {
+                $marketSub->farmer_id =  $user->id;
+                $marketSub->user_id =  $user->id;
+                $marketSub->first_name =  $user->first_name;
+                $marketSub->last_name =  $user->last_name;
+                $marketSub->email =  $user->email;
+            }
+            $created_time = Carbon::now();
+            $created_time_1 = Carbon::now();
+            $marketSub->start_date = $created_time;
+            $days = 1;
+            if (
+                strtolower($marketSub->frequency) == 'trial'
+            ) {
+                $days = 30;
+            } else if (
+                strtolower($marketSub->frequency) == 'weekly'
+            ) {
+                $days = 7 * $marketSub->period_paid;
+            } else if (
+                strtolower($marketSub->frequency) == 'monthly'
+            ) {
+                $days = 30 * $marketSub->period_paid;
+            } else if (
+                strtolower($marketSub->frequency) == 'yearly'
+            ) {
+                $days = 365 * $marketSub->period_paid;
+            }
+            $marketSub->end_date = $created_time_1->addDays($days);
 
-            // Create an array containing the data for the new SubscriptionPayment record.
+            try {
+                $marketSub->save();
+            } catch (\Exception $e) {
+                $msg = "Market Subscription Failed because " . $e->getMessage();
+                Utils::send_sms($marketSub->phone, $msg);
+                return false;
+            }
+
+            try {
+                $marketSub->trigger_payment();
+                $msg = "Complete your Market Info Subscription payment, enter your Mobile Money PIN on the prompt, or dial *165# for manual payment.";
+                Utils::send_sms($marketSub->phone, $msg);
+                return true;
+            } catch (\Exception $e) {
+                $msg = "Market Subscription Failed because " . $e->getMessage();
+                Utils::send_sms($marketSub->phone, $msg);
+                return false;
+            }
+
+
+            /* // Create an array containing the data for the new SubscriptionPayment record.
             $payment = [
                 'tool' => 'USSD',
                 'market_session_id' => $sessionData->id,
@@ -812,7 +862,7 @@ class MenuFunctions
             ];
 
             // Create a new SubscriptionPayment record using the payment array and return true if successful.
-            if (SubscriptionPayment::create($payment)) return true;
+            if (SubscriptionPayment::create($payment)) return true; */
         }
 
         // If an error occurred or data was missing, return false.
