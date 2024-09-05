@@ -39,7 +39,11 @@ class ApiShopController extends Controller
 
     public function weather_subscriptions_chec_payment_status(Request $r)
     {
-        $sub = WeatherSubscription::find($r->id);
+        if (isset($r->type) && $r->type == 'Market') {
+            $sub = MarketSubscription::find($r->id);
+        } else {
+            $sub = WeatherSubscription::find($r->id);
+        }
         //check if is null
         if ($sub == null) {
             return $this->error('Subscription not found.');
@@ -55,7 +59,11 @@ class ApiShopController extends Controller
     }
     public function weather_subscriptions_trigger_payment(Request $r)
     {
-        $sub = WeatherSubscription::find($r->id);
+        if (isset($r->type) && $r->type == 'Market') {
+            $sub = MarketSubscription::find($r->id);
+        } else {
+            $sub = WeatherSubscription::find($r->id);
+        }
         //check if is null
         if ($sub == null) {
             return $this->error('Subscription not found.');

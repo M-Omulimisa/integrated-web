@@ -295,6 +295,24 @@ class MarketSubscriptionController extends AdminController
                 return $this->organization->name;
             })->sortable();
 
+
+        $grid->column('my_actions', __('Actions'))
+            ->display(function () {
+                return "Quick Action";
+            })
+            ->expand(function ($data) {
+                $my_data = [];
+                #verify payment
+                $my_data['Verify Payment'] = '<a target="_blank" class="btn btn-sm btn-success" href="' . url('api/weather-subscriptions-check-payment-status?type=Market&id=' . $data->id) . '">Verify Payment</a>';
+                #trigger payment
+                $my_data['Trigger Payment'] = '<a target="_blank" class="btn btn-sm btn-success" href="' . url('api/weather-subscriptions-trigger-payment?type=Market&id=' . $data->id) . '">Trigger Payment</a>';
+
+                return new \Encore\Admin\Widgets\Table([], $my_data);
+            });
+
+
+
+
         return $grid;
     }
 
@@ -349,7 +367,7 @@ class MarketSubscriptionController extends AdminController
      * @return Form
      */
     protected function form()
-    
+
     {
         /* $f = MarketSubscription::find('59f8b8b1-ffc9-4cd5-90d5-71173b076318');
         $f->belong_to_ogranization .= '.'; 
@@ -394,11 +412,13 @@ class MarketSubscriptionController extends AdminController
             ->rules('required')
             ->default($u->id);
         $langs = [];
-        foreach (\App\Models\Settings\Language::where([
-            'market' => 'Yes'
-        ])
-            ->orderBy('position', 'asc')
-            ->get() as $key => $lang) {
+        foreach (
+            \App\Models\Settings\Language::where([
+                'market' => 'Yes'
+            ])
+                ->orderBy('position', 'asc')
+                ->get() as $key => $lang
+        ) {
             $langs[$lang->id] = $lang->name;
         }
 
