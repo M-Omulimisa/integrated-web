@@ -619,8 +619,6 @@ Route::get('market-info-message-campaigns-send-now', function () {
 Route::get('sync-payments', function () {
     //get market subs that were updated 30 minues ago
     $market_subs = MarketSubscription::where('created_at', '<', Carbon::now()->subHours(5))
-        ->where('is_paid', '!=', 'PAID')
-        ->orderBy('updated_at', 'Desc')
         ->get();
     //SET unlimted time
     set_time_limit(0);
