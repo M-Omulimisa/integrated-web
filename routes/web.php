@@ -626,7 +626,12 @@ Route::get('sync-payments', function () {
         echo "<hr>";
         echo $market_sub->id . "<br>";
         echo $market_sub->phone . "<br>";
-        echo Utils::my_date_time($market_sub->phone) . "<br>";
+
+        try{
+            echo Utils::my_date_time($market_sub->created_at) . "<br>";
+        }catch(\Exception $e){
+            echo $e->getMessage();
+        } 
 
         if ($market_sub->TransactionReference == null || strlen($market_sub->TransactionReference) < 3) {
             echo "<br>Skipped because ref is short: $market_sub->TransactionReference";
