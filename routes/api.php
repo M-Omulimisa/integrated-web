@@ -221,6 +221,7 @@ Route::group([
 
     Route::middleware([JwtMiddleware::class])->group(function () {
         /* ==============START OF SHOP API================== */
+        Route::POST('update-profile', [ApiAuthController::class, 'update_profile']);
         Route::get("notification-message", [ApiShopController::class, "get_orders_notification_nessage"]);
         Route::POST("notification-messages-seen", [ApiShopController::class, "set_notification_messages_seen"]);
         Route::get("orders", [ApiShopController::class, "orders_get"]);
@@ -283,7 +284,6 @@ Route::group([
         Route::get('resources-categories', [ApiAuthController::class, 'resources_categpries']);
         Route::POST('organisation-joining-requests', [ApiAuthController::class, 'organisation_joining_request_post']);
         Route::get('organisations', [ApiAuthController::class, 'organisations']);
-        Route::POST('update-profile', [ApiAuthController::class, 'update_profile']);
         Route::get('farmer-groups', [ApiAuthController::class, 'farmer_groups']);
         Route::get('farmers', [ApiAuthController::class, 'farmers']);
         Route::POST('farmers', [ApiAuthController::class, 'farmers_create']);
