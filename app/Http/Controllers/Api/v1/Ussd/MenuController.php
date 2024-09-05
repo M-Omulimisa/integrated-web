@@ -49,7 +49,8 @@ class MenuController extends Controller
         $main_menu .= "1) Agriculture Insurance \n";
         $main_menu .= "2) Market Information \n";
         $main_menu .= "3) Weather Information\n";
-        $main_menu .= "4) Farmers Marketplace";
+        $main_menu .= "4) Farmers Marketplace\n";
+        $main_menu .= "5) Contact Us Directly";
 
         $advisory_option_menu = "Select option\n";
         $advisory_option_menu .= "1) Advisory Tips\n";
@@ -167,6 +168,13 @@ class MenuController extends Controller
 
                 $action         = "request";
                 $module         = 'farmers_market';
+            } elseif ($input_text == '5') {
+                //print found user
+                $response = "You can call us on 0200 904 415";
+                $current_menu   = "call_us_now";
+
+                $action         = "end";
+                $module         = 'contact_us';
             } else {
                 $action         = "end";
                 $response       = "Invalid input!\n";
