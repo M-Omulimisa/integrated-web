@@ -809,6 +809,8 @@ class ApiShopController extends Controller
         $record->farmer_id = '';
         $record->question_id = '';
 
+        Utils::send_sms($phone, $ai_answer);
+
         if ($ai_answer != null) {
             $record->status = 'Answered';
             $record->post_data = $ai_answer;
