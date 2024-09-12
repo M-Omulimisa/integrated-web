@@ -841,6 +841,7 @@ class ApiShopController extends Controller
         $record->payer_email = isset($r->payer_email) ? $r->payer_email : null;
         $record->Signature = isset($r->Signature) ? $r->Signature : null;
         $record->get_data = isset($r->get_data) ? $r->get_data : null;
+        $record->save(); 
 
         return $this->success(null, $message = "Success", 200);
     }
