@@ -63,6 +63,9 @@ class ProductController extends AdminController
             return implode('<br>', $units);
         });
 
+        $grid->column('quantity', __('QTY (in Units)'))
+            ->sortable()
+            ->editable();
         $grid->column('description', __('Description'))
             ->hide();
 
