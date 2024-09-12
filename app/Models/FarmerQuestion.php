@@ -132,7 +132,7 @@ class FarmerQuestion extends Model
         if ($u == null) {
             return 'Unknown';
         }
-        return $u->name . ' (' . $u->phone . ')';
+        return $u->name;
     }
 
     public function getDistrictTextAttribute()
