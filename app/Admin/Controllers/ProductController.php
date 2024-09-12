@@ -203,6 +203,8 @@ class ProductController extends AdminController
 
         $form->decimal('price_2', __('Original Price'))
             ->rules('required');
+        $form->decimal('quantity', __('Available Quantity (in Units)'))
+            ->rules('required');
 
         $form->decimal('agent_commission', __('Agent Commission'))
             ->rules('required');
