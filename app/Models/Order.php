@@ -36,6 +36,28 @@ class Order extends Model
                 }
             }
 
+            $previous_status = $m->getOriginal('order_state');
+            $new_status = $m->order_state;
+
+            if (strtolower($previous_status) == 'pending') {
+                if (strtolower($new_status) == 'completed') {
+                    $items = OrderedItem::where('order', $m->id)->get();
+                    if ($items && count($items) > 0) {
+                        foreach ($items as $item) {
+                            $product = Product::find($item->product);
+                            if ($product && $product->id) {
+                                $product->quantity = $product->quantity - $item->qty;
+                                try {
+                                    $product->save();
+                                } catch (\Throwable $th) {
+                                    //throw $th;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             //check old order_state if is not the same as the new order_state
             $order_state_1 = $m->getOriginal('order_state');
             $order_state_2 = $m->order_state;
