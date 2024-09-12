@@ -1542,6 +1542,7 @@ class ApiShopController extends Controller
         $pro->user = $u->id;
         $pro->supplier = $u->id;
         $pro->in_stock = $r->in_stock;
+        $pro->quantity = $r->quantity;
         $pro->rates = 1;
 
 
