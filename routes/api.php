@@ -217,6 +217,7 @@ Route::group([
     //get all jea 
 
     Route::match(['get', 'post'], "dmark-sms-webhook", [ApiShopController::class, "dmark_sms_webhook"]);
+    Route::match(['get', 'post'], "yo-uganda-webhook", [ApiShopController::class, "yo_uganda_webhook"]);
     Route::POST("notification-messages-seen", [ApiShopController::class, "set_notification_messages_seen"]);
 
     Route::middleware([JwtMiddleware::class])->group(function () {

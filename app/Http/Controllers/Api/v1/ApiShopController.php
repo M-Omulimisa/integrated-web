@@ -53,7 +53,7 @@ class ApiShopController extends Controller
             $sub->check_payment_status();
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
-        } 
+        }
         return $this->success($sub, 'Success');
     }
     public function weather_subscriptions_trigger_payment(Request $r)
@@ -821,6 +821,30 @@ class ApiShopController extends Controller
         return $ai_answer;
         return $this->success(null, $message = "Success", 200);
     }
+
+    public function yo_uganda_webhook(Request $r)
+    {
+
+
+
+        $record = new \App\Models\YoUgandaLog();
+
+        $record->get_data = json_encode($r->all());
+        $record->post_data = json_encode($_POST);
+        $record->date_time = isset($r->date_time) ? $r->date_time : null;
+        $record->amount = isset($r->amount) ? $r->amount : null;
+        $record->narrative = isset($r->narrative) ? $r->narrative : null;
+        $record->network_ref = isset($r->network_ref) ? $r->network_ref : null;
+        $record->external_ref = isset($r->external_ref) ? $r->external_ref : null;
+        $record->payer_names = isset($r->payer_names) ? $r->payer_names : null;
+        $record->Msisdn = isset($r->Msisdn) ? $r->Msisdn : null;
+        $record->payer_email = isset($r->payer_email) ? $r->payer_email : null;
+        $record->Signature = isset($r->Signature) ? $r->Signature : null;
+        $record->get_data = isset($r->get_data) ? $r->get_data : null;
+
+        return $this->success(null, $message = "Success", 200);
+    }
+
     public function get_orders_notification_nessage(Request $r)
     {
 
