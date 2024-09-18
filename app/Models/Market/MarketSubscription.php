@@ -197,6 +197,15 @@ belong_to_ogranization
         if ($payment_resp->Status != 'OK') {
             //StatusMessage
             if (isset($payment_resp->StatusMessage)) {
+
+                try {
+                    $this->fail_payment_message = "FAILED BECAUSE: ".json_encode($my_data);
+                    $this->payment_status = 'FAILED';
+                    $this->save(); 
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+
                 throw new \Exception("Failed to initiate payment because " . $payment_resp->StatusMessage);
             }
             throw new \Exception('Failed to initiate payment.');

@@ -291,6 +291,13 @@ class WeatherSubscription extends BaseModel
         }
 
         if ($resp->Status != 'OK') {
+            try {
+                $this->fail_payment_message = "FAILED BECAUSE: " . json_encode($my_data);
+                $this->payment_status = 'FAILED';
+                $this->save();
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
             throw new \Exception('Failed to check payment status because Status is not OK. resp: ' . json_encode($resp));
         }
 
