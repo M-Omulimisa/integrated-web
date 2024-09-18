@@ -291,7 +291,7 @@ class WeatherSubscription extends BaseModel
         }
 
         if ($resp->Status != 'OK') {
-            throw new \Exception('Failed to check payment status because Status is not OK.');
+            throw new \Exception('Failed to check payment status because Status is not OK. resp: ' . json_encode($resp));
         }
 
 
@@ -378,7 +378,7 @@ class WeatherSubscription extends BaseModel
     }
 
     public function send_renew_message()
-    { 
+    {
         if ($this->status != 0) {
         }
         $phone = Utils::prepare_phone_number($this->phone);
@@ -409,7 +409,7 @@ class WeatherSubscription extends BaseModel
                 }
             }
         }
- 
+
         $msg = "Your M-Omulimisa subscription to the weather updates has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
 
         try {
