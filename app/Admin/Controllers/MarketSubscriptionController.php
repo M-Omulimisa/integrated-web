@@ -284,6 +284,10 @@ class MarketSubscriptionController extends AdminController
                 $my_data['Is Expiry Message Sent?'] = $data->renew_message_sent;
                 $my_data['Expiry Message Sent At'] = $data->renew_message_sent_at;
                 $my_data['Expiry Message Sent Details'] = $data->renew_message_sent_details;
+
+                $my_data['Payment status'] = $data->payment_status;
+                $my_data['Fail payment message'] = $data->fail_payment_message;
+
                 return new \Encore\Admin\Widgets\Table([], $my_data);
             });
 
