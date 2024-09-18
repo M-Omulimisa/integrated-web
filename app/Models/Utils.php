@@ -1584,7 +1584,16 @@ class Utils
         }
         $data = [];
         foreach ($subs as $key => $sub) {
-            $sub->process_subscription();
+            try {
+                $sub->process_subscription();
+                $sub->payment_status = 'Success';
+                $sub->is_processed = 'Yes';
+                $sub->save();
+            } catch (\Throwable $th) {
+                $sub->payment_status = 'Failed';
+                $sub->fail_payment_message = $th->getMessage();
+                $sub->save();
+            }
         }
     }
 
@@ -1595,7 +1604,17 @@ class Utils
         $subs = \App\Models\Weather\WeatherSubscription::where([])->orderBy('created_at', 'desc')->limit(1000)->get();
         $data = [];
         foreach ($subs as $key => $sub) {
-            $sub->process_subscription();
+
+            try {
+                $sub->process_subscription();
+                $sub->payment_status = 'Success';
+                $sub->is_processed = 'Yes';
+                $sub->save();
+            } catch (\Throwable $th) {
+                $sub->payment_status = 'Failed';
+                $sub->fail_payment_message = $th->getMessage();
+                $sub->save();
+            }
         }
     }
 }
