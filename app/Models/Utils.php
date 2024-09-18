@@ -83,8 +83,16 @@ class Utils
 
     public static function system_boot()
     {
-        self::process_market_subs(false);
-        self::renew_messages();
+        try {
+            self::process_market_subs(false);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+        try {
+            self::renew_messages();
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
         $farmers = Farmer::where('user_account_processed', '!=', 'Yes')->get();
         foreach ($farmers as $key => $value) {
             if ($key > 100) {
