@@ -378,8 +378,7 @@ class WeatherSubscription extends BaseModel
     }
 
     public function send_renew_message()
-    {
-        return;
+    { 
         if ($this->status != 0) {
         }
         $phone = Utils::prepare_phone_number($this->phone);
@@ -410,8 +409,7 @@ class WeatherSubscription extends BaseModel
                 }
             }
         }
-
-        return;
+ 
         $msg = "Your M-Omulimisa subscription to the weather updates has expired. Please renew your subscription to continue receiving market updates. Dial *217*101# to renew. Thank you.";
 
         try {
