@@ -207,6 +207,7 @@ class WeatherSubscription extends BaseModel
         $model->period_paid = $period_paid;
         $days = 0;
         $frequency = strtolower($model->frequency);
+        $frequency = trim($frequency);
         if ($frequency == 'daily') {
             $days = 1;
         } else if ($frequency == 'weekly') {
@@ -215,6 +216,9 @@ class WeatherSubscription extends BaseModel
             $days = 30;
         } else if ($frequency == 'yearly') {
             $days = 365;
+        }else{
+            $days = 7;
+            $frequency = 'weekly';
         }
 
         $created_date = null;

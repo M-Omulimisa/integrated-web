@@ -1568,6 +1568,7 @@ class MenuFunctions
             $weatherSub->district_id =  $sessionData->weather_district_id;
             $weatherSub->subcounty_id =  $sessionData->weather_subcounty_id;
             $weatherSub->frequency =  $sessionData->weather_frequency;
+            $weatherSub->period_paid =  $sessionData->weather_frequency_count;
             $weatherSub->total_price =  $sessionData->weather_amount;
             $weatherSub->status =  0;
             $weatherSub->is_paid =  'NOT PAID';
