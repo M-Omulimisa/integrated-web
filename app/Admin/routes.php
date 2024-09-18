@@ -99,6 +99,8 @@ Route::group([
     $router->resource('s-m-s-outboxes', SMSOutboxController::class);
     $router->resource('test-phone-numbers', TestPhoneNumberController::class); 
     $router->resource('yo-uganda-logs', YoUgandaLogController::class);
+    $router->resource('ussd-session-datas', UssdSessionDataController::class);
+
 
 
 });

@@ -1550,7 +1550,106 @@ class MenuFunctions
                 'status' => 'INITIATED'
             ];
 
+            /* 
+farmer_id	
+language_id	
+location_id	
+district_id	
+subcounty_id	
+parish_id	
+first_name	
+last_name	
+email	
+frequency	
+period_paid	
+start_date	
+end_date	
+status	
+user_id	
+outbox_generation_status	
+outbox_reset_status	
+outbox_last_date	
+awhere_field_id	
+seen_by_admin	
+trial_expiry_sms_sent_at	
+trial_expiry_sms_failure_reason	
+renewal_id	
+organisation_id	
+created_at	
+updated_at		
+payment_id	
+MNOTransactionReferenceId	
+payment_reference_id	
+TransactionStatus	
+TransactionAmount	
+TransactionCurrencyCode	
+TransactionReference	
+TransactionInitiationDate	
+TransactionCompletionDate	
+is_paid	
+total_price	
+renew_message_sent	
+renew_message_sent_at	
+renew_message_sent_details	
+is_processed	
+is_test	
+pre_renew_message_sent	
+pre_renew_message_sent_at	
+pre_renew_message_sent_details	
+welcome_msg_sent	
+welcome_msg_sent_at	
+welcome_msg_sent_details	
+belong_to_ogranization	
+organization_id	
+fail_payment_message	
+payment_status	
+ 
+            */
+
+            $weatherSub = new WeatherSubscription();
+            $weatherSub->phone = Utils::prepare_phone_number($sessionData->weather_subscriber);
+            $user = User::where('phone', $weatherSub->phone)->first();
+            if ($user != null) {
+                $weatherSub->farmer_id =  $user->id;
+                $weatherSub->user_id =  $user->id;
+                $weatherSub->first_name =  $user->first_name;
+                $weatherSub->last_name =  $user->last_name;
+                $weatherSub->email =  $user->email;
+            }
+
             // Create a new SubscriptionPayment record using the payment array and return true if successful.
+            /* 
+
+                'weather_subscrption_for',
+        'weather_subscriber',
+        'weather_subscriber_name',
+        'weather_district',
+        'weather_district_id',
+        'weather_subcounty',
+        'weather_subcounty_id',
+        'weather_parish',
+        'weather_parish_id',
+        'weather_frequency',
+        'weather_frequency_count',
+        'weather_confirmation',
+        'weather_payment_status',
+        'weather_amount',
+        'weather_language_id',
+            
+        
+        try {
+                $marketSub->trigger_payment();
+                //$msg = "Complete your Market Info Subscription payment, enter your Mobile Money PIN on the prompt, or dial *165# for manual payment.";
+                //Utils::send_sms($marketSub->phone, $msg);
+                return true;
+            } catch (\Exception $e) {
+                $msg = "Market Subscription Failed because " . $e->getMessage();
+                Utils::send_sms($marketSub->phone, $msg);
+                return false;
+            }
+
+
+            */
             if (SubscriptionPayment::create($payment)) return true;
         }
 
