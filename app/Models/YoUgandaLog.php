@@ -11,19 +11,12 @@ class YoUgandaLog extends Model
 {
     use HasFactory;
 
-    //boot created
-    protected static function boot()
-    {
-        parent::boot();
-        static::created(function ($model) {
-            self::process_things($model);
-        });
-    }
+  
 
-    public static function process_things($model)
+    public static function process_things($external_ref)
     {
         //get market 
-        $market_sub = MarketSubscription::where(['payment_reference_id' => $model->external_ref])->first();
+        $market_sub = MarketSubscription::where(['payment_reference_id' => $external_ref])->first();
         if ($market_sub != null) {
             $market_sub->check_payment_status();
             $market_sub = MarketSubscription::find($market_sub->id);
@@ -34,7 +27,7 @@ class YoUgandaLog extends Model
             }
         }
 
-        $weather_sub = WeatherSubscription::where(['payment_reference_id' => $model->external_ref])->first();
+        $weather_sub = WeatherSubscription::where(['payment_reference_id' => $external_ref])->first();
         if ($weather_sub != null) {
             $weather_sub->check_payment_status();
             $weather_sub = WeatherSubscription::find($weather_sub->id);

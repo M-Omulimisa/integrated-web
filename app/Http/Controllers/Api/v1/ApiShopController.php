@@ -21,6 +21,7 @@ use App\Models\User;
 use App\Models\Utils;
 use App\Models\Weather\WeatherOutbox;
 use App\Models\Weather\WeatherSubscription;
+use App\Models\YoUgandaLog;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
@@ -841,7 +842,20 @@ class ApiShopController extends Controller
         $record->payer_email = isset($r->payer_email) ? $r->payer_email : null;
         $record->Signature = isset($r->Signature) ? $r->Signature : null;
         $record->get_data = isset($r->get_data) ? $r->get_data : null;
-        $record->save(); 
+
+        try {
+            YoUgandaLog::process_things($r->external_ref);
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+
+
+        try {
+            $record->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
 
         return $this->success(null, $message = "Success", 200);
     }
