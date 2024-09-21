@@ -16,7 +16,9 @@ class Organisation extends BaseModel
     use Uuid, OrganisationRelationship;
 
     protected $fillable = [
-        'name', 'address', 'services'
+        'name',
+        'address',
+        'services'
     ];
 
     /**
@@ -56,6 +58,25 @@ class Organisation extends BaseModel
     }
 
 
+    //comma separated farmer_fields
+    public function getFarmerFieldsAttribute($value)
+    {
+        try {
+            return explode(",", $value);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+        return [];
+    }
+
+    public function setFarmerFieldsAttribute($value)
+    {
+        try {
+            $this->attributes['farmer_fields'] = implode(",", $value);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
 
     /**
      * The "type" of the auto-incrementing ID.

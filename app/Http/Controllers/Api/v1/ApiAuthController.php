@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Schema;
 
 class ApiAuthController extends Controller
 {
@@ -97,6 +98,119 @@ class ApiAuthController extends Controller
             'organisation_id' => $u->organisation_id
         ])->get(), "Success");
     }
+
+
+    public function farmers_create_v2(Request $r)
+    {
+        $u = auth('api')->user();
+        //check if user logged in
+        if ($u == null) {
+            return $this->error("Unauthenticated.");
+        }
+
+        if ($r->first_name == null || strlen($r->first_name) < 3) {
+            return $this->error("First name is required.");
+        }
+        if ($r->last_name == null || strlen($r->last_name) < 3) {
+            return $this->error("Last name is required.");
+        }
+        if ($r->phone == null || strlen($r->phone) < 3) {
+            return $this->error("Phone is required.");
+        }
+
+        $f = Farmer::where('external_id', $r->external_id)->first();
+
+
+        if ($f == null) {
+            $f = Farmer::where('phone', $r->phone)->first();
+        }
+        if ($f == null) {
+            $phone_number = Utils::prepare_phone_number($r->phone);
+            $f = Farmer::where('phone', $phone_number)->first();
+        }
+        if ($f == null) {
+            $phone_number = Utils::prepare_phone_number($r->phone_number);
+            $f = Farmer::where('phone_number', $phone_number)->first();
+        }
+
+        if ($f == null) {
+            if ($r->national_id_number != null) {
+                if (strlen($r->national_id_number) > 4) {
+                    $f = Farmer::where('national_id_number', $r->national_id_number)->first();
+                }
+            }
+        }
+
+        $phone_number = Utils::prepare_phone_number($r->phone);
+        if (!Utils::phone_number_is_valid($phone_number)) {
+            return $this->error('Invalid phone number.');
+        }
+
+        if ($f == null) {
+            $f = new Farmer();
+        }
+
+        $table = (new Farmer())->getTable();
+        $colls_of_table = Schema::getColumnListing($table);
+
+        //all submited fields
+        $submitted_fields = $r->all();
+        //loop through all fields and them to farmer object if they exist in the table
+        $skip = ['id', 'created_at', 'updated_at', 'deleted_at'];
+        foreach ($submitted_fields as $key => $value) {
+            if (in_array($key, $skip)) {
+                continue;
+            }
+            if (in_array($key, $colls_of_table)) {
+                $f->$key = $value;
+            }
+        }
+
+
+        $f->agent_id = $u->id;
+        $f->created_by_user_id = $u->id;
+        $f->created_by_agent_id = $u->id;
+        $f->organisation_id = $u->organisation_id;
+        $f->farmer_group_id = $r->farmer_group_id;
+        $f->country_id = $r->country_id;
+        $f->phone = $phone_number;
+        $f->phone_number = $phone_number;
+        $f->password = password_hash('4321', PASSWORD_DEFAULT);
+        $f->status = 'Pending';
+        try {
+            $f->date_of_birth = Carbon::parse($r->date_of_birth)->format('Y-m-d');
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
+        $image = "no_image.jpg";
+        if (!empty($_FILES)) {
+            try {
+                $image = Utils::photo_upload($r->file('file'));
+                $f->photo = $image;
+            } catch (Throwable $t) {
+                $image = "no_image.jpg";
+            }
+        }
+
+
+        try {
+            $f->save();
+            //$f = Farmer::find($f->id);
+            if ($f == null) {
+                return $this->error("Failed to save farmer on the database.");
+            } else {
+                $f = Farmer::find($f->id);
+                return $this->success($f, "Farmer saved successfully.");
+            }
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+
+        return $this->success($f, "Success");
+    }
+
+
 
 
     public function farmers_create(Request $r)

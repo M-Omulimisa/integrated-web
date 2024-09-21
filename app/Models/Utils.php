@@ -143,6 +143,29 @@ class Utils
         }
     }
 
+    public static function photo_upload($file)
+    {
+        if ($file == null) {
+            return '';
+        }
+        //GET FILE EXTENSION FILE NAME FRO FILE
+        $file_extension = $file->getClientOriginalExtension();
+        //get file extension
+        $file_extension = $file->getClientOriginalExtension();
+        // $file_name = $file->getClientOriginalName();
+        //get file extension
+        $file_extension = $file->getClientOriginalExtension();
+        $file_name = time()
+            . '-' . rand(100000, 9999999)
+            . '-' . rand(100000, 9999999)
+            . '.' . $file_extension;
+
+        $public_path = public_path() . "/storage/images";
+        $file->move($public_path, $file_name);
+        $url = 'images/' . $file_name;
+        return $url;
+    }
+
     public static function file_upload($file)
     {
         if ($file == null) {
@@ -152,7 +175,14 @@ class Utils
         $file_extension = $file->getClientOriginalExtension();
         //get file extension
         $file_extension = $file->getClientOriginalExtension();
-        $file_name = $file->getClientOriginalName();
+        // $file_name = $file->getClientOriginalName();
+
+        $file_extension = $file->getClientOriginalExtension();
+        $file_name = time()
+            . '-' . rand(100000, 9999999)
+            . '-' . rand(100000, 9999999)
+            . '.' . $file_extension;
+
         $public_path = public_path() . "/storage/files";
         $file->move($public_path, $file_name);
         $url = 'files/' . $file_name;

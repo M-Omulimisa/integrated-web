@@ -288,6 +288,7 @@ Route::group([
         Route::get('farmer-groups', [ApiAuthController::class, 'farmer_groups']);
         Route::get('farmers', [ApiAuthController::class, 'farmers']);
         Route::POST('farmers', [ApiAuthController::class, 'farmers_create']);
+        Route::POST('farmers-create-v2', [ApiAuthController::class, 'farmers_create_v2']);
         Route::get('countries', [ApiAuthController::class, 'countries']);
         Route::get('locations', [ApiAuthController::class, 'locations']);
         Route::get('languages', [ApiAuthController::class, 'languages']);

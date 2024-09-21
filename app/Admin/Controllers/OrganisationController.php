@@ -6,9 +6,11 @@ use App\Models\Organisations\Organisation;
 use App\Models\Settings\Country;
 use App\Models\User;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Schema;
 
 class OrganisationController extends AdminController
 {
@@ -28,12 +30,22 @@ class OrganisationController extends AdminController
     {
         $grid = new Grid(new Organisation());
         $grid->disableBatchActions();
+        $u = Admin::user();
+        if (!$u->isRole('administrator')) {
+            $grid->model()->where('id', $u->organisation_id);
+            $grid->disableCreateButton();
+            $grid->disableExport();
+            $grid->disableFilter();
+        }
 
-        $grid->column('id', __('Id'))->hide();
-        $grid->column('name', __('Name'))->sortable();
-        $grid->column('logo', __('Logo'));
-        $grid->column('address', __('Address'));
-        $grid->column('services', __('Services'));
+        $grid->column('logo', __('Logo'))->image();
+        $grid->column('name', __('Organisation'))->sortable();
+        $grid->column('address', __('Address'))->sortable();
+        $grid->column('services', __('Services'))->hide();
+        $grid->column('edit', __('Edit'))->display(function () {
+            return "<a href='" . admin_url('organisations') . '/' . $this->id . "/edit'>Update Settings</a>";
+        });
+        $grid->disableActions();
 
         return $grid;
     }
@@ -84,7 +96,18 @@ class OrganisationController extends AdminController
             ->rules('required');
         $form->image('logo', __('Organization\'s Logo'));
         $form->text('address', __('Address'));
-        $form->textarea('services', __('Services'));
+        // $form->textarea('services', __('Services'));
+        $cols = Schema::getColumnListing('farmers');
+        $famer_fields = [];
+        foreach ($cols as $col) {
+            $name = str_replace("_", " ", $col);
+            $name = ucwords($name);
+            $famer_fields[$col] = $name;
+        }
+        $form->listbox('farmer_fields', __('Farmer Fields'))
+            ->options($famer_fields)
+            ->help('Fields that farmers in this organization are interested in')
+            ->rules('required');
 
         $form->disableReset();
         $form->disableViewCheck();

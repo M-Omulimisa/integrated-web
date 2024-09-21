@@ -322,4 +322,26 @@ class Farmer extends BaseModel
     {
         return $this->belongsTo(FarmerGroup::class, 'farmer_group_id');
     }
+
+    //getter farmer_group_text
+    public function getFarmerGroupTextAttribute()
+    {
+        $farmer_group = FarmerGroup::find($this->farmer_group_id);
+        if ($farmer_group != null) {
+            return $farmer_group->name;
+        }
+        return 'Group # ' . $this->farmer_group_id;
+    }
+    //parish_text
+    public function getParishTextAttribute()
+    {
+        $parish = ParishModel::find($this->parish_id);
+        if ($parish != null) {
+            return $parish->name_text;
+        }
+        return 'Parish # ' . $this->parish_id;
+    }
+
+    //appends farmer_group_text
+    protected $appends = ['farmer_group_text', 'parish_text'];
 }
