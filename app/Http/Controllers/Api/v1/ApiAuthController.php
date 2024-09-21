@@ -316,10 +316,14 @@ class ApiAuthController extends Controller
 
     public function farmers()
     {
-        //$u = auth('api')->user();
-        return $this->success(Farmer::where([])
+        $u = auth('api')->user();
+        $conditions = [];
+        if (!$u->isRole('admin')) {
+            $conditions = ['created_by_user_id' => $u->id];
+        }
+        return $this->success(Farmer::where($conditions)
             ->orderBy('created_at', 'desc')
-            ->limit(100)
+            ->limit(250)
             ->get(), "Success");
     }
 
@@ -716,7 +720,10 @@ class ApiAuthController extends Controller
 
     public function organisations()
     {
-        return $this->success(Organisation::where([])->get(), "Success");
+        $conds = [];
+        $u = auth('api')->user();
+        $conds = ['id' => $u->organisation_id];
+        return $this->success(Organisation::where($conds)->get(), "Success");
     }
 
     public function farmer_questions_create(Request $r)
