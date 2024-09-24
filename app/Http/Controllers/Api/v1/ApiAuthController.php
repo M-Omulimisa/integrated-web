@@ -166,6 +166,11 @@ class ApiAuthController extends Controller
             }
         }
 
+        $farmer_group = FarmerGroup::find($r->farmer_group_id);
+        if ($farmer_group == null) {
+            return $this->error('Farmer group #' . $r->farmer_group_id . ' not found.');
+        }
+
 
         $f->agent_id = $u->id;
         $f->created_by_user_id = $u->id;
@@ -177,6 +182,7 @@ class ApiAuthController extends Controller
         $f->phone_number = $phone_number;
         $f->password = password_hash('4321', PASSWORD_DEFAULT);
         $f->status = 'Pending';
+
         try {
             $f->date_of_birth = Carbon::parse($r->date_of_birth)->format('Y-m-d');
         } catch (\Throwable $th) {
@@ -324,7 +330,7 @@ class ApiAuthController extends Controller
         $conditions = ['organisation_id' => $u->organisation_id];
         return $this->success(Farmer::where($conditions)
             ->orderBy('created_at', 'desc')
-            ->limit(150)
+            ->limit(250)
             ->get(), "Success");
     }
 

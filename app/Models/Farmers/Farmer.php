@@ -104,6 +104,13 @@ class Farmer extends BaseModel
         parent::boot();
         self::creating(function (Farmer $model) {
 
+            //farmer_group_id
+            $farmer_group = FarmerGroup::find($model->farmer_group_id);
+            if ($farmer_group != null) {
+                $model->organisation_id = $farmer_group->organisation_id;
+            }
+
+
             $count = Farmer::where([])->count();
             $model->id = ($count + 1);
             $phone_number = Utils::prepare_phone_number($model->phone);
