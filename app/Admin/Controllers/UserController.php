@@ -165,6 +165,11 @@ class UserController extends AdminController
             ->options(ParishModel::selectData())
             ->rules('required');
 
+        //organisation_id
+        $u = Admin::user();
+        $form->hidden('organisation_id', __('Organisation id'))
+            ->default($u->organisation_id); 
+
 
         /*   $form->select('district_id', __('District'))->options(function ($id) {
             $district = DistrictModel::find($id);
