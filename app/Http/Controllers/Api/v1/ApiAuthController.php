@@ -319,11 +319,12 @@ class ApiAuthController extends Controller
         $u = auth('api')->user();
         $conditions = [];
         if (!$u->isRole('admin')) {
-            $conditions = ['created_by_user_id' => $u->id];
+            // $conditions = ['created_by_user_id' => $u->id];
         }
+        $conditions = ['organisation_id' => $u->id];
         return $this->success(Farmer::where($conditions)
             ->orderBy('created_at', 'desc')
-            ->limit(250)
+            ->limit(150)
             ->get(), "Success");
     }
 
