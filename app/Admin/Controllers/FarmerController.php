@@ -40,7 +40,6 @@ class FarmerController extends AdminController
         ]); */
 
         $grid->model()
-            ->where()
             ->orderBy('first_name', 'asc');
 
         $u = Admin::user();
