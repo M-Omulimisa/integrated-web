@@ -144,6 +144,11 @@ class Farmer extends BaseModel
         });
         self::updating(function (Farmer $model) {
             $model->parish_id = $model->parish_id;
+
+            $farmer_group = FarmerGroup::find($model->farmer_group_id);
+            if ($farmer_group != null) {
+                $model->organisation_id = $farmer_group->organisation_id;
+            }
             if ($model->parish_id != null) {
                 $p = ParishModel::find($model->parish_id);
                 if ($p != null) {
