@@ -269,7 +269,13 @@ class Farmer extends BaseModel
         $user->password = password_hash('4321', PASSWORD_DEFAULT);
         $user->created_by = 1;
         $user->country_id = 1;
-        $user->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
+        $g = FarmerGroup::find($m->farmer_group_id);
+        if ($g != null) {
+            $user->organisation_id = $g->organisation_id;
+        } else {
+            $user->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0';
+        }
+        // $user->organisation_id = '57159775-b9e0-41ce-ad99-4fdd6ed8c1a0'; 
         $user->status = 'Active';
         $user->verified = 1;
         $user->email_verified_at = date('Y-m-d H:i:s');
