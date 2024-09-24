@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Models\Farmers\FarmerGroup;
 use App\Models\Settings\Country;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -27,6 +28,15 @@ class FarmerGroupController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new FarmerGroup());
+
+
+
+        $u = Admin::user();
+        //is not role administrator
+        if (!$u->isRole('administrator')) {
+            $grid->model()->where('organisation_id', $u->organisation_id);
+        }
+
 
         $grid->disableBatchActions();
         $grid->column('name', __('Group Name'))->sortable();

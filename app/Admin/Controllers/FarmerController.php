@@ -40,16 +40,15 @@ class FarmerController extends AdminController
         ]); */
 
         $grid->model()
-            ->where([
-                'is_imported' => 'Yes'
-            ])
+            ->where()
             ->orderBy('first_name', 'asc');
 
         $u = Admin::user();
         //is not role administrator
         if (!$u->isRole('administrator')) {
-            $grid->model()->where('organisation_id', $u->organisation_id); 
+            $grid->model()->where('organisation_id', $u->organisation_id);
         }
+
         $grid->quickSearch('phone', 'first_name', 'last_name', 'email', 'national_id_number')
             ->placeholder('Search by phone, name, email... ');
         $grid->column('first_name', __('Name'))

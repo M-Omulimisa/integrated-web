@@ -32,6 +32,14 @@ class UserController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new User());
+
+        $u = Admin::user();
+        //is not role administrator
+        if (!$u->isRole('administrator')) {
+            $grid->model()->where('organisation_id', $u->organisation_id);
+        }
+
+
         $grid->quickSearch('name', 'email', 'phone', 'first_name', "selected_projects", 'last_name')->placeholder('Search by name, email, phone, first name, last name');
         Utils::create_column(
             (new User())->getTable(),
@@ -194,7 +202,25 @@ class UserController extends AdminController
 
         $form->ignore(['password_confirmation']);
 
-        $form->multipleSelect('roles', trans('admin.roles'))->options($roleModel::all()->pluck('name', 'id'));
+
+        $roles = [];
+
+        $u = Admin::user();
+
+
+        foreach ($roleModel::all() as $key => $r) {
+            //is not role administrator
+            if (!$u->isRole('administrator')) {
+                //if slug is administrator continue
+                if ($r->slug == 'administrator') {
+                    continue;
+                }
+            }
+            $roles[$r->id] = $r->name;
+        }
+ 
+
+        $form->multipleSelect('roles', trans('admin.roles'))->options($roles);
         $form->multipleSelect('permissions', trans('admin.permissions'))->options($permissionModel::all()->pluck('name', 'id'));
 
 
