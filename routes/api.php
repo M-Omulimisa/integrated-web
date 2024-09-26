@@ -256,6 +256,7 @@ Route::group([
         Route::get("weather-subscriptions", [ApiShopController::class, "weather_subscriptions"]);
         Route::post("market-packages-subscribe", [ApiShopController::class, "market_packages_subscribe"]);
         Route::post("weather-packages-subscribe", [ApiShopController::class, "weather_packages_subscribe"]);
+        Route::post("manya-ai-question", [ApiShopController::class, "manya_ai_question"]);
         Route::get("languages", [ApiShopController::class, "languages"]);
         /*==============END OF Market Information Endpoints==============*/
 

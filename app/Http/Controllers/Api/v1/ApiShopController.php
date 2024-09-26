@@ -24,6 +24,7 @@ use App\Models\Weather\WeatherSubscription;
 use App\Models\YoUgandaLog;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
+use Dflydev\DotAccessData\Util;
 use Encore\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
@@ -218,6 +219,23 @@ class ApiShopController extends Controller
         return $this->success($sub, 'Success');
     }
 
+    public function manya_ai_question(Request $r)
+    {
+
+        $phone_number = Utils::prepare_phone_number($r->phone);
+        if (!Utils::phone_number_is_valid($phone_number)) {
+            return $this->error('Invalid phone number.');
+        }
+        $question = $r->question;
+        if ($question == null || strlen($question) < 2) {
+            return $this->error('Question is missing.');
+        }
+
+        return $this->success(
+            Utils::get_ai_answer_v3($question, $phone_number),
+            'Success'
+        );
+    }
     public function weather_packages_subscribe(Request $r)
     {
         /* 
@@ -797,7 +815,7 @@ class ApiShopController extends Controller
         $msg_without_word_manya = str_replace('manya', '', strtolower($msg));
         $ai_answer =  null;
         try {
-            $ai_answer = Utils::get_ai_answer_v2($msg_without_word_manya,$phone);
+            $ai_answer = Utils::get_ai_answer_v2($msg_without_word_manya, $phone);
         } catch (\Throwable $th) {
             $ai_answer = null;
         }

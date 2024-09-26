@@ -126,25 +126,6 @@ class Utils
             return '';
         }
 
-        /* 
-        the response data is as follows, get the first message
-       stdClass Object
-(
-    [conversation_id] => a0381764-c7e9-42e1-95a7-37692fa45249
-    [results] => Array
-        (
-            [0] => stdClass Object
-                (
-                    [message] => As of the latest update, the price of maize in Kampala varies between UGX 1,000 to UGX 1,200 per kilogram, depending on quality and market conditions. For the most accurate and current pricing, please check local market reports or contact our office at M-Omulimisa on Kisaasi-Kyanja Road.
-                    [timestamp] => 2024-09-26T20:50:55.003945
-                )
-
-        )
-
-    [audio_url] => https://storage.googleapis.com/tericv-8eed9.appspot.com/%2B256706638494_2024-09-26T20%3A51%3A29.542928.wav
-) 
-        */
-
         $conversation_id = $data->conversation_id;
 
         if (!isset($data->results)) {
@@ -185,6 +166,105 @@ class Utils
 
         return $_data[0]->message;
     }
+
+
+    public static function get_ai_answer_v3($query, $phone_number)
+    {
+        if (strlen($query) < 3) {
+            return 'Invalid query.';
+        }
+
+        $phone_number = Utils::prepare_phone_number($phone_number);
+        if (Utils::phone_number_is_valid($phone_number) == false) {
+            return 'Invalid phone number.';
+        }
+
+        $twenty_four_hours_ago = Carbon::now()->subHours(24);
+        $lastTransaction = AiQuestionLog::where('phone_number', $phone_number)
+            ->where('created_at', '>', $twenty_four_hours_ago)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $conversation_id = null;
+        if ($lastTransaction != null) {
+            $conversation_id = $lastTransaction->conversation_id;
+        }
+
+
+        $url = 'https://manya-chat-akgvd0gjgvfpcvd0.canadacentral-01.azurewebsites.net/ask';
+        $data = [
+            'prompt' => $query,
+            'user_id' => $phone_number
+        ];
+        if ($conversation_id != null) {
+            $data['conversation_id'] = $conversation_id;
+        }
+
+        $guzzle = new \GuzzleHttp\Client();
+        $response = null;
+        try {
+            $response = $guzzle->post($url, [
+                'json' => $data
+            ]);
+        } catch (\Throwable $th) {
+            return '';
+        }
+        if ($response == null) {
+            return '';
+        }
+        $body = $response->getBody();
+        $data = json_decode($body);
+        if ($data == null) {
+            return '';
+        }
+
+        $conversation_id = $data->conversation_id;
+
+        if (!isset($data->results)) {
+            return '';
+        }
+
+        if (!is_array($data->results)) {
+            return '';
+        }
+        $_data = $data->results;
+        //check if $data[0] is not set
+        if (!isset($_data[0])) {
+            return '';
+        }
+
+        if (!isset($_data[0]->message)) {
+            return '';
+        }
+        if ($_data[0]->message == null) {
+            return '';
+        }
+        $audio_url = null;
+        if (isset($data->audio_url)) {
+            $audio_url = $data->audio_url;
+        }
+
+        $log = new AiQuestionLog();
+        /*             $table->text('question')->nullable();
+            $table->text('answer')->nullable();
+            $table->text('audio')->nullable();
+            $table->text('phone_number')->nullable();
+            $table->text('conversation_id')->nullable(); */
+        $log->question = $query;
+        $log->answer = $_data[0]->message;
+        $log->audio = $audio_url;
+        $log->phone_number = $phone_number;
+        $log->conversation_id = $conversation_id;
+        $log->save();
+
+        return [
+            'message' => $_data[0]->message,
+            'audio' => $audio_url
+        ];
+    }
+
+
+
+
     public static function short($string, $length = 100)
     {
         if (strlen($string) > $length) {
