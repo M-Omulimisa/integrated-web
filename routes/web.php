@@ -392,6 +392,17 @@ Route::get('migrate', function () {
     return Artisan::output();
 });
 Route::get('test', function () {
+
+    $start_time = microtime(true);
+    $data =  Utils::get_ai_answer_v2("What about rice?",'0706638494');
+    $end_time = microtime(true);
+
+    $execution_time = ($end_time - $start_time);
+    
+    echo 'Total Execution Time: ' . $execution_time . ' Seconds';
+    dd($data);
+
+    die("");
     Utils::sendNotification2([
         'msg' => '333 Muhindo to Simeon - FROM LOCAL WEB PORTAL',
         'headings' => '333 mubahood TEST NOTIFCATION',

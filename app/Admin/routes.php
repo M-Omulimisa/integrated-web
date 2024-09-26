@@ -100,6 +100,7 @@ Route::group([
     $router->resource('test-phone-numbers', TestPhoneNumberController::class); 
     $router->resource('yo-uganda-logs', YoUgandaLogController::class);
     $router->resource('ussd-session-datas', UssdSessionDataController::class);
+    $router->resource('ai-question-logs', AiQuestionLogController::class);
 
 
 

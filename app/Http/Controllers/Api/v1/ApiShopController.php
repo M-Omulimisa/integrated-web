@@ -797,7 +797,7 @@ class ApiShopController extends Controller
         $msg_without_word_manya = str_replace('manya', '', strtolower($msg));
         $ai_answer =  null;
         try {
-            $ai_answer = Utils::get_ai_answer($msg_without_word_manya);
+            $ai_answer = Utils::get_ai_answer_v2($msg_without_word_manya,$phone);
         } catch (\Throwable $th) {
             $ai_answer = null;
         }
