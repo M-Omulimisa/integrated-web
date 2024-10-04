@@ -435,7 +435,7 @@ class WeatherSubscription extends BaseModel
                 ]);
             }
 
-            Utils::send_sms($phone, $msg);
+            // Utils::send_sms($phone, $msg);
             $this->renew_message_sent = 'Yes';
             $this->renew_message_sent_at = Carbon::now();
             $this->renew_message_sent_details = $msg . ', Message sent to ' . $phone;
