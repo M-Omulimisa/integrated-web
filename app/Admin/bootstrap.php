@@ -106,7 +106,7 @@ Admin::css('/assets/css/styles.css');
 
 
 /* $subscription = WeatherSubscription::where([])->first();
-$data = WeatherOutbox::make_sms($subscription);
+ 
 dd($data); */
 Encore\Admin\Form::init(function (Encore\Admin\Form $form) {
     $form->tools(function (Tools $tools) {

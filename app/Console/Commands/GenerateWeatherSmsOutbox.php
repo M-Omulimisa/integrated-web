@@ -158,7 +158,7 @@ class GenerateWeatherSmsOutbox extends Command
 
                             $codeDescription = isset($codeDescription) ? $codeDescription . '. ' : '';
 
-                            $sms = str_replace('  ', ' ', $date . ' Weather: ' . $codeDescription . 'Temperature (' . $min_temp . 'C <> ' . $max_temp . 'C) Rain Chance (' . $min_rain_chance . '% <> ' . $max_rain_chance . '%). M-Omulimisa');
+                            $sms = str_replace('  ', ' ', $date . ' 1. Weather: ' . $codeDescription . 'Temperature (' . $min_temp . 'C <> ' . $max_temp . 'C) Rain Chance (' . $min_rain_chance . '% <> ' . $max_rain_chance . '%). M-Omulimisa');
 
                             if ($sms_translation = WeatherSmsTranslation::whereLanguageId($languageId)->first()) {
                                 if (strpos($sms_translation->translation, ',') !== false) {
