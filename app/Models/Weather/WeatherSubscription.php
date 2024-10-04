@@ -216,7 +216,7 @@ class WeatherSubscription extends BaseModel
             $days = 30;
         } else if ($frequency == 'yearly') {
             $days = 365;
-        }else{
+        } else {
             $days = 7;
             $frequency = 'weekly';
         }
@@ -392,6 +392,10 @@ class WeatherSubscription extends BaseModel
     {
         if ($this->status != 0) {
         }
+        // 'is_paid' => 'PAID'
+        if ($this->is_paid != 'PAID') {
+            return;
+        }
         $phone = Utils::prepare_phone_number($this->phone);
         //last subscription
         $last_subscription = WeatherSubscription::where([
@@ -435,7 +439,7 @@ class WeatherSubscription extends BaseModel
                 ]);
             }
 
-            // Utils::send_sms($phone, $msg);
+            Utils::send_sms($phone, $msg);
             $this->renew_message_sent = 'Yes';
             $this->renew_message_sent_at = Carbon::now();
             $this->renew_message_sent_details = $msg . ', Message sent to ' . $phone;

@@ -298,7 +298,10 @@ class Utils
     public static function renew_messages()
     {
         foreach (
-            MarketSubscription::where(['renew_message_sent' => 'No'])
+            MarketSubscription::where([
+                'renew_message_sent' => 'No',
+                'is_paid' => 'PAID'
+            ])
                 ->orderBy('created_at', 'desc')
                 ->get() as $key => $value
         ) {
@@ -313,7 +316,10 @@ class Utils
         }
 
         foreach (
-            WeatherSubscription::where(['renew_message_sent' => 'No'])
+            WeatherSubscription::where([
+                'renew_message_sent' => 'No',
+                'is_paid' => 'PAID'
+            ])
                 ->orderBy('created_at', 'desc')
                 ->get() as $key => $value
         ) {

@@ -72,6 +72,15 @@ class WeatherOutbox extends BaseModel
         $result = null;
         $resp['status'] = 'failed';
         $resp['message'] = 'Failed to send message';
+
+        if ($subscription != null) {
+            if (isset($subscription->is_paid)) {
+                if ($subscription->is_paid != 'PAID') {
+                    return;
+                }
+            }
+        }
+
         try {
             $result = $weatherApi->forecast($subscription->parish->lat, $subscription->parish->lng, 'daily');
         } catch (\Exception $e) {
@@ -123,7 +132,7 @@ class WeatherOutbox extends BaseModel
                 return $resp;
             }
             $codeDescription = isset($codeDescription) ? $codeDescription . '. ' : '';
-            $sms = str_replace('  ', ' ', $date . ' 2. Weather: ' . $codeDescription . 'Temperature (' . $min_temp . 'C <> ' . $max_temp . 'C) Rain Chance (' . $min_rain_chance . '% <> ' . $max_rain_chance . '%). M-Omulimisa');
+            $sms = str_replace('  ', ' ', $date . ' Weather: ' . $codeDescription . 'Temperature (' . $min_temp . 'C <> ' . $max_temp . 'C) Rain Chance (' . $min_rain_chance . '% <> ' . $max_rain_chance . '%). M-Omulimisa');
 
             if ($sms_translation = WeatherSmsTranslation::whereLanguageId($languageId)->first()) {
                 if (strpos($sms_translation->translation, ',') !== false) {
