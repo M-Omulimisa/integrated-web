@@ -704,9 +704,10 @@ class Utils
             return 'Failed to send request 2';
         }
 
+        $data = null;
         //check if response is not json
         if (is_string($body)) {
-            $body = json_decode($body);
+            $data = json_decode($body);
         } else {
             try {
                 $data = json_decode(json_encode($body));
