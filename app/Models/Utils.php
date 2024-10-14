@@ -658,10 +658,10 @@ class Utils
         } */
 
         if (Utils::isLocalhost()) {
-            // $outbox->status = 'sent';
-            // $outbox->reason = 'Localhost';
-            // $outbox->save();
-            // return true;
+            $outbox->status = 'sent';
+            $outbox->reason = 'Localhost';
+            $outbox->save();
+            return true;
         }
         $phone = Utils::prepare_phone_number($phone);
         if (Utils::phone_number_is_valid($phone) == false) {
@@ -688,18 +688,14 @@ class Utils
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $body = curl_exec($ch);
-            dd($body);
             curl_close($ch);
         } catch (\Throwable $th) {
             //throw $th;
-            dd($th);
             $outbox->status = 'failed';
             $outbox->reason = 'Failed to send request. ' . $th->getMessage();
             $outbox->save();
             return 'Failed to send request';
         }
-
-        dd($body);
 
         if ($body == null) {
             $outbox->status = 'failed';
@@ -708,11 +704,27 @@ class Utils
             return 'Failed to send request 2';
         }
 
-        $data = json_decode($body);
+        //check if response is not json
+        if (is_string($body)) {
+            $body = json_decode($body);
+        } else {
+            try {
+                $data = json_decode(json_encode($body));
+            } catch (\Throwable $th) {
+                $data = null;
+            }
+        }
 
         if ($data == null) {
+
+            $_body = "";
+            try {
+                $_body = json_encode($body);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
             $outbox->status = 'failed';
-            $outbox->reason = 'Failed to decode response';
+            $outbox->reason = 'Failed to decode response.: ' . $_body;
             $outbox->save();
             return 'Failed to decode response 1';
         }
