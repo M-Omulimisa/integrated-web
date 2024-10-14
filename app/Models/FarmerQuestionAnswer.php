@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models; 
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +10,13 @@ class FarmerQuestionAnswer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'farmer_question_id', 'body', 'audio', 'photo', 'video', 'document'
+        'user_id',
+        'farmer_question_id',
+        'body',
+        'audio',
+        'photo',
+        'video',
+        'document'
     ];
 
     protected static function boot()
@@ -52,7 +58,7 @@ class FarmerQuestionAnswer extends Model
         if ($u == null) {
             return 'Unknown';
         }
-        return $u->name . ' (' . $u->phone . ')';
+        return $u->name;
     }
 
     public function getUserPhotoAttribute()

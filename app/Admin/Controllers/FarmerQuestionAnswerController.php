@@ -25,18 +25,45 @@ class FarmerQuestionAnswerController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new FarmerQuestionAnswer());
+        $grid->model()->orderBy('id', 'desc');
 
-        $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('user_id', __('User id'));
-        $grid->column('farmer_question_id', __('Farmer question id'));
-        $grid->column('verified', __('Verified'));
-        $grid->column('body', __('Body'));
-        $grid->column('audio', __('Audio'));
-        $grid->column('photo', __('Photo'));
-        $grid->column('video', __('Video'));
-        $grid->column('document', __('Document'));
+        $grid->column('id', __('Id'))->sortable();
+        $grid->column('created_at', __('Created'))
+            ->display(function ($created_at) {
+                return date('d-m-Y H:i:s', strtotime($created_at));
+            });
+        $grid->column('user_id', __('Answered Name'))->display(function () {
+            if ($this->user == null) {
+                return 'Unknown';
+            }
+            return $this->user->name;
+        });
+        $grid->column('farmer_question_id', __('Farmer Question'))
+            ->display(function () {
+                if ($this->farmer_question == null) {
+                    return 'Unknown';
+                }
+                return $this->farmer_question->body;
+            });
+        $grid->column('body', __('Body'))->sortable();
+        $grid->column('verified', __('Verified'))
+            ->editable('select', ['Yes' => 'Yes', 'No' => 'No']);
+        $grid->column('audio', __('Audio'))
+            ->display(function ($audio) {
+                if ($audio == null || $audio == '') {
+                    return 'N/A';
+                }
+                return "<audio controls><source src='$audio' type='audio/mpeg'>Your browser does not support the audio element.</audio>";
+            });
+        $grid->column('photo', __('Photo'))
+            ->display(function ($photo) {
+                if ($photo == null || $photo == '') {
+                    return 'N/A';
+                }
+                return "<img src='$photo' style='max-width:100px;max-height:100px' />";
+            });
+        $grid->column('video', __('Up-votes'))->sortable();
+        $grid->column('document', __('Down-votes'))->sortable();
 
         return $grid;
     }
