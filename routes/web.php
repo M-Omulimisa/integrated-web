@@ -186,6 +186,10 @@ Route::put('/admin/insurance-requests/{id}/update-state', [InsuranceRequestContr
 
 Route::get('/admin/insurance-requests', [InsuranceRequestController::class, 'index'])->name('admin.insurance-requests');
 
+Route::get('test-mail-1', function (Request $r) {
+    Utils::send_sms('0706638494', 'Test message online.');
+    die("sent");
+});
 Route::get('test-mail', function (Request $r) {
     $mails = ['mubahood360@gmail.com'];
 

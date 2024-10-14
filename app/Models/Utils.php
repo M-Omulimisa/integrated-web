@@ -658,10 +658,10 @@ class Utils
         } */
 
         if (Utils::isLocalhost()) {
-            $outbox->status = 'sent';
-            $outbox->reason = 'Localhost';
-            $outbox->save();
-            return true;
+            // $outbox->status = 'sent';
+            // $outbox->reason = 'Localhost';
+            // $outbox->save();
+            // return true;
         }
         $phone = Utils::prepare_phone_number($phone);
         if (Utils::phone_number_is_valid($phone) == false) {
@@ -688,14 +688,18 @@ class Utils
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $body = curl_exec($ch);
+            dd($body);
             curl_close($ch);
         } catch (\Throwable $th) {
             //throw $th;
+            dd($th);
             $outbox->status = 'failed';
             $outbox->reason = 'Failed to send request. ' . $th->getMessage();
             $outbox->save();
             return 'Failed to send request';
         }
+
+        dd($body);
 
         if ($body == null) {
             $outbox->status = 'failed';
