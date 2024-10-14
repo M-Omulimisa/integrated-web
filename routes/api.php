@@ -301,6 +301,7 @@ Route::group([
         Route::POST('gardens-create', [ApiAuthController::class, 'gardens_create']);
         Route::POST('farmer-questions-create', [ApiAuthController::class, 'farmer_questions_create']);
         Route::POST('farmer-answers-create', [ApiAuthController::class, 'farmer_answers_create']);
+        Route::POST('farmer-answers-vote-create', [ApiAuthController::class, 'farmer_answers_vote_create']);
 
         Route::get('crops', [ApiAuthController::class, 'crops']);
         Route::get('gardens', [ApiAuthController::class, 'gardens']);

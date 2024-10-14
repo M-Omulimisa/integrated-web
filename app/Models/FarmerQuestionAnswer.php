@@ -70,5 +70,19 @@ class FarmerQuestionAnswer extends Model
         return $u->photo;
     }
 
+    //getter for video
+    public function getVideoAttribute($value)
+    {
+        $up_votes_count = FarmerQuestionAnswerHasVotes::where('farmer_question_answer_id', $this->id)->where('vote', 'up')->count();
+        return $up_votes_count;
+    }
+
+    //getter for document
+    public function getDocumentAttribute($value)
+    {
+        $down_votes_count = FarmerQuestionAnswerHasVotes::where('farmer_question_answer_id', $this->id)->where('vote', 'down')->count();
+        return $down_votes_count;
+    }
+
     protected $appends = ['user_text', 'user_photo'];
 }

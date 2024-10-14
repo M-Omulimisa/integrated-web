@@ -11,6 +11,7 @@ use App\Models\Crop;
 use App\Models\DistrictModel;
 use App\Models\FarmerQuestion;
 use App\Models\FarmerQuestionAnswer;
+use App\Models\FarmerQuestionAnswerHasVotes;
 use App\Models\Farmers\Farmer;
 use App\Models\Farmers\FarmerGroup;
 use App\Models\GardenCoordicate;
@@ -786,6 +787,45 @@ class ApiAuthController extends Controller
         return $this->success($f, "Question submitted successfully.");
     }
 
+
+    public function farmer_answers_vote_create(Request $r)
+    {
+        /*  if ($r->body == null && empty($_FILES)) return $this->error("Answer is required."); */
+        if ($r->farmer_question_answer_id == null) return $this->error("Question is required.");
+
+
+        $a = FarmerQuestionAnswer::find($r->farmer_question_answer_id);
+        if ($a == null) {
+            return $this->error("Answer not found.");
+        }
+
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error("Not authenticated.");
+        }
+
+        //farmer_question_answer_has_votes
+        $vote = FarmerQuestionAnswerHasVotes::where([
+            'user_id' => $u->id,
+            'farmer_question_answer_id' => $r->farmer_question_answer_id
+        ])->first();
+        if ($vote == null) {
+            $vote = new FarmerQuestionAnswerHasVotes();
+            $vote->user_id = $u->id;
+            $vote->farmer_question_answer_id = $r->farmer_question_answer_id;
+        }
+        $vote->vote = $r->vote;
+
+        try {
+            $vote->save();
+        } catch (\Throwable $t) {
+            return $this->error($t->getMessage());
+        }
+
+        $a = FarmerQuestionAnswer::find($r->farmer_question_answer_id);
+
+        return $this->success($a, "Answer submitted successfully.");
+    }
 
     public function farmer_answers_create(Request $r)
     {
