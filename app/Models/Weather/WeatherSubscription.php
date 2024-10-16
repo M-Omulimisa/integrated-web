@@ -577,21 +577,23 @@ class WeatherSubscription extends BaseModel
                             $msg = "Your M-Omulimisa weather information update for {$sub_text} will expire in next $diff days, Please renew now to avoid disconnection.";
 
                             try {
-                                Utils::send_sms($phone, $msg);
 
-                                if ($u && $u->id) {
-                                    Utils::sendNotification2([
-                                        'msg' => $msg,
-                                        'headings' => 'M-Omulimisa weather information update',
-                                        'receiver' => $u->id,
-                                        'type' => 'text',
-                                    ]);
+                                if ($this->welcome_msg_sent == 'Yes' && $this->status == 1) {
+                                    Utils::send_sms($phone, $msg);
+
+                                    if ($u && $u->id) {
+                                        Utils::sendNotification2([
+                                            'msg' => $msg,
+                                            'headings' => 'M-Omulimisa weather information update',
+                                            'receiver' => $u->id,
+                                            'type' => 'text',
+                                        ]);
+                                    }
+                                    $this->pre_renew_message_sent = 'Yes';
+                                    $this->pre_renew_message_sent_at = Carbon::now();
+                                    $this->pre_renew_message_sent_details = $msg . ' - Message sent to ' . $phone;
+                                    $this->save();
                                 }
-
-                                $this->pre_renew_message_sent = 'Yes';
-                                $this->pre_renew_message_sent_at = Carbon::now();
-                                $this->pre_renew_message_sent_details = $msg . ' - Message sent to ' . $phone;
-                                $this->save();
                             } catch (\Throwable $th) {
                                 $this->pre_renew_message_sent = 'Failed';
                                 $this->pre_renew_message_sent_at = Carbon::now();
