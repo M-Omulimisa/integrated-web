@@ -17,8 +17,8 @@
                             <div class="mb-3">
                                 <label class="form-label" for="username">Email or Phone number (username).</label>
                                 <div class="position-relative auth-pass-inputgroup mb-3">
-                                    <input type="text"  class="form-control pe-5 @error('username') is-invalid @enderror"
-                                        placeholder="Enter username" id="username" name="username" required 
+                                    <input type="text" class="form-control pe-5 @error('username') is-invalid @enderror"
+                                        placeholder="Enter username" id="username" name="username" required
                                         value="{{ old('username') }}">
                                     @if ($errors->has('username'))
                                         @foreach ($errors->get('username') as $message)
@@ -36,6 +36,10 @@
                             </div>
                         </form>
                     </div>
+                    <br>
+                    <p>Do you already have a password reset token? <a href="{{ url('auth/password-reset-form') }}">
+                            reset
+                            password from here</a></p>
                 </div>
                 <!-- end card body -->
             </div>

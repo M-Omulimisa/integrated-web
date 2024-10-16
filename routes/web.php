@@ -398,11 +398,11 @@ Route::get('migrate', function () {
 Route::get('test', function () {
 
     $start_time = microtime(true);
-    $data =  Utils::get_ai_answer_v2("What about rice?",'0706638494');
+    $data =  Utils::get_ai_answer_v2("What about rice?", '0706638494');
     $end_time = microtime(true);
 
     $execution_time = ($end_time - $start_time);
-    
+
     echo 'Total Execution Time: ' . $execution_time . ' Seconds';
     dd($data);
 
@@ -455,6 +455,7 @@ Route::get('password-reset-link', function (Request $r) {
 });
 
 Route::get('auth/login', function () {
+
     $u = Admin::user();
     if ($u != null) {
         return redirect(url('/'));
@@ -466,6 +467,8 @@ Route::get('auth/login', function () {
 });
 
 Route::post('auth/password-reset-form', function (Request $r) {
+
+
     $password = trim($r->password);
     $password_1 = trim($r->password_1);
 
@@ -475,6 +478,11 @@ Route::post('auth/password-reset-form', function (Request $r) {
             ->withErrors(['password' => 'Passwords do not match'])
             ->withInput();
     }
+    if ($r->token == null || strlen($r->token) < 3) {
+        return back()
+            ->withErrors(['token' => 'Token is required.'])
+            ->withInput();
+    }
 
     //get reset_password_token from session
     $reset_password_token = $r->token;
@@ -482,41 +490,55 @@ Route::post('auth/password-reset-form', function (Request $r) {
     $acc = \App\Models\User::where('reset_password_token', $reset_password_token)->first();
     if ($acc == null) {
         $message = "Invalid reset password token";
-        return back()->withErrors(['token' => 'Invalid reset password token'])->withInput();
+        return back()->withErrors(['token' => 'Invalid token'])->withInput();
     }
 
     if ($reset_password_token == null || strlen($reset_password_token) < 3) {
         $message = "Invalid reset password token";
-        return back()->withErrors(['password' => 'Invalid reset password token'])->withInput();
+        return back()->withErrors(['token' => 'Invalid reset password token'])->withInput();
     }
     //check if password contains a letter and a number
-    if (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+    /* if (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
         return back()
             ->withErrors(['password' => 'Password must contain a letter and a number'])
             ->withInput();
-    }
+    } */
 
     //check if password is at least 5 characters long
-    if (strlen($password) < 5) {
+    if (strlen($password) < 4) {
         return back()
-            ->withErrors(['password' => 'Password must be at least 5 characters long'])
+            ->withErrors(['password' => 'Password must be at least 4 characters long'])
             ->withInput();
     }
 
+
+
     //get account
     $acc = \App\Models\User::where('reset_password_token', $reset_password_token)->first();
+
+
     if ($acc == null) {
-        $message = "Invalid reset password token";
-        die($message);
+        return back()->withErrors(['token' => 'Token not found.'])->withInput();
     }
 
     //update password
-    $acc->password = bcrypt($password);
+    $acc->password = password_hash($password, PASSWORD_DEFAULT);
     $acc->reset_password_token = null;
     $acc->has_changed_password = 'Yes';
-    $acc->save();
+    try {
+        $acc->save();
+    } catch (\Throwable $th) {
+        //throw $th;
+    }
+
+    session()->flash('success', 'Password reset successfully, you can now login with your new password.');
+
+    $url = url('auth/login');
+    return redirect($url);
+    Auth::login($acc, true);
+    dd($_SESSION);
     //success message in session
-    session()->flash('success', 'Password updated successfully.');
+    // session()->flash('success', 'Password updated successfully.');
 
     //login user
     Auth::login($acc, true);

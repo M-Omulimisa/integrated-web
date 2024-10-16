@@ -1,5 +1,10 @@
 @extends('layouts.auth')
-
+@php
+    $tok = old('password');
+    if ($tok != null && strlen($tok) > 0) {
+        $token = $tok;
+    }
+@endphp
 @section('content')
 
     <div class="row justify-content-center">
@@ -19,6 +24,13 @@
                                 <label for="token" class="form-label">Token</label>
                                 <input type="text" name="token" value="{{ $token }}" class="form-control"
                                     required>
+                                @if ($errors->has('token'))
+                                    @foreach ($errors->get('token') as $message)
+                                        <label class="control-label text-danger" for="inputError"><i class="fa fa-times-circle-o"></i>
+                                            <li>{{ $message }}</li>
+                                        </label><br>
+                                    @endforeach
+                                @endif
                             </div>
 
                             <div class="mb-3">
