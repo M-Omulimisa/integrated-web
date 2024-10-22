@@ -71,7 +71,7 @@ if (isset($_GET['cmd'])) {
 
 //default grid settings
 Grid::init(function (Grid $grid) {
-    $grid->disableRowSelector();
+    // $grid->disableRowSelector();
     //$grid->disableExport();
     $grid->actions(function (Grid\Displayers\Actions $actions) {
         //$actions->disableDelete();
