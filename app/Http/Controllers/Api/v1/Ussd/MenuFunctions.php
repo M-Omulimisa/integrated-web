@@ -47,6 +47,7 @@ use App\Models\Weather\WeatherSubscription;
 use App\Models\Payments\SubscriptionPayment;
 use App\Models\ProductCategory;
 use Dflydev\DotAccessData\Util;
+use Illuminate\Support\Facades\Http;
 
 class MenuFunctions
 {
@@ -208,6 +209,21 @@ class MenuFunctions
         $this->saveToField($sessionId, $phoneNumber, "option_mappings", $optionMappings);
         return $list;
     }
+
+    public function checkUserDigisaveAccount($phoneNumber)
+    {
+        $response = Http::withHeaders(['Content-Type' => 'application/json'])
+            ->post('https://digisave.m-omulimisa.com/api/get-user', [
+                'phone_number' => $phoneNumber
+            ]);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return null;
+    }
+
 
     public function getUnitsAndPricingInAProduct($sessionId, $phoneNumber, $product)
     {

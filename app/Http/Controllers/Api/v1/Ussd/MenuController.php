@@ -9,6 +9,7 @@ use App\Jobs\SendUssdAdvisoryMessage;
 use App\Models\Ussd\UssdLanguage;
 use App\Models\Ussd\UssdSession;
 use App\Models\ProductCategory;
+use Carbon\Carbon;
 use App\Models\Ussd\UssdSessionData;
 use App\Models\Market\MarketSubscription;
 
@@ -50,7 +51,8 @@ class MenuController extends Controller
         $main_menu .= "2) Market Information \n";
         $main_menu .= "3) Weather Information\n";
         $main_menu .= "4) Farmers Marketplace\n";
-        $main_menu .= "5) Contact Us Directly";
+        $main_menu .= "5) View my Digisave Profile\n";
+        $main_menu .= "6) Contact Us Directly";
 
         $advisory_option_menu = "Select option\n";
         $advisory_option_menu .= "1) Advisory Tips\n";
@@ -172,6 +174,16 @@ class MenuController extends Controller
                 $action         = "request";
                 $module         = 'farmers_market';
             } elseif ($input_text == '5') {
+                //Check if the person has a digidave account via api call to bannaddda's api stuff
+
+                $response = "Welcome to DigiSave. Please select an option.\n";
+                $response .= "1) My personal account\n";
+                $response .= "2) My group\n";
+
+                $module         = 'digisave';
+                $current_menu   = "digisave_menu_choice";
+                $action         = "request";
+            } elseif ($input_text == '6') {
                 //print found user
                 $response = "You can call us on 0200 904 415";
                 $current_menu   = "call_us_now";
@@ -186,6 +198,53 @@ class MenuController extends Controller
 
             //create record
             if (isset($module)) $this->menu_helper->startMenu($sessionId, $phoneNumber, $module);
+        }
+
+        /**********START DIGISAVE*******************************/
+        //personal results
+        elseif ($last_menu == "digisave_menu_choice" && $input_text == '1') {
+            $hasDigisaveAccount = $this->menu_helper->checkUserDigisaveAccount("+" . $phoneNumber);
+
+            if ($hasDigisaveAccount["code"] == 0) {
+                $response = "You do not have a DigiSave account. Kindly contact us on +256 776 035 192.";
+
+                $current_menu   = "digisave_no_account";
+                $module         = 'digisave';
+                $action         = "end";
+            } else {
+                $response = "Hi there. Here's your DigiSave account as at " . Carbon::now()->format('M d, Y') . "\n";
+                $response .= "Savings: " . number_format($hasDigisaveAccount["data"]["member"]["balance"]) . " UGX\n";
+                $response .= "Loan: " .  number_format($hasDigisaveAccount["data"]["member"]["loan_amount"]) . " UGX\n";
+                $response .= "Outstanding Loan: " . number_format($hasDigisaveAccount["data"]["member"]["outstanding_loan"]) . " UGX\n";
+                $response .= "Profit: " . number_format($hasDigisaveAccount["data"]["member"]["member_profit"], 0) . " UGX\n";
+
+                $current_menu   = "digisave_profile";
+                $module         = 'digisave';
+                $action         = "end";
+            }
+        }
+
+        //group results
+        elseif ($last_menu == "digisave_menu_choice" && $input_text == '2') {
+            $hasDigisaveAccount = $this->menu_helper->checkUserDigisaveAccount("+" . $phoneNumber);
+
+            if ($hasDigisaveAccount["code"] == 0) {
+                $response = "You do not have a DigiSave account. Kindly contact us on +256 776 035 192.";
+
+                $current_menu   = "digisave_no_account";
+                $module         = 'digisave';
+                $action         = "end";
+            } else {
+                $response = "Hi there. Here's your Group account as at " . Carbon::now()->format('M d, Y') . "\n";
+                $response .= "Savings: " . number_format($hasDigisaveAccount["data"]["group"]["savings"]) . " UGX\n";
+                $response .= "Loan: " .  number_format($hasDigisaveAccount["data"]["group"]["loan_amount"]) . " UGX\n";
+                $response .= "Outstanding Loan: " . number_format($hasDigisaveAccount["data"]["group"]["outstanding_loan"]) . " UGX\n";
+                $response .= "Profit: " . number_format($hasDigisaveAccount["data"]["group"]["group_profit"], 0) . " UGX\n";
+
+                $current_menu   = "digisave_profile";
+                $module         = 'digisave';
+                $action         = "end";
+            }
         }
 
         /******************* START INSURANCE *******************/
