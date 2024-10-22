@@ -610,7 +610,18 @@ class WeatherSubscription extends BaseModel
         if ($this->status == 0 && $this->is_paid == 'PAID' && $this->renew_message_sent != 'Yes') {
             //check expiry
             $now = Carbon::now();
+
+            $date_ctreated = Carbon::parse($this->created_at);
+            //created date should be less than 2 days from now
+            $days = $date_ctreated->diffInDays($now);
+            $days = abs($days);
+            if ($days < 6) {
+                return;
+            }
+
             $end_date = Carbon::parse($this->end_date);
+
+
 
             if ($now->gt($end_date)) {
                 $diff_in_days = $now->diffInDays($end_date);
