@@ -624,6 +624,24 @@ class Utils
                 return 'success';
             }
         }
+
+        //check again most latest message using latest month
+        $last = SMSOutbox::where([
+            'phone' => $phone,
+            'sms' => $sms
+        ])->latest()->first();
+        if ($last != null) {
+            $now = Carbon::now();
+            $last = Carbon::parse($last->created_at);
+            $diff = $now->diffInMinutes($last);
+            if ($diff < (60 * 12)) {
+                $outbox->status = 'cancelled';
+                $outbox->reason = 'Duplicate message. Sent in the last 12 hours..';
+                $outbox->save();
+                return 'success';
+            }
+        }
+
         //check if phone number is in test numbers
         if (self::isTestNumber($phone)) {
             $outbox->status = 'cancelled';

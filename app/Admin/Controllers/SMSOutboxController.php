@@ -16,7 +16,7 @@ class SMSOutboxController extends AdminController
      *
      * @var string
      */
-    protected $title = 'SMS Outboxes';
+    protected $title = 'SMS Outbox';
 
     /**
      * Make a grid builder.
